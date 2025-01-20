@@ -4,7 +4,7 @@ import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
 from xml.etree.ElementTree import ElementTree
 
-from qgis.core import Qgis, QgsMessageLog, QgsProject
+from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry
 from qgis.utils import iface
 
 from qkan import QKan, enums
@@ -246,73 +246,36 @@ def set_qkanlayer_dbname(oldsource: str, newdb: str) -> str:
     return newsource
 
 
-def get_database_QKan(silent: bool = False) -> Tuple[Optional[str], Optional[int], Optional[str]]:
-    """Ermittlung der aktuellen SpatiaLite-Datenbank aus den geladenen Layern"""
+def get_database_QKan(silent: bool = False) -> None:
+    """Ermittlung der aktuellen Datenbank aus den geladenen Layern"""
 
     # noinspection PyArgumentList
+
     project = QgsProject.instance()
+    qkanlayers = ["Schächte", "Haltungen", "Flächen"]
+    layerobjects = None
+    for lnam in qkanlayers:
+        layerobjects = project.mapLayersByName(lnam)
+        if len(layerobjects) > 0:
+            break
+    else:
+        logger.error_user("Fehler: Es wurde noch kein QKan-Projekt geladen")
 
-    layerobjects = project.mapLayersByName("Schächte")
-    logger.debug(
-        f"qkan.database.qkan_utils.get_database_QKan: \nlayerobjects: {layerobjects}"
-    )
-    if len(layerobjects) > 0:
-        lay = layerobjects[0]
-        dbname_s: Optional[str] = get_qkanlayer_attributes(lay.source())[0].replace('\\', '/')
-        epsg_s = int(lay.crs().postgisSrid())
-        _dt = lay.providerType()
-        if _dt == 'spatialite':
-            dbtype_s = enums.QKanDBChoice.SPATIALITE
-        elif _dt == 'postgres':
-            dbtype_s = enums.QKanDBChoice.POSTGIS
+    layer = layerobjects[0]
+    # only once for loaded project
+    if not QKan.dbsource or layer.publicSource() != QKan.dbsource:
+        QKan.dbsource = layer.publicSource()
+
+        provider = layer.dataProvider().name()
+        if provider == 'postgres':
+            QKan.dbtype = enums.QKanDBChoice.POSTGIS
+        elif provider == 'spatialite':
+            QKan.dbtype = enums.QKanDBChoice.SPATIALITE
+            uri_components = QgsProviderRegistry.instance().decodeUri(layer.dataProvider().name(), layer.publicSource())
+            QKan.config.database.qkan = uri_components['dbname']
+            QKan.config.epsg = uri_components['epsg']
         else:
-            dbtype_s = None
-    else:
-        dbname_s = None
-        epsg_s = 0
-        dbtype_s = None
-
-    layerobjects = project.mapLayersByName("Flächen")
-    if len(layerobjects) > 0:
-        lay = layerobjects[0]
-        dbname_f: Optional[str] = get_qkanlayer_attributes(lay.source())[0].replace('\\', '/')
-        epsg_f = int(lay.crs().postgisSrid())
-        _dt = lay.providerType()
-        if _dt == 'spatialite':
-            dbtype_f = enums.QKanDBChoice.SPATIALITE
-        elif _dt == 'postgres':
-            dbtype_f = enums.QKanDBChoice.POSTGIS
-        else:
-            dbtype_f = None
-    else:
-        dbname_f = None
-        epsg_f = 0
-        dbtype_f = None
-
-    if dbname_s == dbname_f and dbname_s is not None:
-        return dbname_s, epsg_s, dbtype_s
-    elif dbname_s is None and dbname_f is None:
-        logger.error_user(
-            "Fehler in Layerliste:\n"
-            'Layer "Schächte und Flächen existieren nicht"',
-        )
-        raise BaseException
-    elif dbname_f is not None:
-        if not silent:
-            logger.warning("Fehler in Layerliste:", 'Layer "Schächte existiert nicht"')
-        return dbname_f, epsg_f, dbtype_f
-    elif dbname_s is not None:
-        if not silent:
-            logger.warning("Fehler in Layerliste:", 'Layer "Flächen existiert nicht"')
-        return dbname_s, epsg_s, dbtype_s
-    else:
-        logger.error_user(
-            "Fehler in Layerliste:",
-            f"""Layer "Schächte" und "Flächen" sind mit abweichenden Datenbanken verknüpft:
-        Schächte: {dbname_s}
-        Flächen:  {dbname_f}""",
-        )
-        raise BaseException
+            logger.error_code(f"no or wrong dataProvider {provider}")
 
 
 def get_editable_layers() -> Set[str]:

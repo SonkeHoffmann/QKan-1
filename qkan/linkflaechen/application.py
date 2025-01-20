@@ -121,7 +121,8 @@ class LinkFl(QKanPlugin):
     def database_name(self) -> str:
         """Contains the database name"""
         if not self.db_name:
-            self.db_name, _, _ = get_database_QKan()
+            get_database_QKan()
+            self.db_name = QKan.config.database.qkan
         return self.db_name
 
     def run_createlinefl(self) -> None:

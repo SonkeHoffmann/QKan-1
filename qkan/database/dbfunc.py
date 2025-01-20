@@ -139,13 +139,14 @@ class DBConnection:
         """
 
         if not self.dbname:
-            self.dbname, _, self.dbtype = get_database_QKan()
+            get_database_QKan()
+            self.dbname = QKan.config.database.qkan
             if not self.dbname:
                 logger.warning("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
                 raise DBConnectError()
 
         # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Datenbank oder Modul geändert
-        if not QKan.dbtype or QKan.dbtype != self.dbtype or not QKan.module or QKan.module != self.module:
+        if not QKan.dbtype or not QKan.module or QKan.module != self.module:
             QKan.dbtype = self.dbtype
             QKan.module = self.module
             if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:

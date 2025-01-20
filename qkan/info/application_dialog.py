@@ -75,7 +75,8 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
     def select_date(self):
 
         try:
-            database_qkan, epsg = get_database_QKan()
+            get_database_QKan()
+            database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
             if not database_qkan:
                 return
             db_x = database_qkan #Datenbank name

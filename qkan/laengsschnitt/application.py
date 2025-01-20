@@ -165,7 +165,8 @@ class Laengsschnitt(QKanPlugin):
 
 
         # Fill dialog with current info
-        self.database_qkan, _ = get_database_QKan()
+        get_database_QKan()
+        self.database_qkan = QKan.config.database.qkan
         self.db_qkan = DBConnection(dbname=self.database_qkan)
         self.log.debug(f"{__file__}: Datenbankverbindung wurde hergestellt...")
 

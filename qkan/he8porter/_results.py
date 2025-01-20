@@ -47,18 +47,19 @@ class ResultsTask:
 
     def run(self) -> bool:
 
-        database_QKan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         # Attach SQLite-Database with HE8 Data
         sql = f'ATTACH DATABASE "{QKan.config.he8.results_file}" AS he'
 
-        with DBConnection(dbname=database_QKan) as db_qkan:
+        with DBConnection(dbname=database_qkan) as db_qkan:
             if not db_qkan.connected:
                 return False
 
             if db_qkan is None:
                 errormsg = "Fehler in QKan_Import_from_HE\n" + \
-                           "QKan-Datenbank {:s} wurde nicht gefunden!\nAbbruch!".format(database_QKan)
+                           "QKan-Datenbank {:s} wurde nicht gefunden!\nAbbruch!".format(database_qkan)
                 logger.error(errormsg)
                 raise Exception(f"{__name__}: {errormsg}")
 
@@ -121,8 +122,8 @@ class ResultsTask:
             if not project.mapLayersByName("Überstau Schächte"):
 
                 uri = QgsDataSourceUri()
-                uri.setDatabase(database_QKan)
-                logger.debug(f"database_QKan (1): {database_QKan}")
+                uri.setDatabase(database_qkan)
+                logger.debug(f"database_qkan (1): {database_qkan}")
                 uri.setDataSource("", "ResultsSch", "geom")
                 logger.debug(f"(2) uri.database(): {uri.database()}")
                 vlayer = QgsVectorLayer(uri.uri(), "Überstau Schächte", "spatialite")

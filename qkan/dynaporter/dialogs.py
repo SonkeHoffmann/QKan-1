@@ -213,7 +213,8 @@ class ExportDialog(QKanDBDialog, EXPORT_CLASS):  # type: ignore
         # Wenn dies nicht der Fall ist, wird die Quelldatenbank aus der
         # json-Datei übernommen.
 
-        database_qkan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
         if not database_qkan:
             logger.error(
                 "exportdyna.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"

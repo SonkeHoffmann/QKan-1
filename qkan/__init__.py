@@ -74,9 +74,10 @@ class QKan:
     forms: str
 
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen
-    sqls: str                       # SQL-Statements
-    dbtype: enums.QKanDBChoice            # Datenbanktyp
-    module: str                   # aktuelles Modul
+    sqls: str = None                    # SQL-Statements
+    dbtype: enums.QKanDBChoice = None   # Datenbanktyp
+    sqlmodule: str = None               # Modul, für das aktuell SQL-Statements geladen sind
+    dbsource: str = None                # zur Kontrolle, ob noch das gleiche Projekt geladen ist
 
     def __init__(self, iface: qgis.gui.QgisInterface):
         QKan.instance = self

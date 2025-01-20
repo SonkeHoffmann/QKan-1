@@ -43,7 +43,8 @@ class ShowHaltungsschaeden(QDialog, form_class):
     def showlist(self):
         """Textfelder zur Haltung füllen und Liste mit den Haltungsschäden  erstellen"""
 
-        database_qkan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         with DBConnection(dbname=database_qkan, epsg=epsg) as db_qkan:
             if not db_qkan.connected:

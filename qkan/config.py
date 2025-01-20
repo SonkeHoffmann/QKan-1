@@ -231,6 +231,7 @@ class CheckImport(ClassObject):
 class DatabaseConfig(ClassObject):
     qkan: str = ""
     type: enums.QKanDBChoice = enums.QKanDBChoice.SPATIALITE
+    authConfigId: str = 'qkan001'
 
 
 class DynaConfig(ClassObject):

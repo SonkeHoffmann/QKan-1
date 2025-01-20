@@ -178,12 +178,12 @@ class CreateUnbefFlDialog(QKanDialog, FORM_CLASS):  # type: ignore
     def run(self) -> None:
         """Run method that performs all the real work"""
 
-        database_qkan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
         if not database_qkan:
-            logger.error(
+            logger.error_code(
                 "CreateUnbefFl: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
             )
-            return
 
         self.db_name = database_qkan
 

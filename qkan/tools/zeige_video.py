@@ -1,16 +1,7 @@
-import os
-
-from qgis.core import Qgis, QgsProject
 from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
-from qgis.PyQt.uic import loadUiType
-from qkan.database.dbfunc import DBConnection
-from qkan import QKan
 from qkan.utils import get_logger
 from qgis.utils import iface
 from qgis.core import *
-from qgis.gui import QgsMessageBar
-
-from qkan.database.qkan_utils import get_database_QKan
 
 #form_class, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'res/qkan_schadensliste.ui'))
 

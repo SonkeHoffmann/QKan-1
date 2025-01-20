@@ -165,7 +165,8 @@ class QKanTools(QKanPlugin):
         # Formularfeld Datenbank
 
         # Falls eine Datenbank angebunden ist, wird diese zunächst in das Formular eingetragen.
-        self.database_name, epsg = get_database_QKan(silent=True)
+        get_database_QKan(silent=True)
+        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         if self.database_name:
             self.default_dir = os.path.dirname(
@@ -377,7 +378,8 @@ class QKanTools(QKanPlugin):
         # Wenn dies nicht der Fall ist, wird die Quelldatenbank aus der
         # json-Datei übernommen.
 
-        database_qkan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
         if not database_qkan:
             self.log.error(
                 "tools.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
@@ -586,7 +588,8 @@ class QKanTools(QKanPlugin):
         # Formularfeld Datenbank
 
         # Falls eine Datenbank angebunden ist, wird diese zunächst in das Formular eingetragen.
-        self.database_name, epsg = get_database_QKan(silent=True)
+        get_database_QKan(silent=True)
+        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         if self.database_name:
             self.default_dir = os.path.dirname(
@@ -759,7 +762,8 @@ class QKanTools(QKanPlugin):
         """Aktualisiert die QKan-Datenbank"""
 
         # Falls eine Datenbank angebunden ist, wird diese zunächst in das Formular eingetragen.
-        self.database_name, epsg = get_database_QKan(silent=True)
+        get_database_QKan(silent=True)
+        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         if self.database_name:
             self.default_dir = os.path.dirname(
@@ -850,7 +854,8 @@ class QKanTools(QKanPlugin):
 
 
     def run_filepath(self) -> None:
-        self.database_name, epsg = get_database_QKan(silent=True)
+        get_database_QKan(silent=True)
+        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         # with DBConnection(dbname=self.database_name) as db_qkan:
         #     if not db_qkan.connected:

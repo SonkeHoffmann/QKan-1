@@ -54,7 +54,8 @@ class MuPorter(QKanPlugin):
         if self.db_name:
             return self.db_name
 
-        self.db_name, _ = get_database_QKan()
+        get_database_QKan()
+        self.db_name = QKan.config.database.qkan
         return self.db_name
 
     def run_export(self) -> None:

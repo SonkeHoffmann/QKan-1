@@ -49,7 +49,8 @@ class IsyPorter(QKanPlugin):
         self.export_dlg.show()
 
         # Fill dialog with current info
-        self.database_qkan, _ = get_database_QKan()
+        get_database_QKan()
+        self.database_qkan = QKan.config.database.qkan
         if self.database_qkan:
             self.export_dlg.tf_database.setText(self.database_qkan)
         else:

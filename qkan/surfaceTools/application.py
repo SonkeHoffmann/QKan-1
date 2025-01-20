@@ -66,7 +66,8 @@ class SurfaceTools(QKanPlugin):
         # Fetch the currently loaded layers
         # Fetch the currently loaded layers
 
-        database_qkan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         self.surface_dlg.prepareDialog(database_qkan, epsg)
 
@@ -96,7 +97,8 @@ class SurfaceTools(QKanPlugin):
     def run_voronoi(self) -> None:
         """Erzeugt Voronoi-Flächen zu ausgewählten Haltungen"""
 
-        database_qkan, epsg = get_database_QKan()
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         self.log.debug(f'Modul {__name__}: database_qkan: {database_qkan}')
 

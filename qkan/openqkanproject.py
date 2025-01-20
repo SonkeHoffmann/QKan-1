@@ -17,8 +17,9 @@ def initQKanProject():
         logger = get_logger("QKan.openproject")
         logger.debug("openProjekt started\n")
 
-        database_qkan, _, dbtype = get_database_QKan(silent=True)
-        with DBConnection(dbname=database_qkan) as db_qkan:
+        get_database_QKan(silent=True)
+        database_name = QKan.config.database.qkan
+        with DBConnection(dbname=database_name) as db_qkan:
             is_actual = db_qkan.isCurrentDbVersion
         if not is_actual:
             qkt = QKanTools(QKan.instance.iface)

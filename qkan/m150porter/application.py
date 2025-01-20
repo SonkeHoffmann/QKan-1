@@ -49,7 +49,8 @@ class M150Porter(QKanPlugin):
         self.export_dlg.show()
 
         # Fill dialog with current info
-        self.database_name, _ = get_database_QKan()
+        get_database_QKan()
+        self.database_name = QKan.config.database.qkan
         if self.database_name:
             self.export_dlg.tf_database.setText(self.database_name)
 
