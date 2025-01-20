@@ -18,6 +18,8 @@ class ImportTask:
 
     def run(self) -> bool:
 
+        self.db_qkan.setmodule('he8porter')
+
         result = all(
             [
                 self._reftables(),

@@ -4,7 +4,7 @@ import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
 from xml.etree.ElementTree import ElementTree
 
-from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry
+from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry, QgsDataSourceUri
 from qgis.utils import iface
 
 from qkan import QKan, enums
@@ -266,16 +266,16 @@ def get_database_QKan(silent: bool = False) -> None:
     if not QKan.dbsource or layer.publicSource() != QKan.dbsource:
         QKan.dbsource = layer.publicSource()
 
-        provider = layer.dataProvider().name()
-        if provider == 'postgres':
+        provider = layer.dataProvider()
+        if provider.name() == 'postgres':
             QKan.dbtype = enums.QKanDBChoice.POSTGIS
-        elif provider == 'spatialite':
+        elif provider.name() == 'spatialite':
             QKan.dbtype = enums.QKanDBChoice.SPATIALITE
-            uri_components = QgsProviderRegistry.instance().decodeUri(layer.dataProvider().name(), layer.publicSource())
-            QKan.config.database.qkan = uri_components['dbname']
-            QKan.config.epsg = uri_components['epsg']
+            data_source_uri = QgsDataSourceUri(provider.dataSourceUri())
+            QKan.config.database.qkan = data_source_uri.database()
+            QKan.config.epsg = provider.crs().postgisSrid()
         else:
-            logger.error_code(f"no or wrong dataProvider {provider}")
+            logger.error_code(f"no or wrong dataProvider {provider.name()}")
 
 
 def get_editable_layers() -> Set[str]:
@@ -326,6 +326,7 @@ def checknames(
     # ----------------------------------------------------------------------------------------------------------------
     # Prüfung, ob Objektnamen leer oder NULL sind:
 
+    db_qkan.setmodule('database')
     if not db_qkan.sqlyml(
         'database_checknames',
         "QKan.qgis_utils.checknames (1)",

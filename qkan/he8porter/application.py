@@ -152,10 +152,10 @@ class He8Porter(QKanPlugin):
         # Für Test muss noch die Datenbankverbindung hergestellt werden
         with DBConnection(
             dbname=QKan.config.database.qkan,
-            module='he8porter',
             epsg=QKan.config.epsg
         ) as db_qkan:
 
+            db_qkan.setmodule('he8porter')
             if not db_qkan.sqlyml(
                 'he8_attach',
                 "He8Porter.run_export_to_he8 Attach HE8",
@@ -274,7 +274,6 @@ class He8Porter(QKanPlugin):
         self.log.info("Creating DB")
         with DBConnection(
             dbname=QKan.config.database.qkan,
-            module='he8porter',
             epsg=QKan.config.epsg
         ) as db_qkan:
             if not db_qkan.connected:

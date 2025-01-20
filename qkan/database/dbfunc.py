@@ -27,7 +27,7 @@ __copyright__ = "(C) 2016-2024, Joerg Hoettges"
 
 from ..utils import get_logger
 
-logger = get_logger("QKan.database.dbqkan")
+logger = get_logger("QKan.database.dbfunc")
 
 
 class DBConnectError(Exception):
@@ -40,7 +40,6 @@ class DBConnection:
     def __init__(
         self,
         dbname: Optional[str] = None,
-        module: str = None,
         epsg: int = 25832,
         qkan_db_update: bool = False,
         writeDbBackup: bool = True,
@@ -111,8 +110,6 @@ class DBConnection:
 
         self.dbtype = None
 
-        self.module = module
-
         self._connect()
 
     def __enter__(self) -> "DBConnection":
@@ -131,6 +128,30 @@ class DBConnection:
         # )
         self._disconnect()
 
+    def setmodule(self, module) -> None:
+        """Loads module specific sqls"""
+
+        self.module = module
+        # Bei Wechsel des Datenbanktyps QKan.sqls zurücksetzen
+        if QKan.dbtype and (QKan.dbtype != self.dbtype):
+            QKan.sqls = {}
+        # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
+        # noch nicht gelesen
+        if not QKan.dbtype or not QKan.sqls.get(module):
+            QKan.dbtype = self.dbtype
+            if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
+                sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'spatialite.yml')
+            elif QKan.dbtype == enums.QKanDBChoice.POSTGIS:
+                sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgis.yml')
+            else:
+                logger.error_code(f'Datenbanktyp {QKan.dbtype} nicht zulässig!')
+                raise Exception(f"{self.__class__.__name__}")
+            with open(sqlfilename) as fr:
+                QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+
+        # set sqls for active module
+        self.sqls = QKan.sqls[module]
+
     def _connect(self) -> None:
         """Connects to SQLite3 or PostgreSAL database.
 
@@ -141,47 +162,20 @@ class DBConnection:
         if not self.dbname:
             get_database_QKan()
             self.dbname = QKan.config.database.qkan
+            self.dbtype = QKan.dbtype
             if not self.dbname:
                 logger.warning("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
                 raise DBConnectError()
-
-        # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Datenbank oder Modul geändert
-        if not QKan.dbtype or not QKan.module or QKan.module != self.module:
-            QKan.dbtype = self.dbtype
-            QKan.module = self.module
-            if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
-                sqlfilename = os.path.join(pluginDirectory("qkan"), 'database', 'spatialite.yml')
-            elif QKan.dbtype == enums.QKanDBChoice.POSTGIS:
-                sqlfilename = os.path.join(pluginDirectory("qkan"), 'database', 'postgis.yml')
-            else:
-                logger.error_code(f'Fehler: Datenbanktyp {QKan.dbtype} nicht zulässig!')
-                raise Exception(f"{self.__class__.__name__}")
-            with open(sqlfilename) as fr:
-                self.sqls = yaml.load(fr.read(), Loader=yaml.BaseLoader)
-
-            # Modulspezifische Queries zunächst in _sql laden
-            if self.module:
-                if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
-                    sqlfilename = os.path.join(pluginDirectory("qkan"), self.module, 'spatialite.yml')
-                elif QKan.dbtype == enums.QKanDBChoice.POSTGIS:
-                    sqlfilename = os.path.join(pluginDirectory("qkan"), self.module, 'postgis.yml')
-                else:
-                    logger.error_code(f'Datenbanktyp {QKan.dbtype} nicht zulässig!')
-                    raise Exception(f"{self.__class__.__name__}")
-                with open(sqlfilename) as fr:
-                    _sqls = yaml.load(fr.read(), Loader=yaml.BaseLoader)
-
-                if set(list(self.sqls)) & set(list(_sqls)):
-                    fehlermeldung = (f"{self.__class__.__name__}: SQL-Abfragen aus '{self.module}' überschneiden sich "
-                                     f"mit denen aus Modul 'database': "
-                                     f"{set(list(self.sqls)) & set(list(_sqls))}")
-                    logger.error(fehlermeldung)
-                    raise Exception(fehlermeldung)
-
-                self.sqls |= _sqls
-                QKan.sqls = self.sqls
         else:
-            self.sqls = QKan.sqls
+            self.dbtype = enums.QKanDBChoice.SPATIALITE
+
+        # Bei Wechsel des Datenbanktyps QKan.sqls zurücksetzen
+        if QKan.dbtype and QKan.dbtype != self.dbtype:
+            QKan.sqls = {}
+        # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
+        # noch nicht gelesen
+
+        self.setmodule('database')
 
         # Load existing database
         if os.path.exists(self.dbname):

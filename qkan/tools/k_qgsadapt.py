@@ -46,7 +46,7 @@ progress_bar = None
 
 def qgsadapt(
     database_QKan: str,
-    dbQK: DBConnection,
+    db_qkan: DBConnection,
     projectfile: str,
     projecttemplate: str = None,
     epsg: int = None,
@@ -75,14 +75,15 @@ def qgsadapt(
     # Zoom-Bereich für die Projektdatei vorbereiten
     #TODO: AttributeError("'DBConnection' object has no attribute 'sqlyml'")
     try:
-       dbQK.sqlyml('qgsadapt_zoom', "k_qgsadapt (1)")
+        db_qkan.setmodule('tools')
+        db_qkan.sqlyml('qgsadapt_zoom', "k_qgsadapt (1)")
     except BaseException as err:
-       fehlermeldung("SQL-Fehler", repr(err))
-       fehlermeldung("Fehler in qgsadapt", "\nFehler in sql_zoom: \n" + sql + "\n\n")
-       return False
+        fehlermeldung("SQL-Fehler", repr(err))
+        fehlermeldung("Fehler in qgsadapt", "\nFehler in sql_zoom: \n" + sql + "\n\n")
+        return False
 
     try:
-        zoom = dbQK.fetchone()
+        zoom = db_qkan.fetchone()
     except BaseException as err:
         fehlermeldung("SQL-Fehler", repr(err))
         fehlermeldung(
@@ -97,9 +98,9 @@ def qgsadapt(
         srid = epsg
         logger.debug(f"Vorgabe epsg: %s", epsg)
     else:
-        if not dbQK.sqlyml('qgsadapt_proj', "k_qgsadapt (2)"):
+        if not db_qkan.sqlyml('qgsadapt_proj', "k_qgsadapt (2)"):
             return False
-        srid = dbQK.fetchone()
+        srid = db_qkan.fetchone()
 
     try:
         crs = QgsCoordinateReferenceSystem.fromEpsgId(srid)

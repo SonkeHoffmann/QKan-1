@@ -73,11 +73,10 @@ class QKan:
     template_dir: str
     forms: str
 
-    # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen
-    sqls: str = None                    # SQL-Statements
-    dbtype: enums.QKanDBChoice = None   # Datenbanktyp
-    sqlmodule: str = None               # Modul, für das aktuell SQL-Statements geladen sind
-    dbsource: str = None                # zur Kontrolle, ob noch das gleiche Projekt geladen ist
+    # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
+    sqls: dict = {}                     # SQL-Statements for all loaded modules
+    dbtype: enums.QKanDBChoice = None   # Datenbanktyp des Projekts, wird durch get_database_QKan() aktualisiert
+    dbsource: str = None                # Datenbankverbindung des Projekts, wird durch get_database_QKan() aktualisiert
 
     def __init__(self, iface: qgis.gui.QgisInterface):
         QKan.instance = self
@@ -148,10 +147,6 @@ class QKan:
 
         self.toolbar = self.iface.addToolBar("QKan")
         self.toolbar.setObjectName("QKan")
-
-        QKan.sqls = None
-        QKan.dbtype = None
-        QKan.dbmodule = None
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
