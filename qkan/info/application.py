@@ -59,6 +59,8 @@ class Infos(QKanPlugin):
         self.info_dlg.pb_exportExcel.clicked.connect(self.run_info)
         self.info_dlg.pb_exportXML.clicked.connect(self.run_info_2)
 
+        self.info_dlg.comboBox_2.currentTextChanged.connect(self.run)
+
         self.stamm: Optional[Element] = None
         self.hydraulik_objekte: Optional[Element] = None
         self.get_widget_1()
@@ -66,6 +68,7 @@ class Infos(QKanPlugin):
         self.get_widget_3()
         self.get_widget_4()
         self.get_widget_5()
+        self.get_widget_6()
         # self.canv_1 = None
 
 
@@ -153,6 +156,20 @@ class Infos(QKanPlugin):
         self.dialog.verticalLayout.addWidget(self.dialog.canv_5)
         self.dialog.verticalLayout.addWidget(NavigationToolbar(self.dialog.canv_5, qw, True))
 
+    def get_widget_6(self):
+        """
+        Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
+        """
+        self.dialog = self.info_dlg
+        self.dialog.fig_6 = plt.figure(layout='constrained')
+        #in der self.fig können die Matplotlib sachen angezeigt werden
+
+        qw = QWidget(self.dialog)
+        self.dialog.canv_6 = FigureCanvas(self.dialog.fig_6)
+
+        self.dialog.verticalLayout_10.addWidget(self.dialog.canv_6)
+        self.dialog.verticalLayout_10.addWidget(NavigationToolbar(self.dialog.canv_6, qw, True))
+
     def on_click(self, event):
         Info.handle_click(event, Info.anzeigen, Info.anzeigen)
 
@@ -163,7 +180,7 @@ class Infos(QKanPlugin):
         project = QgsProject.instance()
         layers = project.mapLayers()
 
-        self.info_dlg.select_date()
+        self.info_dlg.select_teilgebiet()
         if len(layers) > 0:
 
             self.fig_1 = self.dialog.fig_1
@@ -176,11 +193,14 @@ class Infos(QKanPlugin):
             self.canv_4 = self.dialog.canv_4
             self.fig_5 = self.dialog.fig_5
             self.canv_5 = self.dialog.canv_5
+            self.fig_6 = self.dialog.fig_6
+            self.canv_6 = self.dialog.canv_6
+            self.comboBox_2 = self.dialog.comboBox_2.currentText()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
 
-            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, DBConnection())
+            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, DBConnection())
             test.run(self.info_dlg.date.currentText())
 
             def on_click(self, event):
@@ -287,11 +307,14 @@ class Infos(QKanPlugin):
             self.canv_4 = self.dialog.canv_4
             self.fig_5 = self.dialog.fig_5
             self.canv_5 = self.dialog.canv_5
+            self.fig_6 = self.dialog.fig_6
+            self.canv_6 = self.dialog.canv_6
+            self.comboBox_2 = self.dialog.comboBox_2.currentText()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
 
-            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, DBConnection())
+            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, DBConnection())
             test.run(self.info_dlg.date.currentText())
             # Vorgabe Projektname aktivieren, wenn kein Projekt geladen
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')

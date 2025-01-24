@@ -13,6 +13,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QWidget,
     QTableWidget,
+    QComboBox
 )
 from qkan.database.qkan_utils import (
     get_database_QKan,
@@ -56,6 +57,8 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
     pb_exportExcel: QPushButton
     pb_exportXML: QPushButton
     date: QLineEdit
+    comboBox_2: QComboBox
+    comboBox_3: QComboBox
 
 
     def __init__(
@@ -65,14 +68,14 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
         parent: Optional[QWidget] = None,
     ):
         super().__init__(default_dir, tr, parent)
-
+        #self.select_teilgebiet()
         self.pb_exportExcel.clicked.connect(self.export)
         self.pb_exportXML.clicked.connect(self.export_xml)
-
+        #self.comboBox_3.currentTextChanged.connect(self.select_teilgebiet)
         self.filename = ''
 
 
-    def select_date(self):
+    def select_teilgebiet(self):
 
         try:
             database_qkan, epsg = get_database_QKan()
@@ -83,14 +86,13 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
             uri = QgsDataSourceUri()
             uri.setDatabase(db_x)
             schema = ''
-            table = 'haltungen_untersucht'
+            table = 'haltungen'
             geom_column = 'geom'
             uri.setDataSource(schema, table, geom_column)
-            vlayer = QgsVectorLayer(uri.uri(), 'haltungen_untersucht', 'spatialite')
+            vlayer = QgsVectorLayer(uri.uri(), 'haltungen', 'spatialite')
             list = []
             for feature in vlayer.getFeatures():
-                name = feature["untersuchtag"]
-                name = str(name)[0:4]
+                name = feature["teilgebiet"]
                 if str(name) == 'NULL':
                     pass
                 elif name in list:
@@ -98,34 +100,8 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
                 else:
                     list.append(name)
 
-            self.date.clear()
-            self.date.addItems(list)
-            if list ==[]:
-                try:
-                    db_x = self.db.text()
-
-                    uri = QgsDataSourceUri()
-                    uri.setDatabase(db_x)
-                    schema = ''
-                    table = 'schaechte_untersucht'
-                    geom_column = 'geop'
-                    uri.setDataSource(schema, table, geom_column)
-                    vlayer = QgsVectorLayer(uri.uri(), 'schaechte_untersucht', 'spatialite')
-                    list = []
-                    for feature in vlayer.getFeatures():
-                        name = feature["untersuchtag"]
-                        name = str(name)[0:4]
-                        if str(name) == 'NULL':
-                            pass
-                        elif name in list:
-                            pass
-                        else:
-                            list.append(name)
-
-                    self.date.clear()
-                    self.date.addItems(list)
-                except:
-                    pass
+            self.comboBox_3.clear()
+            self.comboBox_3.addItems(list)
         except:
             pass
 
