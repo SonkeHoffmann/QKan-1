@@ -5672,7 +5672,7 @@ class Subkans_funkt:
 
             db.sql(sql,parameters=data)
 
-        if self.datetype == 'Importdatum':
+        elif self.datetype == 'Importdatum':
             sql = """
                                                                SELECT
                                                                    substanz_haltung_bewertung.pk,
@@ -5819,7 +5819,7 @@ class Subkans_funkt:
 
                 db.sql(sql,parameters=data)
 
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                                                                            SELECT
                                                                                substanz_haltung_bewertung.pk,
@@ -7454,7 +7454,7 @@ class Subkans_funkt:
                     sbk = 0
             else:
                 abn = 'None'
-                sbk = 5
+                sbk = 'None'
             # abn in tabelle schreiben
             sql = """UPDATE haltungen_substanz_bewertung SET Abnutzung = ? WHERE haltungen_substanz_bewertung.pk = ?"""
             data = (abn, attr[5])
