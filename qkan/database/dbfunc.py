@@ -27,7 +27,7 @@ __copyright__ = "(C) 2016-2024, Joerg Hoettges"
 
 from ..utils import get_logger
 
-logger = get_logger("QKan.database.dbfunc")
+logger = get_logger("QKan")
 
 
 class DBConnectError(Exception):
@@ -110,6 +110,8 @@ class DBConnection:
 
         self.dbtype = None
 
+        self.sqlnam = None
+
         self._connect()
 
     def __enter__(self) -> "DBConnection":
@@ -140,12 +142,11 @@ class DBConnection:
         if not QKan.dbtype or not QKan.sqls.get(module):
             QKan.dbtype = self.dbtype
             if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
-                sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'spatialite.yml')
+                sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'sqlite.yml')
             elif QKan.dbtype == enums.QKanDBChoice.POSTGIS:
-                sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgis.yml')
+                sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgres.yml')
             else:
-                logger.error_code(f'Datenbanktyp {QKan.dbtype} nicht zulässig!')
-                raise Exception(f"{self.__class__.__name__}")
+                logger.error_code(f'{self.__class__.__name__}: Datenbanktyp {QKan.dbtype} nicht zulässig!')
             with open(sqlfilename) as fr:
                 QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
 
@@ -199,7 +200,9 @@ class DBConnection:
             elif self.dbtype == enums.QKanDBChoice.SPATIALITE:
                 self.consl = None
             else:
-                logger.error_code(f'Datenbanktyp {self.dbtype} unbekannt: Abbruch')
+                logger.error_code(
+                    f'{self.__class__.__name__}: '
+                    f'Datenbanktyp {self.dbtype} unbekannt: Abbruch')
 
 
             # Versionsprüfung
@@ -364,21 +367,26 @@ class DBConnection:
 
         :returns: void"""
 
-        if replacefun:
-            sql = replacefun(self.sqls[sqlnam])
-        else:
+        # sql nur mit replace() umformen oder mit replacefun() bearbeiten, wenn neu
+        if sqlnam != self.sqlnam:
+            self.sqlnam = sqlnam
             try:
-                sql = self.sqls[sqlnam]
+                _sql = self.sqls[sqlnam].replace('*/ ', '*/\n').strip()
             except:
                 logger.error_code(
+                    f'{self.__class__.__name__}: '
                     f'SQL {sqlnam} nicht gefunden'
                     f'geladene SQLs:\n{self.sqls}'
                 )
-                raise Exception(f"{self.__class__.__name__}")
-            if '{' in sql:
-                logger.error_code(f'Fehler in yaml-Datei: sql enthält Parameter, obwohl keine ersetzen-Funktion'
-                             f'im Aufruf geliefert wird.')
-                raise Exception(f"{self.__class__.__name__}")
+            if replacefun:
+                sql = replacefun(_sql)
+                if '{' in sql:
+                    logger.error_code(
+                        f'{self.__class__.__name__}: '
+                        f'Fehler in yaml-Datei: sql enthält Parameter, obwohl keine ersetzen-Funktion'
+                        f'im Aufruf geliefert wird.')
+            else:
+                sql = _sql
 
         erg = self.sql(
             sql=sql,
@@ -930,12 +938,9 @@ class DBConnection:
             self.cursl.executescript(sqlfile)
         except sqlite3.Error as err:
             self._disconnect()
-            fehlermeldung = (
-                "dbqkan.DBConnection.sql: SQL-Fehler beim Ausführen der SQL-Datei"
-                f"{repr(err)}\n{filenam}"
-            )
-            logger.error_code(fehlermeldung)
-            raise Exception(f"{self.__class__.__name__}: {fehlermeldung}")
+            logger.error_code(
+                f'{self.__class__.__name__}.dbqkan.DBConnection.sql: SQL-Fehler beim Ausführen der SQL-Datei\n'
+                f"{repr(err)}\n{filenam}")
         return True
 
     def fetchall(self) -> List[Any]:
@@ -1173,8 +1178,9 @@ class DBConnection:
             "dbqkan.DBConnection.alter_table (6)",
             replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_new=attr_text_new)
         ):
-            logger.error_code(f'Fehler in SQL=database_create_temp_table')
-            Exception(f"{self.__class__.__name__}")
+            logger.error_code(
+                f'{self.__class__.__name__}: '
+                f'Fehler in SQL=database_create_temp_table')
 
         # 2.2. Geo-Attribute in Tabelle ergänzen
         for attr in attr_set_geo:
@@ -1435,8 +1441,8 @@ class DBConnection:
                 stmt_category= f'Anpassen der Referenztabelle {tabnam} an den QKan-Standard (1)',
                 replacefun=lambda sqltext: sqltext.format(tabnam=tabnam)
         ):
-            logger.error_code(f'_adapt_reftable: Fehler beim Einlesen der Bezeichnungen aus {tabnam}')
-            raise Exception(f"{self.__class__.__name__}")
+            logger.error_code(f'{self.__class__.__name__}._adapt_reftable: Fehler beim Einlesen der '
+                              f'Bezeichnungen aus {tabnam}')
         for data in self.fetchall():
             bezeichnung = data[0]
             for qkan_patt in patterns.keys():
@@ -1455,8 +1461,8 @@ class DBConnection:
                                 replacefun=lambda sqltext: sqltext.format(tabnam=tabnam)
                             ):
                                 logger.error_code(
+                                    f'{self.__class__.__name__}: '
                                     f'_adapt_reftable: Fehler beim Wechsel der Bezeichnungen in {tabnam}')
-                                raise Exception(f"{self.__class__.__name__}")
                             logger.debug(
                                 f'Muster in {tabnam} passt (2): {bezeichnung=} = {patt=}. '
                                 f'Wechsel {bezeichnung} -> {qkan_bez}')

@@ -37,7 +37,7 @@ from qkan import QKan
 from .qkan_utils import fehlermeldung, fortschritt, meldung
 from ..utils import get_logger
 
-logger = get_logger("QKan.database.qkan_database")
+logger = get_logger("QKan")
 
 
 def db_version() -> str:
