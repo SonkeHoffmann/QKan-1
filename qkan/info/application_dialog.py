@@ -56,9 +56,12 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
     tableWidget_2: QTableWidget
     pb_exportExcel: QPushButton
     pb_exportXML: QPushButton
-    date: QLineEdit
+    lineEdit: QLineEdit
+    lineEdit_2: QLineEdit
+    lineEdit_3: QLineEdit
     comboBox_2: QComboBox
     comboBox_3: QComboBox
+    checkBox: QCheckBox
 
 
     def __init__(
@@ -68,43 +71,44 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
         parent: Optional[QWidget] = None,
     ):
         super().__init__(default_dir, tr, parent)
-        #self.select_teilgebiet()
+        self.checkBox.clicked.connect(self.select_teilgebiet)
         self.pb_exportExcel.clicked.connect(self.export)
         self.pb_exportXML.clicked.connect(self.export_xml)
-        #self.comboBox_3.currentTextChanged.connect(self.select_teilgebiet)
         self.filename = ''
 
 
     def select_teilgebiet(self):
+        if self.checkBox.isChecked():
+            try:
+                database_qkan, epsg = get_database_QKan()
+                if not database_qkan:
+                    return
+                db_x = database_qkan #Datenbank name
 
-        try:
-            get_database_QKan()
-            database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
-            if not database_qkan:
-                return
-            db_x = database_qkan #Datenbank name
+                uri = QgsDataSourceUri()
+                uri.setDatabase(db_x)
+                schema = ''
+                table = 'haltungen'
+                geom_column = 'geom'
+                uri.setDataSource(schema, table, geom_column)
+                vlayer = QgsVectorLayer(uri.uri(), 'haltungen', 'spatialite')
+                list = []
+                for feature in vlayer.getFeatures():
+                    name = feature["teilgebiet"]
+                    if str(name) == 'NULL':
+                        pass
+                    elif name in list:
+                        pass
+                    else:
+                        list.append(name)
 
-            uri = QgsDataSourceUri()
-            uri.setDatabase(db_x)
-            schema = ''
-            table = 'haltungen'
-            geom_column = 'geom'
-            uri.setDataSource(schema, table, geom_column)
-            vlayer = QgsVectorLayer(uri.uri(), 'haltungen', 'spatialite')
-            list = []
-            for feature in vlayer.getFeatures():
-                name = feature["teilgebiet"]
-                if str(name) == 'NULL':
-                    pass
-                elif name in list:
-                    pass
-                else:
-                    list.append(name)
-
+                self.comboBox_3.clear()
+                self.comboBox_3.addItems(list)
+            except:
+                pass
+        else:
             self.comboBox_3.clear()
-            self.comboBox_3.addItems(list)
-        except:
-            pass
+
 
 
     def export(self) -> None:
