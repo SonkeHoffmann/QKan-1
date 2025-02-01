@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis hasScaleBasedVisibilityFlag="0" version="3.22.4-Białowieża" maxScale="0" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Legend|Notes" minScale="0">
+<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" readOnly="0" minScale="0" maxScale="0" version="3.22.16-Białowieża">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" startField="" endField="" enabled="0" accumulate="0" durationField="" startExpression="" durationUnit="min" endExpression="" mode="0" fixedDuration="0">
+  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,22 +14,32 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option type="List" name="dualview/previewExpressions">
-        <Option type="QString" value="&quot;bezeichnung&quot;"/>
+      <Option name="QFieldSync/action" value="copy" type="QString"/>
+      <Option name="QFieldSync/attachment_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/cloud_action" value="offline" type="QString"/>
+      <Option name="QFieldSync/geometry_locked_expression" value="" type="QString"/>
+      <Option name="QFieldSync/photo_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/relationship_maximum_visible" value="{}" type="QString"/>
+      <Option name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30" type="int"/>
+      <Option name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1" type="int"/>
+      <Option name="QFieldSync/tracking_measurement_type" value="0" type="int"/>
+      <Option name="QFieldSync/tracking_time_requirement_interval_seconds" value="30" type="int"/>
+      <Option name="QFieldSync/value_map_button_interface_threshold" value="0" type="int"/>
+      <Option name="dualview/previewExpressions" type="List">
+        <Option value="&quot;bezeichnung&quot;" type="QString"/>
       </Option>
-      <Option type="int" name="embeddedWidgets/count" value="0"/>
+      <Option name="embeddedWidgets/count" value="0" type="int"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
-  <legend type="default-vector" showLabelLegend="0"/>
   <fieldConfiguration>
     <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -38,8 +48,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -48,8 +58,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -58,8 +68,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -68,53 +78,53 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias index="0" field="pk" name=""/>
-    <alias index="1" field="bezeichnung" name="Bezeichnung"/>
-    <alias index="2" field="he_nr" name="NR (HYSTEM-EXTRAN)"/>
-    <alias index="3" field="mu_nr" name="NR (Mike Urban)"/>
-    <alias index="4" field="kp_nr" name="NR (Kanal++)"/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="Bezeichnung" index="1" field="bezeichnung"/>
+    <alias name="NR (HYSTEM-EXTRAN)" index="2" field="he_nr"/>
+    <alias name="NR (Mike Urban)" index="3" field="mu_nr"/>
+    <alias name="NR (Kanal++)" index="4" field="kp_nr"/>
   </aliases>
   <defaults>
-    <default expression="" field="pk" applyOnUpdate="0"/>
-    <default expression="" field="bezeichnung" applyOnUpdate="0"/>
-    <default expression="" field="he_nr" applyOnUpdate="0"/>
-    <default expression="" field="mu_nr" applyOnUpdate="0"/>
-    <default expression="" field="kp_nr" applyOnUpdate="0"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="bezeichnung"/>
+    <default applyOnUpdate="0" expression="" field="he_nr"/>
+    <default applyOnUpdate="0" expression="" field="mu_nr"/>
+    <default applyOnUpdate="0" expression="" field="kp_nr"/>
   </defaults>
   <constraints>
-    <constraint constraints="3" field="pk" unique_strength="2" notnull_strength="2" exp_strength="0"/>
-    <constraint constraints="0" field="bezeichnung" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="he_nr" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="mu_nr" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="kp_nr" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="bezeichnung"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="he_nr"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="mu_nr"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="kp_nr"/>
   </constraints>
   <constraintExpressions>
-    <constraint desc="" exp="" field="pk"/>
-    <constraint desc="" exp="" field="bezeichnung"/>
-    <constraint desc="" exp="" field="he_nr"/>
-    <constraint desc="" exp="" field="mu_nr"/>
-    <constraint desc="" exp="" field="kp_nr"/>
+    <constraint exp="" desc="" field="pk"/>
+    <constraint exp="" desc="" field="bezeichnung"/>
+    <constraint exp="" desc="" field="he_nr"/>
+    <constraint exp="" desc="" field="mu_nr"/>
+    <constraint exp="" desc="" field="kp_nr"/>
   </constraintExpressions>
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column width="-1" type="field" hidden="0" name="pk"/>
-      <column width="-1" type="field" hidden="0" name="bezeichnung"/>
-      <column width="-1" type="field" hidden="0" name="he_nr"/>
-      <column width="-1" type="field" hidden="0" name="mu_nr"/>
-      <column width="-1" type="field" hidden="0" name="kp_nr"/>
-      <column width="-1" type="actions" hidden="1"/>
+      <column name="pk" hidden="0" width="-1" type="field"/>
+      <column name="bezeichnung" hidden="0" width="-1" type="field"/>
+      <column name="he_nr" hidden="0" width="-1" type="field"/>
+      <column name="mu_nr" hidden="0" width="-1" type="field"/>
+      <column name="kp_nr" hidden="0" width="-1" type="field"/>
+      <column hidden="1" width="-1" type="actions"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -122,6 +132,7 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\qkan_auslasstypen.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -145,11 +156,11 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field editable="1" name="bezeichnung"/>
-    <field editable="1" name="he_nr"/>
-    <field editable="1" name="kp_nr"/>
-    <field editable="1" name="mu_nr"/>
-    <field editable="1" name="pk"/>
+    <field name="bezeichnung" editable="1"/>
+    <field name="he_nr" editable="1"/>
+    <field name="kp_nr" editable="1"/>
+    <field name="mu_nr" editable="1"/>
+    <field name="pk" editable="1"/>
   </editable>
   <labelOnTop>
     <field name="bezeichnung" labelOnTop="0"/>
@@ -159,11 +170,11 @@ def my_form_open(dialog, layer, feature):
     <field name="pk" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="bezeichnung"/>
-    <field reuseLastValue="0" name="he_nr"/>
-    <field reuseLastValue="0" name="kp_nr"/>
-    <field reuseLastValue="0" name="mu_nr"/>
-    <field reuseLastValue="0" name="pk"/>
+    <field name="bezeichnung" reuseLastValue="0"/>
+    <field name="he_nr" reuseLastValue="0"/>
+    <field name="kp_nr" reuseLastValue="0"/>
+    <field name="mu_nr" reuseLastValue="0"/>
+    <field name="pk" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

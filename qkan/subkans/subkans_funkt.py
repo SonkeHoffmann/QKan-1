@@ -5732,7 +5732,7 @@ class Subkans_funkt:
 
                 db.sql(sql,parameters=data)
 
-            if attr[15] == "UmfS":
+            elif attr[15] == "UmfS":
                 #für Ei-Profile berechnung vom Umfang nach DWA 110!
 
                 if attr[32] in ['Ei', 'Ei (B:H = 2:3)', 'Ei überhöht (B:H=2:3.5)', 'Ei breit (B:H=2:2.5)', 'Ei gedrückt (B:H=2:2)' ]:
@@ -5747,7 +5747,7 @@ class Subkans_funkt:
 
                 db.sql(sql,parameters=data)
 
-            if attr[15] in ["", "None"]:
+            elif attr[15] in ["", "None"]:
                 sl = 0
 
                 sql = """UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?"""

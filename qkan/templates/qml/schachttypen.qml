@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis hasScaleBasedVisibilityFlag="0" version="3.22.4-Białowieża" maxScale="0" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Legend|Notes" minScale="0">
+<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" readOnly="0" minScale="0" maxScale="0" version="3.22.16-Białowieża">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" startField="" endField="" enabled="0" accumulate="0" durationField="" startExpression="" durationUnit="min" endExpression="" mode="0" fixedDuration="0">
+  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,22 +14,32 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option type="List" name="dualview/previewExpressions">
-        <Option type="QString" value="&quot;schachttyp&quot;"/>
+      <Option name="QFieldSync/action" value="copy" type="QString"/>
+      <Option name="QFieldSync/attachment_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/cloud_action" value="offline" type="QString"/>
+      <Option name="QFieldSync/geometry_locked_expression" value="" type="QString"/>
+      <Option name="QFieldSync/photo_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/relationship_maximum_visible" value="{}" type="QString"/>
+      <Option name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30" type="int"/>
+      <Option name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1" type="int"/>
+      <Option name="QFieldSync/tracking_measurement_type" value="0" type="int"/>
+      <Option name="QFieldSync/tracking_time_requirement_interval_seconds" value="30" type="int"/>
+      <Option name="QFieldSync/value_map_button_interface_threshold" value="0" type="int"/>
+      <Option name="dualview/previewExpressions" type="List">
+        <Option value="&quot;schachttyp&quot;" type="QString"/>
       </Option>
-      <Option type="int" name="embeddedWidgets/count" value="0"/>
+      <Option name="embeddedWidgets/count" value="0" type="int"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
-  <legend type="default-vector" showLabelLegend="0"/>
   <fieldConfiguration>
     <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -38,38 +48,38 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias index="0" field="pk" name=""/>
-    <alias index="1" field="schachttyp" name="Name"/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="Name" index="1" field="schachttyp"/>
   </aliases>
   <defaults>
-    <default expression="" field="pk" applyOnUpdate="0"/>
-    <default expression="" field="schachttyp" applyOnUpdate="0"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="schachttyp"/>
   </defaults>
   <constraints>
-    <constraint constraints="3" field="pk" unique_strength="2" notnull_strength="2" exp_strength="0"/>
-    <constraint constraints="0" field="schachttyp" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="schachttyp"/>
   </constraints>
   <constraintExpressions>
-    <constraint desc="" exp="" field="pk"/>
-    <constraint desc="" exp="" field="schachttyp"/>
+    <constraint exp="" desc="" field="pk"/>
+    <constraint exp="" desc="" field="schachttyp"/>
   </constraintExpressions>
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column width="-1" type="field" hidden="0" name="pk"/>
-      <column width="-1" type="field" hidden="0" name="schachttyp"/>
-      <column width="-1" type="actions" hidden="1"/>
+      <column name="pk" hidden="0" width="-1" type="field"/>
+      <column name="schachttyp" hidden="0" width="-1" type="field"/>
+      <column hidden="1" width="-1" type="actions"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -77,6 +87,7 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\forms</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -100,16 +111,16 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field editable="1" name="pk"/>
-    <field editable="1" name="schachttyp"/>
+    <field name="pk" editable="1"/>
+    <field name="schachttyp" editable="1"/>
   </editable>
   <labelOnTop>
     <field name="pk" labelOnTop="0"/>
     <field name="schachttyp" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="pk"/>
-    <field reuseLastValue="0" name="schachttyp"/>
+    <field name="pk" reuseLastValue="0"/>
+    <field name="schachttyp" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

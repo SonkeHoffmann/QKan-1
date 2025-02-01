@@ -91,7 +91,7 @@ class DBConnection:
         # Die nachfolgenden Klassenobjekte dienen dazu, gleichartige (sqlidtext) SQL-Debug-Meldungen
         # nur einmal pro Sekunde zu erzeugen.
         self.sqltime = datetime.datetime.now()
-        self.sqltext = ""
+        self.stmt_category = ""
         self.sqlcount = 0
 
         self.actDbVersion: packaging.version.Version = packaging.version.parse(db_version())
@@ -379,17 +379,17 @@ class DBConnection:
                     f'geladene SQLs:\n{self.sqls}'
                 )
             if replacefun:
-                sql = replacefun(_sql)
-                if '{' in sql:
+                self.sqltext = replacefun(_sql)
+                if '{' in self.sqltext:
                     logger.error_code(
                         f'{self.__class__.__name__}: '
                         f'Fehler in yaml-Datei: sql enthält Parameter, obwohl keine ersetzen-Funktion'
                         f'im Aufruf geliefert wird.')
             else:
-                sql = _sql
+                self.sqltext = _sql
 
         erg = self.sql(
-            sql=sql,
+            sql=self.sqltext,
             stmt_category=stmt_category,
             parameters=parameters,
             many=many,
@@ -436,13 +436,13 @@ class DBConnection:
                 return True
 
             # Suppress log message for 2 seconds if category is identical to last query
-            if self.sqltext == stmt_category:
+            if self.stmt_category == stmt_category:
                 self.sqlcount += 1
                 if (self.sqltime.now() - self.sqltime).seconds < 2:
                     return True
             else:
                 self.sqlcount = 0
-                self.sqltext = stmt_category
+                self.stmt_category = stmt_category
 
             # Log-Message if new category or same category for more than 2 seconds
             self.sqltime = self.sqltime.now()

@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis hasScaleBasedVisibilityFlag="0" version="3.22.4-Białowieża" maxScale="0" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Legend|Notes" minScale="0">
+<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" readOnly="0" minScale="0" maxScale="0" version="3.22.16-Białowieża">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" startField="" endField="" enabled="0" accumulate="0" durationField="" startExpression="" durationUnit="min" endExpression="" mode="0" fixedDuration="0">
+  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,22 +14,32 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option type="List" name="dualview/previewExpressions">
-        <Option type="QString" value="&quot;apnam&quot;"/>
+      <Option name="QFieldSync/action" value="copy" type="QString"/>
+      <Option name="QFieldSync/attachment_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/cloud_action" value="offline" type="QString"/>
+      <Option name="QFieldSync/geometry_locked_expression" value="" type="QString"/>
+      <Option name="QFieldSync/photo_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/relationship_maximum_visible" value="{}" type="QString"/>
+      <Option name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30" type="int"/>
+      <Option name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1" type="int"/>
+      <Option name="QFieldSync/tracking_measurement_type" value="0" type="int"/>
+      <Option name="QFieldSync/tracking_time_requirement_interval_seconds" value="30" type="int"/>
+      <Option name="QFieldSync/value_map_button_interface_threshold" value="0" type="int"/>
+      <Option name="dualview/previewExpressions" type="List">
+        <Option value="&quot;apnam&quot;" type="QString"/>
       </Option>
-      <Option type="int" name="embeddedWidgets/count" value="0"/>
+      <Option name="embeddedWidgets/count" value="0" type="int"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
-  <legend type="default-vector" showLabelLegend="0"/>
   <fieldConfiguration>
     <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -38,8 +48,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -48,8 +58,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -58,8 +68,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -68,8 +78,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -78,8 +88,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -88,8 +98,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -98,8 +108,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -122,19 +132,19 @@
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option type="bool" name="AllowMulti" value="false"/>
-            <Option type="bool" name="AllowNull" value="true"/>
-            <Option type="QString" name="Description" value=""/>
-            <Option type="QString" name="FilterExpression" value=""/>
-            <Option type="QString" name="Key" value="bknam"/>
-            <Option type="QString" name="Layer" value="bodenklassen20170516122309914"/>
-            <Option type="QString" name="LayerName" value="Bodenklassen"/>
-            <Option type="QString" name="LayerProviderName" value="spatialite"/>
-            <Option type="QString" name="LayerSource" value="dbname='juelich.sqlite' table=&quot;bodenklassen&quot;"/>
-            <Option type="int" name="NofColumns" value="1"/>
-            <Option type="bool" name="OrderByValue" value="false"/>
-            <Option type="bool" name="UseCompleter" value="false"/>
-            <Option type="QString" name="Value" value="bknam"/>
+            <Option name="AllowMulti" value="false" type="bool"/>
+            <Option name="AllowNull" value="true" type="bool"/>
+            <Option name="Description" value="" type="QString"/>
+            <Option name="FilterExpression" value="" type="QString"/>
+            <Option name="Key" value="bknam" type="QString"/>
+            <Option name="Layer" value="bodenklassen20170516122309914" type="QString"/>
+            <Option name="LayerName" value="Bodenklassen" type="QString"/>
+            <Option name="LayerProviderName" value="spatialite" type="QString"/>
+            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;bodenklassen&quot;" type="QString"/>
+            <Option name="NofColumns" value="1" type="int"/>
+            <Option name="OrderByValue" value="false" type="bool"/>
+            <Option name="UseCompleter" value="false" type="bool"/>
+            <Option name="Value" value="bknam" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -143,19 +153,19 @@
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option type="bool" name="AllowMulti" value="false"/>
-            <Option type="bool" name="AllowNull" value="true"/>
-            <Option type="QString" name="Description" value=""/>
-            <Option type="QString" name="FilterExpression" value=""/>
-            <Option type="QString" name="Key" value="bezeichnung"/>
-            <Option type="QString" name="Layer" value="flaechentypen_ca71f66a_50bb_41cb_86df_8046fae64926"/>
-            <Option type="QString" name="LayerName" value="Flächentypen"/>
-            <Option type="QString" name="LayerProviderName" value="spatialite"/>
-            <Option type="QString" name="LayerSource" value="dbname='juelich.sqlite' table=&quot;flaechentypen&quot;"/>
-            <Option type="int" name="NofColumns" value="1"/>
-            <Option type="bool" name="OrderByValue" value="false"/>
-            <Option type="bool" name="UseCompleter" value="false"/>
-            <Option type="QString" name="Value" value="bezeichnung"/>
+            <Option name="AllowMulti" value="false" type="bool"/>
+            <Option name="AllowNull" value="true" type="bool"/>
+            <Option name="Description" value="" type="QString"/>
+            <Option name="FilterExpression" value="" type="QString"/>
+            <Option name="Key" value="bezeichnung" type="QString"/>
+            <Option name="Layer" value="flaechentypen_ca71f66a_50bb_41cb_86df_8046fae64926" type="QString"/>
+            <Option name="LayerName" value="Flächentypen" type="QString"/>
+            <Option name="LayerProviderName" value="spatialite" type="QString"/>
+            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;flaechentypen&quot;" type="QString"/>
+            <Option name="NofColumns" value="1" type="int"/>
+            <Option name="OrderByValue" value="false" type="bool"/>
+            <Option name="UseCompleter" value="false" type="bool"/>
+            <Option name="Value" value="bezeichnung" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -164,8 +174,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -179,90 +189,90 @@
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias index="0" field="pk" name=""/>
-    <alias index="1" field="apnam" name="Name"/>
-    <alias index="2" field="anfangsabflussbeiwert" name="Anfangsabflussbeiwert"/>
-    <alias index="3" field="endabflussbeiwert" name="Endabflussbeiwert"/>
-    <alias index="4" field="benetzungsverlust" name="Benetzungsverlust"/>
-    <alias index="5" field="muldenverlust" name="Muldenverlust"/>
-    <alias index="6" field="benetzung_startwert" name="Benetzung Startwert"/>
-    <alias index="7" field="mulden_startwert" name="Mulden Startwert"/>
-    <alias index="8" field="rauheit_kst" name="Rauheitsbeiwert"/>
-    <alias index="9" field="pctZero" name=""/>
-    <alias index="10" field="bodenklasse" name="Bodenklasse"/>
-    <alias index="11" field="flaechentyp" name="Flächentyp"/>
-    <alias index="12" field="kommentar" name="Kommentar"/>
-    <alias index="13" field="createdat" name="bearbeitet"/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="Name" index="1" field="apnam"/>
+    <alias name="Anfangsabflussbeiwert" index="2" field="anfangsabflussbeiwert"/>
+    <alias name="Endabflussbeiwert" index="3" field="endabflussbeiwert"/>
+    <alias name="Benetzungsverlust" index="4" field="benetzungsverlust"/>
+    <alias name="Muldenverlust" index="5" field="muldenverlust"/>
+    <alias name="Benetzung Startwert" index="6" field="benetzung_startwert"/>
+    <alias name="Mulden Startwert" index="7" field="mulden_startwert"/>
+    <alias name="Rauheitsbeiwert" index="8" field="rauheit_kst"/>
+    <alias name="" index="9" field="pctZero"/>
+    <alias name="Bodenklasse" index="10" field="bodenklasse"/>
+    <alias name="Flächentyp" index="11" field="flaechentyp"/>
+    <alias name="Kommentar" index="12" field="kommentar"/>
+    <alias name="bearbeitet" index="13" field="createdat"/>
   </aliases>
   <defaults>
-    <default expression="" field="pk" applyOnUpdate="0"/>
-    <default expression="" field="apnam" applyOnUpdate="0"/>
-    <default expression="" field="anfangsabflussbeiwert" applyOnUpdate="0"/>
-    <default expression="" field="endabflussbeiwert" applyOnUpdate="0"/>
-    <default expression="" field="benetzungsverlust" applyOnUpdate="0"/>
-    <default expression="" field="muldenverlust" applyOnUpdate="0"/>
-    <default expression="" field="benetzung_startwert" applyOnUpdate="0"/>
-    <default expression="" field="mulden_startwert" applyOnUpdate="0"/>
-    <default expression="" field="rauheit_kst" applyOnUpdate="0"/>
-    <default expression="" field="pctZero" applyOnUpdate="0"/>
-    <default expression="" field="bodenklasse" applyOnUpdate="0"/>
-    <default expression="" field="flaechentyp" applyOnUpdate="0"/>
-    <default expression="" field="kommentar" applyOnUpdate="0"/>
-    <default expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat" applyOnUpdate="0"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="apnam"/>
+    <default applyOnUpdate="0" expression="" field="anfangsabflussbeiwert"/>
+    <default applyOnUpdate="0" expression="" field="endabflussbeiwert"/>
+    <default applyOnUpdate="0" expression="" field="benetzungsverlust"/>
+    <default applyOnUpdate="0" expression="" field="muldenverlust"/>
+    <default applyOnUpdate="0" expression="" field="benetzung_startwert"/>
+    <default applyOnUpdate="0" expression="" field="mulden_startwert"/>
+    <default applyOnUpdate="0" expression="" field="rauheit_kst"/>
+    <default applyOnUpdate="0" expression="" field="pctZero"/>
+    <default applyOnUpdate="0" expression="" field="bodenklasse"/>
+    <default applyOnUpdate="0" expression="" field="flaechentyp"/>
+    <default applyOnUpdate="0" expression="" field="kommentar"/>
+    <default applyOnUpdate="0" expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat"/>
   </defaults>
   <constraints>
-    <constraint constraints="3" field="pk" unique_strength="2" notnull_strength="2" exp_strength="0"/>
-    <constraint constraints="0" field="apnam" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="anfangsabflussbeiwert" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="endabflussbeiwert" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="benetzungsverlust" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="muldenverlust" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="benetzung_startwert" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="mulden_startwert" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="rauheit_kst" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="pctZero" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="bodenklasse" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="flaechentyp" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="kommentar" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="createdat" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="apnam"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="anfangsabflussbeiwert"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="endabflussbeiwert"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="benetzungsverlust"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="muldenverlust"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="benetzung_startwert"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="mulden_startwert"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="rauheit_kst"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="pctZero"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="bodenklasse"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="flaechentyp"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="kommentar"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="createdat"/>
   </constraints>
   <constraintExpressions>
-    <constraint desc="" exp="" field="pk"/>
-    <constraint desc="" exp="" field="apnam"/>
-    <constraint desc="" exp="" field="anfangsabflussbeiwert"/>
-    <constraint desc="" exp="" field="endabflussbeiwert"/>
-    <constraint desc="" exp="" field="benetzungsverlust"/>
-    <constraint desc="" exp="" field="muldenverlust"/>
-    <constraint desc="" exp="" field="benetzung_startwert"/>
-    <constraint desc="" exp="" field="mulden_startwert"/>
-    <constraint desc="" exp="" field="rauheit_kst"/>
-    <constraint desc="" exp="" field="pctZero"/>
-    <constraint desc="" exp="" field="bodenklasse"/>
-    <constraint desc="" exp="" field="flaechentyp"/>
-    <constraint desc="" exp="" field="kommentar"/>
-    <constraint desc="" exp="" field="createdat"/>
+    <constraint exp="" desc="" field="pk"/>
+    <constraint exp="" desc="" field="apnam"/>
+    <constraint exp="" desc="" field="anfangsabflussbeiwert"/>
+    <constraint exp="" desc="" field="endabflussbeiwert"/>
+    <constraint exp="" desc="" field="benetzungsverlust"/>
+    <constraint exp="" desc="" field="muldenverlust"/>
+    <constraint exp="" desc="" field="benetzung_startwert"/>
+    <constraint exp="" desc="" field="mulden_startwert"/>
+    <constraint exp="" desc="" field="rauheit_kst"/>
+    <constraint exp="" desc="" field="pctZero"/>
+    <constraint exp="" desc="" field="bodenklasse"/>
+    <constraint exp="" desc="" field="flaechentyp"/>
+    <constraint exp="" desc="" field="kommentar"/>
+    <constraint exp="" desc="" field="createdat"/>
   </constraintExpressions>
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column width="-1" type="field" hidden="1" name="pk"/>
-      <column width="127" type="field" hidden="0" name="apnam"/>
-      <column width="-1" type="field" hidden="0" name="anfangsabflussbeiwert"/>
-      <column width="-1" type="field" hidden="0" name="endabflussbeiwert"/>
-      <column width="-1" type="field" hidden="0" name="benetzungsverlust"/>
-      <column width="-1" type="field" hidden="0" name="muldenverlust"/>
-      <column width="-1" type="field" hidden="0" name="benetzung_startwert"/>
-      <column width="-1" type="field" hidden="0" name="mulden_startwert"/>
-      <column width="-1" type="field" hidden="1" name="rauheit_kst"/>
-      <column width="-1" type="field" hidden="1" name="pctZero"/>
-      <column width="-1" type="field" hidden="0" name="bodenklasse"/>
-      <column width="-1" type="field" hidden="0" name="flaechentyp"/>
-      <column width="-1" type="field" hidden="0" name="kommentar"/>
-      <column width="-1" type="field" hidden="0" name="createdat"/>
-      <column width="-1" type="actions" hidden="1"/>
+      <column name="pk" hidden="1" width="-1" type="field"/>
+      <column name="apnam" hidden="0" width="127" type="field"/>
+      <column name="anfangsabflussbeiwert" hidden="0" width="-1" type="field"/>
+      <column name="endabflussbeiwert" hidden="0" width="-1" type="field"/>
+      <column name="benetzungsverlust" hidden="0" width="-1" type="field"/>
+      <column name="muldenverlust" hidden="0" width="-1" type="field"/>
+      <column name="benetzung_startwert" hidden="0" width="-1" type="field"/>
+      <column name="mulden_startwert" hidden="0" width="-1" type="field"/>
+      <column name="rauheit_kst" hidden="1" width="-1" type="field"/>
+      <column name="pctZero" hidden="1" width="-1" type="field"/>
+      <column name="bodenklasse" hidden="0" width="-1" type="field"/>
+      <column name="flaechentyp" hidden="0" width="-1" type="field"/>
+      <column name="kommentar" hidden="0" width="-1" type="field"/>
+      <column name="createdat" hidden="0" width="-1" type="field"/>
+      <column hidden="1" width="-1" type="actions"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -270,6 +280,7 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\qkan_abflussparameter.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -293,20 +304,20 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field editable="1" name="anfangsabflussbeiwert"/>
-    <field editable="1" name="apnam"/>
-    <field editable="1" name="benetzung_startwert"/>
-    <field editable="1" name="benetzungsverlust"/>
-    <field editable="1" name="bodenklasse"/>
-    <field editable="1" name="createdat"/>
-    <field editable="1" name="endabflussbeiwert"/>
-    <field editable="1" name="flaechentyp"/>
-    <field editable="1" name="kommentar"/>
-    <field editable="1" name="mulden_startwert"/>
-    <field editable="1" name="muldenverlust"/>
-    <field editable="1" name="pctZero"/>
-    <field editable="1" name="pk"/>
-    <field editable="1" name="rauheit_kst"/>
+    <field name="anfangsabflussbeiwert" editable="1"/>
+    <field name="apnam" editable="1"/>
+    <field name="benetzung_startwert" editable="1"/>
+    <field name="benetzungsverlust" editable="1"/>
+    <field name="bodenklasse" editable="1"/>
+    <field name="createdat" editable="1"/>
+    <field name="endabflussbeiwert" editable="1"/>
+    <field name="flaechentyp" editable="1"/>
+    <field name="kommentar" editable="1"/>
+    <field name="mulden_startwert" editable="1"/>
+    <field name="muldenverlust" editable="1"/>
+    <field name="pctZero" editable="1"/>
+    <field name="pk" editable="1"/>
+    <field name="rauheit_kst" editable="1"/>
   </editable>
   <labelOnTop>
     <field name="anfangsabflussbeiwert" labelOnTop="0"/>
@@ -325,20 +336,20 @@ def my_form_open(dialog, layer, feature):
     <field name="rauheit_kst" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="anfangsabflussbeiwert"/>
-    <field reuseLastValue="0" name="apnam"/>
-    <field reuseLastValue="0" name="benetzung_startwert"/>
-    <field reuseLastValue="0" name="benetzungsverlust"/>
-    <field reuseLastValue="0" name="bodenklasse"/>
-    <field reuseLastValue="0" name="createdat"/>
-    <field reuseLastValue="0" name="endabflussbeiwert"/>
-    <field reuseLastValue="0" name="flaechentyp"/>
-    <field reuseLastValue="0" name="kommentar"/>
-    <field reuseLastValue="0" name="mulden_startwert"/>
-    <field reuseLastValue="0" name="muldenverlust"/>
-    <field reuseLastValue="0" name="pctZero"/>
-    <field reuseLastValue="0" name="pk"/>
-    <field reuseLastValue="0" name="rauheit_kst"/>
+    <field name="anfangsabflussbeiwert" reuseLastValue="0"/>
+    <field name="apnam" reuseLastValue="0"/>
+    <field name="benetzung_startwert" reuseLastValue="0"/>
+    <field name="benetzungsverlust" reuseLastValue="0"/>
+    <field name="bodenklasse" reuseLastValue="0"/>
+    <field name="createdat" reuseLastValue="0"/>
+    <field name="endabflussbeiwert" reuseLastValue="0"/>
+    <field name="flaechentyp" reuseLastValue="0"/>
+    <field name="kommentar" reuseLastValue="0"/>
+    <field name="mulden_startwert" reuseLastValue="0"/>
+    <field name="muldenverlust" reuseLastValue="0"/>
+    <field name="pctZero" reuseLastValue="0"/>
+    <field name="pk" reuseLastValue="0"/>
+    <field name="rauheit_kst" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

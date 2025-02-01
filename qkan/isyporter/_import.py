@@ -224,7 +224,7 @@ class Untersuchdat_anschlussleitung(ClassObject):
     inspektionslaenge: float = 0.0
     videozaehler: int = 0
     station: float = 0.0
-    timecode: int = 0
+    timecode: str = ""
     kuerzel: str = ""
     charakt1: str = ""
     charakt2: str = ""
@@ -838,7 +838,7 @@ class ImportTask(Schadenstexte):
             untersucher = ""
             wetter = None
             strasse = ""
-            bewertungsart = 0
+            bewertungsart = None
             bewertungstag = ""
             datenart = self.datenart
 
@@ -853,11 +853,11 @@ class ImportTask(Schadenstexte):
 
                     untersucher = _schacht.findtext("d:NameUntersucher", None, self.NS)
 
-                    wetter = _get_int(_schacht.findtext("d:Wetter", "0", self.NS))
+                    wetter = _schacht.findtext("d:Wetter", "0", self.NS)
 
                     for _schachtz in _schacht.findall("d:Knoten/d:Bewertung", self.NS):
 
-                        bewertungsart = _get_int(_schachtz.findtext("d:Bewertungsverfahren", "0", self.NS))
+                        bewertungsart = _schachtz.findtext("d:Bewertungsverfahren", "0", self.NS)
 
                         bewertungstag = _schachtz.findtext("d:Bewertungsdatum", None, self.NS)
 
@@ -937,7 +937,7 @@ class ImportTask(Schadenstexte):
             id = 0
             bandnr = 0
             videozaehler = 0
-            timecode = 0
+            timecode = None
             kuerzel = ""
             charakt1 = ""
             charakt2 = ""
@@ -963,7 +963,7 @@ class ImportTask(Schadenstexte):
 
                     id = _get_int(_untersuchdat_schacht.findtext("d:Index", "0", self.NS))
                     videozaehler = _get_int(_untersuchdat_schacht.findtext("d:Videozaehler", "0", self.NS))
-                    timecode = _get_int(_untersuchdat_schacht.findtext("d:Timecode", "0", self.NS))
+                    timecode = _untersuchdat_schacht.findtext("d:Timecode", "0", self.NS)
                     kuerzel = _untersuchdat_schacht.findtext("d:InspektionsKode", None, self.NS)
                     charakt1 = _untersuchdat_schacht.findtext("d:Charakterisierung1", None, self.NS)
                     charakt2 = _untersuchdat_schacht.findtext("d:Charakterisierung2", None, self.NS)
@@ -1829,9 +1829,9 @@ class ImportTask(Schadenstexte):
 
             untersuchtag = ""
             untersucher = ""
-            wetter = 0
+            wetter = None
             strasse = ""
-            bewertungsart = 0
+            bewertungsart = None
             bewertungstag = ""
             datenart = self.datenart
 
@@ -1845,11 +1845,11 @@ class ImportTask(Schadenstexte):
 
                     untersucher = _haltung.findtext("d:NameUntersucher", None, self.NS)
 
-                    wetter = _get_int(_haltung.findtext("d:Wetter", "0", self.NS))
+                    wetter = _haltung.findtext("d:Wetter", "0", self.NS)
 
                     for _haltungz in _haltung.findall("d:Rohrleitung/d:Bewertung", self.NS):
 
-                        bewertungsart = _get_int(_haltungz.findtext("d:Bewertungsverfahren", "0", self.NS))
+                        bewertungsart = _haltungz.findtext("d:Bewertungsverfahren", "0", self.NS)
 
                         bewertungstag = _haltungz.findtext("d:Bewertungsdatum", None, self.NS)
 
@@ -1943,7 +1943,7 @@ class ImportTask(Schadenstexte):
             inspektionslaenge = 0.0
             videozaehler = 0
             station = 0.0
-            timecode = 0
+            timecode = None
             kuerzel = ""
             charakt1 = ""
             charakt2 = ""
@@ -1984,7 +1984,7 @@ class ImportTask(Schadenstexte):
                         id = _get_int(_untersuchdat.findtext("d:Index", "0", self.NS))
                         videozaehler = _get_int(_untersuchdat.findtext("d:Videozaehler", 0, self.NS))
                         station = _get_float(_untersuchdat.findtext("d:Station", 0.0, self.NS))
-                        timecode = _get_int(_untersuchdat.findtext("d:Timecode", 0, self.NS))
+                        timecode = _untersuchdat.findtext("d:Timecode", 0, self.NS)
                         kuerzel = _untersuchdat.findtext("d:InspektionsKode", None, self.NS)
                         charakt1 = _untersuchdat.findtext("d:Charakterisierung1", None, self.NS)
                         charakt2 = _untersuchdat.findtext("d:Charakterisierung2", None, self.NS)
@@ -2106,8 +2106,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.commit()
 
-        #Schadenstexte.setschadenstexte_haltungen()
-        self.db_qkan.setschadenstexte_haltungen()
+        Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
+        #self.db_qkan.setschadenstexte_haltungen()
 
 
     def _anschlussleitungen(self) -> None:
@@ -2657,10 +2657,10 @@ class ImportTask(Schadenstexte):
 
                         untersucher = _haltung.findtext("d:NameUntersucher", None, self.NS)
 
-                        wetter = _get_int(_haltung.findtext("d:Wetter", None, self.NS))
+                        wetter = _haltung.findtext("d:Wetter", None, self.NS)
 
                         for _haltungz in _haltung.findall("d:Rohrleitung/d:Bewertung", self.NS):
-                            bewertungsart = _get_int(_haltungz.findtext("d:Bewertungsverfahren", "0", self.NS))
+                            bewertungsart = _haltungz.findtext("d:Bewertungsverfahren", "0", self.NS)
 
                             bewertungstag = _haltungz.findtext("d:Bewertungsdatum", None, self.NS)
 
@@ -2755,7 +2755,7 @@ class ImportTask(Schadenstexte):
             inspektionslaenge = 0.0
             videozaehler = 0
             station = 0.0
-            timecode = 0
+            timecode = None
             kuerzel = ""
             charakt1 = ""
             charakt2 = ""
@@ -2798,7 +2798,7 @@ class ImportTask(Schadenstexte):
                             id = _get_int(_untersuchdat.findtext("d:Index", "0", self.NS))
                             videozaehler = _get_int(_untersuchdat.findtext("d:Videozaehler", 0, self.NS))
                             station = _get_float(_untersuchdat.findtext("d:Station", 0.0, self.NS))
-                            timecode = _get_int(_untersuchdat.findtext("d:Timecode", 0, self.NS))
+                            timecode = _untersuchdat.findtext("d:Timecode", 0, self.NS)
                             kuerzel = _untersuchdat.findtext("d:InspektionsKode", None, self.NS)
                             charakt1 = _untersuchdat.findtext("d:Charakterisierung1", None, self.NS)
                             charakt2 = _untersuchdat.findtext("d:Charakterisierung2", None, self.NS)

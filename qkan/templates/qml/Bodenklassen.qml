@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis hasScaleBasedVisibilityFlag="0" version="3.22.4-Białowieża" maxScale="0" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Legend|Notes" minScale="0">
+<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" readOnly="0" minScale="0" maxScale="0" version="3.22.16-Białowieża">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" startField="" endField="" enabled="0" accumulate="0" durationField="" startExpression="" durationUnit="min" endExpression="" mode="0" fixedDuration="0">
+  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,22 +14,32 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option type="List" name="dualview/previewExpressions">
-        <Option type="QString" value="&quot;bknam&quot;"/>
+      <Option name="QFieldSync/action" value="copy" type="QString"/>
+      <Option name="QFieldSync/attachment_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/cloud_action" value="offline" type="QString"/>
+      <Option name="QFieldSync/geometry_locked_expression" value="" type="QString"/>
+      <Option name="QFieldSync/photo_naming" value="{}" type="QString"/>
+      <Option name="QFieldSync/relationship_maximum_visible" value="{}" type="QString"/>
+      <Option name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30" type="int"/>
+      <Option name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1" type="int"/>
+      <Option name="QFieldSync/tracking_measurement_type" value="0" type="int"/>
+      <Option name="QFieldSync/tracking_time_requirement_interval_seconds" value="30" type="int"/>
+      <Option name="QFieldSync/value_map_button_interface_threshold" value="0" type="int"/>
+      <Option name="dualview/previewExpressions" type="List">
+        <Option value="&quot;bknam&quot;" type="QString"/>
       </Option>
-      <Option type="int" name="embeddedWidgets/count" value="0"/>
+      <Option name="embeddedWidgets/count" value="0" type="int"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
-  <legend type="default-vector" showLabelLegend="0"/>
   <fieldConfiguration>
     <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -38,8 +48,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -48,8 +58,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -58,8 +68,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -68,8 +78,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -78,8 +88,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -88,8 +98,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -98,8 +108,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -108,8 +118,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="QString" name="IsMultiline" value="0"/>
-            <Option type="QString" name="UseHtml" value="0"/>
+            <Option name="IsMultiline" value="0" type="QString"/>
+            <Option name="UseHtml" value="0" type="QString"/>
           </Option>
         </config>
       </editWidget>
@@ -118,80 +128,80 @@
       <editWidget type="DateTime">
         <config>
           <Option type="Map">
-            <Option type="QString" name="allow_null" value="1"/>
-            <Option type="QString" name="calendar_popup" value="1"/>
-            <Option type="QString" name="display_format" value="dd.MM.yyyy HH:mm:ss"/>
-            <Option type="QString" name="field_format" value="yyyy-MM-dd HH:mm:ss"/>
+            <Option name="allow_null" value="1" type="QString"/>
+            <Option name="calendar_popup" value="1" type="QString"/>
+            <Option name="display_format" value="dd.MM.yyyy HH:mm:ss" type="QString"/>
+            <Option name="field_format" value="yyyy-MM-dd HH:mm:ss" type="QString"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias index="0" field="pk" name=""/>
-    <alias index="1" field="bknam" name="Name"/>
-    <alias index="2" field="infiltrationsrateanfang" name="Infiltrationsrate Anfang"/>
-    <alias index="3" field="infiltrationsrateende" name="Infiltrationsrate Ende"/>
-    <alias index="4" field="infiltrationsratestart" name="Infiltrationsrate Start"/>
-    <alias index="5" field="rueckgangskonstante" name="Rückgangskonstante"/>
-    <alias index="6" field="regenerationskonstante" name="Regenerationskonstante"/>
-    <alias index="7" field="saettigungswassergehalt" name="Sättigungswassergehalt"/>
-    <alias index="8" field="kommentar" name="Kommentar"/>
-    <alias index="9" field="createdat" name="bearbeitet"/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="Name" index="1" field="bknam"/>
+    <alias name="Infiltrationsrate Anfang" index="2" field="infiltrationsrateanfang"/>
+    <alias name="Infiltrationsrate Ende" index="3" field="infiltrationsrateende"/>
+    <alias name="Infiltrationsrate Start" index="4" field="infiltrationsratestart"/>
+    <alias name="Rückgangskonstante" index="5" field="rueckgangskonstante"/>
+    <alias name="Regenerationskonstante" index="6" field="regenerationskonstante"/>
+    <alias name="Sättigungswassergehalt" index="7" field="saettigungswassergehalt"/>
+    <alias name="Kommentar" index="8" field="kommentar"/>
+    <alias name="bearbeitet" index="9" field="createdat"/>
   </aliases>
   <defaults>
-    <default expression="" field="pk" applyOnUpdate="0"/>
-    <default expression="" field="bknam" applyOnUpdate="0"/>
-    <default expression="" field="infiltrationsrateanfang" applyOnUpdate="0"/>
-    <default expression="" field="infiltrationsrateende" applyOnUpdate="0"/>
-    <default expression="" field="infiltrationsratestart" applyOnUpdate="0"/>
-    <default expression="" field="rueckgangskonstante" applyOnUpdate="0"/>
-    <default expression="" field="regenerationskonstante" applyOnUpdate="0"/>
-    <default expression="" field="saettigungswassergehalt" applyOnUpdate="0"/>
-    <default expression="" field="kommentar" applyOnUpdate="0"/>
-    <default expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat" applyOnUpdate="0"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="bknam"/>
+    <default applyOnUpdate="0" expression="" field="infiltrationsrateanfang"/>
+    <default applyOnUpdate="0" expression="" field="infiltrationsrateende"/>
+    <default applyOnUpdate="0" expression="" field="infiltrationsratestart"/>
+    <default applyOnUpdate="0" expression="" field="rueckgangskonstante"/>
+    <default applyOnUpdate="0" expression="" field="regenerationskonstante"/>
+    <default applyOnUpdate="0" expression="" field="saettigungswassergehalt"/>
+    <default applyOnUpdate="0" expression="" field="kommentar"/>
+    <default applyOnUpdate="0" expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat"/>
   </defaults>
   <constraints>
-    <constraint constraints="3" field="pk" unique_strength="2" notnull_strength="2" exp_strength="0"/>
-    <constraint constraints="0" field="bknam" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="infiltrationsrateanfang" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="infiltrationsrateende" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="infiltrationsratestart" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="rueckgangskonstante" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="regenerationskonstante" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="saettigungswassergehalt" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="kommentar" unique_strength="0" notnull_strength="0" exp_strength="0"/>
-    <constraint constraints="0" field="createdat" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="bknam"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="infiltrationsrateanfang"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="infiltrationsrateende"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="infiltrationsratestart"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="rueckgangskonstante"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="regenerationskonstante"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="saettigungswassergehalt"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="kommentar"/>
+    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="createdat"/>
   </constraints>
   <constraintExpressions>
-    <constraint desc="" exp="" field="pk"/>
-    <constraint desc="" exp="" field="bknam"/>
-    <constraint desc="" exp="" field="infiltrationsrateanfang"/>
-    <constraint desc="" exp="" field="infiltrationsrateende"/>
-    <constraint desc="" exp="" field="infiltrationsratestart"/>
-    <constraint desc="" exp="" field="rueckgangskonstante"/>
-    <constraint desc="" exp="" field="regenerationskonstante"/>
-    <constraint desc="" exp="" field="saettigungswassergehalt"/>
-    <constraint desc="" exp="" field="kommentar"/>
-    <constraint desc="" exp="" field="createdat"/>
+    <constraint exp="" desc="" field="pk"/>
+    <constraint exp="" desc="" field="bknam"/>
+    <constraint exp="" desc="" field="infiltrationsrateanfang"/>
+    <constraint exp="" desc="" field="infiltrationsrateende"/>
+    <constraint exp="" desc="" field="infiltrationsratestart"/>
+    <constraint exp="" desc="" field="rueckgangskonstante"/>
+    <constraint exp="" desc="" field="regenerationskonstante"/>
+    <constraint exp="" desc="" field="saettigungswassergehalt"/>
+    <constraint exp="" desc="" field="kommentar"/>
+    <constraint exp="" desc="" field="createdat"/>
   </constraintExpressions>
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column width="-1" type="field" hidden="0" name="pk"/>
-      <column width="-1" type="field" hidden="0" name="bknam"/>
-      <column width="-1" type="field" hidden="0" name="infiltrationsrateanfang"/>
-      <column width="-1" type="field" hidden="0" name="infiltrationsrateende"/>
-      <column width="-1" type="field" hidden="0" name="infiltrationsratestart"/>
-      <column width="-1" type="field" hidden="0" name="rueckgangskonstante"/>
-      <column width="-1" type="field" hidden="0" name="regenerationskonstante"/>
-      <column width="-1" type="field" hidden="0" name="saettigungswassergehalt"/>
-      <column width="-1" type="field" hidden="0" name="kommentar"/>
-      <column width="-1" type="field" hidden="0" name="createdat"/>
-      <column width="-1" type="actions" hidden="1"/>
+      <column name="pk" hidden="0" width="-1" type="field"/>
+      <column name="bknam" hidden="0" width="-1" type="field"/>
+      <column name="infiltrationsrateanfang" hidden="0" width="-1" type="field"/>
+      <column name="infiltrationsrateende" hidden="0" width="-1" type="field"/>
+      <column name="infiltrationsratestart" hidden="0" width="-1" type="field"/>
+      <column name="rueckgangskonstante" hidden="0" width="-1" type="field"/>
+      <column name="regenerationskonstante" hidden="0" width="-1" type="field"/>
+      <column name="saettigungswassergehalt" hidden="0" width="-1" type="field"/>
+      <column name="kommentar" hidden="0" width="-1" type="field"/>
+      <column name="createdat" hidden="0" width="-1" type="field"/>
+      <column hidden="1" width="-1" type="actions"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -199,6 +209,7 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\qkan_bodenklassen.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -222,26 +233,26 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <attributeEditorForm>
-    <attributeEditorField index="1" showLabel="1" name="bknam"/>
-    <attributeEditorField index="2" showLabel="1" name="infiltrationsrateanfang"/>
-    <attributeEditorField index="3" showLabel="1" name="infiltrationsrateende"/>
-    <attributeEditorField index="4" showLabel="1" name="infiltrationsratestart"/>
-    <attributeEditorField index="5" showLabel="1" name="rueckgangskonstante"/>
-    <attributeEditorField index="6" showLabel="1" name="regenerationskonstante"/>
-    <attributeEditorField index="7" showLabel="1" name="saettigungswassergehalt"/>
-    <attributeEditorField index="8" showLabel="1" name="kommentar"/>
+    <attributeEditorField showLabel="1" name="bknam" index="1"/>
+    <attributeEditorField showLabel="1" name="infiltrationsrateanfang" index="2"/>
+    <attributeEditorField showLabel="1" name="infiltrationsrateende" index="3"/>
+    <attributeEditorField showLabel="1" name="infiltrationsratestart" index="4"/>
+    <attributeEditorField showLabel="1" name="rueckgangskonstante" index="5"/>
+    <attributeEditorField showLabel="1" name="regenerationskonstante" index="6"/>
+    <attributeEditorField showLabel="1" name="saettigungswassergehalt" index="7"/>
+    <attributeEditorField showLabel="1" name="kommentar" index="8"/>
   </attributeEditorForm>
   <editable>
-    <field editable="1" name="bknam"/>
-    <field editable="1" name="createdat"/>
-    <field editable="1" name="infiltrationsrateanfang"/>
-    <field editable="1" name="infiltrationsrateende"/>
-    <field editable="1" name="infiltrationsratestart"/>
-    <field editable="1" name="kommentar"/>
-    <field editable="1" name="pk"/>
-    <field editable="1" name="regenerationskonstante"/>
-    <field editable="1" name="rueckgangskonstante"/>
-    <field editable="1" name="saettigungswassergehalt"/>
+    <field name="bknam" editable="1"/>
+    <field name="createdat" editable="1"/>
+    <field name="infiltrationsrateanfang" editable="1"/>
+    <field name="infiltrationsrateende" editable="1"/>
+    <field name="infiltrationsratestart" editable="1"/>
+    <field name="kommentar" editable="1"/>
+    <field name="pk" editable="1"/>
+    <field name="regenerationskonstante" editable="1"/>
+    <field name="rueckgangskonstante" editable="1"/>
+    <field name="saettigungswassergehalt" editable="1"/>
   </editable>
   <labelOnTop>
     <field name="bknam" labelOnTop="0"/>
@@ -256,16 +267,16 @@ def my_form_open(dialog, layer, feature):
     <field name="saettigungswassergehalt" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="bknam"/>
-    <field reuseLastValue="0" name="createdat"/>
-    <field reuseLastValue="0" name="infiltrationsrateanfang"/>
-    <field reuseLastValue="0" name="infiltrationsrateende"/>
-    <field reuseLastValue="0" name="infiltrationsratestart"/>
-    <field reuseLastValue="0" name="kommentar"/>
-    <field reuseLastValue="0" name="pk"/>
-    <field reuseLastValue="0" name="regenerationskonstante"/>
-    <field reuseLastValue="0" name="rueckgangskonstante"/>
-    <field reuseLastValue="0" name="saettigungswassergehalt"/>
+    <field name="bknam" reuseLastValue="0"/>
+    <field name="createdat" reuseLastValue="0"/>
+    <field name="infiltrationsrateanfang" reuseLastValue="0"/>
+    <field name="infiltrationsrateende" reuseLastValue="0"/>
+    <field name="infiltrationsratestart" reuseLastValue="0"/>
+    <field name="kommentar" reuseLastValue="0"/>
+    <field name="pk" reuseLastValue="0"/>
+    <field name="regenerationskonstante" reuseLastValue="0"/>
+    <field name="rueckgangskonstante" reuseLastValue="0"/>
+    <field name="saettigungswassergehalt" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>
