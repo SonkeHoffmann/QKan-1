@@ -21,7 +21,7 @@ logger = get_logger("QKan.xml.info")
 
 
 class Info:
-    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, combo, db_qkan: DBConnection):
+    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, combo, combo3, dat1, dat2, dat3, db_qkan: DBConnection):
         self.db_qkan = db_qkan
         self.anz_haltungen = 0
         self.anz_schaechte = 0
@@ -40,6 +40,19 @@ class Info:
         self.canv_6 = canv_6
         self.fig_6 = fig_6
         self.combo = combo
+        self.combo3 = combo3
+        self.dat1 = dat1
+        self.dat2 = dat2
+        self.dat3 = dat3
+
+        if len(combo3)>0:
+            self.abfrage_and = f"AND teilgebiet = {str(self.combo3)}"
+
+            self.abfrage_where = f"WHERE teilgebiet = {str(self.combo3)}"
+
+        else:
+            self.abfrage_and = ""
+            self.abfrage_where = ""
 
         # iface.messageBar().pushMessage("Error",
         #                                str(self.combo),
@@ -87,7 +100,7 @@ class Info:
 
         # plt.figure(figure.number)
         new_plot = figure.add_subplot(pos)
-        #figure.subplots_adjust(left=0.15, right=0.95, wspace=1.5, hspace=5)
+
 
         try:
             new_plot.table(
@@ -175,7 +188,7 @@ class Info:
         #figure.subplots_adjust(left=0.05, right=0.95, wspace=1.5, hspace=2)
 
         wedges, texts, autotexts = new_plot.pie(values, labels=labels,  shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values), radius=1.1)
-        # figure.tight_layout()
+        #figure.tight_layout()
         new_plot.set_title(title)
 
         #bar of pie für "Sonstiges"
@@ -227,7 +240,7 @@ class Info:
         new_plot = figure.add_subplot(pos)
         #figure.subplots_adjust(left=0.05, right=0.95, wspace=1.5, hspace=2)
 
-        if title == 'Gesamtlänge je Zustandsklassen':
+        if title == 'Gesamtlänge je Zustandsklasse':
 
             bar_colors = {
                 '0': 'red',
@@ -236,7 +249,7 @@ class Info:
                 '3': 'green',
                 '4': 'skyblue',
                 '5': 'steelblue',
-                'sonstiges': 'grey'
+                'sonstige': 'grey'
             }
             farben = [bar_colors[attr] for attr in labels]
             summe = sum(values)
@@ -265,7 +278,7 @@ class Info:
             patch_6 = mpatches.Patch(color='grey', label='ZK -: keine verewertbare Inspektion')
             new_plot.legend(handles=[patch_0,patch_1,patch_2,patch_3,patch_4,patch_5,patch_6], fontsize=8)
 
-        elif title == 'Gesamtlänge je Substanzsklassen':
+        elif title == 'Gesamtlänge je Substanzklasse':
 
             bar_colors = {
                 '0': 'red',
@@ -274,7 +287,7 @@ class Info:
                 '3': 'green',
                 '4': 'skyblue',
                 '5': 'steelblue',
-                'sonstiges': 'grey'
+                'sonstige': 'grey'
             }
             farben = [bar_colors[attr] for attr in labels]
             summe = sum(values)
@@ -318,7 +331,7 @@ class Info:
             new_plot.set_title(title)
             new_plot.autoscale()
 
-        elif title == 'Anzahl der Schäden' or title == 'Gesamtschadenslänge je Schaden':
+        elif title == 'Anzahl der Schäden nach Schadenskürzel' or title == 'Gesamtschadenslänge je Schaden':
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
@@ -337,7 +350,7 @@ class Info:
             # plt.title("Back-to-Back Bar Chart")
             # plt.show()
 
-        elif title == 'Gesamtlänge je Durchmesser' or title == 'Gesamtlänge je Rohrprofil' or title == 'Gesamtlänge je Haltungslänge':
+        elif title == 'Gesamtlänge je Durchmesser' or title == 'Gesamtlänge je Profil' or title == 'Verteilung der Haltungslängen':
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
@@ -364,29 +377,28 @@ class Info:
             new_plot.autoscale()
 
     def _infos(self) -> None:
-        #TODO: Anzeige anpassen um die Auswahl eines Teilgebietes zu ermöglichen!
 
         # Karteikarte 1 initialisieren
         figure = self.fig_4
         figure.clear()
 
-        gs = GridSpec(6, 1, figure=figure, wspace=0.15)
+        gs = GridSpec(4, 1, figure=figure, wspace=0.15)
 
         # Infos Haltungen nach Entwässerungsarten ------------------------------------------------------
 
-        sql = """
+        sql = f"""
             WITH liste AS (
                 SELECT
                     entwart,
                     round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
                     count() AS anzahl
                 FROM haltungen
-                WHERE entwart IS NOT NULL 
+                WHERE entwart IS NOT NULL {self.abfrage_and}
                 GROUP BY entwart
             )
             SELECT *
             FROM liste
-            WHERE entwart NOT LIKE '%still%'
+            WHERE entwart NOT LIKE '%still%' 
             ORDER BY gesamtlaenge DESC
         """
         #pos=111
@@ -398,18 +410,18 @@ class Info:
         )
 
         # #Infos Schächte nach Entwässerungsarten ------------------------------------------------------
-        sql = """
+        sql = f"""
                     WITH liste AS (
                         SELECT
                             entwart,
                             count() AS anzahl
                         FROM schaechte
-                        WHERE entwart IS NOT NULL 
+                        WHERE entwart IS NOT NULL {self.abfrage_and}
                         GROUP BY entwart
                     )
                     SELECT *
                     FROM liste
-                    WHERE entwart NOT LIKE '%still%'
+                    WHERE entwart NOT LIKE '%still%' 
                 """
         # pos=111
         self._tableplot_2(
@@ -422,38 +434,38 @@ class Info:
 
         # #Infos Anschlussleitungen nach Entwässerungsarten -------------------------------------------
 
-        sql = """
+        sql = f"""
                     WITH liste AS (
                         SELECT
                             entwart,
                             round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
                             count() AS anzahl
                         FROM anschlussleitungen
-                        WHERE entwart IS NOT NULL 
+                        WHERE entwart IS NOT NULL {self.abfrage_and}
                         GROUP BY entwart
                     )
                     SELECT *
                     FROM liste
-                    WHERE entwart NOT LIKE '%still%'
+                    WHERE entwart NOT LIKE '%still%' 
                     ORDER BY gesamtlaenge DESC
                 """
         # pos=111
         self._tableplot(
             figure=figure,
             sql=sql,
-            title="Anschlussleitungen (Entässerungsart)",
+            title="Anschlussleitungen (Entwässerungsart)",
             pos=gs[2]
         )
 
 
         #Infos Teilgebiete -------------------------------------------------------------------
-        sql = """
+        sql = f"""
                         SELECT
                             coalesce(trim(teilgebiet), '') as tgb,
                             round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
                             count() AS anzahl
                         FROM haltungen
-                        WHERE entwart IS NOT NULL 
+                        WHERE entwart IS NOT NULL {self.abfrage_and}
                         GROUP BY tgb
                 """
 
@@ -464,6 +476,8 @@ class Info:
             title="Haltungen Teilgebiete",
             pos=gs[3]
         )
+
+        self.fig_4.subplots_adjust(left=0.3, right=0.95, wspace=0.3, hspace=1)
 
     def handle_click(event, pie_wedges, run_script_callback):
         # TODO: Anpassen, sodass beim Anklicken der Grafik die jeweiligen Daten in QGIS ausgewählt werden!
@@ -481,90 +495,14 @@ class Info:
 
         gs = GridSpec(1, 2, figure=figure, wspace=0.15)
 
-        # #Darstellung Haltungen nach Entwässerungsart bezogen auf km
-        #
-        # sql = """
-        #     WITH liste AS (
-        #         SELECT
-        #             entwart,
-        #             round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
-        #         FROM haltungen
-        #         WHERE entwart IS NOT NULL
-        #         GROUP BY entwart
-        #     )
-        #     SELECT *
-        #     FROM liste
-        #     WHERE gesamtlaenge > 0.1 AND entwart NOT LIKE '%still%'
-        #     ORDER BY gesamtlaenge DESC
-        # """
-        # #pos=231
-        # wedges, texts, autotexts = self._pieplot(
-        #     sql=sql,
-        #     figure=figure,
-        #     title='Entwässerungsart',
-        #     pos=gs[0],
-        #     pos2=gs[1]
-        # )
-
-        #return self.canv_1, wedges
-
-        # # Event handler for mouse clicks
-        # def on_click(event):
-        #     # Check if the event was in the pie chart area
-        #     if event.inaxes == new_plot:
-        #         for wedge in wedges:
-        #             if wedge.contains_point((event.x, event.y)):
-        #                 index = wedges.index(wedge)
-        #                 # Display the label of the clicked wedge
-        #                 label = names[index]
-        #                 iface.messageBar().pushMessage("Error",
-        #                                                str(label),
-        #                                                level=Qgis.Critical)
-        #                 #funktioniert nur beim ersten Mal anklicken
-        #
-        #                 layers = QgsProject.instance().mapLayersByName('Haltungen')
-        #                 ids = []
-        #
-        #                 sql = f"""select pk from haltungen where entwart = '{label}'"""
-        #
-        #                 if not self.db_qkan.sql(sql):
-        #                     return
-        #                 for attr in self.db_qkan.fetchall():
-        #                     ids.append(attr[0])
-        #
-        #                 layers[0].selectByIds(ids)
-        #
-        #                 plt.draw()
-        #                 #break
-
-        #figure.canvas.mpl_connect('button_press_event', on_click)
-        # self.canv_1.draw()
-
-        #Darstellungen Haltungen nach Baujahren
-
-        # sql = """
-        #     WITH liste AS (
-        #         SELECT
-        #             iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
-        #             iif(
-        #                 coalesce(baujahr, 0) = 0,
-        #                 ' ohne Baujahr',
-        #                 printf('bis %d', min(CAST(strftime('%Y', 'now') AS INT), ceil(baujahr/5.)*5.))) AS baujahr
-        #         FROM haltungen
-        #     )
-        #     SELECT
-        #         baujahr,
-        #         round(sum(laenge)/1000.0 ,2) AS gesamtlaenge
-        #     FROM liste
-        #     GROUP BY baujahr
-        #     ORDER BY baujahr
-        # """
-        sql = """
+        #Darstellungen Haltungen nach Baujahr
+        sql = f"""
                     WITH liste AS (
                         SELECT
                             iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
                             baujahr
                             FROM haltungen
+                            {self.abfrage_where}
                     )
                     SELECT
                         baujahr,
@@ -583,100 +521,18 @@ class Info:
             pos=gs[1]
         )
 
-        # # Darstellungen Haltungen nach Durchmesser
-        #
-        # sql = """
-        #     WITH liste AS (
-        #         SELECT
-        #             iif(hoehe <= 501, ceil(hoehe/100.)*100, iif(hoehe <= 1001, ceil(hoehe/250.)*250, iif(hoehe <= 3001, ceil(hoehe/250.)*250, ceil(hoehe/1000.)*1000))) AS Hoehe,
-        #             iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
-        #         FROM haltungen
-        #     )
-        #     SELECT
-        #         printf('bis %d', Hoehe) AS t_hoehe,
-        #         round(sum(laenge)/1000.,2) AS gesamtlaenge
-        #     FROM liste
-        #     GROUP BY Hoehe
-        #     ORDER BY Hoehe
-        # """
-        #
-        # self._barplot(
-        #     sql=sql,
-        #     figure=figure,
-        #     title='Gesamtlänge je Durchmesser',
-        #     ylabel='Durchmesser bis mm',
-        #     xlabel='Gesamtlänge (km)',
-        #     pos=gs[4]
-        # )
-
-        # l_bezeich = []
-        # sql = """select DISTINCT hoehe from haltungen """
-        #
-        # if not self.db_qkan.sql(sql):
-        #     return
-        #
-        # for i in self.db_qkan.fetchall():
-        #     i = str(i[0])
-        #     l_bezeich.append(i)
-        #
-        # data = {k: None for k in l_bezeich}
-        #
-        # for i in data.keys():
-        #     sql = f"""select sum(laenge) from haltungen WHERE hoehe = '{i}'"""
-        #
-        #     if not self.db_qkan.sql(sql):
-        #         return
-        #
-        #     anz = self.db_qkan.fetchall()[0][0]
-        #
-        #     data[i] = anz
-        #
-        # total = sum(data.values())
-        # threshold = 0.1 * total
-        # daten = {k: v for k, v in data.items() if v >= threshold}
-        # sonstiges = {k: v for k, v in data.items() if v < threshold}
-        #
-        # if sonstiges:
-        #     daten['Sonstiges'] = sum(sonstiges.values())
-        #
-        # # Daten für das Kreisdiagramm
-        # names = list(daten.keys())
-        # values = list(daten.values())
-        #
-        # new_plot = figure.add_subplot(243)
-        # wedges, texts, autotexts = new_plot.pie(values, labels=names, autopct=lambda pct: self.func(pct, values))
-        # new_plot.set_title('Durchmesser DN')
-        # new_plot3 = figure.add_subplot(244)
-        #
-        # if 'Sonstiges' in daten:
-        #     # fig_1, ax2 = plt.subplots()
-        #     sonstiges_names = list(sonstiges.keys())
-        #     sonstiges_values = list(sonstiges.values())
-        #
-        #     y_pos = np.arange(len(sonstiges_values))
-        #     box = new_plot3.get_position()
-        #     new_plot3.set_position([box.x0 + 0.05, box.y0, box.width * 0.5, box.height* 0.75])
-        #     new_plot3.barh(y_pos, sonstiges_values, align='center')
-        #     new_plot3.set_yticks(y_pos)
-        #     new_plot3.set_yticklabels(sonstiges_names)
-        #     new_plot3.invert_yaxis()
-        #     new_plot3.set_xlabel('Durchmesser')
-        #     new_plot3.set_title('Details der Kategorie "Sonstiges"')
-        # new_plot.autoscale()
-        # new_plot3.autoscale()
-
         #TODO:Darstellung nach Tiefenlage?
 
 
         # Darstellungen Haltungen nach Material
 
-        sql = """
+        sql = f"""
             WITH liste AS (
                 SELECT
                     material,
                     round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
                 FROM haltungen
-                WHERE material IS NOT NULL 
+                WHERE material IS NOT NULL  {self.abfrage_and}
                 GROUP BY material
             )
             SELECT *
@@ -694,79 +550,24 @@ class Info:
             pos=gs[0]
         )
 
-        #
-        # l_bezeich = []
-        # sql = """select DISTINCT material from haltungen """
-        #
-        # if not self.db_qkan.sql(sql):
-        #     return
-        #
-        # for i in self.db_qkan.fetchall():
-        #     i = str(i[0])
-        #     l_bezeich.append(i)
-        #
-        # data = {k: None for k in l_bezeich}
-        #
-        # for i in data.keys():
-        #     sql = f"""select sum(laenge) from haltungen WHERE material = '{i}'"""
-        #
-        #     if not self.db_qkan.sql(sql):
-        #         return
-        #
-        #     anz = self.db_qkan.fetchall()[0][0]
-        #
-        #     data[i] = anz
-        #
-        # total = sum(data.values())
-        # threshold = 0.1 * total
-        # daten = {k: v for k, v in data.items() if v >= threshold}
-        # sonstiges = {k: v for k, v in data.items() if v < threshold}
-        #
-        # if sonstiges:
-        #     daten['Sonstiges'] = sum(sonstiges.values())
-        #
-        # # Daten für das Kreisdiagramm
-        # names = list(daten.keys())
-        # values = list(daten.values())
-        #
-        # # Plot
-        # new_plot = figure.add_subplot(234)
-        # wedges, texts, autotexts = new_plot.pie(values, labels=names, autopct=lambda pct: self.func(pct, values))
-        # new_plot.set_title('Material')
-        # new_plot3 = figure.add_subplot(235)
-        # if 'Sonstiges' in daten:
-        #     sonstiges_names = list(sonstiges.keys())
-        #     sonstiges_values = list(sonstiges.values())
-        #
-        #     y_pos = np.arange(len(sonstiges_values))
-        #     box = new_plot3.get_position()
-        #     new_plot3.set_position([box.x0 + 0.05, box.y0, box.width * 0.5, box.height * 0.75])
-        #     new_plot3.barh(y_pos, sonstiges_values, align='center')
-        #     new_plot3.set_yticks(y_pos)
-        #     new_plot3.set_yticklabels(sonstiges_names)
-        #     new_plot3.invert_yaxis()
-        #     new_plot3.set_xlabel('Material')
-        #     new_plot3.set_title('Details der Kategorie "Sonstiges"')
-        # new_plot.autoscale()
-        # new_plot3.autoscale()
-
         self.canv_1.draw()
+        self.fig_1.subplots_adjust(left=0.25, right=0.95, top=0.95, bottom=0.1, wspace=0.3, hspace=0.4)
 
         # Karteikarte 2 initialisieren
         figure = self.fig_6
         figure.clear()
 
-        gs = GridSpec(1, 3, figure=figure, wspace=0.15)
+        gs = GridSpec(1, 3, figure=figure, wspace=0.25)
         # Darstellungen Haltungen nach Profiltyp
 
         # Darstellungen Haltungen nach Durchmesser
 
-        sql = """
+        sql = f"""
             WITH liste AS (
                 SELECT
                     iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(hoehe/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
                     iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
-                FROM haltungen
+                FROM haltungen {self.abfrage_where}
             )
             SELECT
                 printf('bis %d', Hoehe) AS t_hoehe,
@@ -787,13 +588,13 @@ class Info:
 
         # Darstellungen Haltungen nach Profiltyp
 
-        sql = """
+        sql = f"""
             WITH liste AS (
                 SELECT
                     profilnam,
                     round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
                 FROM haltungen
-                WHERE profilnam IS NOT NULL
+                WHERE profilnam IS NOT NULL {self.abfrage_and}
                 GROUP BY profilnam
             )
             SELECT *
@@ -805,20 +606,20 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure,
-            title='Gesamtlänge je Rohrprofil',
-            ylabel='Rohrprofil',
+            title='Gesamtlänge je Profil',
+            ylabel='Profil',
             xlabel='Gesamtlänge (km)',
             pos=gs[1]
         )
 
         # Darstellungen Haltungen nach Länge
-        sql = """
+        sql = f"""
                         WITH liste AS (
                         SELECT
                             laenge,
                             ROUND(SUM(IIF(COALESCE(laenge, 0) = 0, GLength(geom), laenge)), 2) AS gesamtlaenge
                         FROM haltungen
-                        WHERE laenge IS NOT NULL
+                        WHERE laenge IS NOT NULL {self.abfrage_and}
                         GROUP BY laenge
                     ),
                     intervalle AS (
@@ -858,17 +659,16 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure,
-            title='Gesamtlänge je Haltungslänge',
-            ylabel='Länge der Haltung',
+            title='Verteilung der Haltungslängen',
+            ylabel='Haltungslänge (m)',
             xlabel='Gesamtlänge (km)',
             pos=gs[2]
         )
 
         self.canv_6.draw()
+        self.fig_6.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
         #Haltungen nach Zustandsklasse
-        #TODO: Testen ob untersuchdat_haltung_bewertung oder substanz_haltung_bewertung vorhanden ist und die Daten verwenden!
-
         # Karteikarte 3 initialisieren
         figure_3 = self.fig_3
         figure_3.clear()
@@ -877,36 +677,38 @@ class Info:
         if self.combo == 'Originale Bewertung':
             gs = GridSpec(2, 2, figure=figure_3, wspace=0.15, width_ratios=[2, 1])
 
-            sql = """
+            sql = f"""
                 WITH liste AS (
-                    SELECT
-                        CASE
-                            WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                            ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
-                        END AS Zustandszahl,
-                        ROUND(SUM(
-                            CASE 
-                                WHEN COALESCE(laenge, 0) = 0 THEN GLength(geom)
-                                ELSE laenge
-                            END
-                        ) / 1000.0, 2) AS gesamtlaenge,
-                        COUNT(*) AS anzahl
-                    FROM haltungen_untersucht
-                    GROUP BY CASE
-                        WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                        ELSE MIN(max_ZD, max_ZS, max_ZB)
-                    END
-                )
-                SELECT *
-                FROM liste
-                WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
-                ORDER BY Zustandszahl
+                                    SELECT
+                                        CASE
+                                            WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                            ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
+                                        END AS Zustandszahl,
+                                        ROUND(SUM(
+                                            CASE 
+                                                WHEN COALESCE(haltungen_untersucht.laenge, 0) = 0 THEN GLength(haltungen_untersucht.geom)
+                                                ELSE haltungen_untersucht.laenge
+                                            END
+                                        ) / 1000.0, 2) AS gesamtlaenge,
+                                        COUNT(*) AS anzahl
+                                    FROM haltungen_untersucht  
+                                    LEFT JOIN haltungen h ON haltungen_untersucht.haltnam = h.haltnam
+                                    {self.abfrage_where}
+                                    GROUP BY CASE
+                                        WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                        ELSE MIN(max_ZD, max_ZS, max_ZB)
+                                    END
+                                )
+                                SELECT *
+                                FROM liste
+                                WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
+                                ORDER BY Zustandszahl
             """
 
             self._barplot(
                 sql=sql,
                 figure=figure_3,
-                title='Gesamtlänge je Zustandsklassen',
+                title='Gesamtlänge je Zustandsklasse',
                 ylabel='Zustandsklasse',
                 xlabel='Gesamtlänge (km)',
                 pos=gs[0]
@@ -922,7 +724,7 @@ class Info:
             self._barplot(
                 sql=sql,
                 figure=figure_3,
-                title='Anzahl der Schäden',
+                title='Anzahl der Schäden nach Schadenskürzel',
                 ylabel='Art',
                 xlabel='Anzahl',
                 pos=gs[2]
@@ -932,7 +734,7 @@ class Info:
             # plt.figure(figure_3.number)
             new_plot_2 = figure_3.add_subplot(gs[1])
             l_bezeich = []
-            sql = """select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht """
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht LEFT JOIN haltungen h ON h.haltnam = haltungen_untersucht.haltnam {self.abfrage_where}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -945,7 +747,7 @@ class Info:
 
             for i in data.keys():
                 if i != 'None':
-                    sql = f"""select sum(laenge) from haltungen_untersucht WHERE MIN(max_ZD,max_ZS,max_ZB) = {i}"""
+                    sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen h ON h.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -965,7 +767,7 @@ class Info:
                 '3': 'green',
                 '4': 'skyblue',
                 '5': 'steelblue',
-                'sonstiges': 'grey'
+                'sonstige': 'grey'
             }
             farben = [bar_colors[attr] for attr in names]
 
@@ -984,8 +786,9 @@ class Info:
                 y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
                 new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
 
-            new_plot_2.set_title('Zustandsklasse Haltungen')
+            new_plot_2.set_title('Zustandsklassenverteilung Haltungen')
             self.canv_3.draw()
+            self.fig_3.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
         elif self.combo == 'Automatisierte Bewertung':
             sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='haltungen_untersucht_bewertung'
@@ -997,24 +800,26 @@ class Info:
             if liste != []:
                 gs = GridSpec(2, 2, figure=figure_3, wspace=0.15, width_ratios=[2, 1])
 
-                sql = """
+                sql = f"""
                                 WITH liste AS (
                                     SELECT
                                         CASE
-                                            WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                                            ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
+                                            WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                            ELSE CAST(objektklasse_gesamt AS TEXT)
                                         END AS Zustandszahl,
                                         ROUND(SUM(
                                             CASE 
-                                                WHEN COALESCE(laenge, 0) = 0 THEN GLength(geom)
-                                                ELSE laenge
+                                                WHEN COALESCE(haltungen_untersucht_bewertung.laenge, 0) = 0 THEN GLength(haltungen_untersucht_bewertung.geom)
+                                                ELSE haltungen_untersucht_bewertung.laenge
                                             END
                                         ) / 1000.0, 2) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
-                                    FROM haltungen_untersucht_bewertung
+                                    FROM haltungen_untersucht_bewertung  
+                                    LEFT JOIN haltungen h ON haltungen_untersucht_bewertung.haltnam = h.haltnam
+                                    {self.abfrage_where}
                                     GROUP BY CASE
-                                        WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                                        ELSE MIN(max_ZD, max_ZS, max_ZB)
+                                        WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                        ELSE objektklasse_gesamt
                                     END
                                 )
                                 SELECT *
@@ -1026,21 +831,21 @@ class Info:
                 self._barplot(
                     sql=sql,
                     figure=figure_3,
-                    title='Gesamtlänge je Zustandsklassen',
+                    title='Gesamtlänge je Zustandsklasse',
                     ylabel='Zustandsklasse',
                     xlabel='Gesamtlänge (km)',
                     pos=gs[0]
                 )
 
 
-                sql = """
-                                         select kuerzel,count(*) from untersuchdat_haltung_bewertung group by kuerzel
+                sql = f"""
+                                         select kuerzel,count(*) from untersuchdat_haltung_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where} group by kuerzel
                                     """
 
                 self._barplot(
                     sql=sql,
                     figure=figure_3,
-                    title='Anzahl der Schäden',
+                    title='Anzahl der Schäden nach Schadenskürzel',
                     ylabel='Art',
                     xlabel='Anzahl',
                     pos=gs[2]
@@ -1049,7 +854,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_3.add_subplot(gs[1])
                 l_bezeich = []
-                sql = """select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht_bewertung """
+                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_untersucht_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where}"""
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -1062,7 +867,7 @@ class Info:
 
                 for i in data.keys():
                     if i != 'None':
-                        sql = f"""select sum(laenge) from haltungen_untersucht_bewertung WHERE MIN(max_ZD,max_ZS,max_ZB) = {i}"""
+                        sql = f"""select count(*) from haltungen_untersucht_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -1082,7 +887,7 @@ class Info:
                     '3': 'green',
                     '4': 'skyblue',
                     '5': 'steelblue',
-                    'sonstiges': 'grey'
+                    'sonstige': 'grey'
                 }
                 farben = [bar_colors[attr] for attr in names]
                 # Plot
@@ -1100,15 +905,17 @@ class Info:
                     y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
                     new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
 
-                new_plot_2.set_title('Zustandsklasse Haltungen')
+                new_plot_2.set_title('Zustandsklassenverteilung Haltungen')
                 self.canv_3.draw()
+                self.fig_3.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
             else:
                 figure_3.clf()
 
 
+
         elif self.combo == 'Bewertung nach SubKanS':
-            sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='haltungen_substanz_bewertung'
+            sql = f""" SELECT name FROM sqlite_master WHERE type='table' AND name='haltungen_substanz_bewertung'
                                             """
             if not self.db_qkan.sql(sql):
                 return
@@ -1117,49 +924,51 @@ class Info:
             if liste != []:
                 gs = GridSpec(2, 2, figure=figure_3, wspace=0.15, width_ratios=[2, 1])
 
-                sql = """
+                sql = f"""
                                             WITH liste AS (
-                                                SELECT
-                                                    CASE
-                                                        WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                                                        ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
-                                                    END AS Zustandszahl,
-                                                    ROUND(SUM(
-                                                        CASE 
-                                                            WHEN COALESCE(laenge, 0) = 0 THEN GLength(geom)
-                                                            ELSE laenge
-                                                        END
-                                                    ) / 1000.0, 2) AS gesamtlaenge,
-                                                    COUNT(*) AS anzahl
-                                                FROM haltungen_substanz_bewertung
-                                                GROUP BY CASE
-                                                    WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                                                    ELSE MIN(max_ZD, max_ZS, max_ZB)
-                                                END
-                                            )
-                                            SELECT *
-                                            FROM liste
-                                            WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
-                                            ORDER BY Zustandszahl
+                                    SELECT
+                                        CASE
+                                            WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                            ELSE CAST(objektklasse_gesamt AS TEXT)
+                                        END AS Zustandszahl,
+                                        ROUND(SUM(
+                                            CASE 
+                                                WHEN COALESCE(haltungen_substanz_bewertung.laenge, 0) = 0 THEN GLength(haltungen_substanz_bewertung.geom)
+                                                ELSE haltungen_substanz_bewertung.laenge
+                                            END
+                                        ) / 1000.0, 2) AS gesamtlaenge,
+                                        COUNT(*) AS anzahl
+                                    FROM haltungen_substanz_bewertung  
+                                    LEFT JOIN haltungen h ON haltungen_substanz_bewertung.haltnam = h.haltnam
+                                    {self.abfrage_where}
+                                    GROUP BY CASE
+                                        WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                        ELSE objektklasse_gesamt
+                                    END
+                                )
+                                SELECT *
+                                FROM liste
+                                WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
+                                ORDER BY Zustandszahl
                                         """
 
                 self._barplot(
                     sql=sql,
                     figure=figure_3,
-                    title='Gesamtlänge je Zustandsklassen',
+                    title='Gesamtlänge je Zustandsklasse',
                     ylabel='Zustandsklasse',
                     xlabel='Gesamtlänge (km)',
                     pos=gs[0]
                 )
 
-                sql = """
-                                                     select kuerzel,count(*) from substanz_haltung_bewertung group by kuerzel
+                sql = f"""
+                            select kuerzel,count(*) from substanz_haltung_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where} group by kuerzel
                                                 """
 
                 self._barplot(
                     sql=sql,
                     figure=figure_3,
-                    title='Anzahl der Schäden',
+                    title='Anzahl der Schäden nach Schadenskürzel',
                     ylabel='Art',
                     xlabel='Anzahl',
                     pos=gs[2]
@@ -1168,7 +977,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_3.add_subplot(gs[1])
                 l_bezeich = []
-                sql = """select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_substanz_bewertung """
+                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where} """
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -1181,7 +990,7 @@ class Info:
 
                 for i in data.keys():
                     if i != 'None':
-                        sql = f"""select sum(laenge) from haltungen_substanz_bewertung WHERE MIN(max_ZD,max_ZS,max_ZB) = {i}"""
+                        sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam WHERE objektklasse_gesamt = {i}  {self.abfrage_and}"""
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -1201,7 +1010,7 @@ class Info:
                     '3': 'green',
                     '4': 'skyblue',
                     '5': 'steelblue',
-                    'sonstiges': 'grey'
+                    'sonstige': 'grey'
                 }
                 farben = [bar_colors[attr] for attr in names]
                 # Plot
@@ -1218,11 +1027,12 @@ class Info:
                     y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
                     new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
 
-                new_plot_2.set_title('Zustandsklasse Haltungen')
+                new_plot_2.set_title('Zustandsklassenverteilung Haltungen')
                 self.canv_3.draw()
+                self.fig_3.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
             else:
                 figure_3.clf()
-
+        figure_3.tight_layout()
 
         # #Zustandsdaten Schächte
         # l_bezeich = []
@@ -1304,6 +1114,7 @@ class Info:
         new_plot_2.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
         new_plot_2.set_title('Entwässerungsart')
         self.canv_2.draw()
+        self.fig_2.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
         # Darstellungen Schächte nach Baujahren
 
@@ -1332,59 +1143,6 @@ class Info:
             xlabel='Anzahl',
             pos=142
         )
-
-        # l_bezeich = []
-        # sql = """select DISTINCT baujahr from schaechte """
-        #
-        # if not self.db_qkan.sql(sql):
-        #     return
-        #
-        # for i in self.db_qkan.fetchall():
-        #     i = str(i[0])
-        #     l_bezeich.append(i)
-        #
-        # data = {k: None for k in l_bezeich}
-        #
-        # for i in data.keys():
-        #     sql = f"""select count() from schaechte WHERE baujahr = '{i}'"""
-        #
-        #     sql = """
-        #                 SELECT
-        #                         count(),
-        #                         iif(
-        #                             coalesce(baujahr, 0) = 0,
-        #                             ' ohne Baujahr',
-        #                             printf('bis %d', min(CAST(strftime('%Y', 'now') AS INT), ceil(baujahr/5.)*5.))) AS baujahr
-        #                     FROM schaechte
-        #                 GROUP BY baujahr
-        #                 ORDER BY baujahr
-        #             """
-        #     wedges, texts, autotexts = self._pieplot(
-        #         sql=sql,
-        #         figure=figure,
-        #         title='Baujahre',
-        #         pos=gs[1]
-        #     )
-        #
-        #     if not self.db_qkan.sql(sql):
-        #         return
-        #
-        #     anz = self.db_qkan.fetchall()[0][0]
-        #
-        #     data[i] = anz
-        #
-        # if 'None' in data.keys():
-        #     del data['None']
-        # names = list(data.keys())
-        # values = list(data.values())
-        # # Plot
-        # new_plot = figure_2.add_subplot(132)
-        # wedges, texts, autotexts = new_plot.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
-        # new_plot.set_title('Baujahr')
-        # self.canv_2.draw()
-
-
-
 
         # Darstellung Schächte nach Material
         l_bezeich = []
@@ -1417,6 +1175,7 @@ class Info:
         wedges, texts, autotexts = new_plot.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
         new_plot.set_title('Material')
         self.canv_2.draw()
+        self.fig_2.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
         # Haltungen nach Substanzklasse
         # Karteikarte 5 initialisieren
@@ -1434,36 +1193,38 @@ class Info:
 
         if liste != []:
 
-            sql = """
+            sql = f"""
                         WITH liste AS (
-                            SELECT
-                                CASE
-                                    WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                                    ELSE CAST(Substanzklasse AS TEXT)
-                                END AS Substanzzahl,
-                                ROUND(SUM(
-                                    CASE 
-                                        WHEN COALESCE(laenge, 0) = 0 THEN GLength(geom)
-                                        ELSE laenge
-                                    END
-                                ) / 1000.0, 2) AS gesamtlaenge,
-                                COUNT(*) AS anzahl
-                            FROM haltungen_substanz_bewertung
+                          SELECT
+                          CASE
+                          WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                          ELSE CAST(Substanzklasse AS TEXT)
+                          END AS Substanzzahl,
+                          ROUND(SUM(
+                          CASE 
+                          WHEN COALESCE(haltungen_substanz_bewertung.laenge, 0) = 0 THEN GLength(haltungen_substanz_bewertung.geom)
+                          ELSE haltungen_substanz_bewertung.laenge
+                          END
+                          ) / 1000.0, 2) AS gesamtlaenge,
+                          COUNT(*) AS anzahl
+                          FROM haltungen_substanz_bewertung
+                          LEFT JOIN haltungen h ON haltungen_substanz_bewertung.haltnam = h.haltnam
+                                    {self.abfrage_where}
                             GROUP BY CASE
-                                WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
-                                ELSE Substanzklasse
-                            END
-                        )
-                        SELECT *
-                        FROM liste
-                        WHERE gesamtlaenge > 0.01 OR Substanzzahl = 'sonstige'
-                        ORDER BY Substanzzahl
+                          WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                          ELSE Substanzklasse
+                          END
+                          )
+                          SELECT *
+                          FROM liste
+                          WHERE gesamtlaenge > 0.01 OR Substanzzahl = 'sonstige'
+                          ORDER BY Substanzzahl
                     """
 
             self._barplot(
                 sql=sql,
                 figure=figure_5,
-                title='Gesamtlänge je Substanzsklassen',
+                title='Gesamtlänge je Substanzklasse',
                 ylabel='Substanzklasse',
                 xlabel='Gesamtlänge (km)',
                 pos=gs[0]
@@ -1471,7 +1232,7 @@ class Info:
 
             new_plot_2 = figure_5.add_subplot(gs[1])
             l_bezeich = []
-            sql = """select DISTINCT Substanzklasse from haltungen_substanz_bewertung """
+            sql = f"""select DISTINCT Substanzklasse from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -1484,7 +1245,7 @@ class Info:
 
             for i in data.keys():
                 if i != 'None':
-                    sql = f"""select sum(laenge) from haltungen_substanz_bewertung WHERE Substanzklasse = {i}"""
+                    sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam WHERE Substanzklasse = {i}  {self.abfrage_where}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -1504,7 +1265,7 @@ class Info:
                 '3': 'green',
                 '4': 'skyblue',
                 '5': 'steelblue',
-                'sonstiges': 'grey'
+                'sonstige': 'grey'
             }
             farben = [bar_colors[attr] for attr in names]
             # Plot
@@ -1522,11 +1283,12 @@ class Info:
                 y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
                 new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
 
-            new_plot_2.set_title('Substanzklasse Haltungen')
+            new_plot_2.set_title('Substanzklassenverteilung Haltungen')
             self.canv_5.draw()
+            self.fig_5.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
-            sql = """
-                    select kuerzel, IIF(sum(Schadenslaenge),sum(Schadenslaenge), 0) from substanz_haltung_bewertung group by kuerzel
+            sql = f"""
+                     select kuerzel, IIF(sum(Schadenslaenge),sum(Schadenslaenge), 0) from substanz_haltung_bewertung LEFT JOIN haltungen h ON h.haltnam = substanz_haltung_bewertung.untersuchhal {self.abfrage_where} group by kuerzel
                                 """
 
             self._barplot(
@@ -1537,9 +1299,18 @@ class Info:
                 xlabel='Länge',
                 pos=gs[2]
             )
+        figure_5.tight_layout()
 
     def _suewvo(self):
-        date = self.date+'%'
+        dat1 = self.dat1
+        dat2 = self.dat2
+        dat3 = self.dat3
+
+        bericht = dat1 + '%'
+
+        untersuch1 = dat2+'-01-01'
+        untersuch2 = dat3+'-12-31'
+
         self.bew_art = 'DWA'
         self.laenge_haltungen_rw = 0
         self.laenge_haltungen_sw = 0
@@ -1685,15 +1456,19 @@ class Info:
 
                 # laenge haltungen 0
                 sql = """
-                            SELECT haltungen_untersucht_bewertung.haltnam,
+                            SELECT h1.haltnam,
                             haltungen.entwart,
                             haltungen.laenge
-                            FROM haltungen_untersucht_bewertung,haltungen
-                            WHERE haltungen_untersucht_bewertung.haltnam =haltungen.haltnam
-                                AND haltungen_untersucht_bewertung.objektklasse_gesamt = 0
-                                AND haltungen_untersucht_bewertung.untersuchtag like ?
+                                FROM haltungen_untersucht_bewertung h1, haltungen
+                                JOIN (
+                                    SELECT haltnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                                    FROM haltungen_untersucht_bewertung 
+                                    GROUP BY haltnam) h2
+                                ON h1.haltnam = h2.haltnam AND DATE(h1.untersuchtag) = h2.max_untersuchtag
+                                WHERE h1.haltnam =haltungen.haltnam
+                                AND h1.objektklasse_gesamt = 0
                                       """
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 0", data)
@@ -1719,16 +1494,20 @@ class Info:
 
                 # laenge haltungen 1
                 sql = """
-                    SELECT haltungen_untersucht_bewertung.haltnam,
-                    haltungen.entwart,
-                    haltungen.laenge
-                    FROM haltungen_untersucht_bewertung,haltungen
-                    WHERE haltungen_untersucht_bewertung.haltnam =haltungen.haltnam
-                        AND haltungen_untersucht_bewertung.objektklasse_gesamt = 1 
-                        AND haltungen_untersucht_bewertung.untersuchtag like ?;
+                        SELECT h1.haltnam,
+                            haltungen.entwart,
+                            haltungen.laenge
+                                FROM haltungen_untersucht_bewertung h1, haltungen
+                                JOIN (
+                                    SELECT haltnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                                    FROM haltungen_untersucht_bewertung 
+                                    GROUP BY haltnam) h2
+                                ON h1.haltnam = h2.haltnam AND DATE(h1.untersuchtag) = h2.max_untersuchtag
+                                WHERE h1.haltnam =haltungen.haltnam
+                                AND h1.objektklasse_gesamt = 1
                 """
 
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 1", data)
@@ -1753,16 +1532,20 @@ class Info:
 
                 # laenge haltungen 2
                 sql = """
-                    SELECT haltungen_untersucht_bewertung.haltnam,
-                    haltungen.entwart,
-                    haltungen.laenge
-                    FROM haltungen_untersucht_bewertung,haltungen
-                    WHERE haltungen_untersucht_bewertung.haltnam =haltungen.haltnam
-                        AND haltungen_untersucht_bewertung.objektklasse_gesamt = 2
-                        AND haltungen_untersucht_bewertung.untersuchtag like ?;
+                    SELECT h1.haltnam,
+                            haltungen.entwart,
+                            haltungen.laenge
+                                FROM haltungen_untersucht_bewertung h1, haltungen
+                                JOIN (
+                                    SELECT haltnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                                    FROM haltungen_untersucht_bewertung 
+                                    GROUP BY haltnam) h2
+                                ON h1.haltnam = h2.haltnam AND DATE(h1.untersuchtag) = h2.max_untersuchtag
+                                WHERE h1.haltnam =haltungen.haltnam
+                                AND h1.objektklasse_gesamt = 2
                 """
 
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 2", data)
@@ -1787,16 +1570,20 @@ class Info:
 
                 # laenge haltungen 3
                 sql = """
-                    SELECT haltungen_untersucht_bewertung.haltnam,
-                    haltungen.entwart,
-                    haltungen.laenge
-                    FROM haltungen_untersucht_bewertung,haltungen
-                    WHERE haltungen_untersucht_bewertung.haltnam =haltungen.haltnam
-                        AND haltungen_untersucht_bewertung.objektklasse_gesamt = 3
-                        AND haltungen_untersucht_bewertung.untersuchtag like ?;
+                    SELECT h1.haltnam,
+                            haltungen.entwart,
+                            haltungen.laenge
+                                FROM haltungen_untersucht_bewertung h1, haltungen
+                                JOIN (
+                                    SELECT haltnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                                    FROM haltungen_untersucht_bewertung 
+                                    GROUP BY haltnam) h2
+                                ON h1.haltnam = h2.haltnam AND DATE(h1.untersuchtag) = h2.max_untersuchtag
+                                WHERE h1.haltnam =haltungen.haltnam
+                                AND h1.objektklasse_gesamt = 3
                 """
 
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 3", data)
@@ -1821,16 +1608,20 @@ class Info:
 
                 # laenge haltungen 4
                 sql = """
-                    SELECT haltungen_untersucht_bewertung.haltnam,
-                    haltungen.entwart,
-                    haltungen.laenge
-                    FROM haltungen_untersucht_bewertung,haltungen
-                    WHERE haltungen_untersucht_bewertung.haltnam =haltungen.haltnam
-                        AND haltungen_untersucht_bewertung.objektklasse_gesamt = 4
-                        AND haltungen_untersucht_bewertung.untersuchtag like ?;
+                    SELECT h1.haltnam,
+                            haltungen.entwart,
+                            haltungen.laenge
+                                FROM haltungen_untersucht_bewertung h1, haltungen
+                                JOIN (
+                                    SELECT haltnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                                    FROM haltungen_untersucht_bewertung 
+                                    GROUP BY haltnam) h2
+                                ON h1.haltnam = h2.haltnam AND DATE(h1.untersuchtag) = h2.max_untersuchtag
+                                WHERE h1.haltnam =haltungen.haltnam
+                                AND h1.objektklasse_gesamt = 4
                 """
 
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 44", data)
@@ -1855,16 +1646,20 @@ class Info:
 
                 # laenge haltungen 5
                 sql = """
-                    SELECT haltungen_untersucht_bewertung.haltnam,
-                    haltungen.entwart,
-                    haltungen.laenge
-                    FROM haltungen_untersucht_bewertung,haltungen
-                    WHERE haltungen_untersucht_bewertung.haltnam =haltungen.haltnam
-                        AND haltungen_untersucht_bewertung.objektklasse_gesamt = 5
-                        AND haltungen_untersucht_bewertung.untersuchtag like ?;
+                    SELECT h1.haltnam,
+                            haltungen.entwart,
+                            haltungen.laenge
+                                FROM haltungen_untersucht_bewertung h1, haltungen
+                                JOIN (
+                                    SELECT haltnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                                    FROM haltungen_untersucht_bewertung 
+                                    GROUP BY haltnam) h2
+                                ON h1.haltnam = h2.haltnam AND DATE(h1.untersuchtag) = h2.max_untersuchtag
+                                WHERE h1.haltnam =haltungen.haltnam
+                                AND h1.objektklasse_gesamt = 5
                 """
 
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 5", data)
@@ -1886,6 +1681,72 @@ class Info:
                         self.haltungen_5_rw = round(rw/1000,2)
                         self.haltungen_5_sw = round(sw/1000,2)
                         self.haltungen_5_mw = round(mw/1000,2)
+
+                # laenge im untersuchungszyklus
+                sql = """
+                            SELECT h1.haltnam,
+                                    haltungen.entwart,
+                                    haltungen.laenge
+                                    FROM haltungen_untersucht_bewertung h1, haltungen
+                                    WHERE h1.haltnam =haltungen.haltnam
+                                    AND  h1.untersuchtag BETWEEN ? AND ?
+                        """
+
+                data = (untersuch1, untersuch2)
+
+                try:
+                    self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 5", data)
+                except:
+                    pass
+                attr = self.db_qkan.fetchall()
+                if attr != None and attr != []:
+                    rw = 0
+                    sw = 0
+                    mw = 0
+                    for i in attr:
+                        if i[1] == 'Regenwasser':
+                            rw += i[2]
+                        if i[1] == 'Schmutzwasser':
+                            sw += i[2]
+                        if i[1] == 'Mischwasser':
+                            mw += i[2]
+
+                        self.laenge_haltungen_untersuch_rw = round(rw / 1000, 2)
+                        self.laenge_haltungen_untersuch_sw = round(sw / 1000, 2)
+                        self.laenge_haltungen_untersuch_mw = round(mw / 1000, 2)
+
+                # laenge im berichtsjahr
+                sql = """
+                            SELECT h1.haltnam,
+                                haltungen.entwart,
+                                haltungen.laenge
+                                    FROM haltungen_untersucht_bewertung h1, haltungen
+                                    WHERE h1.haltnam =haltungen.haltnam
+                                    AND h1.untersuchtag like ?
+                                """
+
+                data = (bericht,)
+
+                try:
+                    self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 5", data)
+                except:
+                    pass
+                attr = self.db_qkan.fetchall()
+                if attr != None and attr != []:
+                    rw = 0
+                    sw = 0
+                    mw = 0
+                    for i in attr:
+                        if i[1] == 'Regenwasser':
+                            rw += i[2]
+                        if i[1] == 'Schmutzwasser':
+                            sw += i[2]
+                        if i[1] == 'Mischwasser':
+                            mw += i[2]
+
+                        self.laenge_haltungen_untersuch_bj_rw = round(rw / 1000, 2)
+                        self.laenge_haltungen_untersuch_bj_sw = round(sw / 1000, 2)
+                        self.laenge_haltungen_untersuch_bj_mw = round(mw / 1000, 2)
 
 
        #Abfragen Schaechte
@@ -1968,15 +1829,20 @@ class Info:
 
                 # anzahl schaechte 0
                 sql = """
-                    SELECT schaechte_untersucht_bewertung.schnam,
+                    SELECT s1.schnam,
                     schaechte.entwart
-                    FROM schaechte_untersucht_bewertung,schaechte
-                    WHERE schaechte_untersucht_bewertung.schnam =schaechte.schnam
-                        AND schaechte_untersucht_bewertung.objektklasse_gesamt = 0
-                        AND schaechte_untersucht_bewertung.untersuchtag like ?;
+                    FROM schaechte_untersucht_bewertung s1,schaechte
+                    JOIN (
+                        SELECT schnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                        FROM schaechte_untersucht_bewertung 
+                        GROUP BY schnam) s2
+                    ON s1.schnam = s2.schnam AND DATE(s1.untersuchtag) = s2.max_untersuchtag
+                    WHERE s1.schnam =schaechte.schnam
+                        AND s1.objektklasse_gesamt = 0
+
                 """
 
-                data = (date,)
+                data = ()
 
                 try:
                     self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Schächte Objektklasse 0", data)
@@ -2001,15 +1867,19 @@ class Info:
 
                     # anzahl schaechte 1
                     sql = """
-                        SELECT schaechte_untersucht_bewertung.schnam,
-                        schaechte.entwart
-                        FROM schaechte_untersucht_bewertung,schaechte
-                        WHERE schaechte_untersucht_bewertung.schnam =schaechte.schnam
-                            AND schaechte_untersucht_bewertung.objektklasse_gesamt = 1
-                            AND schaechte_untersucht_bewertung.untersuchtag like ?;
+                        SELECT s1.schnam,
+                    schaechte.entwart
+                    FROM schaechte_untersucht_bewertung s1,schaechte
+                    JOIN (
+                        SELECT schnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                        FROM schaechte_untersucht_bewertung 
+                        GROUP BY schnam) s2
+                    ON s1.schnam = s2.schnam AND DATE(s1.untersuchtag) = s2.max_untersuchtag
+                    WHERE s1.schnam =schaechte.schnam
+                        AND s1.objektklasse_gesamt = 1
                     """
 
-                    data = (date,)
+                    data = ()
 
                     try:
                         self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Schächte Objektklasse 1", data)
@@ -2035,15 +1905,19 @@ class Info:
 
                     # anzahl schaechte 2
                     sql = """
-                        SELECT schaechte_untersucht_bewertung.schnam,
-                        schaechte.entwart
-                        FROM schaechte_untersucht_bewertung,schaechte
-                        WHERE schaechte_untersucht_bewertung.schnam =schaechte.schnam
-                            AND schaechte_untersucht_bewertung.objektklasse_gesamt = 2
-                            AND schaechte_untersucht_bewertung.untersuchtag like ?;
+                        SELECT s1.schnam,
+                    schaechte.entwart
+                    FROM schaechte_untersucht_bewertung s1,schaechte
+                    JOIN (
+                        SELECT schnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                        FROM schaechte_untersucht_bewertung 
+                        GROUP BY schnam) s2
+                    ON s1.schnam = s2.schnam AND DATE(s1.untersuchtag) = s2.max_untersuchtag
+                    WHERE s1.schnam =schaechte.schnam
+                        AND s1.objektklasse_gesamt = 2
                     """
 
-                    data = (date,)
+                    data = ()
 
                     try:
                         self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Schächte Objektklasse 2", data)
@@ -2069,15 +1943,19 @@ class Info:
 
                     # anzahl schaechte 3
                     sql = """
-                        SELECT schaechte_untersucht_bewertung.schnam,
-                        schaechte.entwart
-                        FROM schaechte_untersucht_bewertung,schaechte
-                        WHERE schaechte_untersucht_bewertung.schnam =schaechte.schnam
-                            AND schaechte_untersucht_bewertung.objektklasse_gesamt = 3
-                            AND schaechte_untersucht_bewertung.untersuchtag like ?;
+                        SELECT s1.schnam,
+                    schaechte.entwart
+                    FROM schaechte_untersucht_bewertung s1,schaechte
+                    JOIN (
+                        SELECT schnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                        FROM schaechte_untersucht_bewertung 
+                        GROUP BY schnam) s2
+                    ON s1.schnam = s2.schnam AND DATE(s1.untersuchtag) = s2.max_untersuchtag
+                    WHERE s1.schnam =schaechte.schnam
+                        AND s1.objektklasse_gesamt = 3
                     """
 
-                    data = (date,)
+                    data = ()
 
                     try:
                         self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Schächte Objektklasse 3", data)
@@ -2103,15 +1981,19 @@ class Info:
 
                     # anzahl schaechte 4
                     sql = """
-                        SELECT schaechte_untersucht_bewertung.schnam,
-                        schaechte.entwart
-                        FROM schaechte_untersucht_bewertung,schaechte
-                        WHERE schaechte_untersucht_bewertung.schnam =schaechte.schnam
-                            AND schaechte_untersucht_bewertung.objektklasse_gesamt = 4
-                            AND schaechte_untersucht_bewertung.untersuchtag like ?;
+                        SELECT s1.schnam,
+                    schaechte.entwart
+                    FROM schaechte_untersucht_bewertung s1,schaechte
+                    JOIN (
+                        SELECT schnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                        FROM schaechte_untersucht_bewertung 
+                        GROUP BY schnam) s2
+                    ON s1.schnam = s2.schnam AND DATE(s1.untersuchtag) = s2.max_untersuchtag
+                    WHERE s1.schnam =schaechte.schnam
+                        AND s1.objektklasse_gesamt = 4
                     """
 
-                    data = (date,)
+                    data = ()
 
                     try:
                         self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Schächte Objektklasse 4", data)
@@ -2137,15 +2019,19 @@ class Info:
 
                     # anzahl schaechte 5
                     sql = """
-                        SELECT schaechte_untersucht_bewertung.schnam,
-                        schaechte.entwart
-                        FROM schaechte_untersucht_bewertung,schaechte
-                        WHERE schaechte_untersucht_bewertung.schnam =schaechte.schnam
-                            AND schaechte_untersucht_bewertung.objektklasse_gesamt = 5
-                            AND schaechte_untersucht_bewertung.untersuchtag like ?;
+                        SELECT s1.schnam,
+                    schaechte.entwart
+                    FROM schaechte_untersucht_bewertung s1,schaechte
+                    JOIN (
+                        SELECT schnam, MAX(DATE(untersuchtag)) AS max_untersuchtag
+                        FROM schaechte_untersucht_bewertung 
+                        GROUP BY schnam) s2
+                    ON s1.schnam = s2.schnam AND DATE(s1.untersuchtag) = s2.max_untersuchtag
+                    WHERE s1.schnam =schaechte.schnam
+                        AND s1.objektklasse_gesamt = 5
                     """
 
-                    data = (date,)
+                    data = ()
 
                     try:
                         self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Schächte Objektklasse 5", data)
@@ -2169,12 +2055,78 @@ class Info:
                                 self.anz_schaechte_5_sw = sw
                                 self.anz_schaechte_5_mw = mw
 
+                    # anzahl im untersuchungszyklus
+                    sql = """
+                                    SELECT s1.schnam,
+                                    schaechte.entwart
+                                    FROM schaechte_untersucht_bewertung s1,schaechte
+                                            WHERE s1.schnam =schaechte.schnam
+                                            AND  s1.untersuchtag BETWEEN ? AND ?
+                                """
 
-    def run(self, date) -> None:
+                    data = (untersuch1, untersuch2)
+
+                    try:
+                        self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 5",
+                                         data)
+                    except:
+                        pass
+                    attr = self.db_qkan.fetchall()
+                    if attr != None and attr != []:
+                        rw = 0
+                        sw = 0
+                        mw = 0
+                        for i in attr:
+                            if i[1] == 'Regenwasser':
+                                rw += i[2]
+                            if i[1] == 'Schmutzwasser':
+                                sw += i[2]
+                            if i[1] == 'Mischwasser':
+                                mw += i[2]
+
+                            self.anz_schaechte_untersuch_rw = round(rw / 1000, 2)
+                            self.anz_schaechte_untersuch_sw = round(sw / 1000, 2)
+                            self.anz_schaechte_untersuch_mw = round(mw / 1000, 2)
+
+                    # laenge im berichtsjahr
+                    sql = """
+                                    SELECT s1.schnam,
+                                    schaechte.entwart
+                                    FROM schaechte_untersucht_bewertung s1,schaechte
+                                            WHERE s1.schnam =schaechte.schnam
+                                            AND  s1.untersuchtag like ?
+                                        """
+
+                    data = (bericht,)
+
+                    try:
+                        self.db_qkan.sql(sql, "Info Entwässerungsart bewertete Haltungen Objektklasse 5",
+                                         data)
+                    except:
+                        pass
+                    attr = self.db_qkan.fetchall()
+                    if attr != None and attr != []:
+                        rw = 0
+                        sw = 0
+                        mw = 0
+                        for i in attr:
+                            if i[1] == 'Regenwasser':
+                                rw += i[2]
+                            if i[1] == 'Schmutzwasser':
+                                sw += i[2]
+                            if i[1] == 'Mischwasser':
+                                mw += i[2]
+
+                            self.anz_schaechte_untersuch_bj_rw = round(rw / 1000, 2)
+                            self.anz_schaechte_untersuch_bj_sw = round(sw / 1000, 2)
+                            self.anz_schaechte_untersuch_bj_mw = round(mw / 1000, 2)
+
+
+    def run(self) -> None:
             """
             Export der Kanaldaten aus einer QKan-SpatiaLite-Datenbank und Schreiben in eine XML-Datei
             """
-            self.date = date
+
             self._infos()
             self.anzeigen()
             self._suewvo()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1537</width>
-    <height>871</height>
+    <width>1469</width>
+    <height>880</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,22 @@
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Auswahl der Teilgebiete</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_3"/>
+     </item>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -28,16 +44,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Auswahl der Teilgebiete</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox_3"/>
      </item>
     </layout>
    </item>
@@ -170,7 +176,7 @@
           <widget class="QComboBox" name="comboBox_2">
            <item>
             <property name="text">
-             <string>Bewertung nach SubKanS</string>
+             <string>Originale Bewertung</string>
             </property>
            </item>
            <item>
@@ -180,7 +186,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Originale Bewertung</string>
+             <string>Bewertung nach SubKanS</string>
             </property>
            </item>
           </widget>
@@ -224,7 +230,7 @@
         <rect>
          <x>10</x>
          <y>60</y>
-         <width>195</width>
+         <width>251</width>
          <height>16</height>
         </rect>
        </property>
@@ -299,7 +305,7 @@
       <widget class="QTextBrowser" name="textBrowser_13">
        <property name="geometry">
         <rect>
-         <x>301</x>
+         <x>340</x>
          <y>260</y>
          <width>141</width>
          <height>25</height>
@@ -315,7 +321,7 @@
       <widget class="QTextBrowser" name="textBrowser_12">
        <property name="geometry">
         <rect>
-         <x>301</x>
+         <x>340</x>
          <y>230</y>
          <width>141</width>
          <height>25</height>
@@ -365,7 +371,7 @@
         <rect>
          <x>10</x>
          <y>210</y>
-         <width>95</width>
+         <width>131</width>
          <height>16</height>
         </rect>
        </property>
@@ -434,7 +440,7 @@
       <widget class="QTextBrowser" name="textBrowser_11">
        <property name="geometry">
         <rect>
-         <x>300</x>
+         <x>339</x>
          <y>200</y>
          <width>141</width>
          <height>25</height>
@@ -511,8 +517,8 @@
         <rect>
          <x>20</x>
          <y>350</y>
-         <width>1051</width>
-         <height>171</height>
+         <width>1311</width>
+         <height>151</height>
         </rect>
        </property>
        <row>
@@ -577,7 +583,7 @@
        </column>
        <column>
         <property name="text">
-         <string>sanierte Kanallänge im Berichtsjahr [km]</string>
+         <string>untersuchte Kanallänge im Berichtsjahr [km]</string>
         </property>
        </column>
       </widget>
@@ -586,7 +592,7 @@
         <rect>
          <x>20</x>
          <y>540</y>
-         <width>1051</width>
+         <width>1311</width>
          <height>161</height>
         </rect>
        </property>
@@ -652,7 +658,7 @@
        </column>
        <column>
         <property name="text">
-         <string>sanierte Schächte im Berichtsjahr</string>
+         <string>untersuchte Schächte im Berichtsjahr</string>
         </property>
        </column>
       </widget>
@@ -669,21 +675,6 @@
         <string>Berichtsjahr</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="date">
-       <property name="geometry">
-        <rect>
-         <x>300</x>
-         <y>0</y>
-         <width>111</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>test</string>
-        </property>
-       </item>
-      </widget>
       <widget class="QPushButton" name="pb_exportXML">
        <property name="geometry">
         <rect>
@@ -695,6 +686,71 @@
        </property>
        <property name="text">
         <string>Export in XML-Datei</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>10</y>
+         <width>113</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>2024</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_17">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>10</y>
+         <width>282</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Untersuchungszyklus</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_2">
+       <property name="geometry">
+        <rect>
+         <x>720</x>
+         <y>10</y>
+         <width>113</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>2021</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>850</x>
+         <y>10</y>
+         <width>282</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>bis</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_3">
+       <property name="geometry">
+        <rect>
+         <x>910</x>
+         <y>10</y>
+         <width>113</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>2035</string>
        </property>
       </widget>
      </widget>

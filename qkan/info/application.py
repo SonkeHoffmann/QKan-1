@@ -58,8 +58,13 @@ class Infos(QKanPlugin):
         self.info_dlg = InfoDialog(default_dir=self.default_dir, tr=self.tr)
         self.info_dlg.pb_exportExcel.clicked.connect(self.run_info)
         self.info_dlg.pb_exportXML.clicked.connect(self.run_info_2)
+        self.info_dlg.lineEdit.textChanged.connect(self.run)
+        self.info_dlg.lineEdit_2.textChanged.connect(self.run)
+        self.info_dlg.lineEdit_3.textChanged.connect(self.run)
 
         self.info_dlg.comboBox_2.currentTextChanged.connect(self.run)
+        self.info_dlg.checkBox.clicked.connect(self.run)
+        self.info_dlg.comboBox_3.currentTextChanged.connect(self.run)
 
         self.stamm: Optional[Element] = None
         self.hydraulik_objekte: Optional[Element] = None
@@ -91,7 +96,7 @@ class Infos(QKanPlugin):
         """
         self.dialog = self.info_dlg
         #layout='constrained' damit die Texte sich nicht überschneiden!
-        self.dialog.fig_1 = plt.figure(layout='constrained')
+        self.dialog.fig_1 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
 
         qw = QWidget(self.dialog)
@@ -105,7 +110,7 @@ class Infos(QKanPlugin):
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.info_dlg
-        self.dialog.fig_2 = plt.figure(layout='constrained')
+        self.dialog.fig_2 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
 
         qw = QWidget(self.dialog)
@@ -119,7 +124,7 @@ class Infos(QKanPlugin):
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.info_dlg
-        self.dialog.fig_3 = plt.figure(layout='constrained')
+        self.dialog.fig_3 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
 
         qw = QWidget(self.dialog)
@@ -133,7 +138,7 @@ class Infos(QKanPlugin):
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.info_dlg
-        self.dialog.fig_4 = plt.figure(layout='constrained')
+        self.dialog.fig_4 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
 
         qw = QWidget(self.dialog)
@@ -147,7 +152,7 @@ class Infos(QKanPlugin):
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.info_dlg
-        self.dialog.fig_5 = plt.figure(layout='constrained')
+        self.dialog.fig_5 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
 
         qw = QWidget(self.dialog)
@@ -161,7 +166,8 @@ class Infos(QKanPlugin):
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.info_dlg
-        self.dialog.fig_6 = plt.figure(layout='constrained')
+        #self.dialog.fig_6 = plt.figure(layout='constrained')
+        self.dialog.fig_6 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
 
         qw = QWidget(self.dialog)
@@ -180,7 +186,6 @@ class Infos(QKanPlugin):
         project = QgsProject.instance()
         layers = project.mapLayers()
 
-        self.info_dlg.select_teilgebiet()
         if len(layers) > 0:
 
             self.fig_1 = self.dialog.fig_1
@@ -196,12 +201,16 @@ class Infos(QKanPlugin):
             self.fig_6 = self.dialog.fig_6
             self.canv_6 = self.dialog.canv_6
             self.comboBox_2 = self.dialog.comboBox_2.currentText()
+            self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            self.dat_1 = self.dialog.lineEdit.text()
+            self.dat_2 = self.dialog.lineEdit_2.text()
+            self.dat_3 = self.dialog.lineEdit_3.text()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
 
-            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, DBConnection())
-            test.run(self.info_dlg.date.currentText())
+            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, self.comboBox_3, self.dat_1, self.dat_2, self.dat_3, DBConnection())
+            test.run()
 
             def on_click(self, event):
                 test.handle_click(event, self.pie_wedges, run_script)
@@ -294,7 +303,6 @@ class Infos(QKanPlugin):
         project = QgsProject.instance()
         layers = project.mapLayers()
 
-        self.info_dlg.select_date()
         if len(layers) > 0:
 
             self.fig_1 = self.dialog.fig_1
@@ -310,22 +318,26 @@ class Infos(QKanPlugin):
             self.fig_6 = self.dialog.fig_6
             self.canv_6 = self.dialog.canv_6
             self.comboBox_2 = self.dialog.comboBox_2.currentText()
+            self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            self.dat_1 = self.dialog.lineEdit.text()
+            self.dat_2 = self.dialog.lineEdit_2.text()
+            self.dat_3 = self.dialog.lineEdit_3.text()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
 
-            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, DBConnection())
-            test.run(self.info_dlg.date.currentText())
+            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, self.comboBox_3, self.dat_1, self.dat_2, self.dat_3, DBConnection())
+            test.run()
             # Vorgabe Projektname aktivieren, wenn kein Projekt geladen
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')
 
             self.info_dlg.show()
             version = qgs_version()
             self.info_dlg.tf_qkanversion.setText(str(version))
-            self.info_dlg.textBrowser_3.setText(str(test.anz_haltungen))
-            self.info_dlg.textBrowser_4.setText(str(test.anz_schaechte))
-            self.info_dlg.textBrowser_5.setText(str(test.laenge_haltungen))
-            self.info_dlg.tf_anz_teilgeb.setText(str(test.anz_teilgeb))
+            #self.info_dlg.textBrowser_3.setText(str(test.anz_haltungen))
+            #self.info_dlg.textBrowser_4.setText(str(test.anz_schaechte))
+            #self.info_dlg.textBrowser_5.setText(str(test.laenge_haltungen))
+            #self.info_dlg.tf_anz_teilgeb.setText(str(test.anz_teilgeb))
 
             # Felder Haltungen
             if test.bew_art == 'DWA':
@@ -539,9 +551,12 @@ class Infos(QKanPlugin):
 
             path = os.path.dirname(__file__)
             xl = w3c.Dispatch("Excel.Application")
-            xl.Workbooks.Open(Filename=path + r"\süwvo abw-erhebungsbögen 2021_test.xlsm", ReadOnly=1)
-            xl.Application.Run("Tabelle2.ImportXMLData")
-            xl.Workbooks.Close(SaveChanges=0)
+            xl.Visible = True
+            wb = xl.Workbooks.Open(Filename=path + r"\süwvo abw-erhebungsbögen 2021_test.xlsm", ReadOnly=1)
+            #xl.Application.Run("Tabelle2.ImportXMLData")
+            xl.Application.Run("ImportXMLData")
+            #xl.Workbooks.Close(SaveChanges = 0)
+            wb.Close(SaveChanges=0)
             xl.Application.Quit()
             xl.Quit()
             xl = 0
@@ -557,26 +572,42 @@ class Infos(QKanPlugin):
         project = QgsProject.instance()
         layers = project.mapLayers()
 
-        self.info_dlg.select_date()
         if len(layers) > 0:
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
             self.fig_1 = self.dialog.fig_1
             self.canv_1 = self.dialog.canv_1
+            self.fig_2 = self.dialog.fig_2
+            self.canv_2 = self.dialog.canv_2
+            self.fig_3 = self.dialog.fig_3
+            self.canv_3 = self.dialog.canv_3
+            self.fig_4 = self.dialog.fig_4
+            self.canv_4 = self.dialog.canv_4
+            self.fig_5 = self.dialog.fig_5
+            self.canv_5 = self.dialog.canv_5
+            self.fig_6 = self.dialog.fig_6
+            self.canv_6 = self.dialog.canv_6
+            self.comboBox_2 = self.dialog.comboBox_2.currentText()
+            self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            self.dat_1 = self.dialog.lineEdit.text()
+            self.dat_2 = self.dialog.lineEdit_2.text()
+            self.dat_3 = self.dialog.lineEdit_3.text()
 
-            test = Info(self.fig_1, self.canv_1, DBConnection())
-            test.run(self.info_dlg.date.currentText())
+            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4,
+                        self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, self.comboBox_3,
+                        self.dat_1, self.dat_2, self.dat_3, DBConnection())
+            test.run()
             # Vorgabe Projektname aktivieren, wenn kein Projekt geladen
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')
 
             self.info_dlg.show()
             version = qgs_version()
             self.info_dlg.tf_qkanversion.setText(str(version))
-            self.info_dlg.textBrowser_3.setText(str(test.anz_haltungen))
-            self.info_dlg.textBrowser_4.setText(str(test.anz_schaechte))
-            self.info_dlg.textBrowser_5.setText(str(test.laenge_haltungen))
-            self.info_dlg.tf_anz_teilgeb.setText(str(test.anz_teilgeb))
+            #self.info_dlg.textBrowser_3.setText(str(test.anz_haltungen))
+            #self.info_dlg.textBrowser_4.setText(str(test.anz_schaechte))
+            #self.info_dlg.textBrowser_5.setText(str(test.laenge_haltungen))
+            #self.info_dlg.tf_anz_teilgeb.setText(str(test.anz_teilgeb))
 
             # Felder Haltungen
             if test.bew_art == 'DWA':
