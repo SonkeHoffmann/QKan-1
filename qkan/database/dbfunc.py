@@ -17,7 +17,6 @@ from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.utils import spatialite_connect, pluginDirectory
 
 from qkan import QKan, enums
-from .qkan_database import createdbtables, db_version
 from .qkan_utils import get_database_QKan
 import yaml
 
@@ -94,7 +93,7 @@ class DBConnection:
         self.stmt_category = ""
         self.sqlcount = 0
 
-        self.actDbVersion: packaging.version.Version = packaging.version.parse(db_version())
+        self.actDbVersion: packaging.version.Version = packaging.version.parse(QKan.dbVersion)
 
         # Verbindung hergestellt, d.h. weder fehlgeschlagen noch wegen reload geschlossen
         self.connected = True
@@ -275,14 +274,273 @@ class DBConnection:
                 logger.error(errormsg)
                 raise Exception(errormsg)
 
-            if not createdbtables(
-                self.consl, self.cursl, self.actDbVersion.base_version, self.epsg
+            # Erstellen der QKan-Datenbanktabellen inkl. Trigger und Views
+
+            tablis = [
+                "notizen",  # Tabellen mit Geometrieobjekten
+                "haltungen",
+                "haltungen_untersucht",
+                "untersuchdat_haltung",
+                "anschlussleitungen",
+                "anschlussleitungen_untersucht",
+                "untersuchdat_anschlussleitung",
+                "schaechte",
+                "schaechte_untersucht",
+                "untersuchdat_schacht",
+                "einzugsgebiete",
+                "teilgebiete",
+                "flaechen",
+                "linkfl",
+                "linksw",
+                "linkageb",
+                "tezg",
+                "einleit",
+                "aussengebiete",
+                "flaechen_he8",
+
+                "simulationsstatus",  # Referenztabellen
+                "material",
+                "auslasstypen",
+                "abflussparameter",
+                "flaechentypen",
+                "bodenklassen",
+                "abflusstypen",
+                "knotentypen",
+                "schachttypen",
+                "eigentum",
+                "dynahal",
+                "gruppen",
+                "profile",
+                "entwaesserungsarten",
+                "haltungstypen",
+                "untersuchrichtung",
+                "wetter",
+                "bewertungsart",
+                "pumpentypen",
+                "pruefsql",
+                "pruefliste",
+                "reflist_zustand",
+                "info",
+            ]
+            for tabnam in tablis:
+                sqlnam = f"database_create_{tabnam}"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 2. geom-Objekt hinzufügen
+
+            tablis = [
+                "notizen",
+                "haltungen",
+                "haltungen_untersucht",
+                "untersuchdat_haltung",
+                "anschlussleitungen",
+                "anschlussleitungen_untersucht",
+                "untersuchdat_anschlussleitung",
+                "schaechte",
+                "untersuchdat_schacht",
+                "einzugsgebiete",
+                "teilgebiete",
+                "flaechen",
+                "linkfl",
+                "linksw",
+                "tezg",
+                "einleit",
+                "aussengebiete",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_add_{tabnam}_geom"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters={'epsg': self.epsg},
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                sqlnam = f"database_createspatialindex_{tabnam}_geom"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 3. geop-Objekt hinzufügen
+
+            tablis = [
+                "schaechte",
+                "schaechte_untersucht",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_add_{tabnam}_geop"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters={'epsg': self.epsg},
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                sqlnam = f"database_createspatialindex_{tabnam}_geop"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # Anmerkung: Die nachfolgenden beiden Blöcke Waren bisher nur für 'schaechte' vorhanden.
+                # Deshalb erst mal weglassen
+
+                # sqlnam = f"database_drop_trigger_{tabnam}_geop_ggi"
+                # if not self.sqlyml(
+                #     sqlnam=sqlnam,
+                #     stmt_category= sqlnam,
+                # ):
+                #     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # sqlnam = f"database_drop_trigger_{tabnam}_geop_ggu"
+                # if not self.sqlyml(
+                #     sqlnam=sqlnam,
+                #     stmt_category= sqlnam,
+                # ):
+                #     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 4. gbuf-Objekt hinzufügen
+
+            tablis = [
+                "linkfl",
+                "linksw",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_add_{tabnam}_gbuf"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters={'epsg': self.epsg},
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                sqlnam = f"database_createspatialindex_{tabnam}_gbuf"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 5. glink-Objekt hinzufügen
+
+            tablis = [
+                "linkfl",
+                "linksw",
+                "linkageb",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_add_{tabnam}_glink"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters={'epsg': self.epsg},
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                sqlnam = f"database_createspatialindex_{tabnam}_glink"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 6. Geometry-Objekt hinzufügen
+
+            tablis = [
+                "flaechen_he8",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_add_{tabnam}_geometry"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters={'epsg': self.epsg},
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                sqlnam = f"database_createspatialindex_{tabnam}_geometry"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 7. Trigger für Haltungen beim Fangen auf Schächte sowie
+            # für Nachführung von Attributen in Haltungen bei Änderung in Referenztabellen
+
+            tablis = [
+                "new_hal",  # Fangen von Haltungen auf Schächte
+                "mod_hal",
+
+                "update_simulationsstatus",  # Änderung in Referenztabelle
+                "update_material",
+                "update_profile",
+                "update_entwaesserungsarten",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_haltungen_trig_{tabnam}"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 8. Standardisierte Referenztabellen füllen
+
+            tablis = [
+                "auslasstypen",
+                "flaechentypen",
+                "abflusstypen",
+                "knotentypen",
+                "schachttypen",
+                "haltungstypen",
+                "untersuchrichtung",
+                "wetter",
+                "bewertungsart",
+                "pumpentypen",
+            ]
+
+            for tabnam in tablis:
+                sqlnam = f"database_insert_{tabnam}"
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters={'epsg': self.epsg},
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 9. Referenztabelle mit Parametern
+            sqlnam = f"database_insert_info"
+            parameters = (str(self.actDbVersion.base_version),)
+            if not self.sqlyml(
+                    sqlnam=sqlnam,
+                    stmt_category=sqlnam,
+                    parameters=parameters
             ):
-                errormsg = "Fehler in SpatiaLite-Datenbank: Tabellen konnten nicht angelegt werden"
-                self.connected = False
-                self.consl = None
-                logger.error(errormsg)
-                raise Exception(errormsg)
+                logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            # 10. Views
+            sqlnam = f"database_createview_untersuchdat_aktuell"
+            if not self.sqlyml(
+                    sqlnam=sqlnam,
+                    stmt_category=sqlnam,
+            ):
+                logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+            self.commit()
 
     def _disconnect(self) -> None:
         """Closes database connection."""

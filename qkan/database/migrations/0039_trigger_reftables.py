@@ -24,7 +24,7 @@ def run(dbcon: DBConnection) -> bool:
             logger.error('Fehler in migration 0039')
             raise Exception(f"{__name__}")
 
-    sql_file = os.path.join(pluginDirectory("qkan"), 'database/triggers', 'reftables.sql')
+    sql_file = os.path.join(pluginDirectory("qkan"), 'database/migrations', '0039_reftables.sql')
     try:
         dbcon.executefile(sql_file)
     except BaseException as err:

@@ -36,7 +36,6 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_database import qgs_version
 from qkan.database.qkan_utils import (
     eval_node_types,
     fehlermeldung,
@@ -442,7 +441,7 @@ def layersadapt(
 
     # Wenn noch kein Titel vergeben, dann QKan mit Versionsnummer setzen
     if not project.title():
-        project.setTitle("QKan Version {}".format(qgs_version()))
+        project.setTitle("QKan Version {}".format(QKan.qgsVersion))
 
     # if status_neustart:
     # meldung("Achtung! Benutzerhinweis!", "Die Datenbank wurde geändert. Bitte QGIS-Projekt neu laden...")

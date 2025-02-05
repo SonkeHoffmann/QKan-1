@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import *
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
-from qkan.database.qkan_database import qgs_version
 from qkan.database.qkan_utils import warnung
 from xml.etree.ElementTree import Element, SubElement, tostring
 import win32com.client as w3c
@@ -25,7 +24,6 @@ from .application_dialog import InfoDialog
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
-import pandas as pd
 import os
 
 def _create_children(parent: Element, names: List[str]) -> None:
@@ -219,8 +217,7 @@ class Infos(QKanPlugin):
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')
 
             self.info_dlg.show()
-            version = qgs_version()
-            self.info_dlg.tf_qkanversion.setText(str(version))
+            self.info_dlg.tf_qkanversion.setText(str(QKan.qgsVersion))
             self.info_dlg.tf_anz_teilgeb.setText(str(test.anz_teilgeb))
 
             # Felder Haltungen
@@ -332,8 +329,7 @@ class Infos(QKanPlugin):
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')
 
             self.info_dlg.show()
-            version = qgs_version()
-            self.info_dlg.tf_qkanversion.setText(str(version))
+            self.info_dlg.tf_qkanversion.setText(str(QKan.qgsVersion))
             #self.info_dlg.textBrowser_3.setText(str(test.anz_haltungen))
             #self.info_dlg.textBrowser_4.setText(str(test.anz_schaechte))
             #self.info_dlg.textBrowser_5.setText(str(test.laenge_haltungen))
@@ -602,8 +598,7 @@ class Infos(QKanPlugin):
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')
 
             self.info_dlg.show()
-            version = qgs_version()
-            self.info_dlg.tf_qkanversion.setText(str(version))
+            self.info_dlg.tf_qkanversion.setText(str(QKan.qgsVersion))
             #self.info_dlg.textBrowser_3.setText(str(test.anz_haltungen))
             #self.info_dlg.textBrowser_4.setText(str(test.anz_schaechte))
             #self.info_dlg.textBrowser_5.setText(str(test.laenge_haltungen))

@@ -13,7 +13,6 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums, list_selected_items
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_database import qgs_version, db_version
 from qkan.database.qkan_utils import (
     fehlermeldung,
     get_database_QKan,
@@ -843,9 +842,7 @@ class QKanTools(QKanPlugin):
 
     def run_help(self) -> None:
 
-        pjVersion = qgs_version()
-
-        self.dlghp.textBrowser_2.setText(str(pjVersion))
+        self.dlghp.textBrowser_2.setText(str(QKan.qgsVersion))
 
         # show the dialog
         self.dlghp.show()

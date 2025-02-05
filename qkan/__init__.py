@@ -73,6 +73,9 @@ class QKan:
     template_dir: str
     forms: str
 
+    dbVersion = "3.4.3"  # Version der QKan-Datenbank
+    qgsVersion = "3.4.5"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
+
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
     sqls: dict = {}                     # SQL-Statements for all loaded modules
     dbtype: enums.QKanDBChoice = None   # Datenbanktyp des Projekts, wird durch get_database_QKan() aktualisiert
