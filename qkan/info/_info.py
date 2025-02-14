@@ -320,6 +320,9 @@ class Info:
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+            # iface.messageBar().pushMessage("Error",
+            #                                str(labels),
+            #                                level=Qgis.Critical)
             if len(labels)>1:
                 label = [str(baujahr) if baujahr % 50 == 0 else '' for baujahr in labels]
                 new_plot.set_xticklabels(label)
@@ -681,20 +684,22 @@ class Info:
                 WITH liste AS (
                                     SELECT
                                         CASE
+                                         WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
                                             WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                                             ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
                                         END AS Zustandszahl,
-                                        ROUND(SUM(
+                                        COALESCE(ROUND(SUM(
                                             CASE 
                                                 WHEN COALESCE(haltungen_untersucht.laenge, 0) = 0 THEN GLength(haltungen_untersucht.geom)
                                                 ELSE haltungen_untersucht.laenge
                                             END
-                                        ) / 1000.0, 2) AS gesamtlaenge,
+                                        ) / 1000.0, 2),0) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
                                     FROM haltungen_untersucht  
                                     LEFT JOIN haltungen h ON haltungen_untersucht.haltnam = h.haltnam
                                     {self.abfrage_where}
                                     GROUP BY CASE
+                                    WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
                                         WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                                         ELSE MIN(max_ZD, max_ZS, max_ZB)
                                     END
@@ -746,7 +751,7 @@ class Info:
             data = {k: None for k in l_bezeich}
 
             for i in data.keys():
-                if i != 'None':
+                if i not in ['None', 63]:
                     sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen h ON h.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
 
                     if not self.db_qkan.sql(sql):
@@ -804,20 +809,22 @@ class Info:
                                 WITH liste AS (
                                     SELECT
                                         CASE
+                                        WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                             WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                                             ELSE CAST(objektklasse_gesamt AS TEXT)
                                         END AS Zustandszahl,
-                                        ROUND(SUM(
+                                        COALESCE(ROUND(SUM(
                                             CASE 
-                                                WHEN COALESCE(haltungen_untersucht_bewertung.laenge, 0) = 0 THEN GLength(haltungen_untersucht_bewertung.geom)
+                                                WHEN COALESCE(haltungen_untersucht_bewertung.laenge, 0) = 0 THEN GLength(haltungen_untersucht.geom)
                                                 ELSE haltungen_untersucht_bewertung.laenge
                                             END
-                                        ) / 1000.0, 2) AS gesamtlaenge,
+                                        ) / 1000.0, 2),0) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
                                     FROM haltungen_untersucht_bewertung  
                                     LEFT JOIN haltungen h ON haltungen_untersucht_bewertung.haltnam = h.haltnam
                                     {self.abfrage_where}
                                     GROUP BY CASE
+                                        WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                         WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                                         ELSE objektklasse_gesamt
                                     END
@@ -866,7 +873,7 @@ class Info:
                 data = {k: None for k in l_bezeich}
 
                 for i in data.keys():
-                    if i != 'None':
+                    if i not in ['None', 63]:
                         sql = f"""select count(*) from haltungen_untersucht_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
 
                         if not self.db_qkan.sql(sql):
@@ -928,20 +935,22 @@ class Info:
                                             WITH liste AS (
                                     SELECT
                                         CASE
+                                        WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                             WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                                             ELSE CAST(objektklasse_gesamt AS TEXT)
                                         END AS Zustandszahl,
-                                        ROUND(SUM(
+                                        COALESCE(ROUND(SUM(
                                             CASE 
-                                                WHEN COALESCE(haltungen_substanz_bewertung.laenge, 0) = 0 THEN GLength(haltungen_substanz_bewertung.geom)
-                                                ELSE haltungen_substanz_bewertung.laenge
+                                                WHEN COALESCE(haltungen_untersucht.laenge, 0) = 0 THEN GLength(haltungen_untersucht.geom)
+                                                ELSE haltungen_untersucht.laenge
                                             END
-                                        ) / 1000.0, 2) AS gesamtlaenge,
+                                        ) / 1000.0, 2),0) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
                                     FROM haltungen_substanz_bewertung  
                                     LEFT JOIN haltungen h ON haltungen_substanz_bewertung.haltnam = h.haltnam
                                     {self.abfrage_where}
                                     GROUP BY CASE
+                                    WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                         WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                                         ELSE objektklasse_gesamt
                                     END
@@ -989,7 +998,7 @@ class Info:
                 data = {k: None for k in l_bezeich}
 
                 for i in data.keys():
-                    if i != 'None':
+                    if i not in ['None', 63]:
                         sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam WHERE objektklasse_gesamt = {i}  {self.abfrage_and}"""
 
                         if not self.db_qkan.sql(sql):
@@ -1138,7 +1147,7 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure_2,
-            title='Baujahre',
+            title='Baujahre2',
             ylabel='Baujahre',
             xlabel='Anzahl',
             pos=142
@@ -1197,6 +1206,7 @@ class Info:
                         WITH liste AS (
                           SELECT
                           CASE
+                           WHEN Substanzklasse IS NULL THEN 'sonstige'
                           WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                           ELSE CAST(Substanzklasse AS TEXT)
                           END AS Substanzzahl,
@@ -1211,6 +1221,7 @@ class Info:
                           LEFT JOIN haltungen h ON haltungen_substanz_bewertung.haltnam = h.haltnam
                                     {self.abfrage_where}
                             GROUP BY CASE
+                             WHEN Substanzklasse IS NULL THEN 'sonstige'
                           WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
                           ELSE Substanzklasse
                           END
