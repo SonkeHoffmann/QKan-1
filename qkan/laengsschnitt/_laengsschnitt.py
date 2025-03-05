@@ -2502,15 +2502,12 @@ class LaengsTask:
 
             self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False)
             self.anim.event_source.stop()
-            val = self.horizontalSlider_3.value()
+            if self.horizontalSlider_3 is not None:
+                val = self.horizontalSlider_3.value()
+                #iface.messageBar().pushMessage("Error", str(val), level=Qgis.Critical)
 
-            iface.messageBar().pushMessage("Error",
-                                           str(val),
-                                           level=Qgis.Critical)
-
-            if type(val)==type(None):
-                val=0
-            self.horizontalSlider_3.valueChanged.connect(update_slider(val))
+            # Connect the slider to update_slider function
+            self.horizontalSlider_3.valueChanged.connect(lambda val: update_slider(val))
 
             # # TODO: update animation
             # anim2 = animation.FuncAnimation(figure, animate,

@@ -294,7 +294,7 @@ class Zustandsklassen_funkt:
 					pass
 
 			# Tab A.3
-			if attr[10] == "BAB":
+			elif attr[10] == "BAB":
 				z = 'Rissbildung'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -309,7 +309,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAC":
+			elif attr[10] == "BAC":
 				z = 'Rohrbruch/Einsturz'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -324,7 +324,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAD":
+			elif attr[10] == "BAD":
 				z = 'Defektes Mauerwerk'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -339,7 +339,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAE":
+			elif attr[10] == "BAE":
 				z = 'Fehlender Mörtel'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -352,9 +352,9 @@ class Zustandsklassen_funkt:
 				#     db.commit()
 					continue
 				except:
-					 pass
+					pass
 
-			if attr[10] == "BAF":
+			elif attr[10] == "BAF":
 				z = 'Oberflächenschäden'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -369,7 +369,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAG":
+			elif attr[10] == "BAG":
 				z = 'Einragender Anschluss'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -384,7 +384,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAH":
+			elif attr[10] == "BAH":
 				z = 'Schadhafter Anschluss'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -399,7 +399,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAI":
+			elif attr[10] == "BAI":
 				z = 'Einragendes Dichtungsmaterial'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -413,7 +413,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAJ":
+			elif attr[10] == "BAJ":
 				z = 'Verschobene Verbindung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -427,7 +427,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "A":
+			elif attr[10] == "BAK" and attr[11] == "A":
 				z = 'Feststellung der Innenauskleidung: Innenauskleidung abgelöst'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -441,7 +441,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "B":
+			elif attr[10] == "BAK" and attr[11] == "B":
 				z = 'Feststellung der Innenauskleidung: Innenauskleidung verfärbt'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -455,7 +455,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "C":
+			elif attr[10] == "BAK" and attr[11] == "C":
 				z = 'Feststellung der Innenauskleidung: Endstelle der Auskleidung schadhaft'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -469,7 +469,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "D":
+			elif attr[10] == "BAK" and attr[11] == "D":
 				z = 'Feststellung der Innenauskleidung: Faten in der Auskleidung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -483,7 +483,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "E":
+			elif attr[10] == "BAK" and attr[11] == "E":
 				z = 'Feststellung der Innenauskleidung: Blasen oder Beulen in der Auskleidung nach innen'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -497,7 +497,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "F":
+			elif attr[10] == "BAK" and attr[11] == "F":
 				z = 'Feststellung der Innenauskleidung: Beulen aussen'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -511,7 +511,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "G":
+			elif attr[10] == "BAK" and attr[11] == "G":
 				z = 'Feststellung der Innenauskleidung: Ablösen der Innenhaut/Beschichtung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -525,7 +525,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "H":
+			elif attr[10] == "BAK" and attr[11] == "H":
 				z = 'Feststellung der Innenauskleidung: Ablösen der Abdeckung der Verbindungsnaht'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -539,7 +539,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "I":
+			elif attr[10] == "BAK" and attr[11] == "I":
 				z = 'Feststellung der Innenauskleidung: Riss oder Spalt (einschließlich schadhafter Schweissnaht)'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -553,7 +553,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "J":
+			elif attr[10] == "BAK" and attr[11] == "J":
 				z = 'Feststellung der Innenauskleidung: Loch in der Auskleidung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -567,7 +567,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "K":
+			elif attr[10] == "BAK" and attr[11] == "K":
 				z = 'Feststellung der Innenauskleidung: Auskleidungsverbindung defekt'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -581,7 +581,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "L":
+			elif attr[10] == "BAK" and attr[11] == "L":
 				z = 'Feststellung der Innenauskleidung: Auskleidungswerkstoff erscheint weich'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -595,7 +595,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "M":
+			elif attr[10] == "BAK" and attr[11] == "M":
 				z = 'Feststellung der Innenauskleidung: Harz fehlt im Laminat'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -609,7 +609,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "N":
+			elif attr[10] == "BAK" and attr[11] == "N":
 				z = 'Feststellung der Innenauskleidung: Ende der Auskleidung ist nicht abgedichtet, um das Rohr oder den Schacht aufzunehmen.'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -623,7 +623,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "Z":
+			elif attr[10] == "BAK" and attr[11] == "Z":
 				z = 'Feststellung der Innenauskleidung: Anderer Auskleidungsschaden'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -637,7 +637,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "A":
+			elif attr[10] == "BAL" and attr[11] == "A":
 				z = 'Schadhafte Reperatur: Wand fehlt teilweise'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -651,7 +651,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "B":
+			elif attr[10] == "BAL" and attr[11] == "B":
 				z = 'Schadhafte Reperatur: Reperatur zur Abdichtung eines Lochs ist schadhaft'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -665,7 +665,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "C":
+			elif attr[10] == "BAL" and attr[11] == "C":
 				z = 'Schadhafte Reperatur: Ablösen des Reperaturwerkstofes vom Basisrohr'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -679,7 +679,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "D":
+			elif attr[10] == "BAL" and attr[11] == "D":
 				z = 'Schadhafte Reperatur: fehlender Reperaturwerkstoff an der Kontaktfläche'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -693,7 +693,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "E":
+			elif attr[10] == "BAL" and attr[11] == "E":
 				z = 'Schadhafte Reperatur: überschüssiger Reperaturwerkstoff, der ein Hindernis darstellt'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -707,7 +707,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "P":
+			elif attr[10] == "BAL" and attr[11] == "P":
 				z = 'Schadhafte Reperatur: Loch im Reperaturwerkstoff'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -721,7 +721,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "G":
+			elif attr[10] == "BAL" and attr[11] == "G":
 				z = 'Schadhafte Reperatur: Riss im Reperaturwerkstoff'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -735,7 +735,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "Z":
+			elif attr[10] == "BAL" and attr[11] == "Z":
 				z = 'Schadhafte Reperatur: Andere'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -749,7 +749,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAM":
+			elif attr[10] == "BAM":
 				z = 'Schadhafte Schweissnaht'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -763,7 +763,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAN":
+			elif attr[10] == "BAN":
 				z = 'Poroeses Rohr'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -777,7 +777,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAO":
+			elif attr[10] == "BAO":
 				z = 'Boden sichtbar'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -791,7 +791,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAP":
+			elif attr[10] == "BAP":
 				z = 'Hohlraum sichtbar'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -805,7 +805,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBA":
+			elif attr[10] == "BBA":
 				z = 'Wurzeln'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -819,7 +819,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBB":
+			elif attr[10] == "BBB":
 				z = 'Anhaftende Stoffe'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -833,7 +833,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC":
+			elif attr[10] == "BBC":
 				z = 'Ablagerungen'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -847,7 +847,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBD":
+			elif attr[10] == "BBD":
 				z = 'Eindringen von Bodenmaterial'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -861,7 +861,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE":
+			elif attr[10] == "BBE":
 				z = 'Andere Hindernisse'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -875,7 +875,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBF":
+			elif attr[10] == "BBF":
 				z = 'Infiltration'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -889,7 +889,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBG":
+			elif attr[10] == "BBG":
 				z = 'Exfiltration'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -903,7 +903,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBH":
+			elif attr[10] == "BBH":
 				z = 'Ungeziefer'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -917,7 +917,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCA":
+			elif attr[10] == "BCA":
 				z = 'Anschluss'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -931,7 +931,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "A":
+			elif attr[10] == "BCB" and attr[11] == "A":
 				z = 'Punktuelle Reperatur: Reperatur mit Injektionstechnik'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -945,7 +945,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "B":
+			elif attr[10] == "BCB" and attr[11] == "B":
 				z = 'Punktuelle Reperatur: Reperatur mit Roboter'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -959,7 +959,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "C":
+			elif attr[10] == "BCB" and attr[11] == "C":
 				z = 'Punktuelle Reperatur: Reperatur mit partieller Auskleidungs-/Manchettentechnik'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -973,7 +973,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "D":
+			elif attr[10] == "BCB" and attr[11] == "D":
 				z = 'Punktuelle Reperatur: Zulaufeinbindung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -987,7 +987,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "E":
+			elif attr[10] == "BCB" and attr[11] == "E":
 				z = 'Punktuelle Reperatur: Reperatur Rohrwand manuell'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1001,7 +1001,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "F":
+			elif attr[10] == "BCB" and attr[11] == "F":
 				z = 'Punktuelle Reperatur: Reperatur Rohrverbindung manuell'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1015,7 +1015,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "G":
+			elif attr[10] == "BCB" and attr[11] == "G":
 				z = 'Punktuelle Reperatur: Ringspalt-/-raumdichtung (der Auskleidung) zum Anschluss an Schacht/Inspektionsöffnung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1029,7 +1029,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "H":
+			elif attr[10] == "BCB" and attr[11] == "H":
 				z = 'Punktuelle Reperatur: Zulauföffnung ohne Einbindung (Auskleidung)'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1043,7 +1043,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "I":
+			elif attr[10] == "BCB" and attr[11] == "I":
 				z = 'Punktuelle Reperatur: Rohr ausgetauscht'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1057,7 +1057,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "Z":
+			elif attr[10] == "BCB" and attr[11] == "Z":
 				z = 'Punktuelle Reperatur: sonstige Technink'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1071,7 +1071,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCC":
+			elif attr[10] == "BCC":
 				z = 'Krümmung der Leitung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1085,7 +1085,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCD":
+			elif attr[10] == "BCD":
 				z = 'Anfangsknoten'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1099,7 +1099,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCE":
+			elif attr[10] == "BCE":
 				z = 'Endknoten'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1113,7 +1113,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDA":
+			elif attr[10] == "BDA":
 				z = 'Allgemeines Foto'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1127,7 +1127,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AA":
+			elif attr[10] == "BDB" and attr[11] == "AA":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, eingesteckt, gerade'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1141,7 +1141,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AB":
+			elif attr[10] == "BDB" and attr[11] == "AB":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, uebergestuelpt, gerade'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1155,7 +1155,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AC":
+			elif attr[10] == "BDB" and attr[11] == "AC":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, eingesteckt, abgewinkelt'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1169,7 +1169,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AD":
+			elif attr[10] == "BDB" and attr[11] == "AD":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, uebergestuelpt, abgewinkelt'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1183,7 +1183,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AE":
+			elif attr[10] == "BDB" and attr[11] == "AE":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, stumpf aneinandergestossen'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1197,7 +1197,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "BA":
+			elif attr[10] == "BDB" and attr[11] == "BA":
 				z = 'Allgemeine Anmerkung: Verschluss eines Rohrs durch Abmauerung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1211,7 +1211,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "BB":
+			elif attr[10] == "BDB" and attr[11] == "BB":
 				z = 'Allgemeine Anmerkung: Verschluss eines Rohrs durch Moertel'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1225,7 +1225,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "BC":
+			elif attr[10] == "BDB" and attr[11] == "BC":
 				z = 'Allgemeine Anmerkung: Verschluss eines Rohrs durch Deckel (Muffenstopfen)'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1239,7 +1239,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDC":
+			elif attr[10] == "BDC":
 				z = 'Inspektion endet vor dem Endknoten'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1253,7 +1253,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDD":
+			elif attr[10] == "BDD":
 				z = 'Wasserspiegel'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1267,7 +1267,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE":
+			elif attr[10] == "BDE":
 				z = 'Zufluss aus einem Anschluss'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1281,7 +1281,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDF":
+			elif attr[10] == "BDF":
 				z = 'Atmosphäre in der Leitung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1295,7 +1295,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDG":
+			elif attr[10] == "BDG":
 				z = 'Keine Sicht'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -1458,7 +1458,7 @@ class Zustandsklassen_funkt:
 					pass
 
 			# Tab A.3
-			if attr[10] == "BAB":
+			elif attr[10] == "BAB":
 				z = 'Rissbildung'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1473,7 +1473,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAC":
+			elif attr[10] == "BAC":
 				z = 'Rohrbruch/Einsturz'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1488,7 +1488,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAD":
+			elif attr[10] == "BAD":
 				z = 'Defektes Mauerwerk'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1503,7 +1503,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAE":
+			elif attr[10] == "BAE":
 				z = 'Fehlender Mörtel'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1516,9 +1516,9 @@ class Zustandsklassen_funkt:
 				#     db.commit()
 					continue
 				except:
-					 pass
+					pass
 
-			if attr[10] == "BAF":
+			elif attr[10] == "BAF":
 				z = 'Oberflächenschäden'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1533,7 +1533,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAG":
+			elif attr[10] == "BAG":
 				z = 'Einragender Anschluss'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1548,7 +1548,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAH":
+			elif attr[10] == "BAH":
 				z = 'Schadhafter Anschluss'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1563,7 +1563,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BAI":
+			elif attr[10] == "BAI":
 				z = 'Einragendes Dichtungsmaterial'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1577,7 +1577,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAJ":
+			elif attr[10] == "BAJ":
 				z = 'Verschobene Verbindung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1591,7 +1591,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "A":
+			elif attr[10] == "BAK" and attr[11] == "A":
 				z = 'Feststellung der Innenauskleidung: Innenauskleidung abgelöst'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1605,7 +1605,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "B":
+			elif attr[10] == "BAK" and attr[11] == "B":
 				z = 'Feststellung der Innenauskleidung: Innenauskleidung verfärbt'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1619,7 +1619,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "C":
+			elif attr[10] == "BAK" and attr[11] == "C":
 				z = 'Feststellung der Innenauskleidung: Endstelle der Auskleidung schadhaft'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1633,7 +1633,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "D":
+			elif attr[10] == "BAK" and attr[11] == "D":
 				z = 'Feststellung der Innenauskleidung: Faten in der Auskleidung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1647,7 +1647,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "E":
+			elif attr[10] == "BAK" and attr[11] == "E":
 				z = 'Feststellung der Innenauskleidung: Blasen oder Beulen in der Auskleidung nach innen'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1661,7 +1661,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "F":
+			elif attr[10] == "BAK" and attr[11] == "F":
 				z = 'Feststellung der Innenauskleidung: Beulen aussen'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1675,7 +1675,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "G":
+			elif attr[10] == "BAK" and attr[11] == "G":
 				z = 'Feststellung der Innenauskleidung: Ablösen der Innenhaut/Beschichtung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1689,7 +1689,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "H":
+			elif attr[10] == "BAK" and attr[11] == "H":
 				z = 'Feststellung der Innenauskleidung: Ablösen der Abdeckung der Verbindungsnaht'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1703,7 +1703,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "I":
+			elif attr[10] == "BAK" and attr[11] == "I":
 				z = 'Feststellung der Innenauskleidung: Riss oder Spalt (einschließlich schadhafter Schweissnaht)'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1717,7 +1717,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "J":
+			elif attr[10] == "BAK" and attr[11] == "J":
 				z = 'Feststellung der Innenauskleidung: Loch in der Auskleidung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1731,7 +1731,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "K":
+			elif attr[10] == "BAK" and attr[11] == "K":
 				z = 'Feststellung der Innenauskleidung: Auskleidungsverbindung defekt'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1745,7 +1745,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "L":
+			elif attr[10] == "BAK" and attr[11] == "L":
 				z = 'Feststellung der Innenauskleidung: Auskleidungswerkstoff erscheint weich'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1759,7 +1759,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "M":
+			elif attr[10] == "BAK" and attr[11] == "M":
 				z = 'Feststellung der Innenauskleidung: Harz fehlt im Laminat'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1773,7 +1773,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "N":
+			elif attr[10] == "BAK" and attr[11] == "N":
 				z = 'Feststellung der Innenauskleidung: Ende der Auskleidung ist nicht abgedichtet, um das Rohr oder den Schacht aufzunehmen.'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1787,7 +1787,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "Z":
+			elif attr[10] == "BAK" and attr[11] == "Z":
 				z = 'Feststellung der Innenauskleidung: Anderer Auskleidungsschaden'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1801,7 +1801,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "A":
+			elif attr[10] == "BAL" and attr[11] == "A":
 				z = 'Schadhafte Reperatur: Wand fehlt teilweise'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1815,7 +1815,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "B":
+			elif attr[10] == "BAL" and attr[11] == "B":
 				z = 'Schadhafte Reperatur: Reperatur zur Abdichtung eines Lochs ist schadhaft'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1829,7 +1829,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "C":
+			elif attr[10] == "BAL" and attr[11] == "C":
 				z = 'Schadhafte Reperatur: Ablösen des Reperaturwerkstofes vom Basisrohr'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1843,7 +1843,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "D":
+			elif attr[10] == "BAL" and attr[11] == "D":
 				z = 'Schadhafte Reperatur: fehlender Reperaturwerkstoff an der Kontaktfläche'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1857,7 +1857,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "E":
+			elif attr[10] == "BAL" and attr[11] == "E":
 				z = 'Schadhafte Reperatur: überschüssiger Reperaturwerkstoff, der ein Hindernis darstellt'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1871,7 +1871,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "P":
+			elif attr[10] == "BAL" and attr[11] == "P":
 				z = 'Schadhafte Reperatur: Loch im Reperaturwerkstoff'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1885,7 +1885,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "G":
+			elif attr[10] == "BAL" and attr[11] == "G":
 				z = 'Schadhafte Reperatur: Riss im Reperaturwerkstoff'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1899,7 +1899,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "Z":
+			elif attr[10] == "BAL" and attr[11] == "Z":
 				z = 'Schadhafte Reperatur: Andere'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1913,7 +1913,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAM":
+			elif attr[10] == "BAM":
 				z = 'Schadhafte Schweissnaht'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1927,7 +1927,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAN":
+			elif attr[10] == "BAN":
 				z = 'Poroeses Rohr'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1941,7 +1941,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAO":
+			elif attr[10] == "BAO":
 				z = 'Boden sichtbar'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1955,7 +1955,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAP":
+			elif attr[10] == "BAP":
 				z = 'Hohlraum sichtbar'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1969,7 +1969,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBA":
+			elif attr[10] == "BBA":
 				z = 'Wurzeln'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1983,7 +1983,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBB":
+			elif attr[10] == "BBB":
 				z = 'Anhaftende Stoffe'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -1997,7 +1997,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC":
+			elif attr[10] == "BBC":
 				z = 'Ablagerungen'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2011,7 +2011,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBD":
+			elif attr[10] == "BBD":
 				z = 'Eindringen von Bodenmaterial'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2025,7 +2025,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE":
+			elif attr[10] == "BBE":
 				z = 'Andere Hindernisse'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2039,7 +2039,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBF":
+			elif attr[10] == "BBF":
 				z = 'Infiltration'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2053,7 +2053,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBG":
+			elif attr[10] == "BBG":
 				z = 'Exfiltration'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2067,7 +2067,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBH":
+			elif attr[10] == "BBH":
 				z = 'Ungeziefer'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2081,7 +2081,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCA":
+			elif attr[10] == "BCA":
 				z = 'Anschluss'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2095,7 +2095,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "A":
+			elif attr[10] == "BCB" and attr[11] == "A":
 				z = 'Punktuelle Reperatur: Reperatur mit Injektionstechnik'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2109,7 +2109,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "B":
+			elif attr[10] == "BCB" and attr[11] == "B":
 				z = 'Punktuelle Reperatur: Reperatur mit Roboter'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2123,7 +2123,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "C":
+			elif attr[10] == "BCB" and attr[11] == "C":
 				z = 'Punktuelle Reperatur: Reperatur mit partieller Auskleidungs-/Manchettentechnik'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2137,7 +2137,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "D":
+			elif attr[10] == "BCB" and attr[11] == "D":
 				z = 'Punktuelle Reperatur: Zulaufeinbindung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2151,7 +2151,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "E":
+			elif attr[10] == "BCB" and attr[11] == "E":
 				z = 'Punktuelle Reperatur: Reperatur Rohrwand manuell'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2165,7 +2165,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "F":
+			elif attr[10] == "BCB" and attr[11] == "F":
 				z = 'Punktuelle Reperatur: Reperatur Rohrverbindung manuell'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2179,7 +2179,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "G":
+			elif attr[10] == "BCB" and attr[11] == "G":
 				z = 'Punktuelle Reperatur: Ringspalt-/-raumdichtung (der Auskleidung) zum Anschluss an Schacht/Inspektionsöffnung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2193,7 +2193,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "H":
+			elif attr[10] == "BCB" and attr[11] == "H":
 				z = 'Punktuelle Reperatur: Zulauföffnung ohne Einbindung (Auskleidung)'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2207,7 +2207,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "I":
+			elif attr[10] == "BCB" and attr[11] == "I":
 				z = 'Punktuelle Reperatur: Rohr ausgetauscht'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2221,7 +2221,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCB" and attr[11] == "Z":
+			elif attr[10] == "BCB" and attr[11] == "Z":
 				z = 'Punktuelle Reperatur: sonstige Technink'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2235,7 +2235,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCC":
+			elif attr[10] == "BCC":
 				z = 'Krümmung der Leitung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2249,7 +2249,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCD":
+			elif attr[10] == "BCD":
 				z = 'Anfangsknoten'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2263,7 +2263,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BCE":
+			elif attr[10] == "BCE":
 				z = 'Endknoten'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2277,7 +2277,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDA":
+			elif attr[10] == "BDA":
 				z = 'Allgemeines Foto'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2291,7 +2291,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AA":
+			elif attr[10] == "BDB" and attr[11] == "AA":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, eingesteckt, gerade'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2305,7 +2305,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AB":
+			elif attr[10] == "BDB" and attr[11] == "AB":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, uebergestuelpt, gerade'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2319,7 +2319,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AC":
+			elif attr[10] == "BDB" and attr[11] == "AC":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, eingesteckt, abgewinkelt'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2333,7 +2333,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AD":
+			elif attr[10] == "BDB" and attr[11] == "AD":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, uebergestuelpt, abgewinkelt'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2347,7 +2347,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "AE":
+			elif attr[10] == "BDB" and attr[11] == "AE":
 				z = 'Allgemeine Anmerkung: Verbindung zweier Rohre ohne Fomrstück, stumpf aneinandergestossen'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2361,7 +2361,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "BA":
+			elif attr[10] == "BDB" and attr[11] == "BA":
 				z = 'Allgemeine Anmerkung: Verschluss eines Rohrs durch Abmauerung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2375,7 +2375,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "BB":
+			elif attr[10] == "BDB" and attr[11] == "BB":
 				z = 'Allgemeine Anmerkung: Verschluss eines Rohrs durch Moertel'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2389,7 +2389,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and attr[11] == "BC":
+			elif attr[10] == "BDB" and attr[11] == "BC":
 				z = 'Allgemeine Anmerkung: Verschluss eines Rohrs durch Deckel (Muffenstopfen)'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2403,7 +2403,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDC":
+			elif attr[10] == "BDC":
 				z = 'Inspektion endet vor dem Endknoten'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2417,7 +2417,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDD":
+			elif attr[10] == "BDD":
 				z = 'Wasserspiegel'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2431,7 +2431,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE":
+			elif attr[10] == "BDE":
 				z = 'Zufluss aus einem Anschluss'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2445,7 +2445,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDF":
+			elif attr[10] == "BDF":
 				z = 'Atmosphäre in der Leitung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2459,7 +2459,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDG":
+			elif attr[10] == "BDG":
 				z = 'Keine Sicht'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -2593,7 +2593,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAB":
+			elif attr[5] == "DAB":
 				z = 'Rissbildung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2607,7 +2607,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAC":
+			elif attr[5] == "DAC":
 				z = 'Bruch/Einsturz'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2621,7 +2621,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAD":
+			elif attr[5] == "DAD":
 				z = 'Defektes Mauerwerk'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2635,7 +2635,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAE":
+			elif attr[5] == "DAE":
 				z = 'Fehlender Moertel'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2649,7 +2649,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAF":
+			elif attr[5] == "DAF":
 				z = 'Oberflaechenschaden'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2663,7 +2663,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAG":
+			elif attr[5] == "DAG":
 				z = 'Einragender Anschluss'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2677,7 +2677,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAH":
+			elif attr[5] == "DAH":
 				z = 'Schadhafter Anschluss'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2691,7 +2691,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAI":
+			elif attr[5] == "DAI":
 				z = 'Einragendes Dichtungsmaterial'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2705,7 +2705,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAJ":
+			elif attr[5] == "DAJ":
 				z = 'Verschobene Verbindung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -2719,7 +2719,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "A":
+			elif attr[5] == "DAK" and attr[6] == "A":
 				z = 'Feststellung der Innenauskleidung: Innenauskleidung abgeloest'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2733,7 +2733,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "B":
+			elif attr[5] == "DAK" and attr[6] == "B":
 				z = 'Feststellung der Innenauskleidung: Innenauskleidung verfaerbt'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2747,7 +2747,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "C":
+			elif attr[5] == "DAK" and attr[6] == "C":
 				z = 'Feststellung der Innenauskleidung: Endstelle der Auskleidung schadhaft'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2761,7 +2761,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "D":
+			elif attr[5] == "DAK" and attr[6] == "D":
 				z = 'Feststellung der Innenauskleidung: Falten in der Innenauskleidung'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2775,7 +2775,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "E":
+			elif attr[5] == "DAK" and attr[6] == "E":
 				z = 'Feststellung der Innenauskleidung: Blasen oder Beulen in der Auskleidung innen'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2789,7 +2789,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "F":
+			elif attr[5] == "DAK" and attr[6] == "F":
 				z = 'Feststellung der Innenauskleidung: Beulen aussen'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2803,7 +2803,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "G":
+			elif attr[5] == "DAK" and attr[6] == "G":
 				z = 'Feststellung der Innenauskleidung: Abloesen der Innenhaut/Beschichtung'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2817,7 +2817,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "H":
+			elif attr[5] == "DAK" and attr[6] == "H":
 				z = 'Feststellung der Innenauskleidung: Abloesen der Abdeckung der Verbindungsnaht'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2831,7 +2831,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "I":
+			elif attr[5] == "DAK" and attr[6] == "I":
 				z = 'Feststellung der Innenauskleidung: Riss oder Spalt (einschliesslich schadhafter Schweissnaht)'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2845,7 +2845,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "J":
+			elif attr[5] == "DAK" and attr[6] == "J":
 				z = 'Feststellung der Innenauskleidung: Loch in der Auskleidung'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2859,7 +2859,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "K":
+			elif attr[5] == "DAK" and attr[6] == "K":
 				z = 'Feststellung der Innenauskleidung: Auskleidungsverbindung defekt'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2873,7 +2873,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "L":
+			elif attr[5] == "DAK" and attr[6] == "L":
 				z = 'Feststellung der Innenauskleidung: Auskleidungswerkstoff erscheint weich'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2887,7 +2887,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "M":
+			elif attr[5] == "DAK" and attr[6] == "M":
 				z = 'Feststellung der Innenauskleidung: Harz fehlt im Laminat'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2901,7 +2901,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "N":
+			elif attr[5] == "DAK" and attr[6] == "N":
 				z = 'Feststellung der Innenauskleidung: Ende der Auskleidung ist nicht abgedichtet, um das Rohr oder den Schacht aufzunehmen'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2915,7 +2915,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAK" and attr[6] == "Z":
+			elif attr[5] == "DAK" and attr[6] == "Z":
 				z = 'Feststellung der Innenauskleidung: Anderer Auskleidungsschaden'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2929,7 +2929,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "A":
+			elif attr[5] == "DAL" and attr[6] == "A":
 				z = 'Schadhafte Reperatur: Wand fehlt teilweise'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2943,7 +2943,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "B":
+			elif attr[5] == "DAL" and attr[6] == "B":
 				z = 'Schadhafte Reperatur: Reperatur zur Abdichtung eines Lochs ist schadhaft'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2957,7 +2957,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "C":
+			elif attr[5] == "DAL" and attr[6] == "C":
 				z = 'Schadhafte Reperatur: Abloesen des Reperaturwerkstoffs vom Basisrohr'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2971,7 +2971,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "D":
+			elif attr[5] == "DAL" and attr[6] == "D":
 				z = 'Schadhafte Reperatur: fehlender Reperaturwerkstoff an der Kontaktflaeche'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2985,7 +2985,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "E":
+			elif attr[5] == "DAL" and attr[6] == "E":
 				z = 'Schadhafte Reperatur: ueberschuessiger Reperaturwerkstof, der ein Hindernis darstellt'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -2999,7 +2999,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "F":
+			elif attr[5] == "DAL" and attr[6] == "F":
 				z = 'Schadhafte Reperatur: Loch im Reperaturwerkstoff'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3013,7 +3013,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "G":
+			elif attr[5] == "DAL" and attr[6] == "G":
 				z = 'Schadhafte Reperatur: Riss im Reperaturwerkstoff'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3027,7 +3027,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAL" and attr[6] == "Z":
+			elif attr[5] == "DAL" and attr[6] == "Z":
 				z = 'Schadhafte Reperatur: Andere'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3041,7 +3041,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAM":
+			elif attr[5] == "DAM":
 				z = 'Schadhafte Schweissnaht'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3055,7 +3055,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAN":
+			elif attr[5] == "DAN":
 				z = 'Poroese Wand'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3069,7 +3069,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAO":
+			elif attr[5] == "DAO":
 				z = 'Boden sichtbar'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3083,7 +3083,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAP":
+			elif attr[5] == "DAP":
 				z = 'Hohlraum sichtbar'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3097,7 +3097,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAQ":
+			elif attr[5] == "DAQ":
 				z = 'Schadhafte Steighilfen'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3111,7 +3111,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAR":
+			elif attr[5] == "DAR":
 				z = 'Schaeden an Abdeckung oder Rahmen'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3125,7 +3125,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBA":
+			elif attr[5] == "DBA":
 				z = 'Wurzeln'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3139,7 +3139,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBB":
+			elif attr[5] == "DBB":
 				z = 'Anaftene Stoffe'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3153,7 +3153,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBC":
+			elif attr[5] == "DBC":
 				z = 'Ablagerungen'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3167,7 +3167,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBD":
+			elif attr[5] == "DBD":
 				z = 'Eindringen von Bodenmaterial'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3181,7 +3181,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBE":
+			elif attr[5] == "DBE":
 				z = 'Andere Hindernisse'
 				sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -3195,7 +3195,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBF":
+			elif attr[5] == "DBF":
 				z = 'Infiltration'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3209,7 +3209,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBG":
+			elif attr[5] == "DBG":
 				z = 'Exfiltration'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3223,7 +3223,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBH":
+			elif attr[5] == "DBH":
 				z = 'Ungeziefer'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3237,7 +3237,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCA":
+			elif attr[5] == "DCA":
 				z = 'Anschluss'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3251,7 +3251,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "A":
+			elif attr[5] == "DCB" and attr[6] == "A":
 				z = 'Punktuelle Reperatur: Reperatur mit Injektionstechnik'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3265,7 +3265,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "B":
+			elif attr[5] == "DCB" and attr[6] == "B":
 				z = 'Punktuelle Reperatur: Reperatur Bauteilwandung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3279,7 +3279,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "C":
+			elif attr[5] == "DCB" and attr[6] == "C":
 				z = 'Punktuelle Reperatur: Reperatur Bauteilverbindung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3293,7 +3293,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "D":
+			elif attr[5] == "DCB" and attr[6] == "D":
 				z = 'Punktuelle Reperatur: Ringsplat-/-raumabdichtung(Auskleidung in Kanaelen/Leitungen) zum Anschuss an Schacht/Inspektionsoeffnung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3307,7 +3307,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "E":
+			elif attr[5] == "DCB" and attr[6] == "E":
 				z = 'Punktuelle Reperatur: Anschlusseinbindung manuell'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3321,7 +3321,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "F":
+			elif attr[5] == "DCB" and attr[6] == "F":
 				z = 'Punktuelle Reperatur: Anschlusseoeffnung ohne Einbindung(Auskleidung)'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3335,7 +3335,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "G":
+			elif attr[5] == "DCB" and attr[6] == "G":
 				z = 'Punktuelle Reperatur: Schachtbauteil ausgetauscht'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3349,7 +3349,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCB" and attr[6] == "Z":
+			elif attr[5] == "DCB" and attr[6] == "Z":
 				z = 'Punktuelle Reperatur: Reperatur sonstige Technik'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3363,7 +3363,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCG":
+			elif attr[5] == "DCG":
 				z = 'Anschlussleitung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3377,7 +3377,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCH":
+			elif attr[5] == "DCH":
 				z = 'Auftritt'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3391,7 +3391,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCI":
+			elif attr[5] == "DCI":
 				z = 'Gerinne'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3405,7 +3405,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCJ":
+			elif attr[5] == "DCJ":
 				z = 'Sicherheitsketten/-balken'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3419,7 +3419,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCK":
+			elif attr[5] == "DCK":
 				z = 'Abflussregulierung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3433,7 +3433,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCL":
+			elif attr[5] == "DCL":
 				z = 'Rohrdurchfuehrung durch andere Abwasserleitung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3447,7 +3447,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCM":
+			elif attr[5] == "DCM":
 				z = 'Schmutzfaenger unter der Abdeckung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3461,7 +3461,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCN":
+			elif attr[5] == "DCN":
 				z = 'Schlammfang in der Sohle'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3475,7 +3475,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCO":
+			elif attr[5] == "DCO":
 				z = 'Querschnitt'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3489,7 +3489,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDA":
+			elif attr[5] == "DDA":
 				z = 'Allgemeines Foto'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3503,7 +3503,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDB":
+			elif attr[5] == "DDB":
 				z = 'Allgemeine Anmerkung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3517,7 +3517,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDC":
+			elif attr[5] == "DDC":
 				z = 'Inspektion nicht vollstaendig durchgefuehrt'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3531,7 +3531,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDD":
+			elif attr[5] == "DDD":
 				z = 'Wasserspiegel'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3545,7 +3545,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDE":
+			elif attr[5] == "DDE":
 				z = 'Zufluss aus einem Anschluss'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3559,7 +3559,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDF":
+			elif attr[5] == "DDF":
 				z = 'Atmosphäre im Schacht oder in der Inspektionsoeffnung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3573,7 +3573,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDG":
+			elif attr[5] == "DDG":
 				z = 'Keine Sicht'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -3581,12 +3581,12 @@ class Zustandsklassen_funkt:
 					WHERE Untersuchdat_schacht_bewertung.pk = ? ;
 					"""
 				data = (z, attr[0])
-			try:
-				curs.execute(sql, data)
-				#db.commit()
-				continue
-			except:
-				pass
+				try:
+					curs.execute(sql, data)
+					#db.commit()
+					continue
+				except:
+					pass
 
 
 		# sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');"""
@@ -4381,7 +4381,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
+			elif attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
 							"GG", "GG Grauguß", "GGG", "GGG Duktiles Gußeisen", "KST", "KST Nichtidentifizier Kunststoff",
 							"PE", "PE Polyethylen", "PEHD", "PEHD Polyethylen", "PH", "PH Polyesterharz", "PP", "PP Polypropylen",
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
@@ -4565,13 +4565,13 @@ class Zustandsklassen_funkt:
 			except:
 				pass
 			try:
-			   curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+				curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 			except:
-			   pass
+				pass
 			try:
-			   curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+				curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 			except:
-			   pass
+				pass
 
 			# Tab A.2
 			if (attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "A") or (
@@ -4677,8 +4677,7 @@ class Zustandsklassen_funkt:
 			data = ()
 
 			# Tab A.3
-			if attr[10] == "BAB" and attr[11] == "A"  and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+			if attr[10] == "BAB" and attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 				z = '4'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -4692,8 +4691,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and (
-					attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] in ["B", "C", "D", "E"]:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -4714,7 +4712,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and attr[25] in ["", "not found"]:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and attr[25] in ["", "not found"]:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -4758,7 +4756,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and attr[25]/1000 <= 0.3:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and attr[25]/1000 <= 0.3:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -4800,7 +4798,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and 0.5 >= attr[25]/1000 > 0.3:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and 0.5 >= attr[25]/1000 > 0.3:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -4844,7 +4842,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and 0.7 >= attr[25]/1000 > 0.5:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and 0.7 >= attr[25]/1000 > 0.5:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -4888,7 +4886,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "B":
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "B":
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -4921,7 +4919,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and (attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] in ["C", "D", "E"]:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -5254,8 +5252,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "A" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '4'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5280,7 +5277,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "B" and (attr[12] == "A" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 				z = '3'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5306,8 +5303,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "C" and (
-					attr[12] == "A"  or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '3'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5333,8 +5329,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "D" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E","Z"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5360,8 +5355,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "E" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '1'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5387,8 +5381,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "F" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '3'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5414,8 +5407,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "G" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5441,8 +5433,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "H" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "H" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '1'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5468,8 +5459,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "I" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '1'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5507,7 +5497,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "J" and (attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5533,8 +5523,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "K" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '3'
 				sql = f"""
 									  UPDATE untersuchdat_haltung_bewertung
@@ -5548,8 +5537,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "Z" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5656,7 +5644,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAH" and (attr[11] == "B" or attr[11] == "C" or attr[11] == "D"):
+			if attr[10] == "BAH" and attr[11] in ["B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -5735,7 +5723,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAI" and attr[11] == "A" and (attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAI" and attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_haltung_bewertung
@@ -6071,7 +6059,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "D" and (attr[12] == "A" or attr[12] == "B" or attr[12] == "D"):
+			if attr[10] == "BAK" and attr[11] == "D" and attr[12] in ["A", "B", "D"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6333,7 +6321,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "A" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "A" and attr[12] in ["A", "B", "C", "D"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6347,7 +6335,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "B" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "B" and attr[12] in ["A", "B", "C", "D"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6361,7 +6349,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "C" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "C" and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6375,7 +6363,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "D" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "D" and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6389,7 +6377,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "E" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
 				if attr[13] >= 50:
 					z = '0'
 				elif 50 > attr[13] >= 35:
@@ -6414,7 +6402,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "F" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6428,7 +6416,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "G" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "G" and attr[12] in ["A", "B", "C", "D"]:
 				z = '3'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6442,7 +6430,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "Z" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6467,7 +6455,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAM" and (attr[11] == "A" or attr[11] == "C"):
+			if attr[10] == "BAM" and attr[11] in ["A", "C"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6595,7 +6583,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBA" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6667,7 +6655,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBB" and ( attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBB" and attr[11] in ["B", "C", "Z"]:
 				if attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
@@ -6692,7 +6680,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC" and (attr[11] == "A" or attr[11] == "B"):
+			if attr[10] == "BBC" and attr[11] in ["A", "B"]:
 				z = '4'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6706,7 +6694,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC" and (attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBC" and attr[11] in ["C", "Z"]:
 				if attr[13] >= 50:
 					z = '0'
 				elif 50 > attr[13] >= 40:
@@ -6731,8 +6719,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBD" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "Z"):
+			if attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6779,7 +6766,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (attr[11] == "D" or attr[11] == "G"):
+			if attr[10] == "BBE" and attr[11] in ["D", "G"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6816,9 +6803,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "E" or attr[
-				11] == "F" or attr[11] == "H" or attr[11] == "Z"):
+			if attr[10] == "BBE" and attr[11] in ["A", "B", "C", "E", "F", "H", "Z"]:
 				if attr[13] >= 50:
 					z = '0'
 				elif 50 > attr[13] >= 35:
@@ -6881,7 +6866,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBF" and (attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BBF" and attr[11] in ["B", "C"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6982,8 +6967,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBH" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "Z") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "Z"):
+			if attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
 				z = '-'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -6997,7 +6981,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and (attr[11] == "AA" or attr[11] == "AB" or attr[11] == "AC" or attr[11] == "AD" or attr[11] == "AE"):
+			if attr[10] == "BDB" and attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 									UPDATE untersuchdat_haltung_bewertung
@@ -7022,7 +7006,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and (attr[11] == "BA" or attr[11] == "BB" or attr[11] == "BC"):
+			if attr[10] == "BDB" and attr[11] in ["BA", "BB", "BC"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 							UPDATE untersuchdat_haltung_bewertung
@@ -7036,7 +7020,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E") and attr[12] == "A":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -7050,7 +7034,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E") and attr[12] == "B":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_haltung_bewertung
@@ -7423,7 +7407,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
+			elif attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
 							"GG", "GG Grauguß", "GGG", "GGG Duktiles Gußeisen", "KST", "KST Nichtidentifizier Kunststoff",
 							"PE", "PE Polyethylen", "PEHD", "PEHD Polyethylen", "PH", "PH Polyesterharz", "PP", "PP Polypropylen",
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
@@ -7537,13 +7521,13 @@ class Zustandsklassen_funkt:
 			except:
 				pass
 			try:
-			   curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+				curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 			except:
-			   pass
+				pass
 			try:
-			   curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+				curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 			except:
-			   pass
+				pass
 
 			# Tab A.2
 			if (attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "A") or (
@@ -7649,7 +7633,7 @@ class Zustandsklassen_funkt:
 			data = ()
 
 			# Tab A.3
-			if attr[10] == "BAB" and attr[11] == "A" and (attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+			if attr[10] == "BAB" and attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 				z = '4'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -7663,8 +7647,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and (
-					 attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] in ["B", "C", "D", "E"]:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -7685,7 +7668,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and attr[25] in ["", "not found"]:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and attr[25] in ["", "not found"]:
 				if attr[13] >= 3:
 					z = '1'
 				elif 3 > attr[13] >= 2:
@@ -7730,7 +7713,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and attr[25]/1000 <= 0.3:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and attr[25]/1000 <= 0.3:
 				if attr[13] >= 3:
 					z = '0'
 				elif 3 > attr[13] >= 2:
@@ -7753,7 +7736,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and 0.5 >= attr[25]/1000 > 0.3:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and 0.5 >= attr[25]/1000 > 0.3:
 				if attr[13] >= 5:
 					z = '0'
 				elif 5 > attr[13] >= 3:
@@ -7778,7 +7761,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "A" and 0.7 >= attr[25]/1000 > 0.5:
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "A" and 0.7 >= attr[25]/1000 > 0.5:
 				if attr[13] >= 8:
 					z = '0'
 				elif 8 > attr[13] >= 4:
@@ -7803,7 +7786,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and attr[12] == "B":
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] == "B":
 				z = '4'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -7817,7 +7800,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAB" and (attr[11] == "B" or attr[11] == "C") and (attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+			if attr[10] == "BAB" and attr[11] in ["B", "C"] and attr[12] in ["C", "D", "E"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8133,8 +8116,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "A" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '4'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8159,7 +8141,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "B" and (attr[12] == "A" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 				z = '3'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8185,8 +8167,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "C" and (
-					attr[12] == "A"  or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '3'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8212,8 +8193,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "D" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8239,8 +8219,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "E" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '1'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8266,8 +8245,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "F" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '3'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8293,8 +8271,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "G" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8320,8 +8297,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "H" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "H" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '1'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8347,8 +8323,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "I" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '1'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8386,7 +8361,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "J" and (attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8412,8 +8387,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "K" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = '3'
 				sql = f"""
 									  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8427,8 +8401,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAF" and attr[11] == "Z" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+			if attr[10] == "BAF" and attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8480,7 +8453,7 @@ class Zustandsklassen_funkt:
 						z = '4'
 					else:
 						z = '5'
-				if 0.25 < attr[25]/1000 <= 0.5:
+				elif 0.25 < attr[25]/1000 <= 0.5:
 					if attr[13] >= 80:
 						z = '0'
 					elif 80 > attr[13] >= 60:
@@ -8493,7 +8466,7 @@ class Zustandsklassen_funkt:
 						z = '4'
 					else:
 						z = '5'
-				if 0.5 < attr[25]/1000 <= 0.8:
+				elif 0.5 < attr[25]/1000 <= 0.8:
 					if attr[13] >= 70:
 						z = '2'
 					elif 70 > attr[13] >= 10:
@@ -8502,7 +8475,7 @@ class Zustandsklassen_funkt:
 						z = '4'
 					else:
 						z = '5'
-				if attr[25]/1000 > 0.8:
+				elif attr[25]/1000 > 0.8:
 					if attr[13] >= 30:
 						z = '3'
 					elif attr[13] < 30:
@@ -8521,7 +8494,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAH" and (attr[11] == "B" or attr[11] == "C" or attr[11] == "D"):
+			if attr[10] == "BAH" and attr[11] in ["B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8600,7 +8573,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAI" and attr[11] == "A" and (attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAI" and attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -8936,7 +8909,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAK" and attr[11] == "D" and (attr[12] == "A" or attr[12] == "B" or attr[12] == "D"):
+			if attr[10] == "BAK" and attr[11] == "D" and attr[12] in ["A", "B", "D"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9198,7 +9171,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "A" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "A" and attr[12] in ["A", "B", "C", "D"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9212,7 +9185,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "B" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "B" and attr[12] in ["A", "B", "C", "D"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9226,7 +9199,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "C" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "C" and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9240,7 +9213,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "D" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "D" and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9254,7 +9227,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "E" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
 				if attr[13] >= 50:
 					z = '0'
 				elif 50 > attr[13] >= 35:
@@ -9279,7 +9252,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "F" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9293,7 +9266,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "G" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "G" and attr[12] in ["A", "B", "C", "D"]:
 				z = '3'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9307,7 +9280,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "Z" and (attr[12]=="A" or attr[12]=="B" or attr[12]=="C" or attr[12]=="D"):
+			if attr[10] == "BAL" and attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9332,7 +9305,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAM" and (attr[11] == "A" or attr[11] == "C"):
+			if attr[10] == "BAM" and attr[11] in ["A", "C"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9460,7 +9433,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBA" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9532,7 +9505,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBB" and (attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBB" and attr[11] in ["B", "C", "Z"]:
 				if attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
@@ -9557,7 +9530,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC" and (attr[11] == "A" or attr[11] == "B"):
+			if attr[10] == "BBC" and attr[11] in ["A", "B"]:
 				z = '4'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9571,7 +9544,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC" and (attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBC" and attr[11] in ["C", "Z"]:
 				if attr[13] >= 50:
 					z = '0'
 				elif 50 > attr[13] >= 40:
@@ -9596,8 +9569,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBD" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "Z"):
+			if attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9644,7 +9616,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (attr[11] == "D" or attr[11] == "G"):
+			if attr[10] == "BBE" and attr[11] in ["D", "G"]:
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9658,9 +9630,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E" or attr[
-				11] == "F" or attr[11] == "G" or attr[11] == "H" or attr[11] == "Z"):
+			if attr[10] == "BBE" and attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
 				if attr[13] >= 50:
 					z = '0'
 				elif 50 > attr[13] >= 35:
@@ -9723,7 +9693,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBF" and (attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BBF" and attr[11] in ["B", "C"]:
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9824,8 +9794,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBH" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "Z") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "Z"):
+			if attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
 				z = '-'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9839,7 +9808,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and (attr[11] == "AA" or attr[11] == "AB" or attr[11] == "AC" or attr[11] == "AD" or attr[11] == "AE"):
+			if attr[10] == "BDB" and attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 									UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9864,7 +9833,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDB" and (attr[11] == "BA" or attr[11] == "BB" or attr[11] == "BC"):
+			if attr[10] == "BDB" and attr[11] in ["BA", "BB", "BC"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 							UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9889,7 +9858,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E") and attr[12] == "A":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 				z = '1'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9903,7 +9872,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E") and attr[12] == "B":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 				z = '2'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -9917,7 +9886,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr[10] == "BDD" and (attr[11] == "A" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E") and (attr[12] == "A" or attr[12] == "B"):
+			if attr[10] == "BDD" and attr[11] in ["A", "C", "D", "E"] and attr[12] in ["A", "B"]:
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
@@ -10284,7 +10253,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
+			elif attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
 							"GG", "GG Grauguß", "GGG", "GGG Duktiles Gußeisen", "KST", "KST Nichtidentifizier Kunststoff",
 							"PE", "PE Polyethylen", "PEHD", "PEHD Polyethylen", "PH", "PH Polyesterharz", "PP", "PP Polypropylen",
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
@@ -10416,8 +10385,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F") and attr[
-					15] == "biegesteif":
+				if attr[13] in ["B", "C", "D", "F"] and attr[15] == "biegesteif":
 					if attr[8] >= 7:
 						z = '0'
 					elif 7 > attr[8] >= 4:
@@ -10442,8 +10410,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F") and attr[
-					15] == "biegeweich":
+				if attr[13] in ["B", "C", "D", "F"] and attr[15] == "biegeweich":
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 					  UPDATE Untersuchdat_schacht_bewertung
@@ -10459,8 +10426,7 @@ class Zustandsklassen_funkt:
 						pass
 
 			if attr[5] == "DAB" and attr[6] == "A":
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["B", "C", "D", "F", "H", "I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10498,9 +10464,8 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 
-			if attr[5] == "DAB" and (attr[6] == "B" or attr[6] == "C"):
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+			if attr[5] == "DAB" and attr[6] in ["B", "C"]:
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["C", "D", "E", "F"]:
 					z = '5'
 					sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -10536,8 +10501,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["I", "J"]:
 					if attr[8] >= 3:
 						z = '1'
 					elif 3 > attr[8] >= 2:
@@ -10580,7 +10544,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if attr[7] == "A" and (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[7] == "A" and attr[13] in ["B", "C", "D", "F"]:
 					if attr[8] >= 8:
 						z = '0'
 					elif 8 > attr[8] >= 5:
@@ -10605,7 +10569,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[7] == "B" and (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[7] == "B" and attr[13] in ["B", "C", "D", "F"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10619,8 +10583,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[7] in ["C", "D", "E"] and attr[13] in ["B", "C", "D", "F"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10635,7 +10598,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAC" and attr[6] == "A":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10671,7 +10634,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10708,7 +10671,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["B", "C", "D", "F", "H"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10734,7 +10697,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAC" and attr[6] == "B":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10770,7 +10733,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10807,7 +10770,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["B", "C", "D", "F", "H"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10822,7 +10785,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAC" and attr[6] == "C":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10858,7 +10821,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '0'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10895,7 +10858,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["B", "C", "D", "F", "H"]:
 					z = '0'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10921,7 +10884,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAD" and attr[6] == "A":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10934,7 +10897,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10947,7 +10910,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10973,7 +10936,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["H", "I", "J"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -10988,7 +10951,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAD" and attr[6] == "B" and attr[7] == "A":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11001,7 +10964,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11014,7 +10977,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11028,7 +10991,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["H", "I", "J"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11043,7 +11006,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAD" and attr[6] == "B" and attr[7] == "B":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11056,7 +11019,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11070,7 +11033,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11085,7 +11048,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAD" and attr[6] == "C":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11098,7 +11061,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '0'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11111,7 +11074,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '0'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11124,8 +11087,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or attr[
-					13] == "J"):
+				if attr[13] in ["C", "D", "F", "H", "I", "J"]:
 					z = '0'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11140,7 +11102,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAE":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					if attr[8] >= 100:
 						z = '3'
 					elif attr[8] < 100:
@@ -11158,7 +11120,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					if attr[8] >= 100:
 						z = '2'
 					elif attr[8] < 100:
@@ -11177,7 +11139,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					if attr[8] >= 100:
 						z = '2'
 					elif 100 > attr[8] >= 10:
@@ -11199,8 +11161,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAF":
-				if attr[6] == "A" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "A" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11214,8 +11175,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "A" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J" ):
+				if attr[6] == "A" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11229,8 +11189,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "B" and (attr[7] == "A" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "B" and attr[7] in ["A", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11244,8 +11203,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "B" and (attr[7] == "A" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "B" and attr[7] in ["A", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11259,8 +11217,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "C" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "C" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11274,8 +11231,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "C" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "C" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11289,8 +11245,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "D" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "D" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11304,8 +11259,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "D" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "D" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11319,8 +11273,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "E" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "E" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11334,8 +11287,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "E" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "E" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11349,9 +11301,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "F" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "F" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11365,9 +11315,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "F" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "F" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11381,9 +11329,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "G" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "G" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11397,9 +11343,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "G" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "G" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11413,9 +11357,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "H" and (
-						attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "H" and attr[7] in ["B", "C", "D", "E"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11429,9 +11371,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "H" and (
-						attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "H" and attr[7] in ["B", "C", "D", "E"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11445,8 +11385,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "I" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "I" and attr[7] in ["A", "B", "C", "D", "E", "Z"]:
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11459,7 +11399,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["B", "C", "D", "E", "F", "H"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11473,8 +11413,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if attr[6] == "J" and (
-						attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E"):
+				if attr[6] == "J" and attr[7] in ["B", "C", "D", "E"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11500,9 +11439,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "K" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "K" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11516,9 +11453,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "Z" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or
-						attr[13] == "J"):
+				if attr[6] == "Z" and attr[7] in ["A", "B", "C", "D", "E", "Z"]:
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -11531,7 +11467,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["B", "C", "D", "E", "F", "H"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -11546,7 +11482,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DAG" and attr[6] in ["", "not found"] and attr[7] in ["", "not found"]:
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					if attr[8] >= 400:
 						z = '0'
 					elif 400 > attr[8] >= 300:
@@ -11571,7 +11507,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11586,8 +11522,8 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAH":
-				if (attr[6] == "B" or attr[6] == "C" or attr[6] == "D") and attr[7] in ["", "not found"]:
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] in ["B", "C", "D"] and attr[7] in ["", "not found"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11601,7 +11537,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11616,7 +11552,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "E" and attr[7] in ["", "not found"]:
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11631,8 +11567,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "Z" and attr[7] in ["", "not found"]:
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or
-							attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11647,8 +11582,8 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DAI":
-				if attr[6] == "A" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "A" and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11661,7 +11596,7 @@ class Zustandsklassen_funkt:
 							db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11675,7 +11610,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11690,7 +11625,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "Z":
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11704,8 +11639,8 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-			if attr[5] == "DAJ" and (attr[6] == "A" or attr[6] == "B" or attr[6] == "C"):
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+			if attr[5] == "DAJ" and attr[6] in ["A", "B", "C"]:
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11718,7 +11653,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "F"]:
 					z = '4'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11734,7 +11669,7 @@ class Zustandsklassen_funkt:
 						pass
 			if attr[5] == "DAK":
 				if attr[6] == "A":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						if attr[8] >= 40:
 							z = '0'
 						elif 40 > attr[8] >= 30:
@@ -11759,7 +11694,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						if attr[8] >= 50:
 							z = '0'
 						elif 50 > attr[8] >= 35:
@@ -11784,7 +11719,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if attr[6] == "B" and (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "B" and attr[13] in ["C", "D", "E", "F", "I", "J"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11799,7 +11734,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "C":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -11813,7 +11748,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -11839,7 +11774,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "D":
-					if (attr[7]=="A" or attr[7]=="B" or attr[7]=="C" or attr[7]=="D") and (attr[13] == "I" or attr[13] == "J"):
+					if attr[7] in ["A", "B", "C", "D"] and attr[13] in ["I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11852,7 +11787,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[7] == "C") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+					if (attr[7] == "C") and attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11867,8 +11802,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "E":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11881,7 +11815,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						if attr[8] >= 40:
 							z = '0'
 						elif 40 > attr[8] >= 30:
@@ -11906,7 +11840,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						if attr[8] >= 50:
 							z = '0'
 						elif 50 > attr[8] >= 35:
@@ -11931,8 +11865,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if attr[6] == "F" and (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "F" and attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11946,8 +11879,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "G" and (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "G" and attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11961,7 +11893,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "H" and (attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "H" and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -11976,7 +11908,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[6] == "I":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -11990,7 +11922,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12006,7 +11938,7 @@ class Zustandsklassen_funkt:
 							pass
 					continue
 				if attr[6] == "J":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12020,7 +11952,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12035,7 +11967,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "K":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12049,7 +11981,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12064,7 +11996,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "L":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"  or attr[13] == "I"  or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12077,7 +12009,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12091,7 +12023,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "E"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12106,7 +12038,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "M":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12120,7 +12052,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12134,8 +12066,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if attr[6] == "N" and (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or
-							attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "N" and attr[13] in ["C", "D", "E", "F", "I", "J"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -12150,8 +12081,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[6] == "Z":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "I" or
-							attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12189,7 +12119,7 @@ class Zustandsklassen_funkt:
 							pass
 			if attr[5] == "DAL":
 				if attr[6] == "A":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12218,7 +12148,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "B":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "I", "J"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12233,7 +12163,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "C":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12262,7 +12192,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "D":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12276,7 +12206,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12291,7 +12221,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "E":
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "G" or attr[13] == "H"):
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H"]:
 						if attr[8] >= 40:
 							z = '0'
 						elif 40 > attr[8] >= 30:
@@ -12316,7 +12246,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						if attr[8] >= 50:
 							z = '0'
 						elif 50 > attr[8] >= 35:
@@ -12342,7 +12272,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "F":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12356,7 +12286,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12371,7 +12301,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "G":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12385,7 +12315,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12426,7 +12356,7 @@ class Zustandsklassen_funkt:
 						pass
 			if attr[5] == "DAM":
 				if attr[6] == "A":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12439,7 +12369,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12453,7 +12383,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "F"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12468,7 +12398,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "B":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12481,7 +12411,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12495,7 +12425,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "F"]:
 						z = '4'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12510,7 +12440,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "C":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12523,7 +12453,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12537,7 +12467,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "F"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -12552,7 +12482,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DAN":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12565,7 +12495,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12579,7 +12509,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12594,7 +12524,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAO":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12607,7 +12537,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '1'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12621,7 +12551,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '1'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12636,7 +12566,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAP":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12649,7 +12579,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '1'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12663,7 +12593,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '0'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12678,9 +12608,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAQ":
-				if (attr[6] == "A" or attr[6] == "C" or attr[6] == "D" or attr[6] == "F" or attr[6] == "G" or attr[
-					6] == "H" or attr[6] == "I" or attr[6] == "J" or attr[6] == "K") and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[6] in ["A", "C", "D", "F", "G", "H", "I", "J", "K"] and attr[13] in ["C", "D", "F"]:
 					z = '1'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12694,7 +12622,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "B") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[6] == "B") and attr[13] in ["C", "D", "F"]:
 					z = '0'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12708,7 +12636,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "E") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[6] == "E") and attr[13] in ["C", "D", "F"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12722,7 +12650,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "Z") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[6] == "Z") and attr[13] in ["C", "D", "F"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12737,7 +12665,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAR":
-				if (attr[6] == "A" or attr[6] == "C" or attr[6] == "F") and (attr[13] == "A"):
+				if attr[6] in ["A", "C", "F"] and (attr[13] == "A"):
 					z = '0'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12751,7 +12679,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "B" or attr[6] == "E") and (attr[13] == "A"):
+				if attr[6] in ["B", "E"] and (attr[13] == "A"):
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12779,7 +12707,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "G" or attr[6] == "H") and (attr[13] == "A"):
+				if attr[6] in ["G", "H"] and (attr[13] == "A"):
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12808,8 +12736,8 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DBA":
-				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12822,7 +12750,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12862,7 +12790,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C" or attr[6] == "Z"):
+				if attr[6] in ["A", "B", "C", "Z"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -12877,7 +12805,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DBC":
-				if (attr[6] == "C" or attr[6] == "Z"):
+				if attr[6] in ["C", "Z"]:
 					if attr[13] == "J":
 						if attr[8] >= 300:
 							z = '1'
@@ -12916,7 +12844,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DBD":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12929,7 +12857,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '1'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12943,7 +12871,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '0'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12956,7 +12884,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12971,7 +12899,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DBE":
-				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C") and (attr[13] == "I" or attr[13] == "J"):
+				if attr[6] in ["A", "B", "C"] and attr[13] in ["I", "J"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12986,7 +12914,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[6] == "D":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -12999,7 +12927,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13025,7 +12953,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "E" or attr[6] == "F" or attr[6] == "H" or attr[6] == "Z"):
+				if attr[6] in ["E", "F", "H", "Z"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13040,7 +12968,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[6] == "G":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13053,7 +12981,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13080,8 +13008,8 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DBF":
-				if attr[6] == "A" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "A" and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13094,7 +13022,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13120,8 +13048,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "B" or attr[6] == "C") and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "I" or attr[13] == "J"):
+				if attr[6] in ["B", "C"] and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F", "I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13134,7 +13062,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13160,8 +13088,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "D") and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"  or attr[13] == "I"  or attr[13] == "J"):
+				if attr[6] == "D" and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F", "I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13174,7 +13102,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -13200,7 +13128,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-			if attr[5] == "DBG" and (attr[13] == "I" or attr[13] == "J"):
+			if attr[5] == "DBG" and attr[13] in ["I", "J"]:
 				z = '1'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -13226,8 +13154,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DBH" and (attr[6] == "A" or attr[6] == "B" or attr[6] == "Z") and (
-					attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "Z"):
+			if attr[5] == "DBH" and attr[6] in ["A", "B", "Z"] and attr[7] in ["A", "B", "C", "Z"]:
 				z = '-'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -13255,7 +13182,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCI" and (attr[6] == "A") and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D") and (attr[13] == "I"):
+			if attr[5] == "DCI" and (attr[6] == "A") and attr[7] in ["A", "B", "C", "D"] and (attr[13] == "I"):
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -13284,7 +13211,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[5] == "DCJ":
-				if (attr[6] == "B" or attr[6] == "F") and (attr[13] == "F"):
+				if attr[6] in ["B", "F"] and (attr[13] == "F"):
 					z = '0'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -13297,7 +13224,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[6] == "C" or attr[6] == "D" or attr[6] == "G" or attr[6] == "H") and (attr[13] == "F"):
+				if attr[6] in ["C", "D", "G", "H"] and (attr[13] == "F"):
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -13311,7 +13238,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-			if attr[5] == "DCL" and (attr[6] == "A" or attr[6] == "B" or attr[6] == "C") and attr[7] == "A" and (
+			if attr[5] == "DCL" and attr[6] in ["A", "B", "C"] and attr[7] == "A" and (
 					attr[13] == "F"):
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
@@ -13326,7 +13253,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCM" and (attr[6] == "B" or attr[6] == "C") and (attr[13] == "A"):
+			if attr[5] == "DCM" and attr[6] in ["B", "C"] and (attr[13] == "A"):
 				z = '3'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -13354,7 +13281,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDE" and (attr[6] == "A" or attr[6] == "C" or attr[6] == "D" or attr[6] == "E"):
+			if attr[5] == "DDE" and attr[6] in ["A", "C", "D", "E"]:
 				if attr[7] == "A":
 					z = '1'
 					sql = f"""
@@ -13755,7 +13682,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
+			elif attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
 							"GG", "GG Grauguß", "GGG", "GGG Duktiles Gußeisen", "KST", "KST Nichtidentifizier Kunststoff",
 							"PE", "PE Polyethylen", "PEHD", "PEHD Polyethylen", "PH", "PH Polyesterharz", "PP", "PP Polypropylen",
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
@@ -14040,8 +13967,7 @@ class Zustandsklassen_funkt:
 
 			# Tab A.3
 			if attr[10] == "BAB":
-				if attr[11] == "A" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14066,8 +13992,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[11] == "B") and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if (attr[11] == "B") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14080,8 +14005,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[11] == "B" or attr[11] == "C") and (
-						attr[12] == "A" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
 					if attr[13] >= 10:
 						z = '5'
 					elif 10 > attr[13] >= 5:
@@ -14103,7 +14027,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[11] == "B" or attr[11] == "C") and attr[12] == "B":
+				if attr[11] in ["B", "C"] and attr[12] == "B":
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14117,8 +14041,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[11] == "C") and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if (attr[11] == "C") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14147,7 +14070,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[11] == "A" or attr[11] == "B"):
+				if attr[11] in ["A", "B"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14247,7 +14170,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "B" and (attr[12] == "A" or attr[12] == "B"):
+				if attr[11] == "B" and attr[12] in ["A", "B"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14384,9 +14307,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[10] == "BAF":
-				if attr[11] == "A" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14411,7 +14332,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "B" and (attr[12] == "A" or attr[12] == "E" or attr[12] == "Z"):
+				if attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14437,9 +14358,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "C" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14465,9 +14384,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "D" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14493,9 +14410,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "E" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14521,9 +14436,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "F" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14549,9 +14462,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "G" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14577,9 +14488,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "H" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "H" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14605,9 +14514,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "I" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '5'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14645,8 +14552,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "J" and (
-						attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+				if attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14672,9 +14578,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "K" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14688,9 +14592,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "Z" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14752,7 +14654,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[10] == "BAH":
-				if (attr[11] == "B" or attr[11] == "C" or attr[11] == "D"):
+				if attr[11] in ["B", "C", "D"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14766,7 +14668,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "Z":
+				elif attr[11] == "Z":
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14807,7 +14709,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "A" and (attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+				elif attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -14833,7 +14735,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "Z":
+				elif attr[11] == "Z":
 					if attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
@@ -14883,7 +14785,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if 0.4 < attr[25]/1000 <= 0.8:
+				elif 0.4 < attr[25]/1000 <= 0.8:
 					if attr[13] >= 80:
 						z = '5'
 					elif 80 > attr[13] >= 60:
@@ -14907,7 +14809,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if attr[25]/1000 > 0.8:
+				elif attr[25]/1000 > 0.8:
 					if attr[13] >= 90:
 						z = '5'
 					elif 90 > attr[13] >= 65:
@@ -15023,7 +14925,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if 0.2 < attr[25]/1000 <= 0.5:
+				elif 0.2 < attr[25]/1000 <= 0.5:
 					if attr[13] >= 6:
 						z = '5'
 					elif 6 > attr[13] >= 4:
@@ -15047,7 +14949,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if attr[25]/1000 > 0.5:
+				elif attr[25]/1000 > 0.5:
 					if attr[13] >= 6:
 						z = '5'
 					elif 6 > attr[13] >= 4:
@@ -15149,7 +15051,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[10] == "BAK" and attr[11] == "D":
-				if (attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+				if attr[12] in ["A", "B", "C", "D"]:
 					z = '2'
 					sql = f"""
 							UPDATE untersuchdat_haltung_bewertung
@@ -15388,8 +15290,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and (attr[11] == "A" or attr[11] == "B") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] in ["A", "B"] and attr[12] in ["A", "B", "C", "D"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15403,8 +15304,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and (attr[11] == "C" or attr[11] == "D") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] in ["C", "D"] and attr[12] in ["A", "B", "C", "D"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15418,8 +15318,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "E" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
 				if attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 35:
@@ -15444,8 +15343,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "F" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15459,8 +15357,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and (attr[11] == "G") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and (attr[11] == "G") and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15474,8 +15371,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "Z" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15500,7 +15396,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAM" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BAM" and attr[11] in ["A", "B", "C"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15513,7 +15409,7 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-			if attr[10] == "BAM" and (attr[11] == "A" or attr[11] == "C"):
+			if attr[10] == "BAM" and attr[11] in ["A", "C"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15617,7 +15513,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBA" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15652,7 +15548,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBB" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBB" and attr[11] in ["A", "B", "C", "Z"]:
 				if attr[13] >= 30:
 					z = '5'
 				elif 30 > attr[13] >= 20:
@@ -15675,7 +15571,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
 				if attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 40:
@@ -15700,8 +15596,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBD" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "Z"):
+			if attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15748,7 +15643,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (attr[11] == "D" or attr[11] == "G"):
+			if attr[10] == "BBE" and attr[11] in ["D", "G"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15762,9 +15657,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E" or attr[
-				11] == "F" or attr[11] == "G" or attr[11] == "H" or attr[11] == "Z"):
+			if attr[10] == "BBE" and attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
 				if attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 35:
@@ -15789,7 +15682,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBF" and (attr[11] == "A" or attr[11] == "B"):
+			if attr[10] == "BBF" and attr[11] in ["A", "B"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15853,7 +15746,7 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-			if attr[10] == "BBF" and (attr[11] == "C" or attr[11] == "D"):
+			if attr[10] == "BBF" and attr[11] in ["C", "D"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15905,8 +15798,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBH" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "Z") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "Z"):
+			if attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15945,8 +15837,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" and attr[11] == "C" and attr[11] == "D" and attr[11] == "E") and \
-					attr[12] == "A":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -15960,8 +15851,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" and attr[11] == "C" and attr[11] == "D" and attr[11] == "E") and \
-					attr[12] == "B":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
@@ -16305,7 +16195,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
+			elif attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
 							"GG", "GG Grauguß", "GGG", "GGG Duktiles Gußeisen", "KST", "KST Nichtidentifizier Kunststoff",
 							"PE", "PE Polyethylen", "PEHD", "PEHD Polyethylen", "PH", "PH Polyesterharz", "PP", "PP Polypropylen",
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
@@ -16520,8 +16410,7 @@ class Zustandsklassen_funkt:
 
 			# Tab A.3
 			if attr[10] == "BAB":
-				if attr[11] == "A" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16546,8 +16435,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[11] == "B") and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if (attr[11] == "B") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16560,8 +16448,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[11] == "B" or attr[11] == "C") and (
-						attr[12] == "A" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if (attr[11] == "B" or attr[11] == "C") and attr[12] in ["A", "C", "D", "E"]:
 					if attr[13] >= 10:
 						z = '5'
 					elif 10 > attr[13] >= 5:
@@ -16597,8 +16484,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[11] == "C") and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E"):
+				if (attr[11] == "C") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16627,7 +16513,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[11] == "A" or attr[11] == "B"):
+				if attr[11] in ["A", "B"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16727,7 +16613,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "B" and (attr[12] == "A" or attr[12] == "B"):
+				if attr[11] == "B" and attr[12] in ["A", "B"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16864,9 +16750,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[10] == "BAF":
-				if attr[11] == "A" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16891,7 +16775,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "B" and (attr[12] == "A" or attr[12] == "E" or attr[12] == "Z"):
+				if attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16917,9 +16801,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "C" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16945,9 +16827,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "D" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -16973,9 +16853,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "E" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17001,9 +16879,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "F" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17029,9 +16905,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "G" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17057,9 +16931,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "H" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "H" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17085,9 +16957,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "I" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '5'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17125,8 +16995,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "J" and (
-						attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or attr[12] == "Z"):
+				if attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17152,9 +17021,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "K" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17168,9 +17035,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "Z" and (
-						attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D" or attr[12] == "E" or
-						attr[12] == "Z"):
+				if attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17232,7 +17097,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[10] == "BAH":
-				if (attr[11] == "B" or attr[11] == "C" or attr[11] == "D"):
+				if attr[11] in ["B", "C", "D"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17287,7 +17152,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[11] == "A" and (attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+				if attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 					z = '3'
 					sql = f"""
 						  UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17503,7 +17368,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if 0.2 < attr[25]/1000 <= 0.5:
+				elif 0.2 < attr[25]/1000 <= 0.5:
 					if attr[13] >= 6:
 						z = '5'
 					elif 6 > attr[13] >= 4:
@@ -17527,7 +17392,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if attr[25]/1000 > 0.5:
+				elif attr[25]/1000 > 0.5:
 					if attr[13] >= 6:
 						z = '5'
 					elif 6 > attr[13] >= 4:
@@ -17629,7 +17494,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[10] == "BAK" and attr[11] == "D":
-				if (attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+				if attr[12] in ["A", "B", "C", "D"]:
 					z = '2'
 					sql = f"""
 							UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17868,8 +17733,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and (attr[11] == "A" or attr[11] == "B") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] in ["A", "B"] and attr[12] in ["A", "B", "C", "D"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17883,8 +17747,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and (attr[11] == "C" or attr[11] == "D") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] in ["C", "D"] and attr[12] in ["A", "B", "C", "D"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17898,8 +17761,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "E" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
 				if attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 35:
@@ -17924,8 +17786,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "F" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17939,8 +17800,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and (attr[11] == "G") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and (attr[11] == "G") and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17954,8 +17814,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAL" and attr[11] == "Z" and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "D"):
+			if attr[10] == "BAL" and attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17980,7 +17839,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BAM" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BAM" and attr[11] in ["A", "B", "C"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -17993,7 +17852,7 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-			if attr[10] == "BAM" and (attr[11] == "A" or attr[11] == "C"):
+			if attr[10] == "BAM" and attr[11] in ["A", "C"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18097,7 +17956,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBA" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C"):
+			if attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18132,7 +17991,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBB" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBB" and attr[11] in ["A", "B", "C", "Z"]:
 				if attr[13] >= 30:
 					z = '5'
 				elif 30 > attr[13] >= 20:
@@ -18155,7 +18014,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBC" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+			if attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
 				if attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 40:
@@ -18180,8 +18039,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBD" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "Z"):
+			if attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18228,7 +18086,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (attr[11] == "D" or attr[11] == "G"):
+			if attr[10] == "BBE" and attr[11] in ["D", "G"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18242,9 +18100,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBE" and (
-					attr[11] == "A" or attr[11] == "B" or attr[11] == "C" or attr[11] == "D" or attr[11] == "E" or attr[
-				11] == "F" or attr[11] == "G" or attr[11] == "H" or attr[11] == "Z"):
+			if attr[10] == "BBE" and attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
 				if attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 35:
@@ -18269,7 +18125,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBF" and (attr[11] == "A" or attr[11] == "B"):
+			if attr[10] == "BBF" and attr[11] in ["A", "B"]:
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18333,7 +18189,7 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-			if attr[10] == "BBF" and (attr[11] == "C" or attr[11] == "D"):
+			if attr[10] == "BBF" and attr[11] in ["C", "D"]:
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18385,8 +18241,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BBH" and (attr[11] == "A" or attr[11] == "B" or attr[11] == "Z") and (
-					attr[12] == "A" or attr[12] == "B" or attr[12] == "C" or attr[12] == "Z"):
+			if attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
 				z = '2'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18425,8 +18280,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" and attr[11] == "C" and attr[11] == "D" and attr[11] == "E") and \
-					attr[12] == "A":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 				z = '4'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18440,8 +18294,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[10] == "BDE" and (attr[11] == "A" and attr[11] == "C" and attr[11] == "D" and attr[11] == "E") and \
-					attr[12] == "B":
+			if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 				z = '3'
 				sql = f"""
 						UPDATE untersuchdat_anschlussleitung_bewertung
@@ -18780,7 +18633,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 
-			if attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
+			elif attr1[1] in ["CN", "CN Edelstahl", "EIS", "EIS Nichtidentifiziertes Metall", "GFK", "GFK Glasfaserverstärkter Kunststoff",
 							"GG", "GG Grauguß", "GGG", "GGG Duktiles Gußeisen", "KST", "KST Nichtidentifizier Kunststoff",
 							"PE", "PE Polyethylen", "PEHD", "PEHD Polyethylen", "PH", "PH Polyesterharz", "PP", "PP Polypropylen",
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
@@ -18914,8 +18767,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DAA" and (attr[6] == "A" or attr[6] == "B") and (
-					attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F") and attr[
+			if attr[5] == "DAA" and attr[6] in ["A", "B"] and attr[13] in ["B", "C", "D", "F"] and attr[
 				15] == "biegesteif":
 				if attr[8] >= 40:
 					z = '5'
@@ -18954,9 +18806,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[5] == "DAB" and attr[6] == "A":
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -18969,8 +18819,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[7] == "A" or attr[7] == "B") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[7] in ["A", "B"] and attr[13] in ["B", "C", "D", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -18984,8 +18833,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[7] in ["C", "D", "E"] and attr[13] in ["B", "C", "D", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19001,8 +18849,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAB" and (attr[6] == "B"):
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19015,8 +18862,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19030,8 +18876,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAB" and (attr[6] == "C"):
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19044,8 +18889,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "I" or attr[13] == "J"):
+				if attr[7] in ["A", "B", "C", "D", "E"] and attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19058,8 +18902,8 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-			if attr[5] == "DAB" and (attr[6] == "B" or attr[6] == "C"):
-				if (attr[7] == "A") and (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+			if attr[5] == "DAB" and attr[6] in ["B", "C"]:
+				if (attr[7] == "A") and attr[13] in ["B", "C", "D", "F"]:
 					if attr[13] >= 8:
 						z = '5'
 					elif 8 > attr[13] >= 5:
@@ -19084,7 +18928,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[7] == "B") and (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[7] == "B") and attr[13] in ["B", "C", "D", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19098,8 +18942,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[7] == "C" or attr[7] == "D" or attr[7] == "E") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[7] in ["C", "D", "E"] and attr[13] in ["B", "C", "D", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19114,7 +18957,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAC" and attr[6] == "A":
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19127,7 +18970,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19140,7 +18983,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19154,7 +18997,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19169,7 +19012,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAC" and attr[6] == "B":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19182,7 +19025,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19196,7 +19039,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19212,7 +19055,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAC" and attr[6] == "C":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19225,7 +19068,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '5'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19239,7 +19082,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "F"]:
 					z = '5'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19266,7 +19109,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAD" and attr[6] == "A":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19279,7 +19122,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19292,7 +19135,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19318,7 +19161,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["H", "I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19334,7 +19177,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAD" and attr[6] == "B" and attr[7] == "A":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19347,7 +19190,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19360,7 +19203,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19374,7 +19217,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["H", "I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19390,7 +19233,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAD" and attr[6] == "B" and attr[7] == "B":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19403,7 +19246,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19416,7 +19259,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["H", "I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19431,7 +19274,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAD" and attr[6] == "C":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19444,7 +19287,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '5'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19457,7 +19300,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					z = '5'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19470,8 +19313,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F" or attr[13] == "H" or attr[13] == "I" or attr[
-					13] == "J"):
+				if attr[13] in ["C", "D", "F", "H", "I", "J"]:
 					z = '5'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19486,7 +19328,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAE":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					if attr[8] >= 100:
 						z = '2'
 					elif attr[8] < 100:
@@ -19504,7 +19346,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					if attr[8] >= 100:
 						z = '3'
 					elif attr[8] < 100:
@@ -19523,7 +19365,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "F"]:
 					if attr[8] > 100:
 						z = '3'
 					elif 100 >= attr[8] > 10:
@@ -19546,10 +19388,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAF":
-				if attr[6] == "A" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "A" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '1'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19563,8 +19402,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "B" and (attr[7] == "A" or attr[7] == "E" or attr[7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "B" and attr[7] in ["A", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19578,10 +19416,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "C" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "C" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19595,10 +19430,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "D" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "D" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19612,10 +19444,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "E" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "E" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19629,10 +19458,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "F" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "F" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19646,10 +19472,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "G" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "G" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19663,10 +19486,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "H" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (
-						attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "H" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["B", "C", "D" "E", "F"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -19680,9 +19500,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "I" and (
-						attr[7] == "A" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[7] == "Z"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] == "I" and attr[7] in ["A", "C", "D", "E", "Z"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19695,7 +19514,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '5'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19709,7 +19528,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19724,9 +19543,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					continue
-				if attr[6] == "K" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z") and (attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "K" and attr[7] in ["A", "B", "C", "D", "E", "Z"] and attr[13] in ["I", "J"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19740,11 +19557,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "Z" and (
-						attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D" or attr[7] == "E" or attr[
-					7] == "Z"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "Z" and attr[7] in ["A", "B", "C", "D", "E","Z"]:
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19757,7 +19571,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19773,7 +19587,7 @@ class Zustandsklassen_funkt:
 							pass
 					continue
 			if attr[5] == "DAG" and attr[6] in ["", "not found"] and attr[7] in ["", "not found"]:
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["C", "D", "E", "F"]:
 					if attr[8] >= 400:
 						z = '5'
 					elif 400 > attr[8] >= 300:
@@ -19813,8 +19627,8 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAH":
-				if (attr[6] == "B" or attr[6] == "C" or attr[6] == "D") and attr[7] in ["", "not found"]:
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] in ["B", "C", "D"] and attr[7] in ["", "not found"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19843,8 +19657,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "Z" and attr[7] in ["", "not found"]:
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19859,8 +19672,8 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DAI":
-				if attr[6] == "A" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] == "A" and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19874,7 +19687,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19889,7 +19702,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "Z" and attr[7] in ["", "not found"]:
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19903,8 +19716,8 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-			if attr[5] == "DAJ" and (attr[6] == "A" or attr[6] == "B" or attr[6] == "C"):
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+			if attr[5] == "DAJ" and attr[6] in ["A", "B", "C"]:
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19917,7 +19730,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "F"]:
 					z = '1'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -19933,8 +19746,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAK":
-				if attr[6] == "A" and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] == "A" and attr[13] in ["C", "D", "E", "F", "H"]:
 					if attr[8] >= 40:
 						z = '5'
 					elif 40 > attr[8] >= 30:
@@ -19959,7 +19771,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[6] == "A" and (attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "A" and attr[13] in ["I", "J"]:
 					if attr[8] >= 0:
 						z = '5'
 					elif 50 > attr[8] >= 35:
@@ -19985,8 +19797,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[6] == "B":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20001,7 +19812,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "C":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20015,7 +19826,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20040,8 +19851,8 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if attr[6] == "D" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C" or attr[7] == "D"):
-					if (attr[13] == "I" or attr[13] == "J"):
+				if attr[6] == "D" and attr[7] in ["A", "B", "C", "D"]:
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20056,8 +19867,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "D" and (attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20072,8 +19882,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "E":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20086,7 +19895,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						if attr[8] >= 40:
 							z = '5'
 						elif 40 > attr[8] >= 30:
@@ -20111,7 +19920,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						if attr[8] >= 50:
 							z = '5'
 						elif 50 > attr[8] >= 35:
@@ -20137,8 +19946,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "F":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20153,8 +19961,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "G":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20169,7 +19976,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "H":
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20185,7 +19992,7 @@ class Zustandsklassen_funkt:
 							pass
 					continue
 				if attr[6] == "I":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20199,7 +20006,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20215,7 +20022,7 @@ class Zustandsklassen_funkt:
 							pass
 					continue
 				if attr[6] == "J":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20229,7 +20036,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20244,7 +20051,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "K":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20258,7 +20065,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20273,7 +20080,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "L":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20286,7 +20093,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20299,8 +20106,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20315,7 +20121,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "M":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20329,7 +20135,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20344,8 +20150,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "N":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20359,8 +20164,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "Z":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20398,7 +20202,7 @@ class Zustandsklassen_funkt:
 							pass
 			if attr[5] == "DAL":
 				if attr[6] == "A":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -20412,7 +20216,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '4'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -20427,8 +20231,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "B":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H" or
-							attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["C", "D", "E", "F", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -20443,7 +20246,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "C":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20472,7 +20275,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "D":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20486,7 +20289,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20501,8 +20304,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "E":
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-							attr[13] == "F" or attr[13] == "G" or attr[13] == "H"):
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H"]:
 						if attr[8] >= 40:
 							z = '5'
 						elif 40 > attr[8] >= 30:
@@ -20527,7 +20329,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						if attr[8] >= 50:
 							z = '5'
 						elif 50 > attr[8] >= 35:
@@ -20553,7 +20355,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "F":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20582,7 +20384,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "G":
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20636,8 +20438,8 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAM":
-				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -20665,7 +20467,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if (attr[6] == "A" or attr[13] == "C"):
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "F"]:
 						z = '2'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -20680,7 +20482,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 				if attr[6] == "B":
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "F"]:
 						z = '1'
 						sql = f"""
 								UPDATE Untersuchdat_schacht_bewertung
@@ -20696,7 +20498,7 @@ class Zustandsklassen_funkt:
 							pass
 				continue
 			if attr[5] == "DAN":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20723,7 +20525,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20739,7 +20541,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAO":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20766,7 +20568,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '4'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20782,7 +20584,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAP":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20809,7 +20611,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '5'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20825,9 +20627,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DAQ":
-				if (attr[6] == "A" or attr[6] == "C" or attr[6] == "D" or attr[6] == "F" or attr[6] == "G" or attr[
-					6] == "H" or attr[6] == "I" or attr[6] == "J" or attr[6] == "K") and (
-						attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if attr[6] in ["A", "C", "D", "F", "G", "H", "I", "J", "K"] and attr[13] in ["C", "D", "F"]:
 					z = '4'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20841,7 +20641,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "B") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[6] == "B") and attr[13] in ["C", "D", "F"]:
 					z = '5'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20855,7 +20655,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "E") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[6] == "E") and attr[13] in ["C", "D", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20869,7 +20669,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "Z") and (attr[13] == "C" or attr[13] == "D" or attr[13] == "F"):
+				if (attr[6] == "Z") and attr[13] in ["C", "D", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20884,7 +20684,7 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			if attr[5] == "DAR":
-				if (attr[6] == "A" or attr[6] == "C" or attr[6] == "F") and (attr[13] == "A"):
+				if attr[6] in ["A", "C", "F"] and (attr[13] == "A"):
 					z = '5'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20956,7 +20756,7 @@ class Zustandsklassen_funkt:
 						pass
 			if attr[5] == "DBA":
 				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -20982,9 +20782,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-							attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[
-								13] == "J"):
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21000,9 +20798,7 @@ class Zustandsklassen_funkt:
 							pass
 					continue
 			if attr[5] == "DBB":
-				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C" or attr[6] == "Z") and (
-						attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-						attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[6] in ["A", "B", "C", "Z"] and attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -21056,7 +20852,7 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DBD":
-				if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[13] in ["C", "D", "E", "F", "H"]:
 					z = '3'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21069,7 +20865,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "I" or attr[13] == "J"):
+				if attr[13] in ["I", "J"]:
 					z = '4'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21083,7 +20879,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '5'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21096,7 +20892,7 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-				if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[13] in ["B", "C", "D", "E", "F"]:
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21112,7 +20908,7 @@ class Zustandsklassen_funkt:
 						pass
 				continue
 			if attr[5] == "DBE":
-				if (attr[6] == "A" or attr[6] == "B" or attr[6] == "C") and (attr[13] == "I" or attr[13] == "J"):
+				if attr[6] in ["A", "B", "C"] and (attr[13] == "I" or attr[13] == "J"):
 					z = '2'
 					sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21126,11 +20922,8 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "D" or attr[6] == "E" or attr[6] == "F" or attr[6] == "G" or attr[6] == "H" or attr[
-					6] == "Z"):
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-							attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[
-								13] == "J"):
+				if attr[6] in ["D", "E", "F", "G", "H", "Z"]:
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21144,8 +20937,8 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if (attr[6] == "D" or attr[6] == "G"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] in ["D", "G"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21159,7 +20952,7 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21174,8 +20967,8 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 			if attr[5] == "DBF":
-				if (attr[6] == "A" or attr[6] == "B") and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+				if attr[6] in ["A", "B"] and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21188,7 +20981,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21201,7 +20994,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21214,9 +21007,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-							attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[
-								13] == "J"):
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 						z = '1'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21230,8 +21021,8 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-				if attr[6] == "C" and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if attr[6] == "C" and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21244,7 +21035,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21257,7 +21048,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21270,9 +21061,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-							attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[
-								13] == "J"):
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21285,8 +21074,8 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-				if (attr[6] == "D") and (attr[7] == "A" or attr[7] == "B" or attr[7] == "C"):
-					if (attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F"):
+				if (attr[6] == "D") and attr[7] in ["A", "B", "C"]:
+					if attr[13] in ["B", "C", "D", "E", "F"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21299,7 +21088,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or attr[13] == "F" or attr[13] == "H"):
+					if attr[13] in ["C", "D", "E", "F", "H"]:
 						z = '3'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21312,7 +21101,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "I" or attr[13] == "J"):
+					if attr[13] in ["I", "J"]:
 						z = '4'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21325,9 +21114,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-					if (attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-							attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[
-								13] == "J"):
+					if attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 						z = '2'
 						sql = f"""
 							UPDATE Untersuchdat_schacht_bewertung
@@ -21340,7 +21127,7 @@ class Zustandsklassen_funkt:
 							#db.commit()
 						except:
 							pass
-			if attr[5] == "DBG" and (attr[13] == "I" or attr[13] == "J"):
+			if attr[5] == "DBG" and attr[13] in ["I", "J"]:
 				z = '4'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -21395,7 +21182,7 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 			if attr[5] == "DCJ":
-				if (attr[6] == "B" or attr[6] == "F") and (attr[13] == "F"):
+				if attr[6] in ["B", "F"] and (attr[13] == "F"):
 					z = '5'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -21409,7 +21196,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if (attr[6] == "C" or attr[6] == "D" or attr[6] == "G" or attr[6] == "H") and (attr[13] == "F"):
+				if attr[6] in ["C", "D", "G", "H"] and (attr[13] == "F"):
 					z = '2'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -21423,7 +21210,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-			if attr[5] == "DCL" and (attr[6] == "A" or attr[6] == "B" or attr[6] == "C") and attr[7] == "A" and (
+			if attr[5] == "DCL" and attr[6] in ["A", "B", "C"] and attr[7] == "A" and (
 					attr[13] == "F"):
 				z = '2'
 				sql = f"""
@@ -21438,7 +21225,7 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DCM" and (attr[6] == "B" or attr[6] == "C") and (attr[13] == "A"):
+			if attr[5] == "DCM" and attr[6] in ["B", "C"] and (attr[13] == "A"):
 				z = '2'
 				sql = f"""
 					UPDATE Untersuchdat_schacht_bewertung
@@ -21466,10 +21253,8 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-			if attr[5] == "DDE" and (attr[6] == "A" or attr[6] == "C" or attr[6] == "D" or attr[6] == "E"):
-				if attr[7] == "A" and (
-						attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-						attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+			if attr[5] == "DDE" and attr[6] in ["A", "C", "D", "E"]:
+				if attr[7] == "A" and attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 					z = '4'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung
@@ -21483,9 +21268,7 @@ class Zustandsklassen_funkt:
 						continue
 					except:
 						pass
-				if attr[7] == "B" and (
-						attr[13] == "A" or attr[13] == "B" or attr[13] == "C" or attr[13] == "D" or attr[13] == "E" or
-						attr[13] == "F" or attr[13] == "G" or attr[13] == "H" or attr[13] == "I" or attr[13] == "J"):
+				if attr[7] == "B" and attr[13] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
 					z = '3'
 					sql = f"""
 						UPDATE Untersuchdat_schacht_bewertung

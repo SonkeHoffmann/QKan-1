@@ -223,7 +223,7 @@
      </widget>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
-       <string>SüwVO</string>
+       <string>SüwVO - KS</string>
       </attribute>
       <widget class="QLabel" name="label_6">
        <property name="geometry">
