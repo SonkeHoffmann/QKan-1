@@ -54,8 +54,8 @@ database_haltungen_trig_new_hal: "
 CREATE TRIGGER IF NOT EXISTS trig_new_hal
 AFTER INSERT ON haltungen
 BEGIN
-    UPDATE haltungen SET 
-    haltnam = (
+    UPDATE haltungen 
+    SET haltnam = (
         SELECT schnam || '.1'
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
@@ -82,8 +82,8 @@ BEGIN
     )
     WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
 
-    UPDATE haltungen SET 
-    schunten = (
+    UPDATE haltungen 
+    SET schunten = (
         SELECT schnam
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
@@ -102,9 +102,10 @@ database_haltungen_trig_mod_hal: "
 CREATE TRIGGER IF NOT EXISTS trig_mod_hal
 AFTER UPDATE OF geom ON haltungen
 BEGIN
-    UPDATE haltungen SET 
-    schoben = (
-        SELECT coalesce(schnam, OLD.schoben)
+    UPDATE haltungen
+    SET schoben = 
+    (   SELECT
+            coalesce(s.schnam, OLD.schoben)
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
@@ -116,15 +117,10 @@ BEGIN
     )
     WHERE pk = old.pk;
 
-    UPDATE haltungen SET 
-        laenge = NULL,
-        sohleoben = NULL,
-        sohleunten = NULL
-    WHERE pk = old.pk;
-
-    UPDATE haltungen SET 
-    schunten = (
-        SELECT coalesce(schnam, OLD.schunten)
+    UPDATE haltungen
+    SET schunten = 
+    (   SELECT 
+            coalesce(s.schnam, OLD.schunten)
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
         AND s.ROWID IN (

@@ -114,6 +114,8 @@ class PlausiDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
         self.count_selection()
 
+        self.lw_themen.setFocus()
+
         return True
 
     def selected_themes(self):

@@ -1560,36 +1560,6 @@ class ImportTask(Schadenstexte):
                     logger.info("M150: Kein Punktobjekte gefunden. Versuche alte M150-Felder HG201 ...")
                     geom, sohleoben, sohleunten = self._get_HG_201(block, name)
 
-                # # coords = []
-                # #
-                # # sohleoben = None
-                # # sohleunten = None
-                # #
-                # # for _gp in block.findall("GO/GP"):
-                # #
-                # #     #Sohlhöhe nur beim ersten Datensatz lesen
-                # #     if not sohleoben:
-                # #         sohleoben = _get_float(_gp, "GP007", 0.0)  # erste Sohlhöhe
-                # #     xsch = _get_float(_gp, "GP003")
-                # #     if xsch is None:
-                # #         xsch = _get_float(_gp, "GP005")
-                # #     ysch = _get_float(_gp, "GP004")
-                # #     if ysch is None:
-                # #         ysch = _get_float(_gp, "GP006")
-                # #
-                # #     coords.append((xsch, ysch))
-                # #
-                # #     # Sohlhöhe bleibt der zuletzt gelesen Wert
-                # #     sohleunten = _get_float(_gp, "GP007", 0.0)
-                #
-                # # Linienobjekt aus Punktobjekten
-                # if len(coords) > 0:
-                #     pts = [QgsPoint(x, y) for x, y in coords]
-                #     line = QgsGeometry.fromPolyline(pts)
-                #     geom = line.asWkb()
-                # else:
-                #     geom = None
-
                 yield Haltung(
                     haltnam=name,
                     schoben=schoben,

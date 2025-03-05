@@ -20,6 +20,8 @@
     Qkan_Datenaustausch
     Qkan_flaechen
     Qkan_workflow
+    Qkan_qfield
+    Qkan_edit
     
  
 .. toctree::

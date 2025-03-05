@@ -271,7 +271,7 @@ erstellen`. Die Zuordnung sollte anschließend visuell überprüft werden.
 
 Verbindungslinien bearbeiten
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Gibt es unerwünschte Zuordnungen von Flächen zu Haltungen können diese leicht manuell gelöscht oder verschoben werden. Ist der Layer auf 
+Gibt es unerwünschte Zuordnungen von Flächen zu Haltungen können diese leicht manuell gelöscht oder verschoben werden. Ist der Layer, auf 
 dem die Verbindungslinien liegen im |Tool_bearbeitungsmodus| :guilabel:`Bearbeitungsmodus`, kann das |Tool_stuetzpunktwerkzeug| 
 :guilabel:`Stützpunktwerkzeug` ausgewählt werden. Damit die Bearbeitung funktioniert ist es wichtig, dass das 
 |Tool_topologisches_editieren| :guilabel:`topoligisches editieren Werkzeug` deaktiviert ist. Um eine Stützstelle zu ändern, muss nach 

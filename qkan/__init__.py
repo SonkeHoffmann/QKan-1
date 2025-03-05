@@ -8,7 +8,7 @@ import qgis
 from qgis.PyQt.QtCore import QCoreApplication, QSettings, QStandardPaths, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QListWidget, QMenu, QMenuBar, QWidget
-from qgis.core import QgsProject
+from qgis.core import QgsProject, QgsSettings
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 
@@ -150,6 +150,22 @@ class QKan:
 
         self.toolbar = self.iface.addToolBar("QKan")
         self.toolbar.setObjectName("QKan")
+
+        # Add QKan SVG path
+        qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")
+        svgPaths = QgsSettings().value('svg/searchPathsForSVG')
+        if qkanSvgPath not in svgPaths:
+            svgPaths.append(qkanSvgPath)
+            QgsSettings().setValue('svg/searchPathsForSVG', svgPaths)
+
+        # Set Identify Forms Option
+        QgsSettings().setValue('Map/identifyAutoFeatureForm', 'true')
+        QgsSettings().setValue('Map/identifyMode', 'LayerSelection')
+
+        # plugin 'grassprovider' ist needed for surfaceTool.SurfaceTask.run_voronoi
+        if not qgis.utils.isPluginLoaded('grassprovider'):
+            QgsSettings().setValue('PythonPlugins/grassprovider', True)
+            qgis.utils.startPlugin('grassprovider')
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:

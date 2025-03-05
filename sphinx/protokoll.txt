@@ -3,11 +3,23 @@ loading translations [de]... done
 loading pickled environment... done
 building [mo]: targets for 0 po files that are out of date
 writing output... 
-building [html]: targets for 0 source files that are out of date
-updating environment: 0 added, 0 changed, 0 removed
-reading sources... 
+building [html]: targets for 2 source files that are out of date
+updating environment: 1 added, 2 changed, 0 removed
+reading sources... [ 33%] Qkan_editreading sources... [ 67%] Qkan_flaechenreading sources... [100%] index
 looking for now-outdated files... none found
-no targets are out of date.
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... copying downloadable files... [ 50%] _static/kanaldaten.xlsxcopying downloadable files... [100%] _static/kostra_dwd_2010r.zip
+copying static files... done
+copying extra files... done
+done
+writing output... [ 33%] Qkan_editwriting output... [ 67%] Qkan_flaechenwriting output... [100%] index
+generating indices... genindex done
+writing additional pages... search done
+copying images... [  7%] QKan_Bilder/qkan_linkfl.pngcopying images... [ 13%] QKan_Bilder/qkan_linkfl_aufteil.pngcopying images... [ 20%] QKan_Bilder/Form_Flaechen_aufteil.pngcopying images... [ 27%] QKan_Bilder/Tool_bearbeitungsmodus.pngcopying images... [ 33%] QKan_Bilder/Tool_layeraenderungen_speichern.pngcopying images... [ 40%] QKan_Bilder/Tool_objekte_verschmelzen.pngcopying images... [ 47%] QKan_Bilder/Tool_elemente_tezg_zuordnen.pngcopying images... [ 53%] QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_haltungen.pngcopying images... [ 60%] QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_aktualisieren.pngcopying images... [ 67%] QKan_Bilder/Tool_auswahlmodus.pngcopying images... [ 73%] QKan_Bilder/Tool_voronoiflaechen.pngcopying images... [ 80%] QKan_Bilder/Tool_unbef_flaechen.pngcopying images... [ 87%] QKan_Bilder/Tool_verknuepfungslinien_erstellen.pngcopying images... [ 93%] QKan_Bilder/Tool_stuetzpunkt_werkzeug.pngcopying images... [100%] QKan_Bilder/Tool_topologisches_editieren.png
+dumping search index in German (code: de)... done
+dumping object inventory... done
 build succeeded.
 
 The HTML pages are in build\html.

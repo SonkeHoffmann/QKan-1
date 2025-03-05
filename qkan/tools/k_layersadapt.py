@@ -53,19 +53,6 @@ logger = get_logger("QKan.tools.k_layersadapt")
 
 progress_bar = None
 
-def load_plausisql(dbQK):
-    """Lädt die Standardplausibilitätsprüfungen in die Tabelle 'pruefsql'"""
-    templateDir = os.path.join(pluginDirectory("qkan"), "templates")
-    filenam = os.path.join(templateDir, 'Plausibilitaetspruefungen.sql')
-    if dbQK.executefile(filenam):
-        logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
-    else:
-        fehlermeldung("Fehler beim Lesen der Plausibilitätsabfragen:",
-                      f"Die Datei {filenam} konnten nicht gelesen werden!")
-        return False
-    dbQK.commit()
-    return True
-
 
 def load_plausiaction(layer):
     """Lädt für den Layer 'Fehlerliste' die Aktion zum Aktivieren und Zoomen auf das fehlerhaft Objekt"""
@@ -162,19 +149,6 @@ def layersadapt(
 
     # -----------------------------------------------------------------------------------------------------
     # QKan-Projekt
-
-    if anpassen_svgPaths:
-        # Add QKan SVG path
-        qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")
-        svgPaths = QgsSettings().value('svg/searchPathsForSVG')
-        if qkanSvgPath not in svgPaths:
-            svgPaths.append(qkanSvgPath)
-            QgsSettings().setValue('svg/searchPathsForSVG', svgPaths)
-
-        # Set Identify Forms Option
-        QgsSettings().setValue('Map/identifyAutoFeatureForm', 'true')
-        QgsSettings().setValue('Map/identifyMode', 'LayerSelection')
-
 
     # noinspection PyArgumentList
     project = QgsProject.instance()
@@ -325,9 +299,6 @@ def layersadapt(
                     layer.loadNamedStyle(qlsnam)
                     layer.triggerRepaint()
                     logger.debug("Layerstil geladen (2): {}".format(qlsnam))
-                if layer.name() == 'Plausibilitätsprüfungen' and dbQK is not None:
-                    load_plausisql(dbQK)
-                    logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
 
                 # nachfolgende Zeilen sind nicht notwendig, da in Projektdatei schon enthalten:
                 # elif layer.name() == 'Fehlerliste':

@@ -1,5 +1,20 @@
--- DELETE FROM pruefsql;
+/* SQL-Abfragen für das Plausibilitätsprüfungs-Tool
+
+Diese Datei wird beim Öffnen des Tools als SQL-Datei ausgeführt und fügt noch nicht in der Tabelle 'pruefsql' enthaltene Datensätze hinzu. 
+Die Attribute der Datensätze haben folgende Bedeutung:
+ - gruppe: Bezeichnung erscheint im Formular und dient der Auswahl
+ - warntext: interne Bezeichnung (s. u.)
+ - warntyp: Erscheint nach der Ausführung in der Tabelle 'Fehlerliste'
+ - warnlevel: Erscheint nach der Ausführung in der Tabelle 'Fehlerliste': Gewichtung des Fehlers (1-9)
+ - sql: SQL-Anweisung mit folgenden Attributen:
+    - (Attributname): Attribut, das zur Identifikation des fehlerhaften Objektes verwendet werden kann, meistens 'pk'
+    - bemerkung: Text, der in der Fehlerliste in der Spalte 'Warntext' angezeigt wird
+ - Name des Layers, in dem sich das fehlerhafte Objekt befindet
+ - Name des Attributs (string), anhand dessen das fehlerhafte Objekt identifiziert werden kann
+
 -- Hinweis: printf() benötigt Textkonstanten mit ""
+*/
+-- DELETE FROM pruefsql;
 INSERT INTO pruefsql (gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)
 SELECT pn.gruppe, pn.warntext, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn.attrname FROM
 (   SELECT column1 AS gruppe, column2 AS warntext, column3 AS warntyp, column4 AS warnlevel, column5 AS sql, column6 AS layername, column7 AS attrname FROM 
@@ -10,12 +25,18 @@ SELECT pn.gruppe, pn.warntext, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, p
     LEFT JOIN schaechte AS so ON ha.schoben = so.schnam
     WHERE within(so.geop, buffer(pointn(ha.geom,1), 1.0)) <> 1 AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
  'Haltungen', 'haltnam'),
+
 ('Netzstruktur', 'Schacht unten mehr als 1.0 m von Haltungsende entfernt', 'Fehler', 9, 
     'SELECT haltnam, ''Schacht unten mehr als 1.0 m von Haltungsende entfernt'' AS bemerkung
     FROM haltungen AS ha
     LEFT JOIN schaechte AS su ON ha.schunten = su.schnam
     WHERE within(su.geop, buffer(pointn(ha.geom,-1), 1.0)) <> 1 AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
  'Haltungen', 'haltnam'),
+
+('Kreuzende Haltungen (im Plan)', 'Zwei Haltungen kreuzen sich', 'Fehler', 9,
+'WITH haltungen_selected AS (SELECT * FROM haltungen WHERE not transport) SELECT n1.pk AS pk, printf("Haltung %s und %s kreuzen sich. Eine von beiden muss als Transporthaltung markiert werden!", n1.haltnam, n2.haltnam) AS bemerkung
+FROM haltungen_selected AS n1 JOIN haltungen_selected AS n2 ON ST_Intersects(n1.geom, n2.geom) = 1
+WHERE n1.pk > n2.pk  AND n1.schoben not in (n2.schunten, n2.schoben) AND n2.schoben not in (n1.schunten, n1.schoben) AND n1.schunten not in (n2.schunten, n2.schoben) AND n2.schunten not in (n1.schunten, n1.schoben)', 'Haltungen', 'pk'),
 
 ('Netzstruktur', 'Zwei Schächte haben ein identisches Geoobjekt', 'Fehler', 9,
     'SELECT pk, printf("Datensatz in Layer ""Schächte"" in %d Datensätzen hat ein identisches Geoobjekt (nur max. 5 Datensätze angezeigt)", 
@@ -175,7 +196,7 @@ WHERE geom IS NULL LIMIT 5',
         printf("Haltungsnamen doppelt in Layer ""Haltungen"" in %d Datensätzen (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM (SELECT haltnam FROM haltungen GROUP BY haltnam HAVING count(*) > 1))) AS bemerkung
     FROM (SELECT haltnam FROM haltungen GROUP BY haltnam HAVING count(*) > 1) LIMIT 5', 
  'Haltungen', 'haltnam'),
-('Kreuzende Haltungen (braucht sehr lang!)', 'Kreuzende Haltungen', 'Warnung', 6, 
+('Kreuzende Haltungen (3D, braucht sehr lang!)', 'Kreuzende Haltungen', 'Warnung', 6, 
     'SELECT
          haltna1 AS haltnam, 
          printf("Theoretischer Abstand zu Haltung %s beträgt d = %.2f", haltna2, COALESCE(abstkreuz, d3)) as bemerkung

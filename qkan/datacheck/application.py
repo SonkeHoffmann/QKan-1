@@ -11,8 +11,12 @@ from qkan.plugin import QKanPlugin
 from ._plausi import PlausiTask
 from .application_dialog import PlausiDialog
 
+from qkan.utils import get_logger
+
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
+
+logger = get_logger("QKan")
 
 
 class Plausi(QKanPlugin):
@@ -43,13 +47,25 @@ class Plausi(QKanPlugin):
             if not db_qkan.connected:
                 return False
 
+            # Laden der Referenzliste
+            db_qkan.sql("DELETE FROM reflist_zustand", "Plausibilität: Zustandsliste zurücksetzen")
+            db_qkan.commit()
+
+            # Laden der Plausibilitätsprüfungen
+            templateDir = os.path.join(pluginDirectory("qkan"), "templates")
+            filenam = os.path.join(templateDir, 'Plausibilitaetspruefungen.sql')
+            if db_qkan.executefile(filenam):
+                logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
+            else:
+                logger.error_code("Fehler beim Lesen der Plausibilitätsabfragen:"
+                              f"Die Datei {filenam} konnten nicht gelesen werden!")
+            db_qkan.commit()
+            logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
+
             if not self.plausi_dlg.prepareDialog(db_qkan):
                 return False
 
-            # Laden der Referenzliste
-            db_qkan.cursl.execute("DELETE FROM reflist_zustand")
-            db_qkan.commit()
-
+            # Laden der Plausibilitätsdaten zu Zustandsklassen
             reflist_zustandfile = os.path.join(
                 pluginDirectory("qkan"), "templates", "Plausi_Zustandsklassen.csv"
             )

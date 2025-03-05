@@ -176,7 +176,7 @@ class SurfaceTask:
                 "native:geometrybyexpression",
                 {
                     'INPUT': f'spatialite://dbname=\'{self.database_qkan}\' table="haltungen" (geom) '
-                             f'sql=(haltungstyp IS NULL or haltungstyp = \'Haltung\') and '
+                             f'sql=(haltungstyp IS NULL or haltungstyp = \'Haltung\') and not transport and '
                              f'geom IS NOT NULL{auswahl_hal}',
                     'OUTPUT_GEOMETRY': 0,
                     'WITH_Z': False,
@@ -204,25 +204,30 @@ class SurfaceTask:
             progress_bar.setValue(20)
 
             # Voronoi-Gebiete erzeugen
-            p_voronoi = processing.run(
-                "grass7:v.voronoi.skeleton",
-                {'input': p_line2poly['OUTPUT'],
-                 'smoothness': 0.01,
-                 'thin': -1,
-                 '-a': True,
-                 '-s': False,
-                 '-l': False,
-                 '-t': False,
-                 'output': 'TEMPORARY_OUTPUT',
-                 'GRASS_REGION_PARAMETER': f'{xmin},{xmax},{ymin},{ymax} [EPSG:{self.epsg}]',
-                 'GRASS_SNAP_TOLERANCE_PARAMETER': -1,
-                 'GRASS_MIN_AREA_PARAMETER': 0.0001,
-                 'GRASS_OUTPUT_TYPE_PARAMETER': 0,
-                 'GRASS_VECTOR_DSCO': '',
-                 'GRASS_VECTOR_LCO': '',
-                 'GRASS_VECTOR_EXPORT_NOCAT': False
-                 }
-            )
+            try:
+                p_voronoi = processing.run(
+                    "grass7:v.voronoi.skeleton",
+                    {'input': p_line2poly['OUTPUT'],
+                     'smoothness': 0.01,
+                     'thin': -1,
+                     '-a': True,
+                     '-s': False,
+                     '-l': False,
+                     '-t': False,
+                     'output': 'TEMPORARY_OUTPUT',
+                     'GRASS_REGION_PARAMETER': f'{xmin},{xmax},{ymin},{ymax} [EPSG:{self.epsg}]',
+                     'GRASS_SNAP_TOLERANCE_PARAMETER': -1,
+                     'GRASS_MIN_AREA_PARAMETER': 0.0001,
+                     'GRASS_OUTPUT_TYPE_PARAMETER': 0,
+                     'GRASS_VECTOR_DSCO': '',
+                     'GRASS_VECTOR_LCO': '',
+                     'GRASS_VECTOR_EXPORT_NOCAT': False
+                     }
+                )
+            except BaseException as err:
+                logger.warning("Die GRASS-Toolbox ist nicht verfügbar.\nBitte aktivieren Sie die Erweiterung "
+                               "'GRASS GIS provider' und starten Sie QGIS neu...")
+                return False
             # layer = QgsVectorLayer(p_voronoi['output'], "skeleton", "ogr")
             # QgsProject.instance().addMapLayer(layer)
 

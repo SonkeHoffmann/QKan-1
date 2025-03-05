@@ -1,0 +1,75 @@
+# Noch nicht aktiv!
+
+# Infos Haltungen nach Entwässerungsarten
+info_hal_entw: "
+WITH liste AS (
+    SELECT
+        entwart,
+        round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
+        count() AS anzahl
+    FROM haltungen
+    WHERE entwart IS NOT NULL AND (len(coalesce(:combo3, 0)) = 0 OR teilgebiet in :combo3)      /% combo3 = Auswahlliste Teilgebiete %/
+    GROUP BY entwart
+)
+SELECT *
+FROM liste
+WHERE entwart NOT LIKE '%still%' 
+ORDER BY gesamtlaenge DESC"
+
+#Infos Schächte nach Entwässerungsarten
+info_sch_entw: "
+WITH liste AS (
+    SELECT
+        entwart,
+        count() AS anzahl
+    FROM schaechte
+    WHERE entwart IS NOT NULL AND (len(coalesce(:combo3, 0)) = 0 OR teilgebiet in :combo3)      /% combo3 = Auswahlliste Teilgebiete %/
+    GROUP BY entwart
+)
+SELECT *
+FROM liste
+WHERE entwart NOT LIKE '%still%' 
+
+#Infos Anschlussleitungen nach Entwässerungsarten
+info_anschl_entw: "
+WITH liste AS (
+    SELECT
+        entwart,
+        round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
+        count() AS anzahl
+    FROM anschlussleitungen
+    WHERE entwart IS NOT NULL {self.abfrage_and}
+    GROUP BY entwart
+)
+SELECT *
+FROM liste
+WHERE entwart NOT LIKE '%still%' 
+ORDER BY gesamtlaenge DESC"
+
+#Infos Teilgebiete
+info_tgbs: "
+SELECT
+    coalesce(trim(teilgebiet), '') as tgb,
+    round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
+    count() AS anzahl
+FROM haltungen
+WHERE entwart IS NOT NULL {self.abfrage_and}
+GROUP BY tgb
+
+#Darstellungen Haltungen nach Baujahr
+sql = f"""
+            WITH liste AS (
+                SELECT
+                    iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
+                    baujahr
+                    FROM haltungen
+                    {self.abfrage_where}
+            )
+            SELECT
+                baujahr,
+                round(sum(laenge)/1000.0 ,2) AS gesamtlaenge
+            FROM liste
+            GROUP BY baujahr
+            ORDER BY baujahr
+        """
+
