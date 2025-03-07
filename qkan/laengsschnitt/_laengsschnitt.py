@@ -1008,7 +1008,7 @@ class LaengsTask:
         plt.annotate("Deckelhöhe [m ü. NHN]", (x_min-55, y_min-0.4), textcoords="offset points", xytext=(-10, 0), ha='left')
         plt.annotate("Schachtname", (x_min - 55, y_min - 0.9), textcoords="offset points", xytext=(-10, 0),
                      ha='left')
-        plt.annotate("Sohlehöhe Schacht [m ü. NHN]", (x_min - 55, y_min - 1.4), textcoords="offset points", xytext=(-10, 0),
+        plt.annotate("Sohlhöhe Schacht [m ü. NHN]", (x_min - 55, y_min - 1.4), textcoords="offset points", xytext=(-10, 0),
                      ha='left')
         plt.annotate("Sohlhöhe Haltung [m ü. NHN]", (x_min - 55, y_min - 1.9), textcoords="offset points", xytext=(-10, 0),
                      ha='left')
@@ -1040,19 +1040,17 @@ class LaengsTask:
 
         x = 0
 
-        #TODO: umprogrammieren so das beide Höhen ankommens und abgehend zum Schacht angezeigt werden!
-
         x_d = x_deckel_l
         del x_d[-1]
         x_d.insert(0, 0)
 
-        for i, j in zip(x_d, z_sohle_h):
+        for i, j in zip(x_d, sohle_l):
             # so verschieben, dass die Texte passend stehen!
             if x % 2:
-                plt.annotate(round(j, 2), (i +0.1, y_min - 1.9), bbox=dict(facecolor='white', edgecolor='none'),
+                plt.annotate(round(j, 2), (i-5., y_min- 1.9 ), bbox=dict(facecolor='white', edgecolor='none'),
                               ha='center')
             else:
-                plt.annotate(round(j, 2), (i +0.1, y_min - 1.9), bbox=dict(facecolor='white', edgecolor='none'),
+                plt.annotate(round(j, 2), (i+5., y_min - 1.9), bbox=dict(facecolor='white', edgecolor='none'),
                               ha='center')
             x += 1
 

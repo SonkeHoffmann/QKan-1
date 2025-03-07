@@ -216,6 +216,7 @@ class QKan:
             strakat = self.menu.addMenu("STRAKAT")
             flaechen = self.menu.addMenu("Flächenverarbeitung")
             zustand = self.menu.addMenu("Zustandsbewertung")
+            substanz = self.menu.addMenu("Substanzbewertung")
             flood2D = self.menu.addMenu("Überflutung")
             info = self.menu.addMenu("Info")
 
@@ -266,7 +267,7 @@ class QKan:
 
             safe_add_action(zustand, "Zustandsklassen ermitteln")
             safe_add_action(zustand, "Sanierungsbedarfszahl ermitteln")
-            safe_add_action(zustand, "Substanzklassen ermitteln")
+            safe_add_action(substanz, "Substanzklassen ermitteln")
             #
             safe_add_action(flood2D, "Überflutungsanimation")
 
