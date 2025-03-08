@@ -10,10 +10,8 @@ Die Attribute der Datensätze haben folgende Bedeutung:
     - (Attributname): Attribut, das zur Identifikation des fehlerhaften Objektes verwendet werden kann, meistens 'pk'
     - bemerkung: Text, der in der Fehlerliste in der Spalte 'Warntext' angezeigt wird
  - Name des Layers, in dem sich das fehlerhafte Objekt befindet
- - Name des Attributs (string), anhand dessen das fehlerhafte Objekt identifiziert werden kann
+ - Name des Attributs (string), anhand dessen das fehlerhafte Objekt identifiziert werden kann */
 
--- Hinweis: printf() benötigt Textkonstanten mit ""
-*/
 -- DELETE FROM pruefsql;
 INSERT INTO pruefsql (gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)
 SELECT pn.gruppe, pn.warntext, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn.attrname FROM

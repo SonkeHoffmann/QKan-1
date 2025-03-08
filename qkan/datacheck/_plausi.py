@@ -6,9 +6,13 @@ from qkan.utils import get_logger
 logger = get_logger("mu.import")
 
 
-class PlausiTask(QKanPlugin):
-    def __init__(self, db_qkan: DBConnection):
+class PlausiTask:
+    def __init__(self, db_qkan: DBConnection, limitdata: bool = True):
         self.db_qkan = db_qkan
+        if limitdata:
+            self.limit = 5
+        else:
+            self.limit = 5000
 
     def run(self) -> bool:
         selected_themes = QKan.config.plausi.themen
@@ -71,17 +75,19 @@ class PlausiTask(QKanPlugin):
             return False
 
         for (gruppe, warnung, warntyp, warnlevel, sqltext, layername, attrname) in self.db_qkan.fetchall():
-            sql = f"""INSERT INTO pruefliste (objname, warntext, warntyp, warnlevel, layername, attrname)
-                SELECT
-                    {attrname},
-                    bemerkung AS warntext,
-                    '{warntyp}' AS warntyp,
-                    {warnlevel} AS warnlevel,
-                    '{layername}' AS layername,
-                    '{attrname}' AS attrname
-                FROM
-                ({sqltext});"""
-            if not self.db_qkan.sql(sql, "datacheck.PlausiTask.run (2)"):
+            params = {
+                'warnung': warnung,
+                'warntyp': warntyp,
+                'warnlevel': warnlevel,
+                'layername': layername,
+                'limit': self.limit,
+            }
+
+            if not self.db_qkan.sqlyml(
+                'datacheck_plausi',
+                'datacheck.PlausiTask.run (2)',
+                replacefun=lambda sqltext: sqltext.format(attrname=attrname, sqltext=sqltext)
+            ):
                 logger.warning(f"Plausibilitätsabfrage '{warnung}' zum Thema '{gruppe}' ist fehlgeschlagen.")
 
         self.db_qkan.commit()

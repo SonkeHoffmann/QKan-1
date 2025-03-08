@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>380</height>
+    <height>435</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,7 +31,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>330</y>
+     <y>370</y>
      <width>251</width>
      <height>23</height>
     </rect>
@@ -108,27 +108,11 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLineEdit" name="le_anzahl">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>260</y>
-     <width>51</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anzahl auszuführender Plausibilitätsabfragen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="statusTip">
-    <string>Anzahl auszuführender Plausibilitätsabfragen</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>260</y>
+     <x>30</x>
+     <y>250</y>
      <width>201</width>
      <height>20</height>
     </rect>
@@ -142,35 +126,96 @@
     </font>
    </property>
    <property name="text">
-    <string>Plausibilitätsabfragen ausgewählt</string>
+    <string>Plausibilitätsabfragen ausgewählt:</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="cb_keepdata">
+  <widget class="QLabel" name="lf_anzahl">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>290</y>
-     <width>261</width>
-     <height>21</height>
+     <x>240</x>
+     <y>250</y>
+     <width>31</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_5">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>280</y>
+     <width>271</width>
+     <height>71</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>Tahoma</family>
      <pointsize>10</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
+     <weight>75</weight>
+     <bold>true</bold>
     </font>
    </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bereits aufgelistete Ergebnisse erhalten und neue hinzufügen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <property name="title">
+    <string>Optionen</string>
    </property>
-   <property name="statusTip">
-    <string>bisherige Ergebnisse ergänzen</string>
-   </property>
-   <property name="text">
-    <string>Ergebnisse zu bestehenden hinzufügen</string>
-   </property>
+   <widget class="QCheckBox" name="cb_limitdata">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>261</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bereits aufgelistete Ergebnisse erhalten und neue hinzufügen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>neue Ergebnissen zu bisherigen ergänzen</string>
+    </property>
+    <property name="text">
+     <string>Fehlerliste auf 5 je Typ beschränken</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cb_keepdata">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>261</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bereits aufgelistete Ergebnisse erhalten und neue hinzufügen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>neue Ergebnissen zu bisherigen ergänzen</string>
+    </property>
+    <property name="text">
+     <string>Ergebnisse zu bestehenden hinzufügen</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

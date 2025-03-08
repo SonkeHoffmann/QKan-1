@@ -115,7 +115,7 @@ class Plausi(QKanPlugin):
         Einspringpunkt für Test
         """
 
-        self.log.info("QKan: Plausibilitätsabragen")
+        self.log.info("QKan: Plausibilitätsabfragen")
 
         plau = PlausiTask(db_qkan)
         plau.run()

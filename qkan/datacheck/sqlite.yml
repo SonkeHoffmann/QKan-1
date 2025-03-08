@@ -1,0 +1,19 @@
+datacheck_plausi: "
+WITH
+    pcount AS (SELECT count() FROM ({sqltext}))
+INSERT INTO pruefliste (objname, warntext, warntyp, warnlevel, layername, attrname)
+SELECT
+    {attrname} AS objname,                  /* 1. Attribut aus sqltext */
+    printf(
+        :warnung || ' in insgesamt %d Datensätzen',
+        (pcount)
+    ) AS warntext,
+    :warntyp AS warntyp,
+    :warnlevel AS warnlevel,
+    :layername AS layername,
+    :attrname AS attrname
+FROM
+(
+    SELECT * FROM ({sqltext})
+    LIMIT :limit
+);"
