@@ -84,6 +84,11 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.pushButton_3.clicked.connect(self.show_selection)
         self.pushButton_5.clicked.connect(self.ganglinie)
         self.pushButton_6.clicked.connect(self.animiert_laengs)
+        self.geschw_2.sliderReleased.connect(self.slider_geschw_released)
+        #self.geschw_2.sliderReleased.connect(self.animiert_laengs)
+        #self.horizontalSlider_3.sliderMoved.connect(self.animiert_laengs)
+        #self.horizontalSlider_3.sliderPressed.connect(self.stop_laengs)
+        #self.horizontalSlider_3.sliderReleased.connect(self.slider_released)
         self.pushButton_7.clicked.connect(self.select_erg)
         self.checkBox.toggled.connect(self.clicked)
         self.refresh_function = None
@@ -100,6 +105,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.database = None
         self.selected = None
         self.auswahl = {}
+        self.anf = 0
         self.max = False
         self.features = []
         self.anim = None
@@ -137,26 +143,51 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         if self.checkBox.isChecked():
             self.refresh()
 
+    def slider_geschw_released(self):
+        self.db_erg = self.lineEdit_4.text()
+        self.stop_laengs()
+        self.anim = None
+        self.canv_2.flush_events()
+        self.fig_2.clear()
+        self.anf = 0
+        self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3,
+                                      self.canv_3, self.selected, self.auswahl,
+                                      self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max,
+                                      self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
+
+    def slider_released(self):
+        anf = self.horizontalSlider_3.value()
+        self.db_erg = self.lineEdit_4.text()
+        self.stop_laengs()
+        self.anim = None
+        self.canv_2.flush_events()
+        self.fig_2.clear()
+        self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3,
+                                      self.canv_3, self.selected, self.auswahl,
+                                      self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max,
+                                      self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, anf)
+
+
     def export_cad(self):
         self.db_erg = self.lineEdit_4.text()
         self.point = self.lineEdit.text()
         self.massstab = self.lineEdit_2.text()
-        self.export_cad_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2)
+        self.export_cad_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def show_selection(self):
         self.db_erg = self.lineEdit_4.text()
-        self.show_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2)
+        self.show_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def refresh(self):
         self.db_erg = self.lineEdit_4.text()
-        #self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2)
+        #self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
-        if self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2) == 'nicht erstellt':
+        if self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf) == 'nicht erstellt':
             self.label.setText('Bitte Elemente vom Schacht- oder Haltungslayer auswählen und den "refresh" Knopf drücken!')
 
         else:
             self.label.setText('')
-            #self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2)
+            #self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def select_erg(self):
         filename, _ = QFileDialog.getOpenFileName(
@@ -172,9 +203,21 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
     def ganglinie(self):
         self.db_erg = self.lineEdit_4.text()
         self.ausgabe = self.comboBox.currentText()
-        self.gang_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2)
+        self.gang_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def animiert_laengs(self):
+        self.canv_2.flush_events()
+        self.fig_2.clear()
+        self.anf = 0
         self.db_erg = self.lineEdit_4.text()
         self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl,
-                           self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2)
+                           self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
+
+
+    def stop_laengs(self):
+        self.anf = 0
+        self.canv_2.flush_events()
+        self.fig_2.clear()
+        self.db_erg = self.lineEdit_4.text()
+        self.stop_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl,
+                           self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)

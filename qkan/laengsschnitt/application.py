@@ -28,42 +28,53 @@ class Laengsschnitt(QKanPlugin):
 
 
     def refresh_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
-                         features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2):
+                         features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
         LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                    massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                   geschw_2).zeichnen()
+                   geschw_2, anf).zeichnen()
         canv.draw()
 
         return LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl,
                           point, massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                          geschw_2).zeichnen()
+                          geschw_2, anf).zeichnen()
 
 
     def export_cad_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
-                            features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2):
+                            features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
         LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
-                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2).cad()
+                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf).cad()
 
     def show_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
-                      features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2):
+                      features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
         LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
-                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2).show()
+                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf).show()
 
     def gang_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
-                      features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2):
+                      features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
         LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                    massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                   geschw_2).ganglinie()
+                   geschw_2, anf).ganglinie()
         canv_3.draw()
 
     def animiert_laengs_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                                  massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                                 geschw_2):
+                                 geschw_2, anf):
         self.animation = LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
                                     selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
-                                    pushButton_4, horizontalSlider_3, geschw_2)
+                                    pushButton_4, horizontalSlider_3, geschw_2, anf)
         self.animation.laengs()
         canv_2.draw()
+        canv_2.flush_events()
+
+    def stop_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
+                                 massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
+                                 geschw_2, anf):
+        self.animation = LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
+                                    selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
+                                    pushButton_4, horizontalSlider_3, geschw_2, anf)
+        canv_2.flush_events()
+        self.animation.stop_animation()
+        #canv_2.draw()
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
@@ -175,6 +186,7 @@ class Laengsschnitt(QKanPlugin):
         self.laengs_dlg.show_function = self.show_function
         self.laengs_dlg.gang_function = self.gang_function
         self.laengs_dlg.animiert_laengs_function = self.animiert_laengs_function
+        self.laengs_dlg.stop_function = self.stop_function
 
         self.laengs_dlg.pushButton_2.click()
         self.laengs_dlg.show()
@@ -203,7 +215,7 @@ class Laengsschnitt(QKanPlugin):
             LaengsTask(self.db_qkan, self.database_qkan, self.fig, self.canv, self.fig_2,
                        self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point,
                        self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4,
-                       self.pushButton_4, self.horizontalSlider_3, self.geschw_2
+                       self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf
                        ).run()
 
             # window.show()
