@@ -1335,7 +1335,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
+		untersuchdat_haltung_bewertung = 'Ergebnis_ZK_Einzelschäden_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -2500,7 +2500,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_anschlussleitung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
+		untersuchdat_anschlussleitung_bewertung = 'Ergebnis_ZK_Einzelschäden_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_anschlussleitung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -3616,7 +3616,7 @@ class Zustandsklassen_funkt:
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
+		Untersuchdat_schacht_bewertung = 'Ergebnis_ZK_Einzelschäden_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -3884,7 +3884,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
+		untersuchdat_haltung_bewertung = 'Ergebnis_ZK_Einzelschäden_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -3902,7 +3902,7 @@ class Zustandsklassen_funkt:
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		haltungen_untersucht_bewertung = 'haltungen_untersucht_bewertung'
+		haltungen_untersucht_bewertung = 'Ergebnis_ZK_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -4098,7 +4098,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_anschlussleitung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
+		untersuchdat_anschlussleitung_bewertung = 'Ergebnis_ZK_Einzelschäden_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_anschlussleitung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -4116,7 +4116,7 @@ class Zustandsklassen_funkt:
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		anschlussleitungen_untersucht_bewertung = 'anschlussleitungen_untersucht_bewertung'
+		anschlussleitungen_untersucht_bewertung = 'Ergebnis_ZK_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), anschlussleitungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -4286,7 +4286,7 @@ class Zustandsklassen_funkt:
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
+		Untersuchdat_schacht_bewertung = 'Ergebnis_ZK_Einzelschäden_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -4304,7 +4304,7 @@ class Zustandsklassen_funkt:
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		schaechte_untersucht_bewertung = 'schaechte_untersucht_bewertung'
+		schaechte_untersucht_bewertung = 'Ergebnis_ZK_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -7256,7 +7256,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
+		untersuchdat_haltung_bewertung = 'Ergebnis_ZK_Einzelschäden_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -7276,7 +7276,7 @@ class Zustandsklassen_funkt:
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		haltungen_untersucht_bewertung = 'haltungen_untersucht_bewertung'
+		haltungen_untersucht_bewertung = 'Ergebnis_ZK_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -10148,7 +10148,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_anschlussleitung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
+		untersuchdat_anschlussleitung_bewertung = 'Ergebnis_ZK_Einzelschäden_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_anschlussleitung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -10168,7 +10168,7 @@ class Zustandsklassen_funkt:
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		anschlussleitungen_untersucht_bewertung = 'anschlussleitungen_untersucht_bewertung'
+		anschlussleitungen_untersucht_bewertung = 'Ergebnis_ZK_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), anschlussleitungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -13610,7 +13610,7 @@ class Zustandsklassen_funkt:
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
+		Untersuchdat_schacht_bewertung = 'Ergebnis_ZK_Einzelschäden_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -13630,7 +13630,7 @@ class Zustandsklassen_funkt:
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		schaechte_untersucht_bewertung = 'schaechte_untersucht_bewertung'
+		schaechte_untersucht_bewertung = 'Ergebnis_ZK_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -16146,7 +16146,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
+		untersuchdat_haltung_bewertung = 'Ergebnis_ZK_Einzelschäden_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -16211,7 +16211,7 @@ class Zustandsklassen_funkt:
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		haltungen_untersucht_bewertung = 'haltungen_untersucht_bewertung'
+		haltungen_untersucht_bewertung = 'Ergebnis_ZK_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -18644,7 +18644,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_anschlussleitung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
+		untersuchdat_anschlussleitung_bewertung = 'Ergebnis_ZK_Einzelschäden_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_anschlussleitung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -18709,7 +18709,7 @@ class Zustandsklassen_funkt:
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		anschlussleitungen_untersucht_bewertung = 'anschlussleitungen_untersucht_bewertung'
+		anschlussleitungen_untersucht_bewertung = 'Ergebnis_ZK_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), anschlussleitungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -21820,7 +21820,7 @@ class Zustandsklassen_funkt:
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
+		Untersuchdat_schacht_bewertung = 'Ergebnis_ZK_Einzelschäden_Schäden'
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -21879,7 +21879,7 @@ class Zustandsklassen_funkt:
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
-		schaechte_untersucht_bewertung = 'schaechte_untersucht_bewertung'
+		schaechte_untersucht_bewertung = 'Ergebnis_ZK_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -24277,7 +24277,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
+		untersuchdat_haltung_bewertung = 'Ergebnis_ZK_Einzelschäden_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -24295,7 +24295,7 @@ class Zustandsklassen_funkt:
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		haltungen_untersucht_bewertung = 'haltungen_untersucht_bewertung'
+		haltungen_untersucht_bewertung = 'Ergebnis_ZK_Haltungen'
 		vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -26605,7 +26605,7 @@ class Zustandsklassen_funkt:
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		untersuchdat_anschlussleitung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
+		untersuchdat_anschlussleitung_bewertung = 'Ergebnis_ZK_Einzelschäden_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), untersuchdat_anschlussleitung_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -26623,7 +26623,7 @@ class Zustandsklassen_funkt:
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		anschlussleitungen_untersucht_bewertung = 'anschlussleitungen_untersucht_bewertung'
+		anschlussleitungen_untersucht_bewertung = 'Ergebnis_ZK_HA_Leitungen'
 		vlayer = QgsVectorLayer(uri.uri(), anschlussleitungen_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -29622,7 +29622,7 @@ class Zustandsklassen_funkt:
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
+		Untersuchdat_schacht_bewertung = 'Ergebnis_ZK_Einzelschäden_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:
@@ -29640,7 +29640,7 @@ class Zustandsklassen_funkt:
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
-		schaechte_untersucht_bewertung = 'schaechte_untersucht_bewertung'
+		schaechte_untersucht_bewertung = 'Ergebnis_ZK_Schächte'
 		vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
 		x = QgsProject.instance()
 		try:

@@ -3116,7 +3116,7 @@ class Subkans_funkt:
         table = 'substanz_haltung_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        substanz_haltung_bewertung = 'substanz_haltung_bewertung'
+        substanz_haltung_bewertung = 'Bewertung_Substanz_Einzelschäden_Haltungen'
         vlayer = QgsVectorLayer(uri.uri(), substanz_haltung_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:
@@ -4242,7 +4242,7 @@ class Subkans_funkt:
                     pass
 
             # 9 BAI-AZ-ABCD
-            if attr[10] == "BAI" and attr[11] in ["A", "Z"] and attr[12] in ["A", "B", "C", "D"] :
+            if attr[10] == "BAI" and attr[11] in ["A", "Z"] and attr[12] in ["A", "B", "C", "D"]:
 
                 z = 'UmfS'
                 sql = f"""
@@ -5562,7 +5562,7 @@ class Subkans_funkt:
         table = 'substanz_haltung_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        substanz_haltung_bewertung = 'substanz_haltung_bewertung'
+        substanz_haltung_bewertung = 'Bewertung_Substanz_Einzelschäden_Haltungen'
         vlayer = QgsVectorLayer(uri.uri(), substanz_haltung_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:
@@ -5581,7 +5581,6 @@ class Subkans_funkt:
 
         #Überlagerung SOB bei Punkt und Umfangschäden werden SOB nicht überlagert
         #Streckenschäden SOB werden nicht überlagert.
-
         date = self.date + '%'
         db = self.db
         crs = self.crs
@@ -7488,7 +7487,7 @@ class Subkans_funkt:
         table = 'haltungen_substanz_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        haltungen_substanz_bewertung = 'haltungen_substanz_bewertung'
+        haltungen_substanz_bewertung = 'Bewertung_Substanz_Haltungen'
         vlayer = QgsVectorLayer(uri.uri(), haltungen_substanz_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:

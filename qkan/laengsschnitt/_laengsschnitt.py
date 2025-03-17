@@ -13,6 +13,7 @@ from qgis.utils import iface, spatialite_connect
 import numpy as np
 import mpl_toolkits.axes_grid1
 import matplotlib.widgets
+import gc
 
 
 from qkan.database.dbfunc import DBConnection
@@ -29,7 +30,7 @@ class LaengsTask:
     def __init__(self, db_qkan: DBConnection, file: str, fig: plt.figure, canv: FigureCanvas, fig_2: plt.figure,
                  canv_2: FigureCanvas, fig_3: plt.figure, canv_3: FigureCanvas, selected, auswahl, point,
                  massstab, features, db_erg, ausgabe, max, label_4,
-                 pushButton_4, horizontalSlider_3, geschw_2):
+                 pushButton_4, horizontalSlider_3, geschw_2, anf):
         self.db_qkan = db_qkan
         self.fig = fig
         self.canv = canv
@@ -49,7 +50,7 @@ class LaengsTask:
         self.pushButton_4 = pushButton_4
         self.horizontalSlider_3 = horizontalSlider_3
         self.geschw_2 = geschw_2
-        self.anf = 0
+        self.anf = anf
         self.anim = None
         #self.plugin_instance = plugin_instance
 
@@ -57,10 +58,9 @@ class LaengsTask:
         self.db_erg_curs = self.db_erg.cursor()
 
         self.pushButton_4.clicked.connect(self.stop)
-        #self.horizontalSlider_3.sliderReleased.connect(self.slider)
-        self.horizontalSlider_3.sliderPressed.connect(self.stop_slider)
-        self.geschw_2.sliderReleased.connect(self.slider_2)
+        self.horizontalSlider_3.sliderReleased.connect(self.stop_animation)
         self.geschw = self.geschw_2.value()*10
+        self.user_moving_slider = False
 
     def run(self) -> bool:
         self.zeichnen()
@@ -79,422 +79,47 @@ class LaengsTask:
             except AttributeError:
                 pass
 
-    def stop_slider(self):
-        try:
+    def stop_animation(self):
+        """Stoppt und entfernt die aktuelle Animation vollständig."""
+        self.stop()
+        if self.anim is not None:
             self.anim.event_source.stop()
-            self.pushButton_4.setText('Start')
-        except AttributeError:
-            pass
+            self.anim._stop()
+            del self.anim
+            self.anim = None
+            self.canv_2.flush_events()
+            self.fig_2.clear()
+            gc.collect()
+            iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'gestoppt und gelöscht', level=Qgis.Critical)
+
+    # def stop_slider(self):
+    #     try:
+    #         # self.anim.event_source.stop()
+    #         # self.pushButton_4.setText('Start')
+    #         self.stop()
+    #         # if self.anim:
+    #         #     del self.anim
+    #         self.slider()
+    #     except AttributeError:
+    #         pass
 
     def closeEvent(self, event):
         # Stop the animation when the window is closed
 
         if self.anim is not None:
             self.anim.event_source.stop()
-            plt.close(self.fig)
+            plt.close(self.fig_2)
+            self.canv_2.flush_events()
+            self.fig_2.clear()
+            gc.collect()
         event.accept()
         if QtCore.QTimer.isActive():
             QtCore.QTimer.stop()
         event.accept()
 
-
         # TODO:Plugin informieren, dass das Fenster geschlossen wurde
         #self.plugin_instance.window_closed(self)
-
-    def slider(self):
-        """Ändern der frames der Animation"""
-
-        # aktuellen layer auswählen
-        layer = iface.activeLayer()
-        x = layer.source()
-
-        # mit dbfunk layer namen anzeigen lassen (für die information ob haltungen oder schächte ausgewählt wurden)
-        _, table, _, _ = get_qkanlayer_attributes(x)
-
-        t = None
-
-        # selektierte elemente anzeigen
-        self.selected = layer.selectedFeatures()
-        for i in self.selected:
-            attrs = i["pk"]
-            self.features.append(attrs)
-
-        liste = []
-        liste2 = []
-
-        if table not in ['schaechte', 'haltungen']:
-            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
-            return
-
-        if table == 'schaechte':
-            for f in self.selected:
-                x = f['schnam']
-                liste.append(x)
-
-        if table == 'haltungen':
-            for f in self.selected:
-                x = f['schoben']
-                x2 = f['schunten']
-                x3 = f['haltnam']
-                liste2.append(x3)
-                if x not in liste:
-                    liste.append(x)
-                if x2 not in liste:
-                    liste.append(x2)
-
-        route = find_route(self.db_qkan, liste)
-        logger.debug(f'LaengsTask.slider() - Ergebnis von find_route(liste):\n{liste=}\n{liste2=}\n{route=}')
-
-        # if route is None:
-        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (1)', level=Qgis.Critical)
-        #     return 'nicht erstellt'
-
-        # route = (['2747.1J55', '2747.1J56', '2747.1J57'], ['M2747.1J55', 'M2747.1J56'])
-        x_sohle = []
-        y_sohle = []
-        x_sohle2 = []
-        y_sohle2 = []
-        x_deckel = []
-        y_deckel = []
-        y_label = []
-        name = []
-        haltnam_l = []
-        schoben_l = []
-        schunten_l = []
-        laenge_l = []
-        entwart_l = []
-        hoehe_l = []
-        breite_l = []
-        material_l = []
-        strasse_l = []
-        haltungstyp_l = []
-
-        sel = '), ('.join([f"'{num}', {el}" for el, num in enumerate(route[1])])  # sel = ('15600000-45', 0), ('15600000-50', 1), ...)
-        sql = f"""
-                    SELECT
-                        h.schoben,
-                        h.hoehe,
-                        h.schunten,
-                        h.laenge,
-                        schob.deckelhoehe,
-                        schob.sohlhoehe,
-                        schun.deckelhoehe,
-                        schun.sohlhoehe,
-                        h.entwart,
-                        h.haltnam,
-                        h.breite,
-                        h.material,
-                        h.strasse,
-                        h.haltungstyp,
-                        h.sohleoben,
-                        h.sohleunten,
-                        schob.knotentyp,
-                        schun.knotentyp,
-                        schob.entwart,
-                        schun.entwart,
-                        sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as laenge_sum
-                    FROM haltungen AS h
-                    INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
-                    INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
-                    INNER JOIN (VALUES ({sel})) AS sel ON sel.column1 = h.haltnam
-                    """
-
-        if not self.db_qkan.sql(sql, "laengsschnitt.zeichnen.1"):
-            logger.error(f"{__file__}: Fehler in laengsschnitt.zeichnen.1: Datenbankzugriff nicht möglich")
-            return 'nicht erstellt'
-
-        for attr in self.db_qkan.fetchall():
-            (
-                schoben, hoehe, schunten, laenge, deckeloben, sohleoben, deckelunten, sohleunten, entwart,
-                haltnam, breite, material, strasse, haltungstyp, haltung_sohle_o, haltung_sohle_u,
-                schob_typ, schun_typ, entwart_o, entwart_u, laenge2
-            ) = attr
-
-            if int(haltung_sohle_o) == 0:
-                haltung_sohle_o = sohleoben
-            if int(haltung_sohle_u) == 0:
-                haltung_sohle_u = sohleunten
-
-            y_sohle.append(sohleoben)
-            y_sohle.append(haltung_sohle_o)
-            y_sohle.append(haltung_sohle_u)
-            y_sohle.append(sohleunten)
-            x_sohle.append(laenge2 - laenge)
-            x_sohle.append(laenge2 - laenge)
-            x_sohle.append(laenge2)
-            x_sohle.append(laenge2)
-
-            if sohleoben > 0:
-                y_sohle2.append(sohleoben + hoehe/1000)
-            else:
-                y_sohle2.append(sohleoben)
-            if haltung_sohle_o > 0:
-                y_sohle2.append(haltung_sohle_o + hoehe/1000)
-            else:
-                y_sohle2.append(haltung_sohle_o)
-            if haltung_sohle_u > 0:
-                y_sohle2.append(haltung_sohle_u + hoehe/1000)
-            else:
-                y_sohle2.append(haltung_sohle_u)
-            if sohleunten > 0:
-                y_sohle2.append(sohleunten + hoehe/1000)
-            else:
-                y_sohle2.append(sohleunten)
-            x_sohle2.append(laenge2 - laenge)
-            x_sohle2.append(laenge2 - laenge)
-            x_sohle2.append(laenge2)
-            x_sohle2.append(laenge2)
-
-            y_deckel.append(deckeloben)
-            y_deckel.append(deckeloben)
-            y_deckel.append(deckelunten)
-            y_deckel.append(deckelunten)
-            x_deckel.append(laenge2 - laenge)
-            x_deckel.append(laenge2 - laenge)
-            x_deckel.append(laenge2)
-            x_deckel.append(laenge2)
-
-            y_label.append((deckeloben + sohleoben - hoehe/1000) / 2)
-            y_label.append((deckelunten + sohleunten - hoehe/1000) / 2)
-
-            name.append(schoben)
-            name.append(schunten)
-            haltnam_l.append(haltnam)
-            schoben_l.append(schoben)
-            schunten_l.append(schunten)
-            laenge_l.append(laenge)
-            entwart_l.append(entwart)
-            hoehe_l.append(hoehe/1000)
-            breite_l.append(breite/1000)
-            material_l.append(material)
-            strasse_l.append(strasse)
-            haltungstyp_l.append(haltungstyp)
-
-        x = [i for i in y_deckel if i != 0]
-        x2 = [i for i in y_sohle if i != 0]
-        x3 = [i for i in y_sohle2 if i != 0]
-
-        max_deckel = max(x)
-        min_sohle = min(x2)
-        min_sohle2 = min(x3)
-        y_deckel_n = []
-        y_sohle_n = []
-        y_sohle2_n = []
-
-        i = 0
-        for x in y_deckel:
-            if x == 0:
-                y_deckel_n.append(max_deckel)
-            else:
-                y_deckel_n.append(y_deckel[i])
-            i += 1
-        i = 0
-        for x in y_sohle:
-            if x == 0:
-                y_sohle_n.append(min_sohle)
-            else:
-                y_sohle_n.append(y_sohle[i])
-            i += 1
-        i = 0
-        for x in y_sohle2:
-            if x == 0:
-                y_sohle2_n.append(min_sohle2)
-            else:
-                y_sohle2_n.append(y_sohle2[i])
-            i += 1
-
-        haltungen = {}
-        schaechte = {}
-
-        if table == 'haltungen':
-            for haltung, xkoordinate_o, xkoordinate_u in zip(liste2, x_sohle2[0::2], x_sohle2[1::2]):
-                sql = 'SELECT wasserstandoben,wasserstandunten,zeitpunkt FROM lau_gl_el WHERE KANTE=?'
-                data = (haltung,)
-
-                try:
-                    self.db_erg_curs.execute(sql, data)
-                except:
-                    iface.messageBar().pushMessage("Error",
-                                                   "Daten konnten nicht ausgelesen werden",
-                                                   level=Qgis.Critical)
-
-                wasserstaende = self.db_erg_curs.fetchall()
-
-                for wasserstandoben, wasserstandunten, zeitpunkt_t in wasserstaende:
-                    try:
-                        if '.' in zeitpunkt_t:
-                            zeitpunkt = datetime.datetime.strptime(
-                                zeitpunkt_t[:zeitpunkt_t.index('.')+7], "%Y-%m-%d %H:%M:%S.%f"
-                            )
-                        else:
-                            zeitpunkt = datetime.datetime.strptime(
-                                zeitpunkt_t, "%Y-%m-%d %H:%M:%S"
-                            )
-                    except BaseException as err:
-                        iface.messageBar().pushMessage("Error",
-                                                       f"Konvertierung vom Zeitpunkt fehlgeschlagen (1)\n{err=}\n{zeitpunkt_t}",
-                                                       level=Qgis.Critical)
-                        logger.error(f"Konvertierung vom Zeitpunkt fehlgeschlagen (1)\n{err=}\n{zeitpunkt_t}")
-                    if haltungen.get(zeitpunkt) is None:
-                        haltungen[zeitpunkt] = {}
-                    haltungen[zeitpunkt][haltung] = dict(
-                        wasserstandoben=wasserstandoben, wasserstandunten=wasserstandunten, xkoordinate_o=xkoordinate_o,
-                        xkoordinate_u=xkoordinate_u
-                    )
-            zeit = []
-            y_liste = []
-            x_liste = []
-
-            for i in haltungen:
-                zeit.append(i)
-            for time in zeit:
-                x = []
-                y = []
-                for h in liste2:
-                    y.append(haltungen[time][h]['wasserstandoben'])
-                    y.append(haltungen[time][h]['wasserstandunten'])
-                    x.append(haltungen[time][h]['xkoordinate_o'])
-                    x.append(haltungen[time][h]['xkoordinate_u'])
-                x_liste.append(x)
-                y_liste.append(y)
-
-            y_sohle_2 = []
-            y_deckel_3 = []
-            x_deckel_2 = []
-            delete = []
-            # wenn die höhen null sind schachthöhen =max und min werte setzen und farbe grau
-            y1 = [i for i in y_sohle if i != 0]
-            y2 = [i for i in y_deckel if i != 0]
-
-            min_sohle = min(y1)
-            max_deckel = max(y2)
-
-            i = 0
-            for x, y in zip(y_sohle, y_deckel_n):
-                if y_sohle[i] == 0.0 or y_deckel_n[i] == 0.0:
-                    y_sohle_2.append(min_sohle)
-                    y_deckel_3.append(max_deckel)
-                    x_deckel_2.append(x_deckel[i])
-                    delete.append(i)
-                i += 1
-
-            for x in delete[::-1]:
-                y_sohle.pop(x)
-                y_deckel_n.pop(x)
-                x_deckel.pop(x)
-
-        if table == 'schaechte':
-            x_deckel_neu = []
-
-            for i in x_deckel:
-                if round(i,2) not in x_deckel_neu:
-                    x_deckel_neu.append(i)
-
-            for schacht, xkoordinate in zip(liste, x_deckel_neu):
-                sql = 'SELECT wasserstand,zeitpunkt FROM lau_gl_s WHERE KNOTEN=?'
-                data = (schacht,)
-
-                try:
-                    self.db_erg_curs.execute(sql, data)
-                except:
-                    iface.messageBar().pushMessage("Error",
-                                                   "Daten konnten nicht ausgelesen werden",
-                                                   level=Qgis.Critical)
-                wasserstaende = self.db_erg_curs.fetchall()
-
-                for wasserstand, zeitpunkt_t in wasserstaende:
-                    try:
-                        if '.' in zeitpunkt_t:
-                            zeitpunkt = datetime.datetime.strptime(
-                                zeitpunkt_t[:zeitpunkt_t.index('.')+7], "%Y-%m-%d %H:%M:%S.%f"
-                            )
-                        else:
-                            zeitpunkt = datetime.datetime.strptime(
-                                zeitpunkt_t, "%Y-%m-%d %H:%M:%S"
-                            )
-                    except BaseException as err:
-                        iface.messageBar().pushMessage("Error",
-                                                       "Daten konnten nicht ausgelesen werden",
-                                                       level=Qgis.Critical)
-                    if schaechte.get(zeitpunkt) is None:
-                        schaechte[zeitpunkt] = {}
-                    schaechte[zeitpunkt][schacht] = dict(
-                        wasserstand=wasserstand, xkoordinate=xkoordinate
-                    )
-
-            zeit = []
-            y_liste = []
-            x_liste = []
-
-            for i in schaechte:
-                zeit.append(i)
-            for time in zeit:
-                x = []
-                y = []
-                for s in liste:
-                    y.append(schaechte[time][s]['wasserstand'])
-                    x.append(schaechte[time][s]['xkoordinate'])
-                x_liste.append(x)
-                y_liste.append(y)
-
-            y_sohle_2 = []
-            y_deckel_3 = []
-            x_deckel_2 = []
-            delete = []
-
-            # wenn die höhen null sind schachthöhen =max und min werte setzen und farbe grau
-            y1 = [i for i in y_sohle if i != 0]
-            y2 = [i for i in y_deckel if i != 0]
-
-            min_sohle = min(y1)
-            max_deckel = max(y2)
-
-            i = 0
-            for x, y in zip(y_sohle, y_deckel_n):
-                if y_sohle[i] == 0.0 or y_deckel_n[i] == 0.0:
-                    y_sohle_2.append(min_sohle)
-                    y_deckel_3.append(max_deckel)
-                    x_deckel_2.append(x_deckel[i])
-                    delete.append(i)
-                i += 1
-
-            for x in delete[::-1]:
-                y_sohle.pop(x)
-                y_deckel_n.pop(x)
-                x_deckel.pop(x)
-
-        #self.anf = self.horizontalSlider_3.value()
-        #self.anim.frames = range(self.anf, len(zeit))
-        self.anim.event_source.frames = range(self.anf, len(zeit))
-        self.anim.event_source.stop()
-
-        # # TODO: update animation
-        # if self.horizontalSlider_3.sliderMoved():
-        #     self.anim.event_source.stop()
-        #     self.anim = animation.FuncAnimation(figure, animate,
-        #                                         frames=range(self.horizontalSlider_3.tickPosition(), len(zeit)),
-        #                                         interval=geschw,
-        #                                         blit=False)
-
-        try:
-            self.anim.event_source.start()
-            self.pushButton_4.setText('Stop')
-        except AttributeError:
-            pass
-
-
-    def slider_2(self):
-        """Geschwindigkeit der Animation ändern"""
-
-        self.anim._interval = float(self.geschw)
-        #self.anim.event_source.interval = float(self.geschw)
-        self.anim.event_source.stop()
-
-        try:
-            self.anim.event_source.start()
-            self.pushButton_4.setText('Stop')
-        except AttributeError:
-            pass
 
 
     def zeichnen(self):
@@ -1918,36 +1543,34 @@ class LaengsTask:
         # ax = figure.add_subplot(1, 1, 1)
         new_plot = figure.add_subplot(111)
 
-        # #neu
-        #
-        # interval = 100  # ms, time between animation frames
-        # loop_len = 5.0  # seconds per loop
-        # scale = interval / 1000 / loop_len
-        #
-        # def update_slider(val):
+        # Animation controls
+        is_manual = False  # True if user has taken control of the animation
+        interval = geschw  # ms, time between animation frames
+        loop_len = 5.0  # seconds per loop
+        scale = interval / 1000 / loop_len
+
+        self.stop_animation()
+
+            # def on_slider_click(event):
+        #     """Pausiert die Animation, wenn der Slider bewegt wird."""
         #     global is_manual
-        #     is_manual = True
-        #     update(val)
-        #
-        # def update(val):
-        #     # update curve
-        #     l.set_ydata(val * np.sin(t))
-        #     # redraw canvas while idle
-        #     fig.canvas.draw_idle()
+        #     if event.inaxes == horizontalSlider_3.val:
+        #         self.anim.event_source.stop()
+        #         is_manual = True
         #
         # def update_plot(num):
         #     global is_manual
-        #     if is_manual:
-        #         return l,  # don't change
+        #     # if is_manual:
+        #     #    return l,  # don't change
         #
-        #     val = (samp.val + scale) % samp.valmax
-        #     samp.set_val(val)
+        #     val = (horizontalSlider_3.val + scale) % horizontalSlider_3.valmax
+        #     horizontalSlider_3.set_val(val)
         #     is_manual = False  # the above line called update_slider, so we need to reset this
-        #     return l,
+        #    # return l,
         #
         # def on_click(event):
         #     # Check where the click happened
-        #     (xm, ym), (xM, yM) = samp.label.clipbox.get_points()
+        #     (xm, ym), (xM, yM) = horizontalSlider_3.label.clipbox.get_points()
         #     if xm < event.x < xM and ym < event.y < yM:
         #         # Event happened within the slider, ignore since it is handled in update_slider
         #         return
@@ -1955,21 +1578,20 @@ class LaengsTask:
         #         # user clicked somewhere else on canvas = unpause
         #         global is_manual
         #         is_manual = False
-        #
-        # # call update function on slider value change
-        # samp.on_changed(update_slider)
-        #
-        # fig.canvas.mpl_connect('button_press_event', on_click)
-        #
-        # ani = animation.FuncAnimation(fig, update_plot, interval=interval)
-        #
-        # #neu
 
-        # Animation controls
-        is_manual = False  # True if user has taken control of the animation
-        interval = geschw  # ms, time between animation frames
-        loop_len = 5.0  # seconds per loop
-        scale = interval / 1000 / loop_len
+        def load_data(self, frequency):
+            """Holt die Daten aus der Datenbank für eine bestimmte Frequenz."""
+            # conn = sqlite3.connect("data.db")
+            # cursor = conn.cursor()
+            # cursor.execute("SELECT x, y FROM sinus_data WHERE freq = ?", (frequency,))
+            # data = cursor.fetchall()
+            # conn.close()
+            #
+            # if data:
+            #     x_values, y_values = zip(*data)
+            #     return np.array(x_values), np.array(y_values)
+            # else:
+            #     return np.linspace(0, 2 * np.pi, 100), np.sin(frequency * np.linspace(0, 2 * np.pi, 100))
 
         def update_slider(val):
             global is_manual
@@ -1977,31 +1599,17 @@ class LaengsTask:
             update(val)
 
         def update(val):
-            # update curve
-            #l.set_ydata(val * np.sin(t))
-            # redraw canvas while idle
-            figure.canvas.draw_idle()
-
-        def update_plot(num):
-            global is_manual
-            #if is_manual:
-             #   return l,  # don't change
-
-            val = (horizontalSlider_3.val + scale) % horizontalSlider_3.valmax
-            horizontalSlider_3.set_val(val)
-            is_manual = False  # the above line called update_slider, so we need to reset this
-           # return l,
-
-        def on_click(event):
-            # Check where the click happened
-            (xm, ym), (xM, yM) = horizontalSlider_3.label.clipbox.get_points()
-            if xm < event.x < xM and ym < event.y < yM:
-                # Event happened within the slider, ignore since it is handled in update_slider
-                return
-            else:
-                # user clicked somewhere else on canvas = unpause
-                global is_manual
-                is_manual = False
+            pass
+            # time = val
+            # # TODO: anpassen auf die datenbank!
+            # new_plot.vlines(x_deckel, y_sohle, y_deckel, color="red", linestyles='solid', label='Schacht',
+            #                 linewidth=5)
+            # new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid',
+            #                 label='fiktiver Schacht',
+            #                 linewidth=5)
+            #
+            # new_plot.plot(x_liste[time], y_liste[time], color="blue", label='Wasserstand')  # plot the line
+            # figure.canvas.draw()
 
 
         #aktuellen layer auswählen
@@ -2082,6 +1690,7 @@ class LaengsTask:
         material_l = []
         strasse_l = []
         haltungstyp_l = []
+        x_pos = []
 
         sel = '), ('.join(
             [f"'{num}', {el}" for el, num in enumerate(route[1])])  # sel = ('15600000-45', 0), ('15600000-50', 1), ...)
@@ -2223,7 +1832,11 @@ class LaengsTask:
         zeitpunkt = None
 
         if table == 'haltungen':
-            for haltung, xkoordinate_o, xkoordinate_u in zip(liste2, x_sohle2[0::2], x_sohle2[1::2]):
+            #liste2 = sum(zip(liste2, liste2), ())
+
+            x_deckel_neu = x_sohle2[::2]
+
+            for haltung, xkoordinate_o, xkoordinate_u in zip(liste2, x_deckel_neu[0::2], x_deckel_neu[1::2]):
                 sql = 'SELECT wasserstandoben,wasserstandunten,zeitpunkt FROM lau_gl_el WHERE KANTE=?'
                 data = (haltung,)
 
@@ -2262,6 +1875,7 @@ class LaengsTask:
             y_liste = []
             x_liste = []
 
+
             for i in haltungen:
                 zeit.append(i)
             for time in zeit:
@@ -2277,7 +1891,6 @@ class LaengsTask:
 
             horizontalSlider_3.setMinimum(0)
             horizontalSlider_3.setMaximum(len(zeit))
-
 
             y_sohle_2 = []
             y_deckel_3 = []
@@ -2304,7 +1917,14 @@ class LaengsTask:
                 y_deckel_n.pop(x)
                 x_deckel.pop(x)
 
+            # iface.messageBar().pushMessage("Error",
+            #                                str(len(x_liste)),
+            #                                level=Qgis.Critical)
+
+
+
             def animate(t):
+
 
                 plt.cla()  # clear the previous image
                 plt.xlabel('Länge [m]')
@@ -2343,18 +1963,16 @@ class LaengsTask:
 
                 new_plot.plot(x_liste[t], y_liste[t], color="blue", label='Wasserstand')  # plot the line
 
+
                 timestamp = zeit[t]
                 time = timestamp.strftime("%d.%m.%Y %H:%M:%S")[:-3]
                 label_4.setText(time)
                 val=t
-                #horizontalSlider_3.setValue(t)
-
-                # self.horizontalSlider_3.sliderReleased.connect(update_slider(time))
-                self.horizontalSlider_3.valueChanged(update_slider(time))
-
+                self.horizontalSlider_3.setValue(t)
 
             self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False)
             self.anim.event_source.stop()
+            #self.stop()
 
 
             try:
@@ -2489,31 +2107,19 @@ class LaengsTask:
 
                 new_plot.plot(x_liste[t], y_liste[t], color="blue", label='Wasserstand')  # plot the line
 
+
+
+
                 timestamp = zeit[t]
                 time = timestamp.strftime("%d.%m.%Y %H:%M:%S")[:-3]
                 label_4.setText(time)
                 val = t
-                #self.horizontalSlider_3.setValue(t)
+                self.horizontalSlider_3.setValue(t)
 
-            #self.horizontalSlider_3.sliderReleased.connect(update_slider(time))
-            #self.horizontalSlider_3.valueChanged.connect(update_slider)
 
             self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False)
             self.anim.event_source.stop()
-            if self.horizontalSlider_3 is not None:
-                val = self.horizontalSlider_3.value()
-                #iface.messageBar().pushMessage("Error", str(val), level=Qgis.Critical)
-
-            # Connect the slider to update_slider function
-            self.horizontalSlider_3.valueChanged.connect(lambda val: update_slider(val))
-
-            # # TODO: update animation
-            # anim2 = animation.FuncAnimation(figure, animate,
-            #                                      frames=range(horizontalSlider_3.value(), len(zeit)),
-            #                                      interval=geschw,
-            #                                      blit=False)
-            #
-            # horizontalSlider_3.sliderReleased.connect(anim2)
+            #self.stop()
 
             try:
                 self.anim.event_source.start()
@@ -2522,5 +2128,8 @@ class LaengsTask:
                 pass
         figure.tight_layout(pad=1.08)
 
+        # iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.Critical)
+
+        self.canv_2.flush_events()
         self.pushButton_4.setDefault(True)
         QtCore.QTimer.singleShot(100, self.pushButton_4.setFocus)

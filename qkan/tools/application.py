@@ -307,11 +307,7 @@ class QKanTools(QKanPlugin):
         status_logeditor = QKan.config.tools.logeditor == ""
         self.dlgop.tf_logeditor.setEnabled(status_logeditor)
 
-        self.dlgop.tf_panoramoplayer.setText(QKan.config.tools.panoramoplayer)
 
-        # Textfeld für Editor deaktivieren, falls leer:
-        status_panoramoplayer = QKan.config.tools.logeditor == ""
-        self.dlgop.tf_panoramoplayer.setEnabled(status_panoramoplayer)
 
         # show the dialog
         self.dlgop.show()
@@ -333,7 +329,6 @@ class QKanTools(QKanPlugin):
             mindestflaeche: float = float(self.dlgop.tf_mindestflaeche.text())
             max_loops: int = int(self.dlgop.tf_max_loops.text())
             logeditor: str = self.dlgop.tf_logeditor.text().strip()
-            panoramoplayer: str = self.dlgop.tf_panoramoplayer.text().strip()
             if self.dlgop.rb_spatialite.isChecked():
                 datenbanktyp = enums.QKanDBChoice.SPATIALITE
             # elif self.dlgop.rb_postgis.isChecked():
@@ -358,7 +353,6 @@ class QKanTools(QKanPlugin):
             QKan.config.max_loops = max_loops
             QKan.config.mindestflaeche = mindestflaeche
             QKan.config.tools.logeditor = logeditor
-            QKan.config.tools.panoramoplayer = panoramoplayer
             QKan.config.save()
 
     def run_runoffparams(self) -> None:
