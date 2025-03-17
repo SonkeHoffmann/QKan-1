@@ -19,6 +19,7 @@
 
     Qkan_Datenaustausch
     Qkan_flaechen
+    Qkan_Daten
     Qkan_workflow
     Qkan_qfield
     Qkan_edit

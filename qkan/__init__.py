@@ -154,9 +154,10 @@ class QKan:
         # Add QKan SVG path
         qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")
         svgPaths = QgsSettings().value('svg/searchPathsForSVG')
-        if qkanSvgPath not in svgPaths:
-            svgPaths.append(qkanSvgPath)
-            QgsSettings().setValue('svg/searchPathsForSVG', svgPaths)
+        if svgPaths:                        # Ist bei automatisierten Text Null...
+            if qkanSvgPath not in svgPaths:
+                svgPaths.append(qkanSvgPath)
+                QgsSettings().setValue('svg/searchPathsForSVG', svgPaths)
 
         # Set Identify Forms Option
         QgsSettings().setValue('Map/identifyAutoFeatureForm', 'true')

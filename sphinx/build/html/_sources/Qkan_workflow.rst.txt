@@ -303,9 +303,6 @@ Dafür sollte von der Listen-Ansicht auf die Formular-Ansicht gewechselt werden 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_haltungen.png 
 
-.. |Tool_bearbeitungsmodus| image:: ./QKan_Bilder/Tool_bearbeitungsmodus.png
-                             :width: 1.25 em
-
 Hierbei sollte darauf geachtet werden, dass eine der gewählten Haltungen ausgewählt ist (und nicht die erste Haltung der Liste). 
 Dies kann sichergestellt werden, indem man über den Pfeil links unten, einen Schritt nach vorne geht (siehe Bild unten). 
 Der Haltungsname oben im Formular sollte nun mit einem Eintrag aus der Liste (links, grau hinterlegt) übereinstimmen.
@@ -400,9 +397,6 @@ Dies ist über die Layereigenschaften so vorgegeben, da es standartmäßig nicht
 .. |Tool_linienobjekt_hinzufuegen| image:: ./QKan_Bilder/Tool_linienobjekt_hinzufuegen.png
                              :width: 1.25 em
 
-.. |Tool_bearbeitungsmodus| image:: ./QKan_Bilder/Tool_bearbeitungsmodus.png
-                             :width: 1.25 em
-
 Verbindungslinien bearbeiten
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Vorhandene Verbindungslinien können auch im Nachhinein geändert werden.
@@ -441,9 +435,6 @@ Datumsformat **vor** Bearbeitung
      :name: Datumsformat **nach** Bearbeitung
 
 Datumsformat **nach** Bearbeitung
-
-.. |Tool_bearbeitungsmodus| image:: ./QKan_Bilder/Tool_bearbeitungsmodus.png
-                             :width: 1.25 em
 
 Nun muss das Datum in allen Attributtabellen angepasst werden, die aus Excel übernommen wurden.
 Daten, die das Programm selber erstellt hat, sind automatisch im richtigen Format gespeichert.
@@ -529,11 +520,11 @@ Simulationsprogramm demonstriert und erläutert.
 Excel-Datei mit Vorlagedaten (Anzeige und Download) :download:`kanaldaten.xlsx <_static/kanaldaten.xlsx>`
 
 Zu den Videos:
- - `Daten per Clipboard übernehmen <https://fh-aachen.sciebo.de/s/gCEqM9ZDOgmyf6s>`_
- - `Flächendaten zu Gebäuden, Grundstücken und Straßen importieren <https://fh-aachen.sciebo.de/s/fWvLMPr4f9A6JoZ>`_
- - `Flächen vorbereiten <https://fh-aachen.sciebo.de/s/DPMnlKBMS9jjqTC>`_
- - `Flächenaufteilung vorbereiten <https://fh-aachen.sciebo.de/s/cu4krqOti0rf8Vq>`_
- - `Flächen mit Haltungen verknüpfen <https://fh-aachen.sciebo.de/s/Z0a5sIPUd0EWrTD>`_
+- `Daten per Clipboard übernehmen <https://fh-aachen.sciebo.de/s/gCEqM9ZDOgmyf6s>`_
+- `Flächendaten zu Gebäuden, Grundstücken und Straßen importieren <https://fh-aachen.sciebo.de/s/fWvLMPr4f9A6JoZ>`_
+- `Flächen vorbereiten <https://fh-aachen.sciebo.de/s/DPMnlKBMS9jjqTC>`_
+- `Flächenaufteilung vorbereiten <https://fh-aachen.sciebo.de/s/cu4krqOti0rf8Vq>`_
+- `Flächen mit Haltungen verknüpfen <https://fh-aachen.sciebo.de/s/Z0a5sIPUd0EWrTD>`_
 
 
 Anlegen eines neuen QKan-Projektes
@@ -542,7 +533,7 @@ Anlegen eines neuen QKan-Projektes
 
 Eine Videoanleitung zum Anlegen eines neuen QKan-Projektes aus einer bestehenden HYSTEM-EXTRAN-Datenbank und zum 
 anschließenden Einbinden von Flächendaten finden Sie hier:
- - `Video: Neues QKan-Projekt erstellen <https://fh-aachen.sciebo.de/s/PK3WwcNaaGJJQVi>`_
+- `Video: Neues QKan-Projekt erstellen <https://fh-aachen.sciebo.de/s/PK3WwcNaaGJJQVi>`_
 
 
 Übernahme von Kanaldaten aus Excel- oder ASCII-Tabellen
@@ -550,7 +541,7 @@ anschließenden Einbinden von Flächendaten finden Sie hier:
 .. index:: Video: Clipboard
 
 Eine Anleitung zum Einfügen von Kanaldaten aus Tabellendaten
- - `Video: Daten aus dem Clipboard einfügen <https://fh-aachen.sciebo.de/s/J1MC92ShnQWzUtD>`_
+- `Video: Daten aus dem Clipboard einfügen <https://fh-aachen.sciebo.de/s/J1MC92ShnQWzUtD>`_
 
 
 Vorbereitung eines einfachen Projektes für den HYSTEM-EXTRAN-Export
@@ -560,7 +551,7 @@ Vorbereitung eines einfachen Projektes für den HYSTEM-EXTRAN-Export
 In der Videoanleitung wird an einem einfachen Beispiel die Datenvorbereitung für einen Export
 nach HYSTEM-EXTRAN 8.4 gezeigt. In diesem Projekt wird auf die Verwendung von Haltungsflächen
 verzichtet. 
- - `Video: QKan Vorbereitung HE8-Export <https://fh-aachen.sciebo.de/s/zoSzm5br6fmsJnj>`_
+- `Video: QKan Vorbereitung HE8-Export <https://fh-aachen.sciebo.de/s/zoSzm5br6fmsJnj>`_
 
 
 
@@ -569,7 +560,7 @@ verzichtet.
 .. index:: Video: Projektdatei übertragen
 
 Eine Videoanleitung, wie für eine bestehende QKan-Kanaldatenbank eine Vorlage-Projektdatei geladen werden kann:
- - `Video: QKan Projekt laden <https://fh-aachen.sciebo.de/s/JOjxXdF72eLrJsw>`_
+- `Video: QKan Projekt laden <https://fh-aachen.sciebo.de/s/JOjxXdF72eLrJsw>`_
 
 
 .. index:: Video: DXF-Datei als Zeichnungsrahmen
@@ -578,7 +569,7 @@ Eine Videoanleitung, wie für eine bestehende QKan-Kanaldatenbank eine Vorlage-P
 Anzeigen von Berechnungsergebnissen aus HYSTEM-EXTRAN 8.x
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Eine Videoanleitung, wie Ergebnisdaten als Ganglinien und als animierte Längsschnitte angezeigt werden können:
- - `Video: Anzeige von Längsschnitten zu Berechnungsergebnissen <https://fh-aachen.sciebo.de/s/mbWT9CwP2ljEwCW>`_
+- `Video: Anzeige von Längsschnitten zu Berechnungsergebnissen <https://fh-aachen.sciebo.de/s/mbWT9CwP2ljEwCW>`_
 
 
 .. index:: Video: Berechnungsergebnisse aus HYSTEM-EXTRAN-Berechnungen als Ganglinien und Längsschnitte
@@ -588,7 +579,7 @@ Einfügen eines Zeichnungsrahmens aus einer mit Autocad erstellten Vorlage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Eine Videoanleitung, wie ein mit AutoCAD erstellter Zeichnungsrahmen in ein QGIS-Layout eingefügt wird, 
 finden Sie hier: 
- - `Video: Einfügen eines Zeichnungsrahmens in QGIS <https://fh-aachen.sciebo.de/s/pJZayVce4VQMiFl>`_
+- `Video: Einfügen eines Zeichnungsrahmens in QGIS <https://fh-aachen.sciebo.de/s/pJZayVce4VQMiFl>`_
 
 
 .. index:: Video: Bearbeiten eines DYNA-Projektes mit QKan
@@ -596,4 +587,4 @@ finden Sie hier:
 Import eines Kanal++ Projektes nach QKan
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Eine Videoanleitung, wie ein Kanal++ Projekt nach QKan übertragen werden kann, finden Sie hier: 
- - `Video: Export auf Kanal++ nach QKan <https://fh-aachen.sciebo.de/s/1VwlghfBHcHZWRi>`_
+- `Video: Export auf Kanal++ nach QKan <https://fh-aachen.sciebo.de/s/1VwlghfBHcHZWRi>`_

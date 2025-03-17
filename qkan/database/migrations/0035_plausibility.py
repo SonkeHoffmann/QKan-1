@@ -8,20 +8,20 @@ VERSION = "3.3.6"  # must be higher than previous one and correspond with qkan_d
 logger = get_logger("QKan.database.migrations")
 
 
-def run(db_qkan: DBConnection) -> bool:
+def run(dbcon: DBConnection) -> bool:
     """Zusätzliche Tabelle Notizen
-    :type db_qkan:    DBConnection
+    :type dbcon:    DBConnection
     """
 
     templateDir = os.path.join(pluginDirectory("qkan"), "templates")
     filenam = os.path.join(templateDir, 'Plausibilitaetspruefungen.sql')
-    if db_qkan.executefile(filenam):
+    if dbcon.executefile(filenam):
         logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
     else:
         logger.error_code("Fehler beim Lesen der Plausibilitätsabfragen:"
                           f"Die Datei {filenam} konnten nicht gelesen werden!\n"
                           "Fehler in migration 0035_plausibility")
-    db_qkan.commit()
+    dbcon.commit()
     logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
 
     return True

@@ -3,204 +3,255 @@
 Diese Datei wird beim Öffnen des Tools als SQL-Datei ausgeführt und fügt noch nicht in der Tabelle 'pruefsql' enthaltene Datensätze hinzu. 
 Die Attribute der Datensätze haben folgende Bedeutung:
  - gruppe: Bezeichnung erscheint im Formular und dient der Auswahl
- - warntext: interne Bezeichnung (s. u.)
+ - warnbez: interne Bezeichnung. Muss eindeutig sein.
  - warntyp: Erscheint nach der Ausführung in der Tabelle 'Fehlerliste'
  - warnlevel: Erscheint nach der Ausführung in der Tabelle 'Fehlerliste': Gewichtung des Fehlers (1-9)
  - sql: SQL-Anweisung mit folgenden Attributen:
-    - (Attributname): Attribut, das zur Identifikation des fehlerhaften Objektes verwendet werden kann, meistens 'pk'
-    - bemerkung: Text, der in der Fehlerliste in der Spalte 'Warntext' angezeigt wird
- - Name des Layers, in dem sich das fehlerhafte Objekt befindet
- - Name des Attributs (string), anhand dessen das fehlerhafte Objekt identifiziert werden kann */
+    - objid: Attribut, das zur Identifikation des fehlerhaften Objektes verwendet werden kann, meistens 'pk AS objid'
+    - bemerkung: wird in der Fehlerliste in der Spalte 'Warntext' angezeigt
+ - layername: Name des Layers, in dem sich das fehlerhafte Objekt befindet
+ - attrname: Name des Attributs (string), anhand dessen das fehlerhafte Objekt in der entsprechenden Aktion im Layer "Fehlerliste" identifiziert werden kann 
+ 
+ Hinweis zur Fehlersuche: Diese Datei kann im SQL-Fenster des DB-Browser (bei geöffneter QKan-Datenbank) ausgeführt werden. 
+ */
 
--- DELETE FROM pruefsql;
+-- Löschen aller QKan-Standardabfragen, erkennbar am Schluss des Feldes warntext:
+DELETE FROM pruefsql WHERE gruppe IN ('Netzstruktur', 'Geoobjekte', 'HYSTEM-EXTRAN', 'Zustandsklassen', 'Kreuzende Haltungen (3D, braucht sehr lang!)', 'Kreuzende Haltungen (im Plan)');
+
 INSERT INTO pruefsql (gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)
-SELECT pn.gruppe, pn.warntext, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn.attrname FROM
-(   SELECT column1 AS gruppe, column2 AS warntext, column3 AS warntyp, column4 AS warnlevel, column5 AS sql, column6 AS layername, column7 AS attrname FROM 
+SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn.attrname FROM
+(   SELECT column1 AS gruppe, column2 AS warnbez, column3 AS warntyp, column4 AS warnlevel, column5 AS sql, column6 AS layername, column7 AS attrname FROM 
     (   VALUES
+
 ('Netzstruktur', 'Schacht oben mehr als 1.0 m von Haltungsende entfernt', 'Fehler', 9, 
-    'SELECT haltnam, ''Schacht oben mehr als 1.0 m von Haltungsende entfernt'' AS bemerkung
+    'SELECT ha.pk AS objid, printf(''Schacht oben "%s" mehr als 1.0 m von Ende der Haltung "%s" entfernt'', so.schnam, ha.haltnam) AS bemerkung
     FROM haltungen AS ha
     LEFT JOIN schaechte AS so ON ha.schoben = so.schnam
-    WHERE within(so.geop, buffer(pointn(ha.geom,1), 1.0)) <> 1 AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
- 'Haltungen', 'haltnam'),
+    WHERE within(so.geop, buffer(pointn(ha.geom,1), 1.0)) <> 1 AND (ha.haltungstyp = ''Haltung'' OR ha.haltungstyp IS NULL)',
+ 'Haltungen', 'pk'),
 
 ('Netzstruktur', 'Schacht unten mehr als 1.0 m von Haltungsende entfernt', 'Fehler', 9, 
-    'SELECT haltnam, ''Schacht unten mehr als 1.0 m von Haltungsende entfernt'' AS bemerkung
+    'SELECT ha.pk AS objid, printf(''Schacht unten "%s" mehr als 1.0 m von Ende der Haltung "%s" entfernt'', su.schnam, ha.haltnam) AS bemerkung
     FROM haltungen AS ha
     LEFT JOIN schaechte AS su ON ha.schunten = su.schnam
     WHERE within(su.geop, buffer(pointn(ha.geom,-1), 1.0)) <> 1 AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
- 'Haltungen', 'haltnam'),
+ 'Haltungen', 'pk'),
 
 ('Kreuzende Haltungen (im Plan)', 'Zwei Haltungen kreuzen sich', 'Fehler', 9,
-'WITH haltungen_selected AS (SELECT * FROM haltungen WHERE not transport) SELECT n1.pk AS pk, printf("Haltung %s und %s kreuzen sich. Eine von beiden muss als Transporthaltung markiert werden!", n1.haltnam, n2.haltnam) AS bemerkung
-FROM haltungen_selected AS n1 JOIN haltungen_selected AS n2 ON ST_Intersects(n1.geom, n2.geom) = 1
-WHERE n1.pk > n2.pk  AND n1.schoben not in (n2.schunten, n2.schoben) AND n2.schoben not in (n1.schunten, n1.schoben) AND n1.schunten not in (n2.schunten, n2.schoben) AND n2.schunten not in (n1.schunten, n1.schoben)', 'Haltungen', 'pk'),
+    'WITH haltungen_selected AS (SELECT * FROM haltungen WHERE not transport AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL))
+    SELECT n1.pk AS objid, printf(''Haltung "%s" und "%s" kreuzen sich. Eine von beiden muss als Transporthaltung markiert werden!'', n1.haltnam, n2.haltnam) AS bemerkung
+    FROM haltungen_selected AS n1 JOIN haltungen_selected AS n2 ON ST_Intersects(n1.geom, n2.geom) = 1
+    WHERE n1.schoben not in (n2.schunten, n2.schoben)
+      AND n2.schoben not in (n1.schunten, n1.schoben)
+      AND n1.schunten not in (n2.schunten, n2.schoben)
+      AND n2.schunten not in (n1.schunten, n1.schoben)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Zwei Schächte haben ein identisches Geoobjekt', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Schächte"" in %d Datensätzen hat ein identisches Geoobjekt (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT b.pk as pk FROM schaechte a JOIN schaechte b ON a.pk < b.pk WHERE ST_Equals(a.geop, b.geop) = 1 ))) AS bemerkung
-FROM (SELECT b.pk as pk FROM schaechte a JOIN schaechte b ON a.pk < b.pk WHERE ST_Equals(a.geop, b.geop) = 1 ) LIMIT 5', 'Schächte', 'pk'),
+('Netzstruktur', 'Zwei Schächte haben ein identisches Geoobjekt', 'Warnung', 5,
+    'SELECT a.pk AS objid,
+    printf(''Schacht "%s" ist identisch mit Schacht "%s"'', a.schnam, b.schnam) AS bemerkung
+    FROM schaechte AS a
+    JOIN schaechte AS b ON ST_Equals(a.geop, b.geop) = 1
+    WHERE b.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name=''schaechte'' AND search_frame=a.geop) AND a.pk < b.pk',
+'Schächte', 'pk'),
 
-('Netzstruktur', 'Zwei Haltungen haben ein identisches Geoobjekt', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat ein identisches Geoobjekt (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT b.pk as pk FROM haltungen a JOIN haltungen b ON a.pk < b.pk WHERE ST_Equals(a.geom, b.geom) = 1 ))) AS bemerkung
-FROM (SELECT b.pk as pk FROM haltungen a JOIN haltungen b ON a.pk < b.pk WHERE ST_Equals(a.geom, b.geom) = 1 ) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Zwei Haltungen haben ein identisches Geoobjekt', 'Warnung', 5,
+    'SELECT a.pk as objid, printf(''Haltung "%s" ist identisch mit "%s"'', a.haltnam, b.haltnam) As bemerkung
+    FROM haltungen AS a JOIN haltungen AS b ON ST_Equals(a.geom, b.geom) = 1
+    WHERE b.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name=''haltungen'' AND search_frame=a.geom) AND a.pk < b.pk
+      AND (a.haltungstyp = ''Haltung'' OR a.haltungstyp IS NULL)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Zwei Haltungen mit identischen Schachtobjekten', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat ein Objekt mit identischen Schachtobjekten (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT b.pk as pk FROM haltungen a JOIN haltungen b ON a.pk < b.pk WHERE a.schoben= b.schoben AND a.schunten=b.schunten ))) AS bemerkung
-FROM (SELECT b.pk as pk FROM haltungen a JOIN haltungen b ON a.pk < b.pk WHERE a.schoben= b.schoben AND a.schunten=b.schunten) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Zwei Haltungen mit identischen Schachtobjekten', 'Warnung', 5,
+    'SELECT a.pk AS objid, printf(''Haltung "%s" hat die gleichen Schächte wie Haltung "%s"'', a.haltnam, b.haltnam) As bemerkung
+    FROM haltungen AS a JOIN haltungen AS b ON (a.schoben = b.schoben AND a.schunten = b.schunten) OR (a.schoben = b.schunten AND a.schunten = b.schoben)
+    WHERE a.pk < b.pk AND (a.haltungstyp = ''Haltung'' OR a.haltungstyp IS NULL)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Zwei Anschlussleitungen haben ein identisches Geoobjekt', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat ein identisches Geoobjekt (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT b.pk as pk FROM anschlussleitungen a JOIN anschlussleitungen b ON a.pk < b.pk WHERE ST_Equals(a.geom, b.geom) = 1 ))) AS bemerkung
-FROM (SELECT b.pk as pk FROM anschlussleitungen a JOIN anschlussleitungen b ON a.pk < b.pk WHERE ST_Equals(a.geom, b.geom) = 1 ) LIMIT 5', 'Anschlussleitungen', 'pk'),
+('Netzstruktur', 'Zwei Anschlussleitungen haben ein identisches Geoobjekt', 'Warnung', 5,
+    'SELECT a.pk as objid, printf(''Anschlussleitung "%s" ist identisch mit "%s"'', a.leitnam, b.leitnam) As bemerkung
+    FROM anschlussleitungen AS a JOIN anschlussleitungen AS b ON ST_Equals(a.geom, b.geom) = 1
+    WHERE b.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name=''anschlussleitungen'' AND search_frame=a.geom) AND a.pk < b.pk',
+'Anschlussleitungen', 'pk'),
 
-('Netzstruktur', 'Haltungslängen prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat eine unübliche Länge (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT a.pk as pk FROM haltungen a WHERE st_length(a.geom)<2 OR  st_length(a.geom)>80 ))) AS bemerkung
-FROM (SELECT a.pk as pk FROM haltungen a WHERE st_length(a.geom)<2 OR  st_length(a.geom)>80 ) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Haltungslänge unplausibel', 'Warnung', 3,
+    'SELECT pk as objid, printf(''Länge der Haltung "%s" (%.2f) ist unplausibel'', haltnam, st_length(geom)) AS bemerkung
+    FROM haltungen WHERE st_length(geom)<2 OR st_length(geom)>80 AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Haltungslängen prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen weicht von Geometrie ab (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT a.pk as pk FROM haltungen a WHERE st_length(a.geom)<>a.laenge))) AS bemerkung
-FROM (SELECT a.pk as pk FROM haltungen a WHERE st_length(a.geom)<>a.laenge) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Haltungslänge ungleich Geoobjekt', 'Fehler', 9,
+    'SELECT pk as objid,
+    printf(''Haltung "%s": vorgegebene Haltungslänge %.2f m weicht deutlich von der des Geometrieobjekts (%.2f m) ab'', haltnam, laenge, st_length(geom)) AS bemerkung
+    FROM haltungen WHERE abs(st_length(geom)-laenge) / (st_length(geom) + laenge + 5.0) > 0.1',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Haltungsgefälle prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat ein unübliches Gefälle (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT a.pk as pk FROM haltungen a WHERE (( a.sohleoben - a.sohleunten )/st_length(a.geom)*1000)<1 OR (( a.sohleoben - a.sohleunten )/st_length(a.geom)*1000)>30))) AS bemerkung
-FROM (SELECT a.pk as pk FROM haltungen a WHERE (( a.sohleoben - a.sohleunten )/st_length(a.geom)*1000)<1 OR (( a.sohleoben - a.sohleunten )/st_length(a.geom)*1000)>30) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Haltungsgefälle unplausibel', 'Fehler', 9,
+    'SELECT pk as objid, printf(''Unplausibles Gefälle %.2f ‰ in Haltung "%s"'', abs(sohleoben - sohleunten)/st_length(geom) * 1000.0, haltnam) AS bemerkung
+    FROM haltungen
+    WHERE (abs(sohleoben - sohleunten)/st_length(geom) < 0.001 OR abs(sohleoben - sohleunten )/st_length(geom) > 0.030)
+      AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Haltungs Entwässerungsart prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat eine andere Entwässerungsart als die angeschlossenen Schächte (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT ha.pk as pk FROM haltungen AS ha LEFT JOIN schaechte AS so ON ha.schoben = so.schnam WHERE ha.entwart <> so.entwart))) AS bemerkung
-FROM (SELECT ha.pk as pk FROM haltungen AS ha LEFT JOIN schaechte AS so ON ha.schoben = so.schnam WHERE ha.entwart <> so.entwart) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Entwässerungsart Haltung und angeschlossene Schächte unterschiedlich', 'Fehler', 9,
+    'SELECT ha.pk as objid, printf(''Entwässerungsart in Haltung "%s" ("%s") und angeschlossenen Schächten "%s" ("%s"), "%s" ("%s") ist unterschiedlich'', ha.haltnam, ha.entwart, so.schnam, so.entwart, su.schnam, su.entwart) as bemerkung
+    FROM haltungen AS ha LEFT JOIN schaechte AS so ON ha.schoben = so.schnam LEFT JOIN schaechte AS su ON ha.schoben = su.schnam
+    WHERE (ha.entwart <> so.entwart OR ha.entwart <> su.entwart)
+      AND (ha.haltungstyp = ''Haltung'' OR ha.haltungstyp IS NULL)', 'Haltungen', 'pk'),
 
-('Netzstruktur', 'Haltungs Entwässerungsart prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat eine andere Entwässerungsart als die angeschlossenen Schächte (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT ha.pk as pk FROM haltungen AS ha LEFT JOIN schaechte AS su ON ha.schunten = su.schnam WHERE ha.entwart <> su.entwart))) AS bemerkung
-FROM (SELECT ha.pk as pk FROM haltungen AS ha LEFT JOIN schaechte AS su ON ha.schunten = su.schnam WHERE ha.entwart <> su.entwart) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Haltungssohlhöhe oben tiefer als Schachtsohlhöhe', 'Fehler', 9,
+    'SELECT ha.pk as objid, printf(''Sohlhöhe oben von Haltung "%s" (%.3f) ist tiefer als Schachtsohle "%s" (%.3f)'', ha.haltnam, ha.sohleoben, so.schnam, so.sohlhoehe) as bemerkung
+    FROM schaechte AS so JOIN haltungen AS ha ON ha.schoben = so.schnam
+    WHERE ha.sohleoben < so.sohlhoehe AND (ha.haltungstyp = ''Haltung'' OR ha.haltungstyp IS NULL)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Sohlhöhen vom Schacht prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat eine höhere Sohlhöhe als angeschlossen Haltungen (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT so.pk as pk FROM schaechte AS so LEFT JOIN haltungen AS ha ON ha.schoben = so.schnam WHERE ha.sohleoben < so.sohlhoehe))) AS bemerkung
-FROM (SELECT so.pk as pk FROM schaechte AS so LEFT JOIN haltungen AS ha ON ha.schoben = so.schnam WHERE ha.sohleoben < so.sohlhoehe) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Haltungssohlhöhe unten tiefer als Schachtsohlhöhe', 'Fehler', 9,
+    'SELECT su.pk AS objid, printf(''Sohlhöhe unten von Haltung "%s" (%.3f) ist tiefer als Schachtsohle "%s" (%.3f)'', ha.haltnam, ha.sohleunten, su.schnam, su.sohlhoehe) AS bemerkung
+    FROM schaechte AS su JOIN haltungen AS ha ON ha.schunten = su.schnam
+    WHERE ha.sohleunten < su.sohlhoehe AND (ha.haltungstyp = ''Haltung'' OR ha.haltungstyp IS NULL)',
+'Haltungen', 'pk'),
 
-('Netzstruktur', 'Sohlhöhen vom Schacht prüfen', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat eine höhere Sohlhöhe als angeschlossen Haltungen (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT su.pk as pk FROM schaechte AS su LEFT JOIN haltungen AS ha ON ha.schunten = su.schnam WHERE ha.sohleunten < su.sohlhoehe))) AS bemerkung
-FROM (SELECT su.pk as pk FROM schaechte AS su LEFT JOIN haltungen AS ha ON ha.schunten = su.schnam WHERE ha.sohleunten < su.sohlhoehe) LIMIT 5', 'Haltungen', 'pk'),
+('Netzstruktur', 'Schächte ohne zugehörge Haltung', 'Warnung', 3,
+    'SELECT pk AS objid, printf(''Schacht "%s" ist an keiner Haltung angeschlossen'', schaechte.schnam) AS bemerkung
+    FROM schaechte WHERE schaechte.schnam NOT IN (SELECT haltungen.schoben FROM haltungen UNION SELECT haltungen.schunten FROM haltungen)', 'Haltungen', 'pk'),
 
-('Netzstruktur', 'Schächte ohne zugehörge Haltung', 'Fehler', 9,
-    'SELECT pk, printf("Datensatz in Layer ""Schächte"" in %d Datensätzen hat keine angeschlossen Haltungen (nur max. 5 Datensätze angezeigt)", 
-(SELECT count(*) FROM (SELECT pk FROM schaechte WHERE schaechte.schnam NOT IN (SELECT haltungen.schoben FROM haltungen UNION SELECT haltungen.schunten FROM haltungen)))) AS bemerkung
-FROM (SELECT pk FROM schaechte WHERE schaechte.schnam NOT IN (SELECT haltungen.schoben FROM haltungen UNION SELECT haltungen.schunten FROM haltungen)) LIMIT 5', 'Haltungen', 'pk'),
+('Geoobjekte', 'Haltungen ohne graphisches Linienobjekt', 'Fehler', 9,
+    'SELECT pk AS objid, printf(''Haltung "%s" hat kein graphisches Linienobjekt'', haltnam) AS bemerkung
+    FROM haltungen WHERE geom IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
+ 'Haltungen', 'pk'),
 
+('Geoobjekte', 'Pumpe ohne graphisches Linienobjekt', 'Warnung', 9,
+    'SELECT pk AS objid, printf(''Pumpe "%s" hat kein graphisches Linienobjekt'', haltnam) AS bemerkung
+    FROM haltungen WHERE geom IS NULL AND (haltungstyp = ''Pumpe'')',
+ 'Pumpen', 'pk'),
 
-('Geoobjekte', 'Haltung ohne graphisches Linienobjekt', 'Fehler', 9,
-    'SELECT haltnam, printf("Datensatz in Layer ""Haltungen"" in %d Datensätzen hat kein graphisches Linienobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM haltungen WHERE geom IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL))) AS bemerkung
-FROM haltungen
-WHERE geom IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL) LIMIT 5',
- 'Haltungen', 'haltnam'),
-('Geoobjekte', 'Pumpen ohne graphisches Linienobjekt', 'Fehler', 9,
-    'SELECT haltnam, printf("Datensatz in Layer ""Pumpen"" in %d Datensätzen hat kein graphisches Linienobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM haltungen WHERE geom IS NULL AND (haltungstyp = ''Pumpe''))) AS bemerkung
-FROM haltungen
-WHERE geom IS NULL AND (haltungstyp = ''Pumpe'') LIMIT 5',
- 'Pumpen', 'haltnam'),
-('Geoobjekte', 'Wehr ohne graphisches Linienobjekt', 'Fehler', 9,
-    'SELECT haltnam, printf("Datensatz in Layer ""Wehre"" in %d Datensätzen hat kein graphisches Linienobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM haltungen WHERE geom IS NULL AND (haltungstyp = ''Wehr''))) AS bemerkung
-FROM haltungen
-WHERE geom IS NULL AND (haltungstyp = ''Wehr'') LIMIT 5',
- 'Haltungen', 'haltnam'),
-('Geoobjekte', 'Schacht ohne graphisches Punktobjekt', 'Fehler', 9,
-    'SELECT schnam, printf("Datensatz in Layer ""Schächte"" in %d Datensätzen hat kein graphisches  Punktobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM schaechte WHERE geop IS NULL AND (schachttyp = ''Schacht'' OR schachttyp IS NULL))) AS bemerkung
-FROM schaechte
-WHERE geop IS NULL AND (schachttyp = ''Schacht'' OR schachttyp IS NULL) LIMIT 5',
- 'Schächte', 'schnam'),
-('Geoobjekte', 'Auslass ohne graphisches Punktobjekt', 'Fehler', 9,
-    'SELECT schnam, printf("Datensatz in Layer ""Auslässe"" in %d Datensätzen hat kein graphisches  Punktobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM schaechte WHERE geop IS NULL AND (schachttyp = ''Auslass''))) AS bemerkung
-FROM schaechte
-WHERE geop IS NULL AND (schachttyp = ''Auslass'') LIMIT 5',
- 'Auslässe', 'schnam'),
+('Geoobjekte', 'Wehre ohne graphisches Linienobjekt', 'Fehler', 9,
+    'SELECT pk AS objid, printf(''Wehr "%s" hat kein graphisches Linienobjekt'', haltnam) AS bemerkung
+    FROM haltungen WHERE geom IS NULL AND (haltungstyp = ''Wehr'')',
+ 'Wehre', 'pk'),
+
+('Geoobjekte', 'Schächte ohne graphisches Punktobjekt', 'Fehler', 9,
+    'SELECT pk AS objid, printf(''Schacht "%s" hat kein graphisches Punktobjekt'', schnam) AS bemerkung
+    FROM schaechte WHERE geop IS NULL AND (schachttyp = ''Schacht'' OR schachttyp IS NULL)',
+ 'Schächte', 'pk'),
+
+('Geoobjekte', 'Auslässe ohne graphisches Punktobjekt', 'Fehler', 9,
+    'SELECT pk AS objid, printf(''Auslass "%s" hat kein graphisches Punktobjekt'', schnam) AS bemerkung
+    FROM schaechte WHERE geop IS NULL AND schachttyp = ''Auslass''',
+ 'Auslässe', 'pk'),
+
 ('Geoobjekte', 'Speicher ohne graphisches Punktobjekt', 'Fehler', 9,
-    'SELECT schnam, printf("Datensatz in Layer ""Speicher"" in %d Datensätzen hat kein graphisches  Punktobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM schaechte WHERE geop IS NULL AND (schachttyp = ''Speicher'' OR schachttyp IS NULL))) AS bemerkung
-FROM schaechte
-WHERE geop IS NULL AND (schachttyp = ''Speicher'' OR schachttyp IS NULL) LIMIT 5',
- 'Speicher', 'schnam'),
+    'SELECT pk AS objid, printf(''Speicher "%s" hat kein graphisches Punktobjekt'', schnam) AS bemerkung
+    FROM schaechte WHERE geop IS NULL AND (schachttyp = ''Speicher''',
+ 'Speicher', 'pk'),
+
 ('Geoobjekte', 'Kein Flächenobjekt', 'Fehler', 9,
-    'SELECT flnam, printf("Datensatz in Layer ""Flächen"" in %d Datensätzen hat kein graphisches Flächenobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM flaechen WHERE geom IS NULL)) AS bemerkung
-FROM flaechen
-WHERE geom IS NULL LIMIT 5',
- 'Flächen', 'flnam'),
+    'SELECT pk AS objid, printf(''Fläche "%s" hat kein graphisches Flächenobjekt'', flnam) AS bemerkung
+    FROM flaechen WHERE geom IS NULL',
+ 'Flächen', 'pk'),
+
 ('Geoobjekte', 'Kein Flächenobjekt', 'Fehler', 9,
-    'SELECT flnam, printf("Datensatz in Layer ""Haltungsflächen"" in %d Datensätzen hat kein Flächenobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM tezg WHERE geom IS NULL)) AS bemerkung
-FROM tezg
-WHERE geom IS NULL LIMIT 5',
- 'Haltungsflächen', 'flnam'),
+    'SELECT pk AS objid, printf(''Haltungsfläche "%s" hat kein Flächenobjekt'', tgnam) AS bemerkung
+    FROM tezg WHERE geom IS NULL',
+ 'Haltungsflächen', 'pk'),
+
 ('Geoobjekte', 'Flächenanbindung ohne graphisches Linienobjekt', 'Fehler', 9,
-    'SELECT flnam, printf("Datensatz in Layer ""Anbindungen Flächen"" in %d Datensätzen hat kein graphisches Linienobjekt (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM linkfl WHERE geom IS NULL)) AS bemerkung
-FROM linkfl
-WHERE geom IS NULL LIMIT 5',
- 'Anbindungen Flächen', 'flnam'),
+    'SELECT pk AS objid, printf(''Anbindungen Flächen "%s" hat kein graphisches Linienobjekt'', flnam) AS bemerkung
+    FROM linkfl WHERE geom IS NULL',
+ 'Anbindungen Flächen', 'pk'),
 
 ('HYSTEM-EXTRAN', 'Abflussparameter fehlen', 'Fehler', 9,
-    'SELECT f1.flnam,
-        printf("Abflussparameter ""%s"" wird in Layer ""Flächen"" verwendet, fehlt aber in Referenztabelle ""Abflussparameter HE"" bzw. ""... KP"" in %d Datensätzen (nur max. 5 Datensätze angezeigt)", 
-            f1.abflussparameter, (
-			SELECT count(*)
-			FROM flaechen AS f2
-			WHERE f2.abflussparameter = f1.abflussparameter
-			)) AS bemerkung
+    'SELECT pk AS objid,
+    printf(''Abflussparameter in Fläche "%s" fehlt'', flnam) AS bemerkung
+    FROM flaechen
+    WHERE abflussparameter IS NULL', 
+ 'Abflussparameter', 'pk'),
+
+('HYSTEM-EXTRAN', 'Abflussparameter nicht in Referenzliste', 'Fehler', 9,
+    'SELECT f1.pk AS objid,
+    printf(''Abflussparameter "%s" wird in Fläche "%s" verwendet, fehlt aber in Referenztabelle "Abflussparameter"'', f1.abflussparameter, f1.flnam) AS bemerkung
     FROM flaechen AS f1
     LEFT JOIN abflussparameter ON f1.abflussparameter = abflussparameter.apnam
-    WHERE abflussparameter.pk IS NULL
-    GROUP BY f1.flnam LIMIT 5', 
- 'Abflussparameter', 'flnam'),
+    WHERE abflussparameter.pk IS NULL AND f1.abflussparameter IS NOT NULL', 
+ 'Abflussparameter', 'pk'),
+
 ('HYSTEM-EXTRAN', 'Schwerpunktlaufzeiten fehlen', 'Fehler', 9, 
-    'SELECT flnam,
-        printf("Spalte ""fliesszeitflaeche"" in Layer ""Anbindungen Flächen"" in %d Datensätzen leer (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM linkfl WHERE fliesszeitflaeche IS NULL)) AS bemerkung
-    FROM linkfl
-    WHERE fliesszeitflaeche IS NULL LIMIT 5',
- 'Anbindungen Flächen', 'flnam'),
-('HYSTEM-EXTRAN', 'Simulationsstatus fehlt oder nicht in Tabelle "Simulationsstatus"', 'Fehler', 9,
-    'SELECT s.schnam,
-        printf("Spalte simstatus = %s in Spalte leer oder nicht in Simulationsstatus (nur 1 exemplarisch aufgelistet!)", s.simstatus) AS bemerkung
+    'SELECT pk AS objid,
+    printf(''"Fliesszeit Flaeche" fehlt in "Anbindungen Flächen" "%s"'', linkfl.flnam) AS bemerkung
+    FROM linkfl WHERE fliesszeitflaeche IS NULL',
+ 'Anbindungen Flächen', 'pk'),
+
+('HYSTEM-EXTRAN', 'Simulationsstatus fehlt', 'Fehler', 9,
+    'SELECT pk AS objid,
+    printf(''"Simulationsstatus" fehlt in Schacht "%s"'', schnam) AS bemerkung
+    FROM schaechte WHERE simstatus IS NULL AND (schachttyp = ''Schacht'' OR schachttyp IS NULL)', 
+ 'Schächte', 'pk'),
+
+('HYSTEM-EXTRAN', 'Simulationsstatus nicht in Referenzliste', 'Fehler', 9,
+    'SELECT s.pk AS objid,
+    printf(''Planungsstatus "%s" wird in Schacht "%s" verwendet, fehlt aber in Referenzliste "Planungsstatus")'', s.simstatus, s.schnam) AS bemerkung
     FROM schaechte AS s
     LEFT JOIN simulationsstatus AS u ON s.simstatus = u.bezeichnung
-    WHERE u.bezeichnung IS NULL GROUP BY s.simstatus', 
- 'Schächte', 'schnam'),
+    WHERE u.bezeichnung IS NULL AND (s.schachttyp = ''Schacht'' OR s.schachttyp IS NULL)', 
+ 'Schächte', 'pk'),
+
 ('HYSTEM-EXTRAN', 'Neigungsklasse fehlt', 'Fehler', 9,
-    'SELECT flnam,
-        printf("Spalte ""neigkl"" in Layer ""Flächen"" in %d Datensätzen leer (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM flaechen WHERE neigkl IS NULL)) AS bemerkung
-    FROM flaechen
-    WHERE neigkl IS NULL LIMIT 5',
- 'Flächen', 'flnam'),
-('HYSTEM-EXTRAN', 'Profil fehlt in Layer "Profile"', 'Fehler', 9,
-    'SELECT h.haltnam,
-        printf("Profil ''%s'' fehlt in Layer Profile", h.profilnam) AS bemerkung 
+    'SELECT pk AS objid,
+    printf(''"Neigungsklasse" fehlt in Fläche "%s"'', flnam) AS bemerkung
+    FROM flaechen WHERE neigkl IS NULL',
+ 'Flächen', 'pk'),
+
+('HYSTEM-EXTRAN', 'Rohrprofil fehlt', 'Fehler', 9,
+    'SELECT pk AS objid,
+    printf(''"Profilname" fehlt in Haltung "%s"'', haltnam) AS bemerkung
+    FROM haltungen
+    WHERE profilnam IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)',
+ 'Haltungen', 'pk'),
+
+('HYSTEM-EXTRAN', 'Rohrprofil nicht in Referenzliste', 'Fehler', 9,
+    'SELECT h.pk AS objid,
+    printf(''Profil "%s" wird in Haltung "%s" verwendet, fehlt aber in Referenzliste "Profile"'', h.profilnam, h.haltnam) AS bemerkung 
     FROM haltungen AS h
     LEFT JOIN profile AS p
     ON h.profilnam = p.profilnam
-    WHERE p.profilnam IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)
-    GROUP BY h.profilnam',
- 'Haltungen', 'haltnam'),
-('Netzstruktur', 'Schachtnamen doppelt', 'Fehler', 9,
-    'SELECT schnam,
-        printf("Schachtnamen doppelt in Layer ""Schächte"" in %d Datensätzen (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM (SELECT schnam FROM schaechte GROUP BY schnam HAVING count(*) > 1))) AS bemerkung
-    FROM (SELECT schnam FROM schaechte GROUP BY schnam HAVING count(*) > 1) LIMIT 5', 
- 'Schächte', 'schnam'),
-('Netzstruktur', 'Haltungsnamen doppelt', 'Fehler', 9,
-    'SELECT haltnam,
-        printf("Haltungsnamen doppelt in Layer ""Haltungen"" in %d Datensätzen (nur max. 5 Datensätze angezeigt)", (SELECT count(*) FROM (SELECT haltnam FROM haltungen GROUP BY haltnam HAVING count(*) > 1))) AS bemerkung
-    FROM (SELECT haltnam FROM haltungen GROUP BY haltnam HAVING count(*) > 1) LIMIT 5', 
- 'Haltungen', 'haltnam'),
+    WHERE p.profilnam IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL) AND h.profilnam IS NOT NULL',
+ 'Haltungen', 'pk'),
+
+('Netzstruktur', 'Schachtnamen mehrfach', 'Fehler', 9,
+    'SELECT pk AS objid,
+    printf(''Schachtnamen "%s" mehrfach vergeben'', schnam) AS bemerkung
+    FROM schaechte GROUP BY schnam HAVING count() > 1', 
+ 'Schächte', 'pk'),
+
+('Netzstruktur', 'Haltungsnamen mehrfach', 'Fehler', 9,
+    'SELECT pk AS objid,
+    printf(''Haltungsnamen "%s" mehrfach vergeben'', haltnam) AS bemerkung
+    FROM haltungen GROUP BY haltnam HAVING count() > 1', 
+ 'Haltungen', 'pk'),
+
 ('Kreuzende Haltungen (3D, braucht sehr lang!)', 'Kreuzende Haltungen', 'Warnung', 6, 
-    'SELECT
-         haltna1 AS haltnam, 
-         printf("Theoretischer Abstand zu Haltung %s beträgt d = %.2f", haltna2, COALESCE(abstkreuz, d3)) as bemerkung
+    'WITH elems AS (
+    SELECT
+      ha.pk AS pk,
+      ha.haltnam AS haltnam,
+      ha.schoben AS schoben,
+      ha.schunten AS schunten,
+      ha.geom AS geom, 
+      COALESCE(ha.sohleoben, so.sohlhoehe)  + COALESCE(ha.hoehe, ha.breite)*0.5 AS zoben, 
+      COALESCE(ha.sohleunten, su.sohlhoehe) + COALESCE(ha.hoehe, ha.breite)*0.5 AS zunten,
+      COALESCE(ha.hoehe, ha.breite) AS durchm, 
+      CASE WHEN COALESCE(ha.hoehe, 0) = 0 THEN ha.breite ELSE ha.hoehe END AS hoehe
+    FROM haltungen AS ha 
+    INNER JOIN schaechte AS so 
+    ON ha.schoben = so.schnam
+    INNER JOIN schaechte AS su 
+    ON ha.schunten = su.schnam
+    WHERE (haltungstyp = ''Haltung'' OR haltungstyp IS NULL))
+SELECT
+         pk AS objid, 
+         printf(''Theoretischer Abstand zu Haltung "%s" beträgt d = %.2f m'', haltna2, COALESCE(abstkreuz, d3)) as bemerkung
     FROM (
     SELECT 
-      haltna1, haltna2, hoehob, hoehun, 
+      pk, haltna1, haltna2, hoehob, hoehun, 
       abs((p3x-p1x)*ex+(p3y-p1y)*ey+(p3z-p1z)*ez)/SQRT(ex*ex+ey*ey+ez*ez) AS abstkreuz, 
       abs(L13/SQRT(L12))         AS abstpar,
       ((sx-p1x)*(p2x-p1x)+(sy-p1y)*(p2y-p1y))*((sx-p2x)*(p2x-p1x)+(sy-p2y)*(p2y-p1y)) AS d1, 
@@ -208,7 +259,7 @@ WHERE geom IS NULL LIMIT 5',
       MAX(0, L12, L13, L14)-MIN(0, L12, L13, L14)-ABS(L12)-ABS(L34)                   AS d3
     FROM (
       SELECT 
-        haltna1, haltna2, hoehob, hoehun, 
+        pk, haltna1, haltna2, hoehob, hoehun, 
         p1x, p1y, p1z, p2x, p2y, p2z, p3x, p3y, p3z, p4x, p4y, p4z, ex, ey, ez,
         CASE WHEN abs(det) > 0.000001 * bet THEN
           p1x+(p2x-p1x)*((p3x-p1x)*(p3y-p4y)-(p3y-p1y)*(p3x-p4x))/det ELSE NULL END     AS sx,
@@ -220,7 +271,7 @@ WHERE geom IS NULL LIMIT 5',
         ((p4x-p3x)*(p2x-p1x)+(p4y-p3y)*(p2y-p1y))                                       AS L34
       FROM (
         SELECT 
-          haltna1, haltna2, hoehob, hoehun, 
+          pk, haltna1, haltna2, hoehob, hoehun, 
           p1x, p1y, p1z, p2x, p2y, p2z, p3x, p3y, p3z, p4x, p4y, p4z, 
           (p2y-p1y)*(p4z-p3z)-(p2z-p1z)*(p4y-p3y) AS ex, 
           (p2z-p1z)*(p4x-p3x)-(p2x-p1x)*(p4z-p3z) AS ey,
@@ -229,6 +280,7 @@ WHERE geom IS NULL LIMIT 5',
           ((p2x-p1x)*(p3x-p4x)+(p2y-p1y)*(p3y-p4y)) AS bet
         FROM (
           SELECT
+            ho.pk                 AS pk,
             ho.haltnam            AS haltna1, 
             hu.haltnam            AS haltna2, 
             ho.hoehe              AS hoehob, 
@@ -245,40 +297,8 @@ WHERE geom IS NULL LIMIT 5',
             x(PointN(hu.geom,-1)) AS p4x, 
             y(PointN(hu.geom,-1)) AS p4y, 
             hu.zunten             AS p4z
-          FROM (
-            SELECT
-              ha.haltnam AS haltnam, 
-              ha.schoben AS schoben,
-              ha.schunten AS schunten,
-              ha.geom AS geom, 
-              COALESCE(ha.sohleoben, so.sohlhoehe)  + COALESCE(ha.hoehe, ha.breite)*0.5 AS zoben, 
-              COALESCE(ha.sohleunten, su.sohlhoehe) + COALESCE(ha.hoehe, ha.breite)*0.5 AS zunten,
-              COALESCE(ha.hoehe, ha.breite) AS durchm, 
-              CASE WHEN COALESCE(ha.hoehe, 0) = 0 THEN ha.breite ELSE ha.hoehe END AS hoehe
-            FROM haltungen AS ha 
-            INNER JOIN schaechte AS so 
-            ON ha.schoben = so.schnam
-            INNER JOIN schaechte AS su 
-            ON ha.schunten = su.schnam
-            WHERE (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)
-          ) AS ho 
-          INNER JOIN (
-            SELECT
-              ha.haltnam AS haltnam, 
-              ha.schoben AS schoben,
-              ha.schunten AS schunten,
-              ha.geom AS geom, 
-              COALESCE(ha.sohleoben, so.sohlhoehe)  + COALESCE(ha.hoehe, ha.breite)*0.5 AS zoben, 
-              COALESCE(ha.sohleunten, su.sohlhoehe) + COALESCE(ha.hoehe, ha.breite)*0.5 AS zunten,
-              COALESCE(ha.hoehe, ha.breite) AS durchm, 
-              CASE WHEN COALESCE(ha.hoehe, 0) = 0 THEN ha.breite ELSE ha.hoehe END AS hoehe
-            FROM haltungen AS ha 
-            INNER JOIN schaechte AS so 
-            ON ha.schoben = so.schnam
-            INNER JOIN schaechte AS su 
-            ON ha.schunten = su.schnam
-            WHERE (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)
-          ) AS hu
+          FROM elems AS ho 
+          INNER JOIN elems AS hu
           ON Distance(ho.geom, hu.geom) < 0.5 + (ho.durchm + hu.durchm) / 2.0
           WHERE
             ho.haltnam <> hu.haltnam AND 
@@ -294,147 +314,166 @@ WHERE geom IS NULL LIMIT 5',
     WHEN d1 IS NULL AND d3 <= 0
         THEN abstpar <= (hoehob + hoehun) / 2.0 + 0.5
     ELSE FALSE END)',
- 'Haltungen', 'haltnam'),
+ 'Haltungen', 'pk'),
 
 ('Zustandsklassen', 'Der Schadenskode hat mehr als 3 Zeichen', 'Fehler', 9,
-    'SELECT pk , ''Der Schadenskode hat mehr als 3 Zeichen'' AS bemerkung
+    'SELECT pk AS objid, ''Der Schadenskode hat mehr als 3 Zeichen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE LENGTH(kuerzel) IS NOT 3',
  'Untersuchungsdaten Haltung', 'pk'),
-('Zustandsklassen', 'Haltungsname doppelt', 'Fehler', 9,
-    'SELECT COUNT(*) AS "Count", pk , ''Haltungsname doppelt'' AS bemerkung
+
+('Zustandsklassen', 'Haltungsname mehrfach', 'Fehler', 9,
+    'SELECT pk AS objid, ''Haltungsname doppelt'' AS bemerkung
     FROM haltungen group by haltnam having count(*)>1 ',
  'Haltungen', 'pk'),
-('Zustandsklassen', 'Schachtname doppelt', 'Fehler', 9,
-    'SELECT COUNT(*) AS "Count", pk , ''Haltungsname doppelt'' AS bemerkung
+
+('Zustandsklassen', 'Schachtname mehrfach', 'Fehler', 9,
+    'SELECT pk AS objid, ''Haltungsname doppelt'' AS bemerkung
     FROM schaechte group by schnam having count(*)>1 ',
  'Schächte', 'pk'),
+
 ('Zustandsklassen', 'Der Schadenskode hat mehr als 3 Zeichen', 'Fehler', 9,
-    'SELECT pk , ''Der Schadenskode hat mehr als 3 Zeichen'' AS bemerkung
+    'SELECT pk AS objid, ''Der Schadenskode hat mehr als 3 Zeichen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE LENGTH(kuerzel) IS NOT 3',
  'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Fehlende Angabe der Streckenschadensnummer', 'Fehler', 9,
-    'SELECT pk , ''Fehlende Angabe der Streckenschadensnummer'' AS bemerkung
+    'SELECT pk AS objid, ''Fehlende Angabe der Streckenschadensnummer'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE streckenschaden IS NOT "not found" and streckenschaden_lfdnr IS 0',
  'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Fehlende Angabe des Streckenschadens', 'Fehler', 9,
-    'SELECT pk , ''Fehlende Angabe des Streckenschadens'' AS bemerkung
+    'SELECT pk AS objid, ''Fehlende Angabe des Streckenschadens'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE (streckenschaden IS "not found" or streckenschaden IS NULL) and streckenschaden_lfdnr IS NOT 0',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Das vergebene Schadenskürzel prüfen', 'Fehler', 9,
-    'SELECT pk , ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE  Untersuchdat_haltung.kuerzel
 							not in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Haltung DWA")
 							AND  Untersuchdat_haltung.untersuchhal in (select haltungen_untersucht.haltnam from haltungen_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Das vergebene Schadenskürzel prüfen', 'Fehler', 9,
-    'SELECT pk , ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE  Untersuchdat_haltung.kuerzel
 							not in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Haltung ISYBAU")
 							AND  Untersuchdat_haltung.untersuchhal in (select haltungen_untersucht.haltnam from haltungen_untersucht WHERE datenart = "ISYBAU")',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Das vergebene Schadenskürzel prüfen', 'Fehler', 9,
-    'SELECT pk , ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE  Untersuchdat_schacht.kuerzel
 							not in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht DWA")
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Das vergebene Schadenskürzel prüfen', 'Fehler', 9,
-    'SELECT pk , ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Das vergebene Schadenskürzel prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							not in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht ISYBAU")
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "ISYBAU")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 1 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 1 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 1 prüfen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE Untersuchdat_haltung.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Haltung DWA")
 							AND Untersuchdat_haltung.charakt1
 							not in (select reflist_zustand.charakterisierung1 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_haltung.charakt1 AND Untersuchdat_haltung.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_haltung.untersuchhal in (select haltungen_untersucht.haltnam from haltungen_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 1 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 1 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 1 prüfen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE Untersuchdat_haltung.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Haltung ISYBAU")
 							AND Untersuchdat_haltung.charakt1
 							not in (select reflist_zustand.charakterisierung1 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_haltung.charakt1 AND Untersuchdat_haltung.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_haltung.untersuchhal in (select haltungen_untersucht.haltnam from haltungen_untersucht WHERE datenart = "ISYBAU")',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Die Charakteriserung 1 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 1 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 1 prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht DWA")
 							AND Untersuchdat_schacht.charakt1
 							not in (select reflist_zustand.charakterisierung1 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_schacht.charakt1 AND Untersuchdat_schacht.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 1 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 1 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 1 prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht ISYBAU")
 							AND Untersuchdat_schacht.charakt1
 							not in (select reflist_zustand.charakterisierung1 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_schacht.charakt1 AND Untersuchdat_schacht.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "ISYBAU")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 2 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 2 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 2 prüfen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE Untersuchdat_haltung.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Haltung DWA")
 							AND Untersuchdat_haltung.charakt2
 							not in (select reflist_zustand.charakterisierung2 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_haltung.charakt1 AND Untersuchdat_haltung.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_haltung.untersuchhal in (select haltungen_untersucht.haltnam from haltungen_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 2 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 2 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 2 prüfen'' AS bemerkung
     FROM Untersuchdat_haltung
     WHERE Untersuchdat_haltung.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Haltung ISYBAU")
 							AND Untersuchdat_haltung.charakt2
 							not in (select reflist_zustand.charakterisierung2 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_haltung.charakt1 AND Untersuchdat_haltung.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_haltung.untersuchhal in (select haltungen_untersucht.haltnam from haltungen_untersucht WHERE datenart = "ISYBAU")',
- 'Untersuchungsdaten Haltung', 'pk'), 
+ 'Untersuchungsdaten Haltung', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 2 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 2 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 2 prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht DWA")
 							AND Untersuchdat_schacht.charakt2
 							not in (select reflist_zustand.charakterisierung2 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_schacht.charakt1 AND Untersuchdat_schacht.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Die Charakterisierung 2 prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Charakteriserung 2 prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Charakteriserung 2 prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht ISYBAU")
 							AND Untersuchdat_schacht.charakt2
 							not in (select reflist_zustand.charakterisierung2 from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_schacht.charakt1 AND Untersuchdat_schacht.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "ISYBAU")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Die Angabe vom Bereich prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Angabe vom Bereich prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Angabe vom Bereich prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht DWA")
 							AND Untersuchdat_schacht.bereich
 							not in (select reflist_zustand.bereich from reflist_zustand WHERE reflist_zustand.charakterisierung1 like Untersuchdat_schacht.charakt1 AND Untersuchdat_schacht.kuerzel = reflist_zustand.hauptcode)
 							AND  Untersuchdat_schacht.untersuchsch in (select schaechte_untersucht.schnam from schaechte_untersucht WHERE datenart = "DWA")',
- 'Untersuchungsdaten Schacht', 'pk'), 
+ 'Untersuchungsdaten Schacht', 'pk'),
+
 ('Zustandsklassen', 'Die Angabe vom Bereich prüfen', 'Fehler', 9,
-    'SELECT pk , ''Die Angabe vom Bereich prüfen'' AS bemerkung
+    'SELECT pk AS objid, ''Die Angabe vom Bereich prüfen'' AS bemerkung
     FROM Untersuchdat_schacht
     WHERE Untersuchdat_schacht.kuerzel
 							in (select reflist_zustand.hauptcode from reflist_zustand WHERE art = "Schacht ISYBAU")
@@ -445,5 +484,5 @@ WHERE geom IS NULL LIMIT 5',
     )
 ) AS pn
 LEFT JOIN pruefsql AS ps
-ON (pn.gruppe = ps.gruppe AND pn.warntext = ps.warntext)
+ON (pn.gruppe = ps.gruppe AND pn.warnbez = ps.warntext)
 WHERE ps.warntext IS NULL;

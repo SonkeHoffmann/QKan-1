@@ -145,9 +145,9 @@
   <widget class="QGroupBox" name="groupBox_5">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>20</x>
      <y>280</y>
-     <width>271</width>
+     <width>401</width>
      <height>71</height>
     </rect>
    </property>
@@ -167,7 +167,7 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>261</width>
+      <width>381</width>
       <height>21</height>
      </rect>
     </property>
@@ -186,7 +186,7 @@
      <string>neue Ergebnissen zu bisherigen ergänzen</string>
     </property>
     <property name="text">
-     <string>Fehlerliste auf 5 je Typ beschränken</string>
+     <string>Fehlerliste auf 5 Meldungen je Fehlertyp beschränken</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="cb_keepdata">

@@ -1,19 +1,30 @@
+datacheck_clear: "
+DELETE FROM pruefliste"
+
+datacheck_load_plausi: "
+SELECT 
+    pk, gruppe, warntext, warntyp, warnlevel, sql, layername, attrname
+FROM pruefsql
+WHERE gruppe in ({filter})"
+
 datacheck_plausi: "
-WITH
-    pcount AS (SELECT count() FROM ({sqltext}))
 INSERT INTO pruefliste (objname, warntext, warntyp, warnlevel, layername, attrname)
 SELECT
-    {attrname} AS objname,                  /* 1. Attribut aus sqltext */
-    printf(
-        :warnung || ' in insgesamt %d Datensätzen',
-        (pcount)
-    ) AS warntext,
+    pdata.objid AS objname,                  /* Suchaktion im Projekt verwendet attrname = 'objid' */
+    CASE WHEN pcount.anz > :limit
+    THEN
+        printf(
+            '%s (insgesamt %d mal)',
+            pdata.bemerkung,
+            pcount.anz
+        )
+    ELSE
+        pdata.bemerkung
+    END AS warntext,
     :warntyp AS warntyp,
     :warnlevel AS warnlevel,
     :layername AS layername,
     :attrname AS attrname
 FROM
-(
-    SELECT * FROM ({sqltext})
-    LIMIT :limit
-);"
+(   SELECT count() AS anz FROM ({sqltxt}))                  AS pcount, 
+(   SELECT objid, bemerkung FROM ({sqltxt}) LIMIT :limit)   AS pdata;"

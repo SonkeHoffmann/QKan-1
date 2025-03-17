@@ -1,5 +1,4 @@
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.k_layersadapt import load_plausisql
 from qkan.utils import get_logger
 from qkan import QKan
 

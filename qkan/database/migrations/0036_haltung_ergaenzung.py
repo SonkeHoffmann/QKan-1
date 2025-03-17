@@ -8,11 +8,11 @@ VERSION = "3.3.7"  # must be higher than previous one and correspond with qkan_d
 logger = get_logger("QKan.database.migrations")
 
 
-def run(db_qkan: DBConnection) -> bool:
+def run(dbcon: DBConnection) -> bool:
     """Zusätzliche Spalten in der Haltungstabelle
     :type dbcon:    DBConnection
     """
-    if not db_qkan.alter_table(
+    if not dbcon.alter_table(
         "haltungen",
         [
             "haltnam TEXT",
@@ -52,16 +52,16 @@ def run(db_qkan: DBConnection) -> bool:
 
     templateDir = os.path.join(pluginDirectory("qkan"), "templates")
     filenam = os.path.join(templateDir, 'Plausibilitaetspruefungen.sql')
-    if db_qkan.executefile(filenam):
+    if dbcon.executefile(filenam):
         logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
     else:
         logger.error_code("Fehler beim Lesen der Plausibilitätsabfragen:"
                           f"Die Datei {filenam} konnten nicht gelesen werden!\n"
                           "Fehler in migration 0035_plausibility")
-    db_qkan.commit()
+    dbcon.commit()
     logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
 
-    if not db_qkan.alter_table(
+    if not dbcon.alter_table(
         "entwaesserungsarten", [
             "bezeichnung TEXT                    -- eindeutige QKan-Bezeichnung",
             "kuerzel TEXT                        -- nur für Beschriftung",

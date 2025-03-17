@@ -27,10 +27,11 @@ class TestPlausi(QgisTest):
             z.extractall(BASE_WORK)
 
     def test_plausi(self) -> None:
-        database_qkan = str(BASE_WORK / "modell.sqlite")
+        database_qkan = str(BASE_WORK / "juelich.sqlite")
         db_qkan = DBConnection(database_qkan, qkan_db_update=True)              # inkl. automatischem DB-Update
         QKan.config.plausi.themen = ["Netzstruktur","HYSTEM-EXTRAN"]
         QKan.config.plausi.keepdata = False
+        QKan.config.plausi.limitdata = True
 
         test = Plausi(iface())
         test._doplausi(db_qkan)

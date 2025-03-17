@@ -44,16 +44,14 @@ class DBConnection:
         writeDbBackup: bool = True,
         writeQgsBackup: bool = True,
     ):
-        """Constructor. Überprüfung, ob die QKan-Datenbank die aktuelle Version hat, mit dem Attribut isCurrentDbVersion.
+        """Constructor. Überprüfung, ob die QKan-Datenbank die aktuelle Version hat,
+           mit dem Attribut isCurrentDbVersion.
 
         :param dbname:          Pfad zur SpatiaLite-Datenbankdatei.
                                  - Falls angegeben und nicht vorhanden, wird es angelegt.
                                  - Falls nicht angegeben, wird die Datenbank aus den Layern "Schächte" und
                                    "Flächen" gelesen und verbunden
         :type dbname:           String
-
-        :param module:          Ordnername des Moduls, in dem sich die yaml-Datei mit den SQL-Statements befindet
-        :type module:           String
 
         :param epsg:            EPSG-Code aller Tabellen in einer neuen Datenbank
 
@@ -598,8 +596,11 @@ class DBConnection:
             ignore: bool = False,
             replacefun: callable = None
     ) -> bool:
-        """Wrapper for sql(). Reads sql from dict (read from yaml file in __init()) and optionaly replaces
+        """Wrapper for sql(). Reads sql from dict and optionaly replaces
            parameters using the format function replacefun.
+
+           dict must first be read from module specific yaml file "sqlite.yml" / "postgres.yml"
+           using db_qkan.loadmodule()
 
         :sqlnam:                Name of the SQL-statement in dict 'sqls'
         :type sqlnam:           String
@@ -625,26 +626,28 @@ class DBConnection:
 
         :returns: void"""
 
-        # sql nur mit replace() umformen oder mit replacefun() bearbeiten, wenn neu
         if sqlnam != self.sqlnam:
             self.sqlnam = sqlnam
             try:
-                _sql = self.sqls[sqlnam].replace('*/ ', '*/\n').strip()
+                self.sql_txt = self.sqls[sqlnam].replace('*/ ', '*/\n').strip()
             except:
                 logger.error_code(
                     f'{self.__class__.__name__}: '
-                    f'SQL {sqlnam} nicht gefunden'
+                    f'SQL {sqlnam} nicht gefunden\n'
+                    f'Möglicherweise wurde im Modulcode vergessen db_qkan.setmodule aufzurufen.\n'
                     f'geladene SQLs:\n{self.sqls}'
                 )
-            if replacefun:
-                self.sqltext = replacefun(_sql)
-                if '{' in self.sqltext:
-                    logger.error_code(
-                        f'{self.__class__.__name__}: '
-                        f'Fehler in yaml-Datei: sql enthält Parameter, obwohl keine ersetzen-Funktion'
-                        f'im Aufruf geliefert wird.')
-            else:
-                self.sqltext = _sql
+
+        # Die nachfolgende Funktion muss auch bei gleichem Abfragetyp durchgeführt werden, siehe _plausi.py
+        if replacefun:
+            self.sqltext = replacefun(self.sql_txt)
+            if '{' in self.sqltext:
+                logger.error_code(
+                    f'{self.__class__.__name__}: '
+                    f'Fehler in yaml-Datei: sql enthält Parameter, obwohl keine ersetzen-Funktion'
+                    f'im Aufruf geliefert wird.')
+        else:
+            self.sqltext = self.sql_txt
 
         erg = self.sql(
             sql=self.sqltext,
@@ -684,11 +687,11 @@ class DBConnection:
                 try:
                     self.cursl.execute(sql, parameters)
                 except ValueError as err:
-                    logger.error(f"{err}\nTyp von parameters: {type(parameters)}")
-                    raise ValueError(f"{err}\nTyp von parameters: {type(parameters)}")
+                    logger.error(f"{err}:\nTyp von parameters: {type(parameters)}")
+                    raise ValueError(f"{err}:\nTyp von parameters: {type(parameters)}")
                 except BaseException as err:
-                    logger.error(f"{err}\n: {sql=}")
-                    raise ValueError(f"{err}\n: {sql=}")
+                    logger.error(f"{err}:\n {sql=}\n{parameters=}")
+                    raise ValueError(f"{err}:\n {sql=}\n{parameters=}")
 
             if mute_logger:
                 return True

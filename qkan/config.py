@@ -809,6 +809,7 @@ class PlausiConfig(ClassObject):
     """Einstellungen der Plausibilitätskontrolle datacheck"""
     themen: list = ['Netzstruktur']
     keepdata: bool = False
+    limitdata: bool = True
 
 
 class Config(ClassObject):

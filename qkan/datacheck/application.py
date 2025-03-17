@@ -4,6 +4,7 @@ from qgis.utils import pluginDirectory
 from qgis.gui import QgisInterface
 from qgis.core import QgsProject
 
+import qkan.config
 from qkan import QKan, get_default_dir
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
@@ -104,6 +105,7 @@ class Plausi(QKanPlugin):
                     self.plausi_dlg.selected_themes()
                 )  # alternativ auch aus self.plausi_dlg.lw_themen zu entnehmen.
                 QKan.config.plausi.keepdata = self.plausi_dlg.cb_keepdata.isChecked()
+                QKan.config.plausi.limitdata = self.plausi_dlg.cb_limitdata.isChecked()
 
                 QKan.config.save()
 
@@ -114,8 +116,6 @@ class Plausi(QKanPlugin):
 
         Einspringpunkt für Test
         """
-
-        self.log.info("QKan: Plausibilitätsabfragen")
 
         plau = PlausiTask(db_qkan)
         plau.run()

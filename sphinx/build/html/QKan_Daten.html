@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
     <link rel="search" title="Suche" href="search.html" />
-    <link rel="next" title="Hystem-Extran" href="QKan_Hystem_Extran.html" />
-    <link rel="prev" title="Verwaltung" href="QKan_Verwaltung.html" /> 
+    <link rel="next" title="Beispielprojekt" href="Qkan_workflow.html" />
+    <link rel="prev" title="Arbeiten mit Flächen" href="Qkan_flaechen.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,30 +55,20 @@
 <li class="toctree-l1"><a class="reference internal" href="Qkan_faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Funktionen</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Qkan_Datenaustausch.html">Datenaustausch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Qkan_flaechen.html">Arbeiten mit Flächen</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Daten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#plausibilitatsprufung">Plausibilitätsprüfung</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Qkan_workflow.html">Beispielprojekt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Qkan_qfield.html">QKan-Projekte auf dem Tablet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Qkan_edit.html">Erstellen und Bearbeiten von Kanalnetzen</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Übersicht</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="Qkan_Formulare.html">Formulare</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="QKan_Formulare_Allgemein.html">Allgemein</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html">Verwaltung</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Daten</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#plausibilitatsprufung">Plausibilitätsprüfung</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Hystem_Extran.html">Hystem-Extran</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_DYNA.html">DYNA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Mike.html">Mike+</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html">SWMM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_STRAKAT.html">STRAKAT</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Flaechenverarbeitung.html">Flächenverarbeitung</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Qkan_Formulare.html#allgemeine-funktionselemente-in-formularen">Allgemeine Funktionselemente in Formularen</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Qkan_Formulare.html">Formulare</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Qkan_Tabellen.html">QKan-Tabellen</a></li>
 </ul>
 
@@ -96,10 +86,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="Qkan_Formulare.html">Formulare</a></li>
       <li class="breadcrumb-item active">Daten</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/QKan_Daten.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+            <a href="_sources/Qkan_Daten.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
       </li>
   </ul>
   <hr/>
@@ -111,17 +100,34 @@
 <h1>Daten<a class="headerlink" href="#daten" title="Link to this heading"></a></h1>
 <section id="plausibilitatsprufung">
 <h2>Plausibilitätsprüfung<a class="headerlink" href="#plausibilitatsprufung" title="Link to this heading"></a></h2>
-<p>Mit der Funktion <a class="reference internal" href="_images/Tool_plausibilitaet.png"><img alt="Tool_plausibilitaet" src="_images/Tool_plausibilitaet.png" style="width: 1.25em;" /></a> <span class="guilabel">Plausibilitätsprüfung</span> können die verschiedenen Plausibilitätsprüfungen, welche unter der
-gleichnamigen Tabelle zu finden sind, bequem ausgeführt werden. Die zur Auswahl stehenden Themen entsprechen dabei den Gruppen aus der Tabelle
-„Plausibilitätsprüfungen. In dieser Tabelle sind die einzelnen Plausibilitätsprüfungen, mit Beschreibung sowie der genauen SQL-Abfrage,
-zu finden. Die SQL-Abfrage kann auch hier bearbeitet werden. Dies ist nur zu empfehlen, wenn ein umfangreicheres SQL-Verständnis vorliegt.</p>
+<p>Mit der Funktion <a class="reference internal" href="_images/Tool_plausibilitaet.png"><img alt="Tool_plausibilitaet" src="_images/Tool_plausibilitaet.png" style="width: 1.25em;" /></a> <span class="guilabel">Plausibilitätsprüfung</span> können die verschiedenen
+Plausibilitätsprüfungen, welche unter der gleichnamigen Tabelle zu finden sind, bequem ausgeführt werden.
+Die zur Auswahl stehenden Themen entsprechen dabei den Gruppen aus der Tabelle „Plausibilitätsprüfungen“. In
+dieser Tabelle sind die einzelnen Plausibilitätsprüfungen, mit Beschreibung sowie der genauen SQL-Abfrage, zu
+finden.</p>
 <img alt="_images/plausibilitaet.png" src="_images/plausibilitaet.png" />
 <img alt="_images/tabelle_plausi.png" src="_images/tabelle_plausi.png" />
-<p>Zur Durchführung können eine oder mehrere Themen ausgewählt werden und gleichzeitig durchgeführt werden. Durch die Option „Ergebnisse zu
-bestehenden hinzufügen“ wird die vorhandene Fehlerliste nicht überschrieben, sondern ergänzt. Nach Durchführung der Plausibilitätsprüfung
-öffnet sich die Tabelle „Fehlerliste“ automatisch. Hier werden die gefundenen Fehler aufgeführt. Bei einigen Abfragen ist die Anzeige
-auf max. 5 Einträge gleichartiger Fehlertypen begrenzt. In diesem Fall wird dies auch in dem Warntext erwähnt, sowie die genaue Anzahl
-des jeweiligen Fehlertypens.</p>
+<p>Zur Durchführung können eine oder mehrere Themen ausgewählt und die entsprechenden SQL-Abfragen ausgeführt werden.
+Nach Durchführung der Plausibilitätsprüfung öffnet sich die Tabelle „Fehlerliste“ automatisch.</p>
+<img alt="_images/tabelle_fehler.png" src="_images/tabelle_fehler.png" />
+<p>Hier werden die gefundenen Fehler aufgeführt und durch Klick auf das Symbol in
+der ersten Spalte „Aktionen“ kann das fehlerhafte Objekt in der Karte markiert und die Karte auf dieses Objekt
+gezoomt werden.</p>
+<p>Durch die Option „Ergebnisse zu bestehenden hinzufügen“ wird die vorhandene Fehlerliste nicht überschrieben,
+sondern ergänzt. Die Option „Fehlerliste auf 5 Meldungen je Fehlertyp beschränken“ bewirkt, dass für jeden
+Fehlertyp maximal 5 Fälle aufgelistet werden, um einen besseren Überblick über die verschiedenen Fehlertypen
+zu ermöglichen. Am Ende jeder Warnung ist die Gesamtzahl je Fehlertyp aufgeführt.</p>
+<p>Die Liste der Plausibilitätsprüfungen kann durch den Anwender ergänzt werden. Dazu muss in der Spalte „sql“
+eine SQL-Abfrage eingetragen werden, die zwei Spalten liefert:
+- objid: Bezeichnung, anhand derer die aufzulistenden Objekte identifiziert werden können.
+- bemerkung: Beschreibung des Fehlers, gegebenenfalls mit zusätzlichen Informationen (z. B. fehlerhafte Länge)</p>
+<p>Die in der Spalte „Gruppe“
+eingetragende Bezeichnung erscheint in der Themenauswahl des Formulars „Plausibilitätsprüfungen“.
+Wichtig ist zu beachten, dass die von QKan vorgegebenen Datenprüfungen bei Updates automatisch geändert werden
+können. Um selbst ergänzte Plausibilitätsprüfungen davon auszunehmen reicht es aus, in der Spalte „Gruppe“
+eine andere als die vorgegebenen Bezeichnungen zu verwenden, z. B. „Netzstruktur, ergänzt“, da nur die von QKan
+vorgegebenen Standardgruppen (z. B. „Geoobjekte“, „HYSTEM-EXTRAN“, „Netzstruktur“) von den Aktualisierungen
+betroffen sind (siehe auch Abbildung oben: „Plausibilitätsprüfungen“).</p>
 </section>
 </section>
 
@@ -129,8 +135,8 @@ des jeweiligen Fehlertypens.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="QKan_Verwaltung.html" class="btn btn-neutral float-left" title="Verwaltung" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
-        <a href="QKan_Hystem_Extran.html" class="btn btn-neutral float-right" title="Hystem-Extran" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Qkan_flaechen.html" class="btn btn-neutral float-left" title="Arbeiten mit Flächen" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="Qkan_workflow.html" class="btn btn-neutral float-right" title="Beispielprojekt" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

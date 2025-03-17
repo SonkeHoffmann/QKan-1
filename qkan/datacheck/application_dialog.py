@@ -43,7 +43,7 @@ IMPORT_CLASS, _ = uic.loadUiType(
 
 class PlausiDialog(_Dialog, IMPORT_CLASS):  # type: ignore
     lw_themen: QListWidget
-    le_anzahl: QLineEdit
+    lf_anzahl: QLineEdit
 
     def __init__(
         self,
@@ -75,7 +75,7 @@ class PlausiDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         for thema in self.themen:
             anzahl += self.themesdata[thema]
 
-        self.le_anzahl.setText(str(anzahl))
+        self.lf_anzahl.setText(str(anzahl))
         return True
 
     def prepareDialog(self, db_qkan: DBConnection) -> bool:
@@ -83,7 +83,7 @@ class PlausiDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
         # gespeicherte Optionen abrufen
         self.cb_keepdata.setChecked(QKan.config.plausi.keepdata)
-
+        self.cb_limitdata.setChecked(QKan.config.plausi.limitdata)
         # Anlegen der Tabelle zur Auswahl der Themen
         # Zunächst wird die Liste der beim letzten Mal gewählten Themen aus config gelesen
         self.themen: list[str] = QKan.config.plausi.themen
