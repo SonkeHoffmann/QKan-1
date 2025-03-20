@@ -98,11 +98,26 @@
    <property name="statusTip">
     <string extracomment="Auswahl der zu bearbeitenden Teilgebiete. Alle auswählen mit [Strg]+A">Auswahl der Plausibilitätsabfragen</string>
    </property>
+   <property name="frameShape">
+    <enum>QFrame::WinPanel</enum>
+   </property>
    <property name="tabKeyNavigation">
     <bool>true</bool>
    </property>
    <property name="selectionMode">
-    <enum>QAbstractItemView::MultiSelection</enum>
+    <enum>QAbstractItemView::ExtendedSelection</enum>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="viewMode">
+    <enum>QListView::ListMode</enum>
+   </property>
+   <property name="modelColumn">
+    <number>0</number>
    </property>
    <property name="selectionRectVisible">
     <bool>true</bool>
