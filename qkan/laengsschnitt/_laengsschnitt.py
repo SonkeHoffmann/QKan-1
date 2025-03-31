@@ -4,7 +4,7 @@ import matplotlib.animation as animation
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
-import pywintypes
+# import pywintypes                         # nicht mehr benötigt, jh
 import win32com.client
 from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -1102,8 +1102,8 @@ class LaengsTask:
             acad = win32com.client.GetActiveObject('AutoCAD.Application')  # scheint zwar doppelt,
             # aber sonst erscheint ein Fehler
             acad.Visible = True
-        except pywintypes.error as e:
-            print(e)
+        # except pywintypes.error as e:                         # nicht mehr benötigt, jh
+        #     print(e)                                          # nicht mehr benötigt, jh
         except BaseException as e:
             print(e)
 

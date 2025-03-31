@@ -560,7 +560,7 @@ class ImportTask:
         # subject = "xml_import auslasstypen"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_outlet)
 
-        sql = "SSELECT m145, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m145 ORDER BY pk) " \
+        sql = "SELECT m145, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m145 ORDER BY pk) " \
               "FROM simulationsstatus WHERE m145 IS NOT NULL GROUP BY m145"
         subject = "xml_import simulationsstatus"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_simstatus)
@@ -569,7 +569,7 @@ class ImportTask:
         # subject = "xml_import untersuchrichtung"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_untersuchrichtung)
 
-        sql = "SSELECT m145, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m145 ORDER BY pk) " \
+        sql = "SELECT m145, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m145 ORDER BY pk) " \
               "FROM wetter"
         subject = "xml_import wetter WHERE m145 IS NOT NULL GROUP BY m145"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_wetter)
