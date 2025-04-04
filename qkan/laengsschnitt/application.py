@@ -92,12 +92,13 @@ class Laengsschnitt(QKanPlugin):
         else:
             self.laengs_dlg.close()
 
-    def window_closed(self, window):
-        """Setzt das Fenster auf None, wenn es geschlossen wird."""
-
-        #TODO mit verfolgen wie viele fenster offen sind! und beim schließen die Anmiation stoppen
-        if window in self.windows:
-            self.windows.remove(window)
+    def closeEvent(self, event):
+        #TODO: Animation stoppen und löchen wenn das FEnster geschlossen wird, da sonst immer ein fehler kommt!
+        if self.animation:
+            #self.animation.event_source.stop()  # Animation beenden
+            self.animation.stop_animation()
+            self.animation = None
+        event.accept()
 
     def get_widget(self):
         """
@@ -194,6 +195,7 @@ class Laengsschnitt(QKanPlugin):
         self.point = self.laengs_dlg.lineEdit.text()
         self.massstab = self.laengs_dlg.lineEdit_2.text()
 
+
         if self.laengs_dlg.exec_():
 
             # Save to config
@@ -211,7 +213,7 @@ class Laengsschnitt(QKanPlugin):
                     level=Qgis.Critical,
                 )
 
-            # Run
+                # Run
             LaengsTask(self.db_qkan, self.database_qkan, self.fig, self.canv, self.fig_2,
                        self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point,
                        self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4,

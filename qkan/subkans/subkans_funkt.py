@@ -13,6 +13,8 @@ from qgis.core import (
 )
 from qgis.utils import iface, spatialite_connect
 
+from qkan import enums
+
 
 logger = get_logger("QKan.zustand.import")
 
@@ -3116,7 +3118,7 @@ class Subkans_funkt:
         table = 'substanz_haltung_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        substanz_haltung_bewertung = 'Bewertung_Substanz_Einzelschäden_Haltungen'
+        substanz_haltung_bewertung =  enums.LAYERBEZ.SK_Einzelschaeden_Haltungen.value
         vlayer = QgsVectorLayer(uri.uri(), substanz_haltung_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:
@@ -5562,7 +5564,7 @@ class Subkans_funkt:
         table = 'substanz_haltung_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        substanz_haltung_bewertung = 'Bewertung_Substanz_Einzelschäden_Haltungen'
+        substanz_haltung_bewertung = enums.LAYERBEZ.SK_Einzelschaeden_Haltungen.value
         vlayer = QgsVectorLayer(uri.uri(), substanz_haltung_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:
@@ -7487,7 +7489,7 @@ class Subkans_funkt:
         table = 'haltungen_substanz_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        haltungen_substanz_bewertung = 'Bewertung_Substanz_Haltungen'
+        haltungen_substanz_bewertung = enums.LAYERBEZ.SK_Zustand_Haltungen_gesamt.value
         vlayer = QgsVectorLayer(uri.uri(), haltungen_substanz_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:

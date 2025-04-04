@@ -4,8 +4,12 @@ import matplotlib.animation as animation
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
-import pywintypes
-import win32com.client
+#import pywintypes
+try:
+    import win32com.client
+    WINDOWS = True
+except ImportError:
+    WINDOWS = False
 from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from qgis.core import Qgis
@@ -90,8 +94,8 @@ class LaengsTask:
             self.canv_2.flush_events()
             self.fig_2.clear()
             gc.collect()
-            iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.Critical)
-            iface.messageBar().pushMessage("Fehler", 'gestoppt und gelöscht', level=Qgis.Critical)
+            #iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.Critical)
+            #iface.messageBar().pushMessage("Fehler", 'gestoppt und gelöscht', level=Qgis.Critical)
 
     # def stop_slider(self):
     #     try:
@@ -1092,20 +1096,20 @@ class LaengsTask:
         #cad anbindung starten
         acad = None
         doc = None
-
-        try:
-            acad = win32com.client.Dispatch('AutoCAD.Application')
-            acad.Visible = True
-        except WindowsError:
-            print('Autocad wird gestartet. Das kann ca. eine halbe Minute dauern...')
-            acad = win32com.client.CreateObject('AutoCAD.Application')
-            acad = win32com.client.GetActiveObject('AutoCAD.Application')  # scheint zwar doppelt,
-            # aber sonst erscheint ein Fehler
-            acad.Visible = True
-        except pywintypes.error as e:
-            print(e)
-        except BaseException as e:
-            print(e)
+        if WINDOWS:
+            try:
+                acad = win32com.client.Dispatch('AutoCAD.Application')
+                acad.Visible = True
+            except WindowsError:
+                print('Autocad wird gestartet. Das kann ca. eine halbe Minute dauern...')
+                acad = win32com.client.CreateObject('AutoCAD.Application')
+                acad = win32com.client.GetActiveObject('AutoCAD.Application')  # scheint zwar doppelt,
+                # aber sonst erscheint ein Fehler
+                acad.Visible = True
+            #except pywintypes.error as e:
+             #   print(e)
+            except BaseException as e:
+                print(e)
 
         # Prüfen, ob schon eine Datei offen ist. Falls nicht, wird eine neue Datei angelegt.
         if acad is None:
@@ -1550,67 +1554,7 @@ class LaengsTask:
         scale = interval / 1000 / loop_len
 
         self.stop_animation()
-
-            # def on_slider_click(event):
-        #     """Pausiert die Animation, wenn der Slider bewegt wird."""
-        #     global is_manual
-        #     if event.inaxes == horizontalSlider_3.val:
-        #         self.anim.event_source.stop()
-        #         is_manual = True
-        #
-        # def update_plot(num):
-        #     global is_manual
-        #     # if is_manual:
-        #     #    return l,  # don't change
-        #
-        #     val = (horizontalSlider_3.val + scale) % horizontalSlider_3.valmax
-        #     horizontalSlider_3.set_val(val)
-        #     is_manual = False  # the above line called update_slider, so we need to reset this
-        #    # return l,
-        #
-        # def on_click(event):
-        #     # Check where the click happened
-        #     (xm, ym), (xM, yM) = horizontalSlider_3.label.clipbox.get_points()
-        #     if xm < event.x < xM and ym < event.y < yM:
-        #         # Event happened within the slider, ignore since it is handled in update_slider
-        #         return
-        #     else:
-        #         # user clicked somewhere else on canvas = unpause
-        #         global is_manual
-        #         is_manual = False
-
-        def load_data(self, frequency):
-            """Holt die Daten aus der Datenbank für eine bestimmte Frequenz."""
-            # conn = sqlite3.connect("data.db")
-            # cursor = conn.cursor()
-            # cursor.execute("SELECT x, y FROM sinus_data WHERE freq = ?", (frequency,))
-            # data = cursor.fetchall()
-            # conn.close()
-            #
-            # if data:
-            #     x_values, y_values = zip(*data)
-            #     return np.array(x_values), np.array(y_values)
-            # else:
-            #     return np.linspace(0, 2 * np.pi, 100), np.sin(frequency * np.linspace(0, 2 * np.pi, 100))
-
-        def update_slider(val):
-            global is_manual
-            is_manual = True
-            update(val)
-
-        def update(val):
-            pass
-            # time = val
-            # # TODO: anpassen auf die datenbank!
-            # new_plot.vlines(x_deckel, y_sohle, y_deckel, color="red", linestyles='solid', label='Schacht',
-            #                 linewidth=5)
-            # new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid',
-            #                 label='fiktiver Schacht',
-            #                 linewidth=5)
-            #
-            # new_plot.plot(x_liste[time], y_liste[time], color="blue", label='Wasserstand')  # plot the line
-            # figure.canvas.draw()
-
+        self.anim = None
 
         #aktuellen layer auswählen
         layer = iface.activeLayer()
@@ -1966,14 +1910,15 @@ class LaengsTask:
 
                 timestamp = zeit[t]
                 time = timestamp.strftime("%d.%m.%Y %H:%M:%S")[:-3]
-                label_4.setText(time)
+                if label_4 is not None:
+                    label_4.setText(time)
                 val=t
                 self.horizontalSlider_3.setValue(t)
 
-            self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False)
+
+            self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False, repeat=True)
             self.anim.event_source.stop()
             #self.stop()
-
 
             try:
                 self.anim.event_source.start()
@@ -2112,12 +2057,14 @@ class LaengsTask:
 
                 timestamp = zeit[t]
                 time = timestamp.strftime("%d.%m.%Y %H:%M:%S")[:-3]
-                label_4.setText(time)
+                if label_4 is not None:
+                    label_4.setText(time)
                 val = t
                 self.horizontalSlider_3.setValue(t)
 
 
-            self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False)
+
+            self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False, repeat=True)
             self.anim.event_source.stop()
             #self.stop()
 
