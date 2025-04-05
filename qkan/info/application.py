@@ -174,8 +174,8 @@ class Infos(QKanPlugin):
         self.dialog.verticalLayout_10.addWidget(self.dialog.canv_6)
         self.dialog.verticalLayout_10.addWidget(NavigationToolbar(self.dialog.canv_6, qw, True))
 
-    def on_click(self, event):
-        Info.handle_click(event, Info.anzeigen, Info.anzeigen)
+    # def on_click(self, event):
+    #     Info.handle_click(event, Info.anzeigen, Info.anzeigen)
 
 
 
@@ -210,8 +210,8 @@ class Infos(QKanPlugin):
             test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.comboBox_2, self.comboBox_3, self.dat_1, self.dat_2, self.dat_3, DBConnection())
             test.run()
 
-            def on_click(self, event):
-                test.handle_click(event, self.pie_wedges, run_script)
+            # def on_click(self, event):
+            #     test.handle_click(event, self.pie_wedges, run_script)
 
             # Vorgabe Projektname aktivieren, wenn kein Projekt geladen
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')

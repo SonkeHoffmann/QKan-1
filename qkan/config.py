@@ -403,23 +403,23 @@ class ToolsConfig(ClassObject):
 
         # Layer names with data source table 'schaechte'
         schacht_types: dict = {
-            "Schächte": "Schacht",
-            "Knotenpunkte": "Schacht",
-            "Knotentyp": "Schacht",
-            "Speicher": "Speicher",
-            "Auslässe": "Auslass",
+            enums.LAYERBEZ.Schaechte.value: "Schacht",
+            enums.LAYERBEZ.Geometrien.value: "Schacht",
+            enums.LAYERBEZ.Knotentyp.value: "Schacht",
+            enums.LAYERBEZ.Speicher.value: "Speicher",
+            enums.LAYERBEZ.Auslaesse.value: "Auslass",
         }
 
         # Layer names with data source table 'haltungen'
         haltung_types: dict = {
-            "Haltungen": "Haltung",
-            "Pumpen": "Pumpe",
-            "Wehre": "Wehr",
-            "Drosseln": "Drossel",
-            "Schieber": "Schieber",
-            "Grund-/Seitenauslässe": "GrundSeitenauslass",
-            "H-Regler": "H-Regler",
-            "Q-Regler": "Q-Regler",
+            enums.LAYERBEZ.Haltungen.value: "Haltung",
+            enums.LAYERBEZ.Pumpen.value: "Pumpe",
+            enums.LAYERBEZ.Wehre.value: "Wehr",
+            enums.LAYERBEZ.Drosseln.value: "Drossel",
+            enums.LAYERBEZ.Schieber.value: "Schieber",
+            enums.LAYERBEZ.Grund_Seitenauslass.value: "GrundSeitenauslass",
+            enums.LAYERBEZ.H_Regler.value: "H-Regler",
+            enums.LAYERBEZ.Q_Regler.value: "Q-Regler",
         }
 
         # patterns must be lower case

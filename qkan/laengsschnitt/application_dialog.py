@@ -144,11 +144,10 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
             self.refresh()
 
     def slider_geschw_released(self):
-        self.db_erg = self.lineEdit_4.text()
-        self.stop_laengs()
-        self.anim = None
         self.canv_2.flush_events()
         self.fig_2.clear()
+        self.db_erg = self.lineEdit_4.text()
+        self.anim = None
         self.anf = 0
         self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3,
                                       self.canv_3, self.selected, self.auswahl,
@@ -156,16 +155,15 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
                                       self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def slider_released(self):
-        anf = self.horizontalSlider_3.value()
-        self.db_erg = self.lineEdit_4.text()
-        self.stop_laengs()
-        self.anim = None
         self.canv_2.flush_events()
         self.fig_2.clear()
+        self.anf = self.horizontalSlider_3.value()
+        self.db_erg = self.lineEdit_4.text()
+        self.anim = None
         self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3,
                                       self.canv_3, self.selected, self.auswahl,
                                       self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max,
-                                      self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, anf)
+                                      self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
 
     def export_cad(self):
@@ -206,9 +204,11 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.gang_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def animiert_laengs(self):
+        self.anim = None
         self.canv_2.flush_events()
         self.fig_2.clear()
-        self.anf = 0
+        #self.anf = 0
+        self.anf = self.horizontalSlider_3.value()
         self.db_erg = self.lineEdit_4.text()
         self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl,
                            self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)

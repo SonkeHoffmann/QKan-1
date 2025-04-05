@@ -769,7 +769,7 @@ class ImportTask(Schadenstexte):
             for x_anlage in x_anlagen:
                 schnam = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
                 geop, geom, sohlhoehe, deckelhohe = self._get_knoten2(x_anlage)
-                name, schacht_typ, xsch, ysch, sohlhoehe = 1
+                name, schacht_typ, xsch, ysch, sohlhoehe = self._consume_smp_block(x_anlage)
 
                 schachttyp = 'Schacht'
 

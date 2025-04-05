@@ -237,6 +237,7 @@ class Info:
         data = self.db_qkan.fetchall()
         labels, values = [[el[i] for el in data] for i in range(2)]
 
+
         new_plot = figure.add_subplot(pos)
         #figure.subplots_adjust(left=0.05, right=0.95, wspace=1.5, hspace=2)
 
@@ -334,6 +335,24 @@ class Info:
             new_plot.set_title(title)
             new_plot.autoscale()
 
+        elif title == 'Baujahre der Schächte':
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+            # iface.messageBar().pushMessage("Error",
+            #                                str(labels),
+            #                                level=Qgis.Critical)
+            if len(labels)>1:
+                label = [str(baujahr) if baujahr % 50 == 0 else '' for baujahr in labels]
+                new_plot.set_xticklabels(label)
+            new_plot.bar(y_pos, values, align='center')
+            new_plot.set_xticks(y_pos)
+            #new_plot.invert_yaxis()
+            new_plot.set_xlabel(ylabel)
+            new_plot.set_ylabel(xlabel)
+            new_plot.set_title(title)
+            new_plot.autoscale()
+
         elif title == 'Anzahl der Schäden nach Schadenskürzel' or title == 'Gesamtschadenslänge je Schaden':
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
@@ -378,6 +397,28 @@ class Info:
             new_plot.set_ylabel(ylabel)
             new_plot.set_title(title)
             new_plot.autoscale()
+
+    #TODO: Wenn auf Balken oder Pie geklickt wird soll die Auswahl in QGIS angezeigt werden
+
+    # def make_picker(fig, wedges):
+    #
+    #     def onclick(event):
+    #         wedge = event.artist
+    #         label = wedge.get_label()
+    #         print(label)
+    #
+    #     # Make wedges selectable
+    #     for wedge in wedges:
+    #         wedge.set_picker(True)
+    #
+    #     fig.canvas.mpl_connect('pick_event', onclick)
+
+    # def handle_click(event, pie_wedges, run_script_callback):
+    #     # TODO: Anpassen, sodass beim Anklicken der Grafik die jeweiligen Daten in QGIS ausgewählt werden!
+    #     for wedge in pie_wedges:
+    #         if wedge.contains_point([event.x, event.y]):
+    #             run_script_callback()
+    #             break
 
     def _infos(self) -> None:
 
@@ -481,13 +522,6 @@ class Info:
         )
 
         self.fig_4.subplots_adjust(left=0.3, right=0.95, wspace=0.3, hspace=1)
-
-    def handle_click(event, pie_wedges, run_script_callback):
-        # TODO: Anpassen, sodass beim Anklicken der Grafik die jeweiligen Daten in QGIS ausgewählt werden!
-        for wedge in pie_wedges:
-            if wedge.contains_point([event.x, event.y]):
-                run_script_callback()
-                break
 
     def anzeigen(self):
         """Grafiken in den Karteikarten erstellen"""
@@ -1086,105 +1120,127 @@ class Info:
         figure_2 = self.fig_2
         figure_2.clear()
         # plt.figure(figure_2.number)
-        new_plot_2 = figure_2.add_subplot(141)
+        #new_plot_2 = figure_2.add_subplot(121)
 
-        l_bezeich = []
-        sql = """select count() from schaechte"""
-
-        if not self.db_qkan.sql(sql):
-            return
-
-        sql = """select DISTINCT entwart from schaechte """
-
-        if not self.db_qkan.sql(sql):
-            return
-
-        for i in self.db_qkan.fetchall():
-            i = str(i[0])
-            l_bezeich.append(i)
-
-        data = {k: None for k in l_bezeich}
-
-        for i in data.keys():
-            sql = f"""select count() from schaechte WHERE entwart = '{i}'"""
-
-            if not self.db_qkan.sql(sql):
-                return
-
-            anz = self.db_qkan.fetchall()[0][0]
-
-            data[i] = anz
-
-        if 'None' in data.keys():
-            del data['None']
-        names = list(data.keys())
-        values = list(data.values())
-        # Plot
-        new_plot_2.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
-        new_plot_2.set_title('Entwässerungsart')
-        self.canv_2.draw()
-        self.fig_2.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
+        # l_bezeich = []
+        # sql = """select count() from schaechte"""
+        #
+        # if not self.db_qkan.sql(sql):
+        #     return
+        #
+        # sql = """select DISTINCT entwart from schaechte """
+        #
+        # if not self.db_qkan.sql(sql):
+        #     return
+        #
+        # for i in self.db_qkan.fetchall():
+        #     i = str(i[0])
+        #     l_bezeich.append(i)
+        #
+        # data = {k: None for k in l_bezeich}
+        #
+        # for i in data.keys():
+        #     sql = f"""select count() from schaechte WHERE entwart = '{i}'"""
+        #
+        #     if not self.db_qkan.sql(sql):
+        #         return
+        #
+        #     anz = self.db_qkan.fetchall()[0][0]
+        #
+        #     data[i] = anz
+        #
+        # if 'None' in data.keys():
+        #     del data['None']
+        # names = list(data.keys())
+        # values = list(data.values())
+        # # Plot
+        # new_plot_2.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
+        # new_plot_2.set_title('Entwässerungsart')
+        # self.canv_2.draw()
+        # self.fig_2.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
         # Darstellungen Schächte nach Baujahren
 
         sql = """
+        
             WITH liste AS (
-                SELECT 
-                    iif(coalesce(baujahr, 0) = 0,
-                        ' ohne Baujahr',
-                        printf('bis %d', min(CAST(strftime('%Y', 'now') AS INT), ceil(baujahr/5.)*5.))
-                    )               AS baujahr_gruppe
-                FROM 
-                    schaechte
-            )
-            SELECT
-                baujahr_gruppe,
-                count() AS anzahl_schaechte
-            FROM liste
-            GROUP BY baujahr_gruppe
-            ORDER BY baujahr_gruppe;
+                        SELECT
+                            baujahr
+                            FROM schaechte
+                           
+                    )
+                    SELECT
+                        baujahr,
+                        count() as Anzahl
+                    FROM liste
+                    GROUP BY baujahr
+                    ORDER BY baujahr;
         """
         self._barplot(
             sql=sql,
             figure=figure_2,
-            title='Baujahre2',
+            title='Baujahre der Schächte',
             ylabel='Baujahre',
             xlabel='Anzahl',
-            pos=142
+            pos=122
         )
 
         # Darstellung Schächte nach Material
-        l_bezeich = []
-        sql = """select DISTINCT material from schaechte """
+        sql = """
 
-        if not self.db_qkan.sql(sql):
-            return
+                    WITH liste AS (
+                                SELECT
+                                    material
+                                    FROM schaechte
 
-        for i in self.db_qkan.fetchall():
-            i = str(i[0])
-            l_bezeich.append(i)
+                            )
+                            SELECT
+                                material,
+                                count() as Anzahl
+                            FROM liste
+                            GROUP BY material
+                            ORDER BY material;
+                """
+        self._barplot(
+            sql=sql,
+            figure=figure_2,
+            title='Material der Schächte',
+            ylabel='Material',
+            xlabel='Anzahl',
+            pos=121
+        )
 
-        data = {k: None for k in l_bezeich}
-
-        for i in data.keys():
-            sql = f"""select count() from schaechte WHERE material = '{i}'"""
-
-            if not self.db_qkan.sql(sql):
-                return
-
-            anz = self.db_qkan.fetchall()[0][0]
-
-            data[i] = anz
-        if 'None' in data.keys():
-            del data['None']
-        names = list(data.keys())
-        values = list(data.values())
-        # Plot
-        new_plot = figure_2.add_subplot(144)
-        wedges, texts, autotexts = new_plot.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
-        new_plot.set_title('Material')
-        self.canv_2.draw()
-        self.fig_2.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
+        # l_bezeich = []
+        # sql = """select DISTINCT material from schaechte """
+        #
+        # if not self.db_qkan.sql(sql):
+        #     return
+        #
+        # for i in self.db_qkan.fetchall():
+        #     i = str(i[0])
+        #     l_bezeich.append(i)
+        #
+        # data = {k: None for k in l_bezeich}
+        #
+        # for i in data.keys():
+        #     sql = f"""select count() from schaechte WHERE material = '{i}'"""
+        #
+        #     if not self.db_qkan.sql(sql):
+        #         return
+        #
+        #     anz = self.db_qkan.fetchall()[0][0]
+        #
+        #     data[i] = anz
+        # if 'None' in data.keys():
+        #     del data['None']
+        # names = list(data.keys())
+        # values = list(data.values())
+        # # Plot
+        # new_plot = figure_2.add_subplot(122)
+        # wedges, texts, autotexts = new_plot.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
+        # new_plot.set_title('Material')
+        # self.canv_2.draw()
+        # self.fig_2.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
         # Haltungen nach Substanzklasse
         # Karteikarte 5 initialisieren
