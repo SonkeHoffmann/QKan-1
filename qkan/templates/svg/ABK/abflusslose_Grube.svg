@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="abfl-lose_Grube_Entw.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="175.36248"
+     inkscape:cy="515.48084"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="swatch27"
+       inkscape:swatch="solid">
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       id="rect1"
+       width="75"
+       height="45"
+       x="60.986458"
+       y="110.06667" />
+    <path
+       d="m 60.394584,85.269738 0.01568,70.681462 h 76.000016 l 0.003,-70.841514 -9.6e-4,0.0033 -0.83263,-0.165353 0.003,0.996082 -0.17204,69.0076 H 61.410205 l -0.0078,-69.454459 8.41e-4,-0.0015 -1.00225,-0.232915 z"
+       style="baseline-shift:baseline;display:inline;overflow:visible;vector-effect:none;enable-background:accumulate"
+       id="path10"
+       sodipodi:nodetypes="ccccccccccccc" />
+    <path
+       id="path9"
+       d="m 82.910185,54.951168 v 13.064319 l 0.539365,0.04704 0.469759,-0.265955 -0.0093,-0.778503 8.3e-5,-0.0025 V 55.951107 l 29.002908,0.0021 v 11.064441 l 9.7e-4,0.02474 9.3e-4,0.750807 0.0645,0.02027 0.93087,0.202036 V 54.951168 Z"
+       sodipodi:nodetypes="ccccccccccccccc" />
+    <path
+       d="M 113.22596,67.401795 136.1031,85.505672"
+       id="path5"
+       sodipodi:nodetypes="cc" />
+    <path
+       d="M 83.607593,67.403836 60.707822,85.655537"
+       id="path6"
+       sodipodi:nodetypes="cc" />
+  </g>
+</svg>
