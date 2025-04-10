@@ -13,6 +13,7 @@ from ._plausi import PlausiTask
 from .application_dialog import PlausiDialog
 
 from qkan.utils import get_logger
+from qkan import enums
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
@@ -125,7 +126,7 @@ class Plausi(QKanPlugin):
         # Anzeige der Attributtabelle, nicht im Testmodus
         if not is_test:
             project = QgsProject.instance()
-            layers = project.mapLayersByName("Fehlerliste")
+            layers = project.mapLayersByName(enums.LAYERBEZ.FEHLERLISTE)
             if not layers:
                 self.log.warning('Layer "Fehlerliste" fehlt!')
                 return True

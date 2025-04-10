@@ -354,7 +354,7 @@ class LinkFl(QKanPlugin):
 
                 # Einfügen der Verbindungslinien in die Layerliste, wenn nicht schon geladen
                 project = QgsProject.instance()
-                layers = project.mapLayersByName("Anbindungen Flächen")
+                layers = project.mapLayersByName(enums.LAYERBEZ.ANBINDUNG_FLAECHEN)
                 if not layers:
                     uri = QgsDataSourceUri()
                     uri.setDatabase(self.database_name)
@@ -519,7 +519,7 @@ class LinkFl(QKanPlugin):
 
                 # Einfügen der Verbindungslinien in die Layerliste, wenn nicht schon geladen
                 project = QgsProject.instance()
-                layers = project.mapLayersByName("Anbindungen Direkteinleitungen")
+                layers = project.mapLayersByName(enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN)
                 if not layers:
                     uri = QgsDataSourceUri()
                     uri.setDatabase(self.database_name)

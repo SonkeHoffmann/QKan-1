@@ -252,7 +252,7 @@ def get_database_QKan(silent: bool = False) -> None:
     # noinspection PyArgumentList
 
     project = QgsProject.instance()
-    qkanlayers = ["Schächte", "Haltungen", "Flächen"]
+    qkanlayers = [enums.LAYERBEZ.SCHAECHTE, enums.LAYERBEZ.HALTUNGEN, enums.LAYERBEZ.EINZELFLAECHEN]
     layerobjects = None
     for lnam in qkanlayers:
         layerobjects = project.mapLayersByName(lnam)
