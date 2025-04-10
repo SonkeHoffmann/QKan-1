@@ -3,12 +3,12 @@
 
 <svg
    width="1000"
-   height="300"
-   viewBox="0 0 264.58335 79.374996"
+   height="1000"
+   viewBox="0 0 264.58334 264.58335"
    version="1.1"
    id="svg5"
-   sodipodi:docname="SW Einl in Gew.svg"
-   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="wegfallend.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -25,53 +25,33 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="0.914906"
-     inkscape:cx="396.76207"
-     inkscape:cy="141.5446"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="1912"
+     inkscape:cx="-37.708792"
+     inkscape:cy="542.1322"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <sodipodi:guide
-       position="0,79.375006"
+       position="0,264.58335"
        orientation="0,1000"
        id="guide3078"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="264.58335,79.375006"
+       position="264.58334,264.58335"
        orientation="1000,0"
        id="guide3080"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="264.58335,-185.20833"
+       position="264.58334,0"
        orientation="0,-1000"
        id="guide3082"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="0,-185.20833"
+       position="0,0"
        orientation="-1000,0"
        id="guide3084"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="0,79.375006"
-       orientation="0,1000"
-       id="guide15595"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="264.58336,79.375006"
-       orientation="800,0"
-       id="guide15597"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="141.99319,-132.29167"
-       orientation="0,-1000"
-       id="guide15599"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="0,-132.29167"
-       orientation="-800,0"
-       id="guide15601"
        inkscape:locked="false" />
   </sodipodi:namedview>
   <defs
@@ -90,17 +70,12 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       id="path30878"
-       fill="param(fill)"
-       fill-opacity="1"
-       stroke="param(outline)"
-       stroke-width="4"
-       stroke-linecap="butt"
-       stroke-linejoin="miter"
-       stroke-miterlimit="5"
-       stroke-dasharray="none"
-       stroke-opacity="1"
-       d="M 65.312428,2.9803673 V 25.520534 H 5.0261858 V 53.483303 H 65.312428 v 22.54017 L 247.82462,39.501921 Z"
-       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1;stroke-dasharray:none" />
+       style="fill:#00aafe;stroke:#000000;stroke-width:19.9943;stroke-linecap:square;stroke-miterlimit:5;stroke-dasharray:none;stroke-opacity:1"
+       d="M 14.210772,14.138067 250.44524,250.37254"
+       id="path4642" />
+    <path
+       style="fill:#00aafe;stroke:#000000;stroke-width:20;stroke-linecap:square;stroke-miterlimit:5;stroke-dasharray:none;stroke-opacity:1"
+       d="M 14.141296,250.44204 250.44203,14.1413"
+       id="path5370" />
   </g>
 </svg>

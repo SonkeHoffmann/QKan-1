@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="Molch.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.5"
+     inkscape:cx="-42"
+     inkscape:cy="607"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#pattern6-7"
+       preserveAspectRatio="xMidYMid"
+       id="pattern55"
+       patternTransform="translate(190,350)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="29"
+       height="20"
+       patternTransform="translate(190,350)"
+       preserveAspectRatio="xMidYMid"
+       style="fill:#000000"
+       id="pattern6-7"
+       inkscape:label=""
+       inkscape:collect="always"
+       inkscape:isstock="true">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-dasharray:none;paint-order:stroke markers fill;stop-color:#000000"
+         d="M 0,5 C 19,5 10,15 29,15"
+         id="path4-2"
+         sodipodi:nodetypes="cc" />
+    </pattern>
+    <linearGradient
+       id="swatch55"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop55" />
+    </linearGradient>
+    <linearGradient
+       id="swatch54"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop54" />
+    </linearGradient>
+    <inkscape:path-effect
+       effect="powermask"
+       id="path-effect36"
+       is_visible="true"
+       lpeversion="1"
+       uri="#mask-powermask-path-effect36"
+       invert="false"
+       hide_mask="false"
+       background="true"
+       background_color="#ffffffff" />
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask-powermask-path-effect36">
+      <path
+         d="m 165.625,41.064453 c -5.60391,0 -10.15039,4.546478 -10.15039,10.15039 0,5.603915 4.54648,10.15039 10.15039,10.15039 5.60391,0 10.15039,-4.546475 10.15039,-10.15039 0,-5.603912 -4.54648,-10.15039 -10.15039,-10.15039 z m 0,0.30078 c 5.44178,0 9.84961,4.407829 9.84961,9.84961 0,5.441783 -4.40783,9.849609 -9.84961,9.849609 -5.44178,0 -9.84961,-4.407826 -9.84961,-9.849609 0,-5.441781 4.40783,-9.84961 9.84961,-9.84961 z"
+         id="path36"
+         style="stroke-width:1"
+         sodipodi:nodetypes="ssssssssss" />
+    </mask>
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       fill="param(fill)"
+       fill-rule="evenodd"
+       stroke-width="0.527"
+       stroke="none"
+       stroke-dasharray="none"
+       d="m 6.8708088,143.377 c -0.4264407,-2.1322 -0.4264407,-13.00562 0,-15.13783 l 0.329085,-1.64542 H 35.830266 64.460584 v 9.21434 9.21433 H 35.830266 7.1998938 Z"
+       id="path1" />
+    <path
+       fill="param(fill)"
+       fill-rule="evenodd"
+       stroke-width="0.527"
+       stroke="none"
+       stroke-dasharray="none"
+       d="m 145.54687,135.81258 v -9.21883 h 28.91031 28.91032 l 0.3122,4.87044 c 0.1717,2.67874 0.13458,6.76595 -0.0825,9.0827 l -0.39469,4.21227 -28.82783,0.13614 -28.82781,0.13612 z"
+       id="path2" />
+    <path
+       id="path46"
+       fill="none"
+       stroke="param(outline)"
+       stroke-width="4"
+       stroke-dasharray="none"
+       d="m 65.291518,125.71962 v 34.82629 H 144.89384 V 110.79467 H 65.291518 Z" />
+    <path
+       id="path51"
+       fill="none"
+       stroke="param(outline)"
+       stroke-width="4"
+       stroke-dasharray="none"
+       d="M 105.09206,36.167801 A 99.502794,99.502387 0 0 0 6.3010811,125.71962 H 65.291518 v -14.92495 h 79.602322 v 14.92495 h 59.1972 A 99.502794,99.502387 0 0 0 105.09206,36.167801 Z m 98.99898,89.551819 h -59.1972 v 19.90133 h 58.9905 a 99.502794,99.502387 0 0 0 0.71062,-9.95066 99.502794,99.502387 0 0 0 -0.50392,-9.95067 z m -0.2067,19.90133 h -58.9905 v 14.92496 H 65.291518 V 145.62095 H 6.3010811 a 99.502794,99.502387 0 0 0 98.7909789,89.55182 99.502794,99.502387 0 0 0 98.79228,-89.55182 z m -197.5832589,0 H 65.291518 V 125.71962 H 6.3010811 a 99.502794,99.502387 0 0 0 -0.7106164,9.95067 99.502794,99.502387 0 0 0 0.7106164,9.95066 z" />
+    <text
+       xml:space="preserve"
+       font-style="normal"
+       font-variant="normal"
+       font-weight="normal"
+       font-stretch="normal"
+       font-size="50px"
+       font-family="Verdana"
+       inkscape-font-specification="Verdana, Normal"
+       font-variant-ligatures="normal"
+       font-variant-caps="normal"
+       font-variant-numeric="normal"
+       font-variant-east-asian="normal"
+       stroke-width="1"
+       stroke-dasharray="none"
+       stroke="param(outline)"
+       stroke-opacity="1"
+       x="84.023376"
+       y="105.26936"
+       id="text54"><tspan
+         sodipodi:role="line"
+         id="tspan54"
+         x="84.023376"
+         y="105.26936"
+         stroke-width="1"
+         stroke-dasharray="none"
+         stroke="param(outline)"
+         stroke-opacity="1">M</tspan></text>
+  </g>
+</svg>

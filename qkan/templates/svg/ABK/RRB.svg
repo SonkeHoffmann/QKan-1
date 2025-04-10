@@ -1,1 +1,60 @@
-<svg width="1024.57" height="647.061" viewBox="0 0 271.083 171.202" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg5" overflow="hidden"><defs id="defs2"><linearGradient id="linearGradient3090"><stop offset="0"/></linearGradient><rect x="326.815" y="166.414" width="374.157" height="153.073" id="rect690"/></defs><g id="layer1" transform="translate(2.50004 24.7476)"><rect x="-0.953789" y="-24.7476" width="267.213" height="171.202" id="rect1" stroke-width="0.498395" fill="param(fill)"/><rect x="1.49996" y="72.7604" width="263.083" height="0.0145801" id="rect17055" stroke="param(outline)" stroke-width="8" fill="none"/><rect x="26.0194" y="10.3125" width="216.593" height="131.547" id="rect15541" stroke="param(outline)" stroke-width="8" stroke-linecap="round" fill="param(fill)"/><text id="text688" stroke="param(outline)" stroke-width="1.88976" stroke-linecap="square" stroke-miterlimit="5" font-family="Arial" font-size="120" xml:space="preserve" transform="matrix(0.237984 0 0 0.244893 -55.6052 -69.447)"><tspan x="326.814" y="274.505">RRB</tspan></text></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1024.57"
+   height="647.061"
+   viewBox="0 0 271.083 171.202"
+   id="svg5"
+   overflow="hidden"
+   version="1.1"
+   sodipodi:docname="RRB.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.2595413"
+     inkscape:cx="512.09119"
+     inkscape:cy="260.01529"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient3090">
+      <stop
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+    <rect
+       x="326.815"
+       y="166.414"
+       width="374.157"
+       height="153.073"
+       id="rect690" />
+  </defs>
+  <g
+     id="layer1"
+     transform="translate(2.50004 24.7476)">
+    <path
+       id="rect15541"
+       display="inline"
+       fill="param(fill)"
+       stroke="param(outline)"
+       stroke-width="8"
+       stroke-linecap="round"
+       d="m 26.0194,10.3125 h 216.593 v 131.547 H 26.0194 Z M 1.4293286,72.689774 H 25.180862 v 0.155843 H 1.4293286 Z m 242.1939514,-0.0096 h 21.03993 v 0.175068 h -21.03993 z" />
+  </g>
+</svg>

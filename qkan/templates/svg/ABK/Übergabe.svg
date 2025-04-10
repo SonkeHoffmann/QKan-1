@@ -1,1 +1,74 @@
-<svg width="1004.09" height="250" viewBox="0 0 265.665 66.1458" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg5" overflow="hidden"><defs id="defs2"><linearGradient id="linearGradient3090"><stop offset="0"/></linearGradient></defs><g id="layer1" transform="translate(-0.300281 0)"><path d="M218.872 33.0729 65.3638-2.58333e-06 65.3638 66.1458Z" id="path30878" stroke-width="2.89399" stroke-miterlimit="5"/><rect x="1.8542" y="21.4449" width="72.2628" height="23.2561" id="rect30932" stroke="param(outline)" stroke-width="3.10784" stroke-miterlimit="10"/><ellipse cx="237.214" cy="32.7837" rx="22.7517" ry="22.5778" id="path34042" stroke="param(outline)" stroke-width="12" stroke-miterlimit="5" fill="none"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1004.09"
+   height="250"
+   viewBox="0 0 265.665 66.1458"
+   id="svg5"
+   overflow="hidden"
+   version="1.1"
+   sodipodi:docname="Übergabe.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.3265743"
+     inkscape:cx="502.04501"
+     inkscape:cy="124.75743"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5" />
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient3090">
+      <stop
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+  </defs>
+  <g
+     id="layer1"
+     transform="translate(-0.300281 0)">
+    <path
+       d="M218.872 33.0729 65.3638-2.58333e-06 65.3638 66.1458Z"
+       id="path30878"
+       stroke-width="2.89399"
+       stroke-miterlimit="5"
+       fill="param(fill)" fill-opacity="1" stroke="none" stroke-dasharray="none" />
+    <rect
+       x="1.8542"
+       y="21.4449"
+       width="72.2628"
+       height="23.2561"
+       id="rect30932"
+       stroke="none"
+       stroke-width="3.10784"
+       stroke-miterlimit="10"
+       fill="param(fill)" fill-opacity="1" stroke-opacity="1" stroke-dasharray="none" />
+    <ellipse
+       cx="237.214"
+       cy="32.7837"
+       rx="22.7517"
+       ry="22.5778"
+       id="path34042"
+       stroke="param(outline)"
+       stroke-width="12"
+       stroke-miterlimit="5"
+       fill="none"
+       stroke-opacity="1" stroke-dasharray="none" />
+  </g>
+</svg>

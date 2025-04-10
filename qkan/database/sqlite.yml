@@ -1086,8 +1086,8 @@ INSERT INTO info (
 subject, value)
 VALUES ('version', ?);"
 
-database_create_bauwerke: "
-CREATE TABLE bauwerke (
+database_create_symbole: "
+CREATE TABLE symbole (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
     art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
@@ -1095,20 +1095,20 @@ CREATE TABLE bauwerke (
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
 
-database_add_bauwerke_geom: "
-SELECT AddGeometryColumn('bauwerke', 'geom', :epsg, 'POINT', 2)"
+database_add_symbole_geom: "
+SELECT AddGeometryColumn('symbole', 'geom', :epsg, 'POINT', 2)"
 
-database_createspatialindex_bauwerke_geom: "
-SELECT CreateSpatialIndex('bauwerke', 'geom')"
+database_createspatialindex_symbole_geom: "
+SELECT CreateSpatialIndex('symbole', 'geom')"
 
-database_create_bauwerksarten: "
-CREATE TABLE qkan.bauwerksarten (
+database_create_symbolkatalog: "
+CREATE TABLE qkan.symbolkatalog (
     pk SERIAL PRIMARY KEY,
     bezeichnung character varying(30),
     kommentar character varying(255));"
 
-database_insert_bauwerksarten: "
-INSERT INTO qkan.bauwerksarten (pk, bezeichnung, kommentar) VALUES
+database_insert_symbolkatalog: "
+INSERT INTO qkan.symbolkatalog (pk, bezeichnung, kommentar) VALUES
 (2, 'KA geplant', NULL),
 (3, 'KA vorh', NULL),
 (4, 'KKA', NULL),

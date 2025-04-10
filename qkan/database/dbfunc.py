@@ -176,8 +176,8 @@ class DBConnection:
         self.setmodule('database')
 
         # Load existing database
-        if os.path.exists(self.dbname):
-            if self.dbtype == enums.QKanDBChoice.SPATIALITE:
+        if self.dbtype == enums.QKanDBChoice.SPATIALITE:
+            if os.path.exists(self.dbname):
                 self.consl = spatialite_connect(
                     database=self.dbname, check_same_thread=False
                 )
@@ -194,351 +194,351 @@ class DBConnection:
                     "dbqkan.DBConnection.__init__: Datenbank existiert und Verbindung hergestellt:\n"
                     + "{}".format(self.dbname)
                 )
-            elif self.dbtype == enums.QKanDBChoice.SPATIALITE:
-                self.consl = None
+
+                # Versionsprüfung
+                self.check_version()
+                if not self.isCurrentDbVersion:
+                    logger.debug("dbqkan: Datenbank ist nicht aktuell")
+                    if self.qkan_db_update:
+                        logger.debug(
+                            "dbqkan: Update aktiviert. Deshalb wird Datenbank aktualisiert"
+                        )
+
+                        if self.writeDbBackup or self.writeQgsBackup:
+                            pjVersion = self.current_dbversion.base_version
+                            fpath, ext = os.path.splitext(self.dbname)
+                            bakdir = os.path.join(f'{fpath}_backup', f'backup_{pjVersion}')
+                            num = 0
+                            bakdir_0 = bakdir
+                            while os.path.exists(bakdir):
+                                num += 1
+                                bakdir = f'{bakdir_0}_{num}'
+                            os.makedirs(bakdir)
+
+                            if self.writeDbBackup:
+                                shutil.copy(self.dbname, bakdir)
+
+                            if self.writeQgsBackup:
+                                shutil.copy(QKan.config.project.file, bakdir)
+
+                        self.upgrade_database()
+                    else:
+                        logger.info(
+                            f"Projekt muss aktualisiert werden. Die QKan-Version der "
+                            f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
+                            f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} überein und muss aktualisiert werden!"
+                        )
+                        self.consl.close()
+                        self.connected = False
+
+                        return None
+
+            # Create new database
             else:
-                logger.error_code(
-                    f'{self.__class__.__name__}: '
-                    f'Datenbanktyp {self.dbtype} unbekannt: Abbruch')
-
-
-            # Versionsprüfung
-            self.check_version()
-            if not self.isCurrentDbVersion:
-                logger.debug("dbqkan: Datenbank ist nicht aktuell")
-                if self.qkan_db_update:
-                    logger.debug(
-                        "dbqkan: Update aktiviert. Deshalb wird Datenbank aktualisiert"
-                    )
-
-                    if self.writeDbBackup or self.writeQgsBackup:
-                        pjVersion = self.current_dbversion.base_version
-                        fpath, ext = os.path.splitext(self.dbname)
-                        bakdir = os.path.join(f'{fpath}_backup', f'backup_{pjVersion}')
-                        num = 0
-                        bakdir_0 = bakdir
-                        while os.path.exists(bakdir):
-                            num += 1
-                            bakdir = f'{bakdir_0}_{num}'
-                        os.makedirs(bakdir)
-
-                        if self.writeDbBackup:
-                            shutil.copy(self.dbname, bakdir)
-
-                        if self.writeQgsBackup:
-                            shutil.copy(QKan.config.project.file, bakdir)
-
-                    self.upgrade_database()
-                else:
-                    logger.info(
-                        f"Projekt muss aktualisiert werden. Die QKan-Version der "
-                        f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
-                        f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} überein und muss aktualisiert werden!"
-                    )
-                    self.consl.close()
-                    self.connected = False
-
-                    return None
-
-        # Create new database
-        else:
-            QKan.instance.iface.messageBar().pushMessage(
-                "Information",
-                "SpatiaLite-Datenbank wird erstellt. Bitte waren...",
-                level=Qgis.Info,
-            )
-
-            datenbank_qkan_template = os.path.join(QKan.template_dir, "qkan.sqlite")
-            try:
-                shutil.copyfile(datenbank_qkan_template, self.dbname)
-
-                self.consl = spatialite_connect(database=self.dbname)
-                self.cursl = self.consl.cursor()
-
                 QKan.instance.iface.messageBar().pushMessage(
                     "Information",
-                    "SpatiaLite-Datenbank ist erstellt!",
+                    "SpatiaLite-Datenbank wird erstellt. Bitte waren...",
                     level=Qgis.Info,
                 )
-            except BaseException as err:
-                logger.debug(f"Datenbank ist nicht vorhanden: {self.dbname}")
-                errormsg=(
-                    f"Fehler in dbqkan.DBConnection:\n{err}\n"
-                    f"Kopieren von: {QKan.template_dir}\nnach: {self.dbname}\n nicht möglich"
+
+                datenbank_qkan_template = os.path.join(QKan.template_dir, "qkan.sqlite")
+                try:
+                    shutil.copyfile(datenbank_qkan_template, self.dbname)
+
+                    self.consl = spatialite_connect(database=self.dbname)
+                    self.cursl = self.consl.cursor()
+
+                    QKan.instance.iface.messageBar().pushMessage(
+                        "Information",
+                        "SpatiaLite-Datenbank ist erstellt!",
+                        level=Qgis.Info,
                     )
-                self.connected = False
-                self.consl = None
+                except BaseException as err:
+                    logger.debug(f"Datenbank ist nicht vorhanden: {self.dbname}")
+                    errormsg=(
+                        f"Fehler in dbqkan.DBConnection:\n{err}\n"
+                        f"Kopieren von: {QKan.template_dir}\nnach: {self.dbname}\n nicht möglich"
+                        )
+                    self.connected = False
+                    self.consl = None
 
-                logger.error(errormsg)
-                raise Exception(errormsg)
+                    logger.error(errormsg)
+                    raise Exception(errormsg)
 
-            # Erstellen der QKan-Datenbanktabellen inkl. Trigger und Views
+                # Erstellen der QKan-Datenbanktabellen inkl. Trigger und Views
 
-            tablis = [
-                "notizen",  # Tabellen mit Geometrieobjekten
-                "haltungen",
-                "haltungen_untersucht",
-                "untersuchdat_haltung",
-                "anschlussleitungen",
-                "anschlussleitungen_untersucht",
-                "untersuchdat_anschlussleitung",
-                "schaechte",
-                "schaechte_untersucht",
-                "untersuchdat_schacht",
-                "einzugsgebiete",
-                "teilgebiete",
-                "flaechen",
-                "linkfl",
-                "linksw",
-                "linkageb",
-                "tezg",
-                "einleit",
-                "aussengebiete",
-                "flaechen_he8",
+                tablis = [
+                    "notizen",  # Tabellen mit Geometrieobjekten
+                    "haltungen",
+                    "haltungen_untersucht",
+                    "untersuchdat_haltung",
+                    "anschlussleitungen",
+                    "anschlussleitungen_untersucht",
+                    "untersuchdat_anschlussleitung",
+                    "schaechte",
+                    "schaechte_untersucht",
+                    "untersuchdat_schacht",
+                    "einzugsgebiete",
+                    "teilgebiete",
+                    "flaechen",
+                    "linkfl",
+                    "linksw",
+                    "linkageb",
+                    "tezg",
+                    "einleit",
+                    "aussengebiete",
+                    "flaechen_he8",
 
-                "simulationsstatus",  # Referenztabellen
-                "material",
-                "auslasstypen",
-                "abflussparameter",
-                "flaechentypen",
-                "bodenklassen",
-                "abflusstypen",
-                "knotentypen",
-                "schachttypen",
-                "eigentum",
-                "dynahal",
-                "gruppen",
-                "profile",
-                "entwaesserungsarten",
-                "haltungstypen",
-                "untersuchrichtung",
-                "wetter",
-                "bewertungsart",
-                "pumpentypen",
-                "pruefsql",
-                "pruefliste",
-                "reflist_zustand",
-                "info",
-            ]
-            for tabnam in tablis:
-                sqlnam = f"database_create_{tabnam}"
+                    "simulationsstatus",  # Referenztabellen
+                    "material",
+                    "auslasstypen",
+                    "abflussparameter",
+                    "flaechentypen",
+                    "bodenklassen",
+                    "abflusstypen",
+                    "knotentypen",
+                    "schachttypen",
+                    "eigentum",
+                    "dynahal",
+                    "gruppen",
+                    "profile",
+                    "entwaesserungsarten",
+                    "haltungstypen",
+                    "untersuchrichtung",
+                    "wetter",
+                    "bewertungsart",
+                    "pumpentypen",
+                    "pruefsql",
+                    "pruefliste",
+                    "reflist_zustand",
+                    "info",
+                ]
+                for tabnam in tablis:
+                    sqlnam = f"database_create_{tabnam}"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 2. geom-Objekt hinzufügen
+
+                tablis = [
+                    "notizen",
+                    "haltungen",
+                    "haltungen_untersucht",
+                    "untersuchdat_haltung",
+                    "anschlussleitungen",
+                    "anschlussleitungen_untersucht",
+                    "untersuchdat_anschlussleitung",
+                    "schaechte",
+                    "untersuchdat_schacht",
+                    "einzugsgebiete",
+                    "teilgebiete",
+                    "flaechen",
+                    "linkfl",
+                    "linksw",
+                    "tezg",
+                    "einleit",
+                    "aussengebiete",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_add_{tabnam}_geom"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                            parameters={'epsg': self.epsg},
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    sqlnam = f"database_createspatialindex_{tabnam}_geom"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 3. geop-Objekt hinzufügen
+
+                tablis = [
+                    "schaechte",
+                    "schaechte_untersucht",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_add_{tabnam}_geop"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                            parameters={'epsg': self.epsg},
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    sqlnam = f"database_createspatialindex_{tabnam}_geop"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    # Anmerkung: Die nachfolgenden beiden Blöcke Waren bisher nur für 'schaechte' vorhanden.
+                    # Deshalb erst mal weglassen
+
+                    # sqlnam = f"database_drop_trigger_{tabnam}_geop_ggi"
+                    # if not self.sqlyml(
+                    #     sqlnam=sqlnam,
+                    #     stmt_category= sqlnam,
+                    # ):
+                    #     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    # sqlnam = f"database_drop_trigger_{tabnam}_geop_ggu"
+                    # if not self.sqlyml(
+                    #     sqlnam=sqlnam,
+                    #     stmt_category= sqlnam,
+                    # ):
+                    #     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 4. gbuf-Objekt hinzufügen
+
+                tablis = [
+                    "linkfl",
+                    "linksw",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_add_{tabnam}_gbuf"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                            parameters={'epsg': self.epsg},
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    sqlnam = f"database_createspatialindex_{tabnam}_gbuf"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 5. glink-Objekt hinzufügen
+
+                tablis = [
+                    "linkfl",
+                    "linksw",
+                    "linkageb",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_add_{tabnam}_glink"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                            parameters={'epsg': self.epsg},
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    sqlnam = f"database_createspatialindex_{tabnam}_glink"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 6. Geometry-Objekt hinzufügen
+
+                tablis = [
+                    "flaechen_he8",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_add_{tabnam}_geometry"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                            parameters={'epsg': self.epsg},
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                    sqlnam = f"database_createspatialindex_{tabnam}_geometry"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 7. Trigger für Haltungen beim Fangen auf Schächte sowie
+                # für Nachführung von Attributen in Haltungen bei Änderung in Referenztabellen
+
+                tablis = [
+                    "new_hal",  # Fangen von Haltungen auf Schächte
+                    "mod_hal",
+
+                    "update_simulationsstatus",  # Änderung in Referenztabelle
+                    "update_material",
+                    "update_profile",
+                    "update_entwaesserungsarten",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_haltungen_trig_{tabnam}"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 8. Standardisierte Referenztabellen füllen
+
+                tablis = [
+                    "auslasstypen",
+                    "flaechentypen",
+                    "abflusstypen",
+                    "knotentypen",
+                    "schachttypen",
+                    "haltungstypen",
+                    "untersuchrichtung",
+                    "wetter",
+                    "bewertungsart",
+                    "pumpentypen",
+                ]
+
+                for tabnam in tablis:
+                    sqlnam = f"database_insert_{tabnam}"
+                    if not self.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category=sqlnam,
+                            parameters={'epsg': self.epsg},
+                    ):
+                        logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 9. Referenztabelle mit Parametern
+                sqlnam = f"database_insert_info"
+                parameters = (str(self.actDbVersion.base_version),)
+                if not self.sqlyml(
+                        sqlnam=sqlnam,
+                        stmt_category=sqlnam,
+                        parameters=parameters
+                ):
+                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
+
+                # 10. Views
+                sqlnam = f"database_createview_untersuchdat_aktuell"
                 if not self.sqlyml(
                         sqlnam=sqlnam,
                         stmt_category=sqlnam,
                 ):
                     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
 
-            # 2. geom-Objekt hinzufügen
+                self.commit()
+        elif self.dbtype == enums.QKanDBChoice.POSTGIS:
+            self.consl = None
+        else:
+            logger.error_code(
+                f'{self.__class__.__name__}: '
+                f'Datenbanktyp {self.dbtype} unbekannt: Abbruch')
 
-            tablis = [
-                "notizen",
-                "haltungen",
-                "haltungen_untersucht",
-                "untersuchdat_haltung",
-                "anschlussleitungen",
-                "anschlussleitungen_untersucht",
-                "untersuchdat_anschlussleitung",
-                "schaechte",
-                "untersuchdat_schacht",
-                "einzugsgebiete",
-                "teilgebiete",
-                "flaechen",
-                "linkfl",
-                "linksw",
-                "tezg",
-                "einleit",
-                "aussengebiete",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_add_{tabnam}_geom"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                        parameters={'epsg': self.epsg},
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                sqlnam = f"database_createspatialindex_{tabnam}_geom"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 3. geop-Objekt hinzufügen
-
-            tablis = [
-                "schaechte",
-                "schaechte_untersucht",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_add_{tabnam}_geop"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                        parameters={'epsg': self.epsg},
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                sqlnam = f"database_createspatialindex_{tabnam}_geop"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                # Anmerkung: Die nachfolgenden beiden Blöcke Waren bisher nur für 'schaechte' vorhanden.
-                # Deshalb erst mal weglassen
-
-                # sqlnam = f"database_drop_trigger_{tabnam}_geop_ggi"
-                # if not self.sqlyml(
-                #     sqlnam=sqlnam,
-                #     stmt_category= sqlnam,
-                # ):
-                #     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                # sqlnam = f"database_drop_trigger_{tabnam}_geop_ggu"
-                # if not self.sqlyml(
-                #     sqlnam=sqlnam,
-                #     stmt_category= sqlnam,
-                # ):
-                #     logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 4. gbuf-Objekt hinzufügen
-
-            tablis = [
-                "linkfl",
-                "linksw",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_add_{tabnam}_gbuf"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                        parameters={'epsg': self.epsg},
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                sqlnam = f"database_createspatialindex_{tabnam}_gbuf"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 5. glink-Objekt hinzufügen
-
-            tablis = [
-                "linkfl",
-                "linksw",
-                "linkageb",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_add_{tabnam}_glink"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                        parameters={'epsg': self.epsg},
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                sqlnam = f"database_createspatialindex_{tabnam}_glink"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 6. Geometry-Objekt hinzufügen
-
-            tablis = [
-                "flaechen_he8",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_add_{tabnam}_geometry"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                        parameters={'epsg': self.epsg},
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-                sqlnam = f"database_createspatialindex_{tabnam}_geometry"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 7. Trigger für Haltungen beim Fangen auf Schächte sowie
-            # für Nachführung von Attributen in Haltungen bei Änderung in Referenztabellen
-
-            tablis = [
-                "new_hal",  # Fangen von Haltungen auf Schächte
-                "mod_hal",
-
-                "update_simulationsstatus",  # Änderung in Referenztabelle
-                "update_material",
-                "update_profile",
-                "update_entwaesserungsarten",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_haltungen_trig_{tabnam}"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 8. Standardisierte Referenztabellen füllen
-
-            tablis = [
-                "auslasstypen",
-                "flaechentypen",
-                "abflusstypen",
-                "knotentypen",
-                "schachttypen",
-                "haltungstypen",
-                "untersuchrichtung",
-                "wetter",
-                "bewertungsart",
-                "pumpentypen",
-            ]
-
-            for tabnam in tablis:
-                sqlnam = f"database_insert_{tabnam}"
-                if not self.sqlyml(
-                        sqlnam=sqlnam,
-                        stmt_category=sqlnam,
-                        parameters={'epsg': self.epsg},
-                ):
-                    logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 9. Referenztabelle mit Parametern
-            sqlnam = f"database_insert_info"
-            parameters = (str(self.actDbVersion.base_version),)
-            if not self.sqlyml(
-                    sqlnam=sqlnam,
-                    stmt_category=sqlnam,
-                    parameters=parameters
-            ):
-                logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            # 10. Views
-            sqlnam = f"database_createview_untersuchdat_aktuell"
-            if not self.sqlyml(
-                    sqlnam=sqlnam,
-                    stmt_category=sqlnam,
-            ):
-                logger.error_code(f"{self.__class__.__name__}: {sqlnam}")
-
-            self.commit()
 
     def _disconnect(self) -> None:
         """Closes database connection."""

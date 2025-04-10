@@ -1,1 +1,97 @@
-<svg width="1017.31" height="347.819" viewBox="0 0 269.162 92.0272" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg5" overflow="hidden"><defs id="defs2"><linearGradient id="linearGradient3090"><stop offset="0"/></linearGradient></defs><g id="layer1" transform="translate(1.41281 6.3261)"><path d="M245.244 39.6875 65.947-0.227347 65.947 79.6023Z" id="path30878" stroke="param(outline)" stroke-width="9.78071" stroke-miterlimit="5" fill="none"/><rect x="0.273297" y="24.3444" width="64.4794" height="30.6861" id="rect30932" stroke="param(outline)" stroke-width="3.37221" stroke-miterlimit="10"/><rect x="4.08301" y="27.9674" width="69.1871" height="22.6694" id="rect30932-6" stroke-width="3.00238" stroke-miterlimit="10" fill="param(fill)"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1000"
+   height="300"
+   viewBox="0 0 264.58335 79.374996"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="NW Einl in Gew_neu.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#3e3e3e"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="0.914906"
+     inkscape:cx="397.85508"
+     inkscape:cy="141.5446"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="0,79.375006"
+       orientation="0,1000"
+       id="guide3078"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="264.58335,79.375006"
+       orientation="1000,0"
+       id="guide3080"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="264.58335,-185.20833"
+       orientation="0,-1000"
+       id="guide3082"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="0,-185.20833"
+       orientation="-1000,0"
+       id="guide3084"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="0,79.375006"
+       orientation="0,1000"
+       id="guide15595"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="264.58336,79.375006"
+       orientation="800,0"
+       id="guide15597"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="141.99319,-132.29167"
+       orientation="0,-1000"
+       id="guide15599"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="0,-132.29167"
+       orientation="-800,0"
+       id="guide15601"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient3090"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3088" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path30878"
+       fill="none" fill-opacity="1" stroke="param(outline)" stroke-width="4" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="5" stroke-dasharray="none" stroke-opacity="1"
+       d="M 65.312428,2.9803673 V 25.520534 H 5.0261858 V 53.483303 H 65.312428 v 22.54017 L 247.82462,39.501921 Z" />
+  </g>
+</svg>
