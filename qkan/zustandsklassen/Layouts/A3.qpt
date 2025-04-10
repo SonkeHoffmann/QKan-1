@@ -350,7 +350,7 @@
        <property value="Knotentyp" key="cached_name"/>
       </customproperties>
      </layer-tree-layer>
-     <layer-tree-layer patch_size="0,0" expanded="1" legend_exp="" checked="Qt::Checked" providerKey="spatialite" legend_split_behavior="0" name="Knotenpunkte" source="dbname='C:/Users/Nora/Desktop/bilder_video_test/test_dwa51.sqlite' table=&quot;schaechte&quot; (geom)" id="schaechte20161016203756252">
+     <layer-tree-layer patch_size="0,0" expanded="1" legend_exp="" checked="Qt::Checked" providerKey="spatialite" legend_split_behavior="0" name="Geometrien" source="dbname='C:/Users/Nora/Desktop/bilder_video_test/test_dwa51.sqlite' table=&quot;schaechte&quot; (geom)" id="schaechte20161016203756252">
       <customproperties/>
      </layer-tree-layer>
     </layer-tree-group>
@@ -421,9 +421,9 @@
        <property value="Haltungsflächen" key="cached_name"/>
       </customproperties>
      </layer-tree-layer>
-     <layer-tree-layer patch_size="0,0" expanded="1" legend_exp="" checked="Qt::Checked" providerKey="spatialite" legend_split_behavior="0" name="Flächen" source="dbname='C:/Users/Nora/Desktop/bilder_video_test/test_dwa51.sqlite' table=&quot;flaechen&quot; (geom)" id="Flächen_2449ac97_6c2e_49df_96bc_5b9cc1d96e2c">
+     <layer-tree-layer patch_size="0,0" expanded="1" legend_exp="" checked="Qt::Checked" providerKey="spatialite" legend_split_behavior="0" name="Einzelflächen" source="dbname='C:/Users/Nora/Desktop/bilder_video_test/test_dwa51.sqlite' table=&quot;flaechen&quot; (geom)" id="Flächen_2449ac97_6c2e_49df_96bc_5b9cc1d96e2c">
       <customproperties>
-       <property value="Flächen" key="cached_name"/>
+       <property value="Einzelflächen" key="cached_name"/>
       </customproperties>
      </layer-tree-layer>
     </layer-tree-group>

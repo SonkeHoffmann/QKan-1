@@ -288,6 +288,7 @@ class DBConnection:
                     "einleit",
                     "aussengebiete",
                     "flaechen_he8",
+                    "symbole",
 
                     "simulationsstatus",  # Referenztabellen
                     "material",
@@ -299,6 +300,7 @@ class DBConnection:
                     "knotentypen",
                     "schachttypen",
                     "eigentum",
+                    "symbolkatalog",
                     "dynahal",
                     "gruppen",
                     "profile",
@@ -1752,7 +1754,7 @@ class DBConnection:
                     raise Exception(f"{self.__class__.__name__}: errno. 101")
 
             project = QgsProject.instance()
-            for layer in project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN):
+            for layer in project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value):
                 for feat in layer.selectedFeatures():
                     params = {'pk': feat[0]}
                     if not self.sqlyml('database_insert_haltungen_sel', 'insert selected haltungen', parameters=params):
@@ -1760,7 +1762,7 @@ class DBConnection:
                     logger.debug(f'sel: Haltung hinzugefügt: {params}')
                     n_haltungen += 1
                 break               # nur 1. gefundener Layer ;)
-            for layer in project.mapLayersByName(enums.LAYERBEZ.SCHAECHTE):
+            for layer in project.mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value):
                 for feat in layer.selectedFeatures():
                     params = {'pk': feat[0]}
                     if not self.sqlyml('database_insert_schaechte_sel', 'insert selected schaechte', parameters=params):
@@ -1768,7 +1770,7 @@ class DBConnection:
                     logger.debug(f'sel: Schacht hinzugefügt: {params}')
                     n_schaechte += 1
                 break               # nur 1. gefundener Layer ;)
-            for layer in project.mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN):
+            for layer in project.mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value):
                 for feat in layer.selectedFeatures():
                     params = {'pk': feat[0]}
                     if not self.sqlyml('database_insert_flaechen_sel', 'insert selected flaechen', parameters=params):

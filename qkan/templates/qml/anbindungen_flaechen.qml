@@ -421,7 +421,7 @@
             <Option name="FilterExpression" type="QString" value=""/>
             <Option name="Key" type="QString" value="flnam"/>
             <Option name="Layer" type="QString" value="Flächen_2449ac97_6c2e_49df_96bc_5b9cc1d96e2c"/>
-            <Option name="LayerName" type="QString" value="Flächen"/>
+            <Option name="LayerName" type="QString" value="Einzelflächen"/>
             <Option name="LayerProviderName" type="QString" value="spatialite"/>
             <Option name="LayerSource" type="QString" value="dbname='C:/Users/User/Desktop/Hiwi Höttges/QGIS/muster.sqlite' table=&quot;flaechen&quot; (geom)"/>
             <Option name="NofColumns" type="int" value="1"/>

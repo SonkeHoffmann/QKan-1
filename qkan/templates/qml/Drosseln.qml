@@ -432,7 +432,7 @@
             <Option name="FilterExpression" value="" type="QString"/>
             <Option name="Key" value="schnam" type="QString"/>
             <Option name="Layer" value="schaechte20161016203756252" type="QString"/>
-            <Option name="LayerName" value="Knotenpunkte" type="QString"/>
+            <Option name="LayerName" value="Geometrien" type="QString"/>
             <Option name="LayerProviderName" value="spatialite" type="QString"/>
             <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;schaechte&quot; (geom)" type="QString"/>
             <Option name="NofColumns" value="1" type="int"/>
@@ -453,7 +453,7 @@
             <Option name="FilterExpression" value="" type="QString"/>
             <Option name="Key" value="schnam" type="QString"/>
             <Option name="Layer" value="schaechte20161016203756252" type="QString"/>
-            <Option name="LayerName" value="Knotenpunkte" type="QString"/>
+            <Option name="LayerName" value="Geometrien" type="QString"/>
             <Option name="LayerProviderName" value="spatialite" type="QString"/>
             <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;schaechte&quot; (geom)" type="QString"/>
             <Option name="NofColumns" value="1" type="int"/>

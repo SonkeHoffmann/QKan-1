@@ -321,7 +321,7 @@
             <Option name="FilterExpression" value="" type="QString"/>
             <Option name="Key" value="flnam" type="QString"/>
             <Option name="Layer" value="Flächen_2449ac97_6c2e_49df_96bc_5b9cc1d96e2c" type="QString"/>
-            <Option name="LayerName" value="Flächen" type="QString"/>
+            <Option name="LayerName" value="Einzelflächen" type="QString"/>
             <Option name="LayerProviderName" value="spatialite" type="QString"/>
             <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;flaechen&quot; (geom)" type="QString"/>
             <Option name="NofColumns" value="1" type="int"/>

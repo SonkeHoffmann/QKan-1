@@ -5,7 +5,7 @@ from qgis.PyQt.QtWidgets import QWidget
 from qgis.core import Qgis
 from qgis.core import QgsApplication, QgsProject, QgsMessageLog, QgsGeometry
 
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.database.qkan_utils import (
     fehlermeldung,
@@ -196,7 +196,7 @@ class ReadData:  # type: ignore
                 head_match[icol] = colClip
             elif colClip == "wkt_geom":
                 if self.layer_name in self.schacht_types and (
-                    self.layer_name != "Knotenpunkte"
+                    self.layer_name != enums.LAYERBEZ.GEOMETRIEN.value
                 ):
                     head_match[icol] = "geop"
                 else:

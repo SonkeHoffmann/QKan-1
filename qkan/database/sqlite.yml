@@ -1102,10 +1102,10 @@ database_createspatialindex_symbole_geom: "
 SELECT CreateSpatialIndex('symbole', 'geom')"
 
 database_create_symbolkatalog: "
-CREATE TABLE qkan.symbolkatalog (
-    pk SERIAL PRIMARY KEY,
-    bezeichnung character varying(30),
-    kommentar character varying(255));"
+CREATE TABLE symbolkatalog (
+    pk INTEGER PRIMARY KEY,
+    bezeichnung TEXT,
+    kommentar TEXT);"
 
 database_insert_symbolkatalog: "
 INSERT INTO qkan.symbolkatalog (pk, bezeichnung, kommentar) VALUES

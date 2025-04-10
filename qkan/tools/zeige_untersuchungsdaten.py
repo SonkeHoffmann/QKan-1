@@ -253,7 +253,7 @@ class ShowHaltungsschaeden(QDialog, form_class):
     def show_selected(self):
         """Setzt einen Filter auf ausgewählte Haltungen_untersucht"""
         splitstr = ' AND untersuchhal = '
-        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN.value
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]
@@ -309,7 +309,7 @@ class ShowSchachtschaeden():
     def show_selected(self):
         """Setzt einen Filter auf ausgewählte Schaechte_untersucht"""
         splitstr = ' AND untersuchsch = '
-        layername = enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE.value
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]
@@ -365,7 +365,7 @@ class ShowHausanschlussschaeden():
     def show_selected(self):
         """Setzt einen Filter auf ausgewählte Hausanschlussleitungen_untersucht"""
         splitstr = ' AND untersuchleit = '
-        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN.value
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]

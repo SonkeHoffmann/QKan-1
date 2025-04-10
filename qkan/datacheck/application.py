@@ -126,7 +126,7 @@ class Plausi(QKanPlugin):
         # Anzeige der Attributtabelle, nicht im Testmodus
         if not is_test:
             project = QgsProject.instance()
-            layers = project.mapLayersByName(enums.LAYERBEZ.FEHLERLISTE)
+            layers = project.mapLayersByName(enums.LAYERBEZ.FEHLERLISTE.value)
             if not layers:
                 self.log.warning('Layer "Fehlerliste" fehlt!')
                 return True
