@@ -7417,7 +7417,7 @@ class Subkans_funkt:
                             ELSE haltungen_untersucht.laenge
                         END
                     ),  
-                haltungen_substanz_bewertung.pk
+                haltungen_substanz_bewertung.pk,
                 haltungen_substanz_bewertung.objektklasse_gesamt
                 FROM 
                     substanz_haltung_bewertung
