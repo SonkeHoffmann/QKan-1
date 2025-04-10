@@ -403,23 +403,23 @@ class ToolsConfig(ClassObject):
 
         # Layer names with data source table 'schaechte'
         schacht_types: dict = {
-            enums.LAYERBEZ.Schaechte.value: "Schacht",
-            enums.LAYERBEZ.Geometrien.value: "Schacht",
-            enums.LAYERBEZ.Knotentyp.value: "Schacht",
-            enums.LAYERBEZ.Speicher.value: "Speicher",
-            enums.LAYERBEZ.Auslaesse.value: "Auslass",
+            enums.LAYERBEZ.SCHAECHTE.value: "Schacht",                  # Filterkriterium in Attribut schachttyp
+            enums.LAYERBEZ.GEOMETRIEN.value: "Schacht",
+            enums.LAYERBEZ.KNOTENTYP.value: "Schacht",
+            enums.LAYERBEZ.SPEICHER.value: "Speicher",
+            enums.LAYERBEZ.AUSLAESSE.value: "Auslass",
         }
 
         # Layer names with data source table 'haltungen'
         haltung_types: dict = {
-            enums.LAYERBEZ.Haltungen.value: "Haltung",
-            enums.LAYERBEZ.Pumpen.value: "Pumpe",
-            enums.LAYERBEZ.Wehre.value: "Wehr",
-            enums.LAYERBEZ.Drosseln.value: "Drossel",
-            enums.LAYERBEZ.Schieber.value: "Schieber",
-            enums.LAYERBEZ.Grund_Seitenauslass.value: "GrundSeitenauslass",
-            enums.LAYERBEZ.H_Regler.value: "H-Regler",
-            enums.LAYERBEZ.Q_Regler.value: "Q-Regler",
+            enums.LAYERBEZ.HALTUNGEN.value: "Haltung",                  # Filterkriterium in Attribut haltungstyp
+            enums.LAYERBEZ.PUMPEN.value: "Pumpe",
+            enums.LAYERBEZ.WEHRE.value: "Wehr",
+            enums.LAYERBEZ.DROSSELN.value: "Drossel",
+            enums.LAYERBEZ.SCHIEBER.value: "Schieber",
+            enums.LAYERBEZ.GRUND_SEITENAUSLASS.value: "GrundSeitenauslass",
+            enums.LAYERBEZ.H_REGLER.value: "H-Regler",
+            enums.LAYERBEZ.Q_REGLER.value: "Q-Regler",
         }
 
         # patterns must be lower case
@@ -711,7 +711,7 @@ class ToolsConfig(ClassObject):
                 'bandnr': ['bandn*'],
                 'videozaehler': ['videoz*'],
                 'timecode': ['timeco*', 'zeitco*'],
-                'kuerzel''': ['kuerz*', 'kürz*', 'k\xfcrz*'],
+                'kuerzel': ['kuerz*', 'kürz*', 'k\xfcrz*'],
                 'charakt1': ['cara*1', 'chara*1'],
                 'charakt2': ['cara*2', 'chara*2'],
                 'quantnr1': ['quan*1'],

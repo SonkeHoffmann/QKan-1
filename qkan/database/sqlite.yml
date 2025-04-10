@@ -491,13 +491,13 @@ CREATE TABLE flaechen (
     abflussparameter TEXT,                  /* join abflussparameter.apnam */
     aufteilen INTEGER DEFAULT 0,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_flaechen_geom: "
-SELECT AddGeometryColumn('flaechen', 'geom', :epsg, 'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('flaechen', 'geom', :epsg, 'MULTIPOLYGON',2);"
 
 database_createspatialindex_flaechen_geom: "
-SELECT CreateSpatialIndex('flaechen', 'geom')"
+SELECT CreateSpatialIndex('flaechen', 'geom');"
 
 # Anbindung Flächen
 # Die Tabelle linkfl verwaltet die Anbindung von Flächen an Haltungen. Diese Anbindung
@@ -1085,6 +1085,66 @@ database_insert_info: "
 INSERT INTO info (
 subject, value)
 VALUES ('version', ?);"
+
+database_create_bauwerke: "
+CREATE TABLE bauwerke (
+    pk INTEGER PRIMARY KEY,
+    bezeichnung TEXT,
+    art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
+    link TEXT,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+
+database_add_bauwerke_geom: "
+SELECT AddGeometryColumn('bauwerke', 'geom', :epsg, 'POINT', 2)"
+
+database_createspatialindex_bauwerke_geom: "
+SELECT CreateSpatialIndex('bauwerke', 'geom')"
+
+database_create_bauwerksarten: "
+CREATE TABLE qkan.bauwerksarten (
+    pk SERIAL PRIMARY KEY,
+    bezeichnung character varying(30),
+    kommentar character varying(255));"
+
+database_insert_bauwerksarten: "
+INSERT INTO qkan.bauwerksarten (pk, bezeichnung, kommentar) VALUES
+(2, 'KA geplant', NULL),
+(3, 'KA vorh', NULL),
+(4, 'KKA', NULL),
+(5, 'MS gepl', NULL),
+(6, 'MS vorh', NULL),
+(7, 'NW Einl in Gew gepl', NULL),
+(8, 'NW Einl in Gew vorh', NULL),
+(9, 'PW gepl', NULL),
+(10, 'PW vorh', NULL),
+(11, 'RRB gepl', NULL),
+(12, 'RRB vorh', NULL),
+(13, 'RÜ gepl', NULL),
+(14, 'RÜ vorh', NULL),
+(15, 'RÜB gepl', NULL),
+(16, 'RÜB vorh', NULL),
+(17, 'SW Einl in Gew gepl', NULL),
+(18, 'SW Einl in Gew vorh', NULL),
+(19, 'SW Einl in GW gepl', NULL),
+(20, 'SW Einl in GW vorh', NULL),
+(21, 'TS gepl', NULL),
+(22, 'TS vorh', NULL),
+(23, 'NW Einl in GW gepl', NULL),
+(24, 'NW Einl in GW vorh', NULL),
+(25, 'Übergabe gepl', NULL),
+(26, 'Übergabe vorh', NULL),
+(27, 'Übernahme gepl', NULL),
+(28, 'Übernahme vorh', NULL),
+(29, 'USG', NULL),
+(30, 'USG fest', NULL),
+(31, 'USG plan', NULL),
+(32, 'VSA gepl', NULL),
+(33, 'wegfallend', NULL),
+(34, 'WSZ I', NULL),
+(35, 'WSZ II', NULL),
+(36, 'WSZ IIIa', NULL),
+(37, 'WSZ IIIb', NULL);"
 
 database_createview_untersuchdat_aktuell: "
 CREATE VIEW v_untersuchdat_hal_last AS

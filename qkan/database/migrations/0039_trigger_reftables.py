@@ -11,19 +11,6 @@ logger = get_logger("QKan.database.migrations")
 def run(dbcon: DBConnection) -> bool:
     # Korrektur der Trigger für einige Referenztabellen
 
-    sqls = [
-        "DROP TRIGGER IF EXISTS trig_ref_profile",
-        "DROP TRIGGER IF EXISTS trig_ref_entwart",
-        "DROP TRIGGER IF EXISTS trig_ref_simstatus",
-        "DROP TRIGGER IF EXISTS trig_ref_material",
-    ]
-
-    for sql in sqls:
-        if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
-                              f"Korrektur der Trigger für einige Referenztabellen"):
-            logger.error('Fehler in migration 0039')
-            raise Exception(f"{__name__}")
-
     sql_file = os.path.join(pluginDirectory("qkan"), 'database/migrations', '0039_reftables.sql')
     try:
         dbcon.executefile(sql_file)
