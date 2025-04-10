@@ -119,7 +119,7 @@ class ResultsTask:
             # Einfügen der Ergebnistabelle in die Layerliste, wenn nicht schon geladen
             project = QgsProject.instance()
             logger.debug(f'project.mapLayersByName("Überstau Schächte")= {project.mapLayersByName("Überstau Schächte")}')
-            if not project.mapLayersByName("Überstau Schächte"):
+            if not project.mapLayersByName(enums.LAYERBEZ.UEBERSTAUSCHAECHTE):
 
                 uri = QgsDataSourceUri()
                 uri.setDatabase(database_qkan)

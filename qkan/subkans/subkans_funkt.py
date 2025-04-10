@@ -7417,7 +7417,8 @@ class Subkans_funkt:
                             ELSE haltungen_untersucht.laenge
                         END
                     ),  
-                haltungen_substanz_bewertung.pk 
+                haltungen_substanz_bewertung.pk
+                haltungen_substanz_bewertung.objektklasse_gesamt
                 FROM 
                     substanz_haltung_bewertung
                 JOIN 
@@ -7433,6 +7434,7 @@ class Subkans_funkt:
         db.sql(sql,parameters=data)
         sbk='-'
         abn='-'
+
         for attr in db1.fetchall():
             # abn = bsl/länge*100
             if attr[2] not in ("","not found", None, None) and attr[3] not in ("","not found", None, None):
@@ -7453,6 +7455,9 @@ class Subkans_funkt:
                     sbk = 1
                 elif 5>=sub_ges:
                     sbk = 0
+            if attr[6] == 5:
+                abn = 0
+                sbk = 5
             else:
                 abn = 'None'
                 sbk = 'None'

@@ -4,7 +4,7 @@ from qgis.core import Qgis, QgsProject
 from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
 from qgis.PyQt.uic import loadUiType
 from qkan.database.dbfunc import DBConnection
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.utils import get_logger
 
 from qkan.database.qkan_utils import get_database_QKan
@@ -253,7 +253,7 @@ class ShowHaltungsschaeden(QDialog, form_class):
     def show_selected(self):
         """Setzt einen Filter auf ausgewählte Haltungen_untersucht"""
         splitstr = ' AND untersuchhal = '
-        layername = 'Untersuchungsdaten Haltung'
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]
@@ -309,7 +309,7 @@ class ShowSchachtschaeden():
     def show_selected(self):
         """Setzt einen Filter auf ausgewählte Schaechte_untersucht"""
         splitstr = ' AND untersuchsch = '
-        layername = 'Untersuchungsdaten Schacht'
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]
@@ -365,7 +365,7 @@ class ShowHausanschlussschaeden():
     def show_selected(self):
         """Setzt einen Filter auf ausgewählte Hausanschlussleitungen_untersucht"""
         splitstr = ' AND untersuchleit = '
-        layername = 'Untersuchungsdaten Hausanschlüsse'
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]
