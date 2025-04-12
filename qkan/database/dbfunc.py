@@ -267,8 +267,9 @@ class DBConnection:
 
                 # Erstellen der QKan-Datenbanktabellen inkl. Trigger und Views
 
-                tablis = [
-                    "notizen",  # Tabellen mit Geometrieobjekten
+                # Tabellen mit Geometrieobjekten
+                tablisgeom = [
+                    "notizen",
                     "haltungen",
                     "haltungen_untersucht",
                     "untersuchdat_haltung",
@@ -276,21 +277,41 @@ class DBConnection:
                     "anschlussleitungen_untersucht",
                     "untersuchdat_anschlussleitung",
                     "schaechte",
-                    "schaechte_untersucht",
                     "untersuchdat_schacht",
                     "einzugsgebiete",
                     "teilgebiete",
                     "flaechen",
                     "linkfl",
                     "linksw",
-                    "linkageb",
                     "tezg",
                     "einleit",
                     "aussengebiete",
-                    "flaechen_he8",
                     "symbole",
+                ]
 
-                    "simulationsstatus",  # Referenztabellen
+                tablisgeop = [
+                    "schaechte",
+                    "schaechte_untersucht",
+                ]
+
+                tablisgbuf = [
+                    "linkfl",
+                    "linksw",
+                ]
+
+                tablisglink = [
+                    "linkfl",
+                    "linksw",
+                    "linkageb",
+                ]
+
+                tablisgeometry = [
+                    "flaechen_he8",
+                ]
+
+                # Referenztabellen
+                tablisattr = [
+                    "simulationsstatus",
                     "material",
                     "auslasstypen",
                     "abflussparameter",
@@ -315,6 +336,13 @@ class DBConnection:
                     "reflist_zustand",
                     "info",
                 ]
+
+                tablis = set(tablisgeom) | \
+                         set(tablisgeop) | \
+                         set(tablisgbuf) | \
+                         set(tablisglink) | \
+                         set(tablisgeometry) | \
+                         set(tablisattr)
                 for tabnam in tablis:
                     sqlnam = f"database_create_{tabnam}"
                     if not self.sqlyml(
@@ -325,27 +353,7 @@ class DBConnection:
 
                 # 2. geom-Objekt hinzufügen
 
-                tablis = [
-                    "notizen",
-                    "haltungen",
-                    "haltungen_untersucht",
-                    "untersuchdat_haltung",
-                    "anschlussleitungen",
-                    "anschlussleitungen_untersucht",
-                    "untersuchdat_anschlussleitung",
-                    "schaechte",
-                    "untersuchdat_schacht",
-                    "einzugsgebiete",
-                    "teilgebiete",
-                    "flaechen",
-                    "linkfl",
-                    "linksw",
-                    "tezg",
-                    "einleit",
-                    "aussengebiete",
-                ]
-
-                for tabnam in tablis:
+                for tabnam in tablisgeom:
                     sqlnam = f"database_add_{tabnam}_geom"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
@@ -363,12 +371,7 @@ class DBConnection:
 
                 # 3. geop-Objekt hinzufügen
 
-                tablis = [
-                    "schaechte",
-                    "schaechte_untersucht",
-                ]
-
-                for tabnam in tablis:
+                for tabnam in tablisgeop:
                     sqlnam = f"database_add_{tabnam}_geop"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
@@ -403,12 +406,7 @@ class DBConnection:
 
                 # 4. gbuf-Objekt hinzufügen
 
-                tablis = [
-                    "linkfl",
-                    "linksw",
-                ]
-
-                for tabnam in tablis:
+                for tabnam in tablisgbuf:
                     sqlnam = f"database_add_{tabnam}_gbuf"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
@@ -426,13 +424,7 @@ class DBConnection:
 
                 # 5. glink-Objekt hinzufügen
 
-                tablis = [
-                    "linkfl",
-                    "linksw",
-                    "linkageb",
-                ]
-
-                for tabnam in tablis:
+                for tabnam in tablisglink:
                     sqlnam = f"database_add_{tabnam}_glink"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
@@ -450,11 +442,7 @@ class DBConnection:
 
                 # 6. Geometry-Objekt hinzufügen
 
-                tablis = [
-                    "flaechen_he8",
-                ]
-
-                for tabnam in tablis:
+                for tabnam in tablisgeometry:
                     sqlnam = f"database_add_{tabnam}_geometry"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
