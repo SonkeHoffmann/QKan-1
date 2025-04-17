@@ -1070,9 +1070,9 @@ class ImportTask(Schadenstexte):
                     else:
                         foto_dateiname = None
 
-                    ZD = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", 63, self.NS))
-                    ZS = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKSvAuto", 63, self.NS))
-                    ZB = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Standsicherheit/d:SKBvAuto", 63, self.NS))
+                    ZD = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", None, self.NS))
+                    ZS = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKSvAuto", None, self.NS))
+                    ZB = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Standsicherheit/d:SKBvAuto", None, self.NS))
 
 
                     yield Untersuchdat_schacht(
@@ -1894,9 +1894,9 @@ class ImportTask(Schadenstexte):
                         else:
                             foto_dateiname = None
 
-                        ZD = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", 63, self.NS))
-                        ZS = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKSvAuto", 63, self.NS))
-                        ZB = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Standsicherheit/d:SKBvAuto", 63, self.NS))
+                        ZD = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", None, self.NS))
+                        ZS = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKSvAuto", None, self.NS))
+                        ZB = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Standsicherheit/d:SKBvAuto", None, self.NS))
 
 
                         yield Untersuchdat_haltung(
@@ -2707,11 +2707,11 @@ class ImportTask(Schadenstexte):
                                 foto_dateiname = None
 
                             ZD = _get_int(
-                                _untersuchdat.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", 63, self.NS))
+                                _untersuchdat.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", None, self.NS))
                             ZS = _get_int(
-                                _untersuchdat.findtext("d:Klassifizierung/d:Standsicherheit/d:SKSvAuto", 63, self.NS))
+                                _untersuchdat.findtext("d:Klassifizierung/d:Standsicherheit/d:SKSvAuto", None, self.NS))
                             ZB = _get_int(
-                                _untersuchdat.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKBvAuto", 63, self.NS))
+                                _untersuchdat.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKBvAuto", None, self.NS))
 
                             yield Untersuchdat_anschlussleitung(
                                 untersuchhal=name,

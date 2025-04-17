@@ -785,7 +785,7 @@ class Info:
             data = {k: None for k in l_bezeich}
 
             for i in data.keys():
-                if i not in ['None', 63]:
+                if i not in ['None', 63, '63']:
                     sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen h ON h.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
 
                     if not self.db_qkan.sql(sql):
@@ -797,6 +797,8 @@ class Info:
 
             if 'None' in data.keys():
                 del data['None']
+            if '63' in data.keys():
+                del data['63']
             names = list(data.keys())
             values = list(data.values())
             bar_colors = {
@@ -1161,13 +1163,16 @@ class Info:
 
         # Darstellungen Schächte nach Baujahren
 
-        sql = """
+        sql = f"""
         
             WITH liste AS (
                         SELECT
-                            baujahr
+                        CASE
+                        WHEN baujahr IS NULL THEN 'sonstige'
+                          ELSE baujahr
+                            END AS baujahr
                             FROM schaechte
-                           
+                            {self.abfrage_where}      
                     )
                     SELECT
                         baujahr,
@@ -1186,20 +1191,24 @@ class Info:
         )
 
         # Darstellung Schächte nach Material
-        sql = """
+        sql = f"""
 
                     WITH liste AS (
-                                SELECT
-                                    material
-                                    FROM schaechte
-
-                            )
-                            SELECT
-                                material,
-                                count() as Anzahl
-                            FROM liste
-                            GROUP BY material
-                            ORDER BY material;
+                        SELECT
+                        CASE
+                        WHEN material IS NULL THEN 'sonstige'
+                          ELSE CAST(material AS text)
+                        END AS material
+                        FROM schaechte
+                             {self.abfrage_where} 
+                           
+                    )
+                    SELECT
+                        material,
+                        count() as Anzahl
+                    FROM liste
+                    GROUP BY material
+                    ORDER BY material;
                 """
         self._barplot(
             sql=sql,
