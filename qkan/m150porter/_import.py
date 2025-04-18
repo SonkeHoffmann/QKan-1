@@ -1089,18 +1089,18 @@ class ImportTask(Schadenstexte):
                     wetter = _schacht.findtext("KI106", None)
                     bewertungsart = _schacht.findtext("KI005", None)
                     bewertungstag = _schacht.findtext("KI204", None)
-                    max_ZD = _get_int(_schacht, "KI206", 63)
-                    max_ZB = _get_int(_schacht, "KI208", 63)
-                    max_ZS = _get_int(_schacht, "KI207", 63)
+                    max_ZD = _get_int(_schacht, "KI206", None)
+                    max_ZB = _get_int(_schacht, "KI208", None)
+                    max_ZS = _get_int(_schacht, "KI207", None)
                 else:
                     untersuchtag = ""
                     untersucher = ""
                     wetter = ""
                     bewertungsart = ""
                     bewertungstag = ""
-                    max_ZD = 63
-                    max_ZB = 63
-                    max_ZS = 63
+                    max_ZD = None
+                    max_ZB = None
+                    max_ZS = None
                 datenart = self.datenart
 
                 yield Schacht_untersucht(
@@ -1222,9 +1222,9 @@ class ImportTask(Schadenstexte):
                     else:
                         foto_dateiname = None
 
-                    ZD = _get_int(_untersuchdat_schacht, "KZ206", 63)
-                    ZB = _get_int(_untersuchdat_schacht, "KZ208", 63)
-                    ZS = _get_int(_untersuchdat_schacht, "KZ207", 63)
+                    ZD = _get_int(_untersuchdat_schacht, "KZ206", None)
+                    ZB = _get_int(_untersuchdat_schacht, "KZ208", None)
+                    ZS = _get_int(_untersuchdat_schacht, "KZ207", None)
 
 
                     yield Untersuchdat_schacht(
@@ -1722,9 +1722,9 @@ class ImportTask(Schadenstexte):
                     wetter = _haltung.findtext("HI106", None)
                     bewertungsart = _haltung.findtext("HI005", None)
                     bewertungstag = _haltung.findtext("HI204", None)
-                    max_ZD = _get_int(_haltung, "HI206", 63)
-                    max_ZB = _get_int(_haltung, "HI208", 63)
-                    max_ZS = _get_int(_haltung, "HI207", 63)
+                    max_ZD = _get_int(_haltung, "HI206", None)
+                    max_ZB = _get_int(_haltung, "HI208", None)
+                    max_ZS = _get_int(_haltung, "HI207", None)
 
                     _val = _haltung.findtext("HI101", None)
                     if _val == "I":
@@ -1749,9 +1749,9 @@ class ImportTask(Schadenstexte):
                     wetter = ""
                     bewertungsart = None
                     bewertungstag = None
-                    max_ZD = 63
-                    max_ZB = 63
-                    max_ZS = 63
+                    max_ZD = None
+                    max_ZB = None
+                    max_ZS = None
                 datenart = self.datenart
 
                 yield Haltung_untersucht(
@@ -1842,9 +1842,9 @@ class ImportTask(Schadenstexte):
             foto_dateiname = ""
             film_dateiname = ""
             streckenschaden_lfdnr=0
-            ZD = 63
-            ZB = 63
-            ZS = 63
+            ZD = None
+            ZB = None
+            ZS = None
 
 
             for block in blocks:
@@ -1909,9 +1909,9 @@ class ImportTask(Schadenstexte):
                     else:
                         foto_dateiname = None
 
-                    ZD = _get_int(_untersuchdat, "HZ206", 63)
-                    ZB = _get_int(_untersuchdat, "HZ208", 63)
-                    ZS = _get_int(_untersuchdat, "HZ207", 63)
+                    ZD = _get_int(_untersuchdat, "HZ206", None)
+                    ZB = _get_int(_untersuchdat, "HZ208", None)
+                    ZS = _get_int(_untersuchdat, "HZ207", None)
 
 
                     yield Untersuchdat_haltung(
@@ -2188,9 +2188,9 @@ class ImportTask(Schadenstexte):
                     wetter = _haltung.findtext("HI106", None)
                     bewertungsart = _haltung.findtext("HI005", None)
                     bewertungstag = _haltung.findtext("HI204", None)
-                    max_ZD = _get_int(_haltung, "HI206", 63)
-                    max_ZB = _get_int(_haltung, "HI208", 63)
-                    max_ZS = _get_int(_haltung, "HI207", 63)
+                    max_ZD = _get_int(_haltung, "HI206", None)
+                    max_ZB = _get_int(_haltung, "HI208", None)
+                    max_ZS = _get_int(_haltung, "HI207", None)
 
                     _val = _haltung.findtext("HI101", None)
                     if _val == "I":
@@ -2212,9 +2212,9 @@ class ImportTask(Schadenstexte):
                     wetter = ""
                     bewertungsart = None
                     bewertungstag = None
-                    max_ZD = 63
-                    max_ZB = 63
-                    max_ZS = 63
+                    max_ZD = None
+                    max_ZB = None
+                    max_ZS = None
                     untersuchrichtung = None
                     bezugspunkt = None
                 datenart = self.datenart
@@ -2306,9 +2306,9 @@ class ImportTask(Schadenstexte):
             foto_dateiname = ""
             film_dateiname = ""
             streckenschaden_lfdnr = 0
-            ZD = 63
-            ZB = 63
-            ZS = 63
+            ZD = None
+            ZB = None
+            ZS = None
 
             for block in blocks:
 
@@ -2370,9 +2370,9 @@ class ImportTask(Schadenstexte):
                     else:
                         foto_dateiname = None
 
-                    ZD = _get_int(_untersuchdat,"HZ206", 63)
-                    ZB = _get_int(_untersuchdat, "HZ208", 63)
-                    ZS = _get_int(_untersuchdat,"HZ207", 63)
+                    ZD = _get_int(_untersuchdat,"HZ206", None)
+                    ZB = _get_int(_untersuchdat, "HZ208", None)
+                    ZS = _get_int(_untersuchdat,"HZ207", None)
 
                     yield Untersuchdat_anschlussleitung(
                         untersuchhal=name,                                      # Hinweis: Untersuchdat_anschlussleitung = Untersuchdat_haltung

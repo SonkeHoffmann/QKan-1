@@ -4,6 +4,7 @@ from datetime import datetime
 from qkan.utils import get_logger
 from math import pi, floor, ceil
 from qkan.database.dbfunc import DBConnection
+import time
 
 from qgis.core import (
     Qgis,
@@ -209,19 +210,22 @@ class Subkans_funkt:
             pass
 
         # jh: subkans_update_objektklasse_gesamt
-        #TODO: mit MIN() arbeiten
         try:
             db.sql("""Update
                                 haltungen_substanz_bewertung
                                 SET
                                 objektklasse_gesamt =
-                                (Case
-                                 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-                                 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-                                 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-                                 Else NULL
-                                 END
-                                 );""")
+                                (
+                               SELECT MIN(wert)
+                               FROM (
+                                   SELECT objektklasse_dichtheit AS wert
+                                   UNION ALL
+                                   SELECT objektklasse_standsicherheit
+                                   UNION ALL
+                                   SELECT objektklasse_betriebssicherheit
+                               )
+                               WHERE wert IS NOT NULL
+                           );""")
             db.commit()
         except:
             pass
@@ -318,13 +322,17 @@ class Subkans_funkt:
                                             substanz_haltung_bewertung
                                             set
                                             Zustandsklasse_ges =
-                                            (Case
-                                             When Zustandsklasse_D <= Zustandsklasse_S And Zustandsklasse_D <= Zustandsklasse_B Then Zustandsklasse_D
-                                             When Zustandsklasse_S <= Zustandsklasse_D And Zustandsklasse_S <= Zustandsklasse_B Then Zustandsklasse_S
-                                             When Zustandsklasse_B <= Zustandsklasse_D And Zustandsklasse_B <= Zustandsklasse_S Then Zustandsklasse_B
-                                             Else 'Prüfen!'
-                                             END
-                                             );""")
+                                            (
+                                               SELECT MIN(wert)
+                                               FROM (
+                                                   SELECT Zustandsklasse_D AS wert
+                                                   UNION ALL
+                                                   SELECT Zustandsklasse_S
+                                                   UNION ALL
+                                                   SELECT Zustandsklasse_B
+                                               )
+                                               WHERE wert IS NOT NULL
+                                           );""")
             db1.commit()
         except:
             pass
@@ -3133,6 +3141,7 @@ class Subkans_funkt:
 
 
     def bewertung_subkans(self):
+        self.start_time = time.time()
         date = self.date + '%'
         db = self.db
         db_x = db
@@ -3415,13 +3424,17 @@ class Subkans_funkt:
                                     substanz_haltung_bewertung
                                     set
                                     Zustandsklasse_ges =
-                                    (Case
-                                     When Zustandsklasse_D <= Zustandsklasse_S And Zustandsklasse_D <= Zustandsklasse_B Then Zustandsklasse_D
-                                     When Zustandsklasse_S <= Zustandsklasse_D And Zustandsklasse_S <= Zustandsklasse_B Then Zustandsklasse_S
-                                     When Zustandsklasse_B <= Zustandsklasse_D And Zustandsklasse_B <= Zustandsklasse_S Then Zustandsklasse_B
-                                     Else 'Prüfen!'
-                                     END
-                                     );""")
+                                    (
+                                               SELECT MIN(wert)
+                                               FROM (
+                                                   SELECT Zustandsklasse_D AS wert
+                                                   UNION ALL
+                                                   SELECT Zustandsklasse_S
+                                                   UNION ALL
+                                                   SELECT Zustandsklasse_B
+                                               )
+                                               WHERE wert IS NOT NULL
+                                           );""")
             db1.commit()
         except:
             pass
@@ -5583,6 +5596,10 @@ class Subkans_funkt:
 
         #Überlagerung SOB bei Punkt und Umfangschäden werden SOB nicht überlagert
         #Streckenschäden SOB werden nicht überlagert.
+        zeit = time.time()
+        iface.messageBar().pushMessage("Error",
+                                       str(zeit),
+                                       level=Qgis.Critical)
         date = self.date + '%'
         db = self.db
         crs = self.crs
@@ -7214,6 +7231,10 @@ class Subkans_funkt:
                 db.commit()
             except:
                 pass
+        zeit = time.time()
+        iface.messageBar().pushMessage("Error",
+                                       str(zeit),
+                                       level=Qgis.Critical)
 
     def subkans(self):
         #Berechnung der Substanzklassen
@@ -7455,7 +7476,7 @@ class Subkans_funkt:
                     sbk = 1
                 elif 5>=sub_ges:
                     sbk = 0
-            if attr[6] == 5:
+            elif attr[6] == 5:
                 abn = 0
                 sbk = 5
             else:
@@ -7487,6 +7508,12 @@ class Subkans_funkt:
             db1.commit()
         except:
             pass
+
+        self.end_time = time.time()
+        zeit= self.end_time - self.start_time
+        iface.messageBar().pushMessage("Error",
+                                      str(zeit),
+                                       level=Qgis.Critical)
 
         uri = QgsDataSourceUri()
         uri.setDatabase(db.dbname)
