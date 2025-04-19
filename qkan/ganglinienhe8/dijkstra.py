@@ -167,7 +167,7 @@ def get_info(qkan_db: DBConnection, schaechte: List[str], haltungen: List[str]) 
             sohlhoeheunten=sohlhoeheunten,
             querschnitt=querschnitt,
         )
-    logger.info("Haltunginfo wurde erstellt")
+    logger.debug("Haltunginfo wurde erstellt")
 
     statement = """SELECT schnam, deckelhoehe, sohlhoehe FROM schaechte WHERE schnam IN ('{}')"""
     schselected = "', '".join(schaechte)
@@ -181,7 +181,7 @@ def get_info(qkan_db: DBConnection, schaechte: List[str], haltungen: List[str]) 
             deckelhoehe=deckelhoehe,
             sohlhoehe=sohlhoehe,
         )
-    logger.info("Schachtinfo wurde erstellt")
+    logger.debug("Schachtinfo wurde erstellt")
 
     return schacht_info, haltung_info
 
@@ -238,7 +238,7 @@ def find_route(dbname: str, auswahl: List[str], layer_type: int) -> Optional[Hal
 
         # Gewichtungen auf der Strecke von 'kvon' nach 'knach' für alle paarweisen
         # Kombinationen aus 'schachtauswahl'
-        logger.info(knotennetz)
+        logger.debug(knotennetz)
         gewicht: Dict[str, Dict[str, float]] = {
             kvon: {
                 knach: knotennetz[kvon].weight.get(knach, 0)

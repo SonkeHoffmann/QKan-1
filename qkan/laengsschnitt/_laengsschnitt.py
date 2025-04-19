@@ -1104,22 +1104,24 @@ class LaengsTask:
                 print('Autocad wird gestartet. Das kann ca. eine halbe Minute dauern...')
                 acad = win32com.client.CreateObject('AutoCAD.Application')
                 acad = win32com.client.GetActiveObject('AutoCAD.Application')  # scheint zwar doppelt,
-                # aber sonst erscheint ein Fehler
+                                                                                # aber sonst erscheint ein Fehler
                 acad.Visible = True
             #except pywintypes.error as e:
              #   print(e)
             except BaseException as e:
                 print(e)
 
-        # Prüfen, ob schon eine Datei offen ist. Falls nicht, wird eine neue Datei angelegt.
-        if acad is None:
-            iface.messageBar().pushMessage("Error", "Autocad ist nicht installiert!", level=Qgis.Critical)
-        elif acad.Documents.Count > 0:
-            doc = acad.ActiveDocument
-            print("Eine Datei ist bereits offen")
+            # Prüfen, ob schon eine Datei offen ist. Falls nicht, wird eine neue Datei angelegt.
+            if acad is None:
+                logger.warning("Das hat nicht funktioniert. AutoCAD ist wahrscheinlich nicht installiert...")
+            elif acad.Documents.Count > 0:
+                doc = acad.ActiveDocument
+                print("Eine Datei ist bereits offen")
+            else:
+                print("Eine neue Datei wird angelegt")
+                doc = acad.Documents.Add()
         else:
-            print("Eine neue Datei wird angelegt")
-            doc = acad.Documents.Add()
+            logger.warning("Es tut mir leid: AutoCAD kann nur unter Windows ausgeführt werden.")
 
         if doc is not None:
             #print("Bitte klicken Sie in der AutoCAD-Datei auf einen Punkt!")

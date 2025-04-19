@@ -4,9 +4,11 @@ from PyQt5.QtWidgets import *
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
-from qkan.database.qkan_utils import warnung
 from xml.etree.ElementTree import Element, SubElement, tostring
-import win32com.client as w3c
+try:
+    import win32com.client as w3c
+except:
+    w3c = None
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -15,7 +17,7 @@ from pathlib import Path
 from xml.dom import minidom
 
 from qkan.utils import get_logger
-logger = get_logger("QKan.strakat.import")
+logger = get_logger("QKan")
 
 from PyQt5.QtWidgets import QTableWidgetItem
 
@@ -546,22 +548,25 @@ class Infos(QKanPlugin):
                 )
 
             path = os.path.dirname(__file__)
-            xl = w3c.Dispatch("Excel.Application")
-            xl.Visible = True
-            wb = xl.Workbooks.Open(Filename=path + r"\süwvo abw-erhebungsbögen 2021_test.xlsm", ReadOnly=1)
-            #xl.Application.Run("Tabelle2.ImportXMLData")
-            xl.Application.Run("ImportXMLData")
-            #xl.Workbooks.Close(SaveChanges = 0)
-            wb.Close(SaveChanges=0)
-            xl.Application.Quit()
-            xl.Quit()
-            xl = 0
+            if w3c:
+                xl = w3c.Dispatch("Excel.Application")
+                xl.Visible = True
+                wb = xl.Workbooks.Open(Filename=path + r"\süwvo abw-erhebungsbögen 2021_test.xlsm", ReadOnly=1)
+                #xl.Application.Run("Tabelle2.ImportXMLData")
+                xl.Application.Run("ImportXMLData")
+                #xl.Workbooks.Close(SaveChanges = 0)
+                wb.Close(SaveChanges=0)
+                xl.Application.Quit()
+                xl.Quit()
+                xl = 0
 
-            # Run the dialog event loop
-            result = self.info_dlg.exec_()
+                # Run the dialog event loop
+                result = self.info_dlg.exec_()
+            else:
+                logger.warning("Es tut mir leid: Excel kann nur unter Windows ausgeführt werden.")
 
         else:
-            warnung('Hinweis', 'Es ist kein Projekt geladen!')
+            logger.warning('Hinweis: Es ist kein Projekt geladen!')
 
     def run_info_2(self) -> None:
         # Prüfen, ob ein Projekt geladen ist
