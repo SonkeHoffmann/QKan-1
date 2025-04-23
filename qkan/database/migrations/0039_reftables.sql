@@ -57,70 +57,151 @@ CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON ma
                     WHERE material = old.bezeichnung AND material IS NOT NULL;
                 END;
 
--- Tabelle Bauwerke ergänzen
-CREATE TABLE bauwerke (
+-- Trigger für neue oder geänderte Haltungen aktualisieren
+
+DROP TRIGGER IF EXISTS trig_new_hal;
+DROP TRIGGER IF EXISTS trig_mod_hal;
+
+CREATE TRIGGER IF NOT EXISTS trig_new_hal
+AFTER INSERT ON haltungen
+BEGIN
+    UPDATE haltungen 
+    SET haltnam = (
+        SELECT coalesce(new.haltnam, s.schnam || '.1') AS haltnam
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, 1))
+    )
+    WHERE pk = new.pk AND (haltnam = '' OR haltnam IS NULL);
+
+    UPDATE haltungen SET
+    (schoben, sohleoben) = (
+        SELECT
+            coalesce(new.schnam, s.schnam) AS schoben, 
+            coalesce(new.sohleoben, old.sohleoben, s.sohlhoehe) AS sohleoben
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, 1))
+    )
+    WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
+
+    UPDATE haltungen SET
+    (schunten, sohleunten) = (
+        SELECT
+            coalesce(new.schnam, s.schnam) AS schunten, 
+            coalesce(new.sohleunten, old.sohleunten, s.sohlhoehe) AS sohleunten
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, -1))
+    )
+    WHERE pk = new.pk AND (schunten = '' OR schunten IS NULL);
+END;
+
+CREATE TRIGGER IF NOT EXISTS trig_mod_hal
+AFTER UPDATE OF geom ON haltungen
+BEGIN
+    UPDATE haltungen
+    SET (schoben, sohleoben) = 
+    (   SELECT
+            coalesce(s.schnam, OLD.schoben),
+            coalesce(OLD.sohleoben, NEW.sohleoben, s.sohlhoehe)
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, 1))
+    )
+    WHERE pk = old.pk;
+
+    UPDATE haltungen
+    SET (schunten, sohleunten) = 
+    (   SELECT 
+            coalesce(s.schnam, OLD.schunten),
+            coalesce(OLD.sohleunten, NEW.sohleunten, s.sohlhoehe)
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, -1))
+    )
+    WHERE pk = old.pk;
+END;
+
+-- Tabelle Symbole ergänzen
+CREATE TABLE symbole (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
     art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
     link TEXT,
+    gruppe TEXT,
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP);
 
-SELECT AddGeometryColumn('qkan', 'bauwerke', 'geom', ?, 'POINT', 2);
+SELECT AddGeometryColumn('symbole', 'geom', {epsg}, 'POINT', 2);
 
-CREATE INDEX idx_bauwerke_geom ON qkan.bauwerke USING GIST (geom);
+SELECT CreateSpatialIndex('symbole', 'geom');
 
-CREATE TABLE bauwerke (
+CREATE TABLE symbolkatalog (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
-    art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
-    link TEXT,
-    kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP);
+    gruppe TEXT,                            /* zur Aufteilung auf verschiedene Layer */
+    kommentar TEXT);
 
-SELECT AddGeometryColumn('bauwerke', 'geom', ?, 'POINT', 2);
-
-SELECT CreateSpatialIndex('bauwerke', 'geom');
-
-CREATE TABLE qkan.bauwerksarten (
-	pkuid SERIAL PRIMARY KEY,
-	bezeichnung character varying(30),
-	kommentar character varying(255));
-
-
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (2, 'KA geplant', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (3, 'KA vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (4, 'KKA', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (5, 'MS gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (6, 'MS vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (7, 'NW Einl in Gew gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (8, 'NW Einl in Gew vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (9, 'PW gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (10, 'PW vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (11, 'RRB gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (12, 'RRB vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (13, 'RÜ gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (14, 'RÜ vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (15, 'RÜB gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (16, 'RÜB vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (17, 'SW Einl in Gew gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (18, 'SW Einl in Gew vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (19, 'SW Einl in GW gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (20, 'SW Einl in GW vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (21, 'TS gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (22, 'TS vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (23, 'NW Einl in GW gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (24, 'NW Einl in GW vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (25, 'Übergabe gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (26, 'Übergabe vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (27, 'Übernahme gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (28, 'Übernahme vorh', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (29, 'USG', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (30, 'USG fest', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (31, 'USG plan', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (32, 'VSA gepl', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (33, 'wegfallend', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (34, 'WSZ I', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (35, 'WSZ II', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (36, 'WSZ IIIa', NULL);
-INSERT INTO bauwerksarten (pkuid, bezeichnung, kommentar) VALUES (37, 'WSZ IIIb', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('KA geplant', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('KA vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('KKA', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('MS gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('MS vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('NW Einl in Gew gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('NW Einl in Gew vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('PW gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('PW vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('RRB gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('RRB vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('RÜ gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('RÜ vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('RÜB gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('RÜB vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('SW Einl in Gew gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('SW Einl in Gew vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('SW Einl in GW gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('SW Einl in GW vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('TS gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('TS vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('NW Einl in GW gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('NW Einl in GW vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Übergabe gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Übergabe vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Übernahme gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Übernahme vorh', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('USG', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('USG fest', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('USG plan', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('VSA gepl', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('wegfallend', 'ABK NRW', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Abflusslose Grube', 'Entwässerung', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Be-/Entlüftungsschacht', 'Entwässerung', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Molchschacht', 'Entwässerung', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Strassenablauf', 'Entwässerung', NULL);
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES ('Vakuumstation', 'Entwässerung', NULL);

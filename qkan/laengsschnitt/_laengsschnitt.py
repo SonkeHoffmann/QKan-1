@@ -3,8 +3,6 @@ import datetime
 import matplotlib.animation as animation
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
-# import pywintypes
 try:
     import win32com.client
     WINDOWS = True
@@ -14,11 +12,7 @@ from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from qgis.core import Qgis
 from qgis.utils import iface, spatialite_connect
-import numpy as np
-import mpl_toolkits.axes_grid1
-import matplotlib.widgets
 import gc
-
 
 from qkan.database.dbfunc import DBConnection
 from qkan.database.qkan_utils import ffloat

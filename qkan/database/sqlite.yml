@@ -56,7 +56,7 @@ AFTER INSERT ON haltungen
 BEGIN
     UPDATE haltungen 
     SET haltnam = (
-        SELECT schnam || '.1'
+        SELECT coalesce(new.haltnam, s.schnam || '.1') AS haltnam
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
@@ -69,8 +69,10 @@ BEGIN
     WHERE pk = new.pk AND (haltnam = '' OR haltnam IS NULL);
 
     UPDATE haltungen SET
-    schoben = (
-        SELECT schnam
+    (schoben, sohleoben) = (
+        SELECT
+            coalesce(new.schnam, s.schnam) AS schoben, 
+            coalesce(new.sohleoben, old.sohleoben, s.sohlhoehe) AS sohleoben
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
@@ -82,9 +84,11 @@ BEGIN
     )
     WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
 
-    UPDATE haltungen 
-    SET schunten = (
-        SELECT schnam
+    UPDATE haltungen SET
+    (schunten, sohleunten) = (
+        SELECT
+            coalesce(new.schnam, s.schnam) AS schunten, 
+            coalesce(new.sohleunten, old.sohleunten, s.sohlhoehe) AS sohleunten
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
         AND s.ROWID IN (
@@ -103,9 +107,10 @@ CREATE TRIGGER IF NOT EXISTS trig_mod_hal
 AFTER UPDATE OF geom ON haltungen
 BEGIN
     UPDATE haltungen
-    SET schoben = 
+    SET (schoben, sohleoben) = 
     (   SELECT
-            coalesce(s.schnam, OLD.schoben)
+            coalesce(s.schnam, OLD.schoben),
+            coalesce(OLD.sohleoben, NEW.sohleoben, s.sohlhoehe)
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
@@ -118,9 +123,10 @@ BEGIN
     WHERE pk = old.pk;
 
     UPDATE haltungen
-    SET schunten = 
+    SET (schunten, sohleunten) = 
     (   SELECT 
-            coalesce(s.schnam, OLD.schunten)
+            coalesce(s.schnam, OLD.schunten),
+            coalesce(OLD.sohleunten, NEW.sohleunten, s.sohlhoehe)
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
         AND s.ROWID IN (
@@ -1092,6 +1098,7 @@ CREATE TABLE symbole (
     bezeichnung TEXT,
     art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
     link TEXT,
+    gruppe TEXT,
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
 
@@ -1105,36 +1112,42 @@ database_create_symbolkatalog: "
 CREATE TABLE symbolkatalog (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
+    gruppe TEXT,                            /* zur Aufteilung auf verschiedene Layer */
     kommentar TEXT);"
 
 database_insert_symbolkatalog: "
-INSERT INTO symbolkatalog (pk, bezeichnung, kommentar) VALUES
-(1, 'KA gepl', NULL),
-(2, 'KA vorh', NULL),
-(3, 'KKA', NULL),
-(4, 'NW Einl in Gew gepl', NULL),
-(5, 'NW Einl in Gew vorh', NULL),
-(6, 'NW Einl in GW gepl', NULL),
-(7, 'NW Einl in GW vorh', NULL),
-(8, 'PW gepl', NULL),
-(9, 'PW vorh', NULL),
-(10, 'RRB gepl', NULL),
-(11, 'RRB vorh', NULL),
-(12, 'RÜ gepl', NULL),
-(13, 'RÜ vorh', NULL),
-(14, 'RÜB gepl', NULL),
-(15, 'RÜB vorh', NULL),
-(16, 'SW Einl in Gew gepl', NULL),
-(17, 'SW Einl in Gew vorh', NULL),
-(18, 'SW Einl in GW gepl', NULL),
-(19, 'SW Einl in GW vorh', NULL),
-(20, 'Übergabe gepl', NULL),
-(21, 'Übergabe vorh', NULL),
-(22, 'Übernahme gepl', NULL),
-(23, 'Übernahme vorh', NULL),
-(24, 'VSA gepl', NULL),
-(25, 'VSA vorh', NULL),
-(26, 'wegfallend', NULL);"
+INSERT INTO symbolkatalog (bezeichnung, kommentar) VALUES
+('KA gepl', 'ABK NRW', NULL),
+('KA vorh', 'ABK NRW', NULL),
+('KKA', 'ABK NRW', NULL),
+('NW Einl in Gew gepl', 'ABK NRW', NULL),
+('NW Einl in Gew vorh', 'ABK NRW', NULL),
+('NW Einl in GW gepl', 'ABK NRW', NULL),
+('NW Einl in GW vorh', 'ABK NRW', NULL),
+('PW gepl', 'ABK NRW', NULL),
+('PW vorh', 'ABK NRW', NULL),
+('RRB gepl', 'ABK NRW', NULL),
+('RRB vorh', 'ABK NRW', NULL),
+('RÜ gepl', 'ABK NRW', NULL),
+('RÜ vorh', 'ABK NRW', NULL),
+('RÜB gepl', 'ABK NRW', NULL),
+('RÜB vorh', 'ABK NRW', NULL),
+('SW Einl in Gew gepl', 'ABK NRW', NULL),
+('SW Einl in Gew vorh', 'ABK NRW', NULL),
+('SW Einl in GW gepl', 'ABK NRW', NULL),
+('SW Einl in GW vorh', 'ABK NRW', NULL),
+('Übergabe gepl', 'ABK NRW', NULL),
+('Übergabe vorh', 'ABK NRW', NULL),
+('Übernahme gepl', 'ABK NRW', NULL),
+('Übernahme vorh', 'ABK NRW', NULL),
+('VSA gepl', 'ABK NRW', NULL),
+('VSA vorh', 'ABK NRW', NULL),
+('wegfallend', 'ABK NRW', NULL),
+('Abflusslose Grube', 'Entwässerung', NULL),
+('Be-/Entlüftungsschacht', 'Entwässerung', NULL),
+('Molchschacht', 'Entwässerung', NULL),
+('Strassenablauf', 'Entwässerung', NULL),
+('Vakuumstation', 'Entwässerung', NULL);"
 
 database_createview_untersuchdat_aktuell: "
 CREATE VIEW v_untersuchdat_hal_last AS

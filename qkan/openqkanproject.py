@@ -5,18 +5,32 @@ from qgis.utils import iface, pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import get_database_QKan, warnung
+from qkan.database.qkan_utils import get_database_QKan
 from qkan.tools.application import QKanTools
 from qkan.tools.k_layersadapt import layersadapt
 from qkan.utils import get_logger
 
+logger = get_logger("QKan.openproject")
 
 def initQKanProject():
     """Update tables to actual version if necessary"""
-    try:
-        logger = get_logger("QKan.openproject")
-        logger.debug("openProjekt started\n")
+    logger.debug("openProjekt started\n")
 
+    try:
+        _ = QKan.config.database.qkan                 # nur zum Test, ob QQKan geladen ist
+    except:
+        logger.debug(f'{id(QKan)=}')
+        logger.error("QKan ist nicht aktiviert!")
+        QgsMessageLog.logMessage(
+            tag="QKan",
+            message=f"QKan ist nicht aktiviert!"
+        )
+        iface.openMessageLog()
+
+        iface.messageBar().pushMessage("QKan ist nicht aktiviert!", level=Qgis.Warning)
+        return
+
+    try:
         get_database_QKan(silent=True)
         database_name = QKan.config.database.qkan
         with DBConnection(dbname=database_name) as db_qkan:
@@ -37,7 +51,7 @@ def initQKanProject():
             message=msg,
             level=Qgis.Info,
         )
-        iface.messageBar().pushMessage("Information", msg, level=Qgis.Info)
+        QKan.instance.messageBar().pushMessage("Information", msg, level=Qgis.Info)
 
     # Anpassen der Formularpfade
     projectTemplate = os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs")

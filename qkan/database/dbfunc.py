@@ -1181,12 +1181,32 @@ class DBConnection:
 
         return result
 
-    def executefile(self, filenam):
-        """Liest eine Datei aus dem template-Verzeichnis und führt sie als SQL-Befehle aus"""
+    def executefile(self, filenam, replacefun: callable = None):
+        """Liest eine Datei aus dem template-Verzeichnis und führt sie als SQL-Befehle aus.
+        Dabei wird optional die Funktion replacefun zum Ersetzen von Variablen ausgeführt
+
+        :filenam:               Filename with SQL-script
+        :type sqlnam:           String
+
+        :replacefun:            function which replaces variables in sql script
+        :type replacefun:       function
+
+        :returns: void"""
         try:
             with open(filenam) as fr:
-                sqlfile = fr.read()
-            self.cursl.executescript(sqlfile)
+                sql_txt = fr.read()
+
+            if replacefun:
+                sqltext = replacefun(sql_txt)
+                if '{' in sqltext:
+                    logger.error_code(
+                        f'{self.__class__.__name__}: '
+                        f'Fehler in yaml-Datei: sql enthält Parameter, obwohl keine ersetzen-Funktion'
+                        f'im Aufruf geliefert wird.')
+            else:
+                sqltext = sql_txt
+
+            self.cursl.executescript(sqltext)
         except sqlite3.Error as err:
             self._disconnect()
             logger.error_code(

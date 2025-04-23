@@ -15,7 +15,7 @@ from qkan.tools.dialogs.empty_db import EmptyDBDialog
 from qkan.tools.dialogs.read_data import ReadData
 
 # Fuer einen Test mit PyCharm Workingdir auf C:\Users\...\default\python\plugins einstellen (d. h. "\test" löschen)
-class TestPlausi(QgisTest):
+class TestReadData(QgisTest):
     """Test des Moduls Plausi"""
 
     @classmethod
