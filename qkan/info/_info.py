@@ -21,7 +21,7 @@ logger = get_logger("QKan.xml.info")
 
 
 class Info:
-    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, combo, combo3, dat1, dat2, dat3, db_qkan: DBConnection):
+    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, fig_7, canv_7, fig_8, canv_8, fig_9, canv_9, fig_10, canv_10, combo, combo3, dat1, dat2, dat3, dat8, dat9, db_qkan: DBConnection):
         self.db_qkan = db_qkan
         self.anz_haltungen = 0
         self.anz_schaechte = 0
@@ -39,11 +39,21 @@ class Info:
         self.fig_5 = fig_5
         self.canv_6 = canv_6
         self.fig_6 = fig_6
+        self.canv_7 = canv_7
+        self.fig_7 = fig_7
+        self.canv_8 = canv_8
+        self.fig_8 = fig_8
+        self.canv_9 = canv_9
+        self.fig_9 = fig_9
+        self.canv_10 = canv_10
+        self.fig_10 = fig_10
         self.combo = combo
         self.combo3 = combo3
         self.dat1 = dat1
         self.dat2 = dat2
         self.dat3 = dat3
+        self.dat8 = dat8
+        self.dat9 = dat9
 
         if len(combo3)>0:
             self.abfrage_and = f"AND teilgebiet = {str(self.combo3)}"
@@ -267,6 +277,44 @@ class Info:
             new_plot.set_ylabel(ylabel)
             new_plot.set_title(title)
             new_plot.bar_label(bar_container, fmt=lambda x: f'{x :.1f} km ({x/summe*100 :.1f} %)')
+            new_plot.spines['top'].set_visible(False)
+            new_plot.spines['right'].set_visible(False)
+            #new_plot.legend(['ZK 0: sofort', 'ZK 1: kurzfristig', 'ZK 2: mittelfristig', 'ZK 3: langfristig', 'ZK 4: nachrangig', 'ZK 5: schadensfrei', 'ZK -: keine verewertbare Inspektion'], loc='upper right')
+            patch_0 = mpatches.Patch(color= 'red', label='ZK 0: sofort')
+            patch_1 = mpatches.Patch(color='orange', label='ZK 1: kurzfristig')
+            patch_2 = mpatches.Patch(color='yellow', label='ZK 2: mittelfristig')
+            patch_3 = mpatches.Patch(color='green', label='ZK 3: langfristig')
+            patch_4 = mpatches.Patch(color='skyblue', label='ZK 4: nachrangig')
+            patch_5 = mpatches.Patch(color='steelblue', label='ZK 5: schadensfrei')
+            patch_6 = mpatches.Patch(color='grey', label='ZK -: keine verewertbare Inspektion')
+            new_plot.legend(handles=[patch_0,patch_1,patch_2,patch_3,patch_4,patch_5,patch_6], fontsize=8)
+
+        elif title == 'Anzahl je Zustandsklasse':
+
+            bar_colors = {
+                '0': 'red',
+                '1': 'orange',
+                '2': 'yellow',
+                '3': 'green',
+                '4': 'skyblue',
+                '5': 'steelblue',
+                'sonstige': 'grey'
+            }
+            farben = [bar_colors[attr] for attr in labels]
+            summe = sum(values)
+
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height* 0.9])
+            bar_container = new_plot.barh(y_pos, values, color=farben, align='center')
+            new_plot.autoscale()
+            new_plot.set_yticks(y_pos)
+            new_plot.set_yticklabels(labels)
+            new_plot.invert_yaxis()
+            new_plot.set_xlabel(xlabel)
+            new_plot.set_ylabel(ylabel)
+            new_plot.set_title(title)
+            #new_plot.bar_label(bar_container, fmt=lambda x: f'{x :.1f} km ({x/summe*100 :.1f} %)')
             new_plot.spines['top'].set_visible(False)
             new_plot.spines['right'].set_visible(False)
             #new_plot.legend(['ZK 0: sofort', 'ZK 1: kurzfristig', 'ZK 2: mittelfristig', 'ZK 3: langfristig', 'ZK 4: nachrangig', 'ZK 5: schadensfrei', 'ZK -: keine verewertbare Inspektion'], loc='upper right')
@@ -705,6 +753,184 @@ class Info:
         self.canv_6.draw()
         self.fig_6.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
+        # Karteikarte 4 initialisieren HA-Leitungen 1
+        figure = self.fig_7
+        figure.clear()
+
+        gs = GridSpec(1, 2, figure=figure, wspace=0.15)
+
+        # Darstellungen Haltungen nach Baujahr
+        sql = f"""
+                            WITH liste AS (
+                                SELECT
+                                    iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
+                                    baujahr
+                                    FROM anschlussleitungen
+                                    {self.abfrage_where}
+                            )
+                            SELECT
+                                baujahr,
+                                round(sum(laenge)/1000.0 ,2) AS gesamtlaenge
+                            FROM liste
+                            GROUP BY baujahr
+                            ORDER BY baujahr
+                        """
+
+        self._barplot(
+            sql=sql,
+            figure=figure,
+            title='Baujahre',
+            ylabel='Baujahre',
+            xlabel='Gesamtlänge (km)',
+            pos=gs[1]
+        )
+
+        # TODO:Darstellung nach Tiefenlage?
+
+        # Darstellungen Haltungen nach Material
+
+        sql = f"""
+                    WITH liste AS (
+                        SELECT
+                            material,
+                            round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
+                        FROM anschlussleitungen
+                        WHERE material IS NOT NULL  {self.abfrage_and}
+                        GROUP BY material
+                    )
+                    SELECT *
+                    FROM liste
+                    WHERE gesamtlaenge > 0.01
+                    ORDER BY gesamtlaenge DESC
+                """
+
+        self._barplot(
+            sql=sql,
+            figure=figure,
+            title='Gesamtlänge je Material',
+            ylabel='Material',
+            xlabel='Gesamtlänge (km)',
+            pos=gs[0]
+        )
+
+        self.canv_7.draw()
+        self.fig_7.subplots_adjust(left=0.25, right=0.95, top=0.95, bottom=0.1, wspace=0.3, hspace=0.4)
+
+        # Karteikarte 5 initialisieren HA-LEitungen 2
+        figure = self.fig_8
+        figure.clear()
+
+        gs = GridSpec(1, 3, figure=figure, wspace=0.25)
+        # Darstellungen Haltungen nach Profiltyp
+
+        # Darstellungen Haltungen nach Durchmesser
+
+        sql = f"""
+                    WITH liste AS (
+                        SELECT
+                            iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(hoehe/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
+                            iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
+                        FROM anschlussleitungen {self.abfrage_where}
+                    )
+                    SELECT
+                        printf('bis %d', Hoehe) AS t_hoehe,
+                        round(sum(laenge)/1000.,2) AS gesamtlaenge
+                    FROM liste
+                    GROUP BY Hoehe
+                    ORDER BY Hoehe
+                """
+
+        self._barplot(
+            sql=sql,
+            figure=figure,
+            title='Gesamtlänge je Durchmesser',
+            ylabel='Durchmesser bis mm',
+            xlabel='Gesamtlänge (km)',
+            pos=gs[0]
+        )
+
+        # Darstellungen Haltungen nach Profiltyp
+
+        sql = f"""
+                    WITH liste AS (
+                        SELECT
+                            profilnam,
+                            round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
+                        FROM anschlussleitungen
+                        WHERE profilnam IS NOT NULL {self.abfrage_and}
+                        GROUP BY profilnam
+                    )
+                    SELECT *
+                    FROM liste
+                    WHERE gesamtlaenge > 0.01
+                    ORDER BY gesamtlaenge DESC
+                """
+
+        self._barplot(
+            sql=sql,
+            figure=figure,
+            title='Gesamtlänge je Profil',
+            ylabel='Profil',
+            xlabel='Gesamtlänge (km)',
+            pos=gs[1]
+        )
+
+        # Darstellungen Haltungen nach Länge
+        sql = f"""
+                                WITH liste AS (
+                                SELECT
+                                    laenge,
+                                    ROUND(SUM(IIF(COALESCE(laenge, 0) = 0, GLength(geom), laenge)), 2) AS gesamtlaenge
+                                FROM anschlussleitungen
+                                WHERE laenge IS NOT NULL {self.abfrage_and}
+                                GROUP BY laenge
+                            ),
+                            intervalle AS (
+                                SELECT
+                                    laenge,
+                                    gesamtlaenge,
+                                    CASE
+                                        WHEN laenge < 10 THEN '0-10'
+                                        WHEN laenge BETWEEN 10 AND 20 THEN '10-20'
+                                        WHEN laenge BETWEEN 20 AND 30 THEN '20-30'
+                                        WHEN laenge BETWEEN 30 AND 40 THEN '30-40'
+                                        WHEN laenge BETWEEN 40 AND 50 THEN '40-50'
+                                        WHEN laenge BETWEEN 50 AND 60 THEN '50-60'
+                                        WHEN laenge BETWEEN 60 AND 70 THEN '60-70'
+                                        ELSE '70+'
+                                    END AS intervall
+                                FROM liste
+                            )
+                            SELECT 
+                                intervall,
+                                ROUND(SUM(gesamtlaenge), 2)/1000 AS gesamtlaenge_km
+                            FROM intervalle
+                            GROUP BY intervall
+                            ORDER BY 
+                                CASE 
+                                    WHEN intervall = '0-10' THEN 1
+                                    WHEN intervall = '10-20' THEN 2
+                                    WHEN intervall = '20-30' THEN 3
+                                    WHEN intervall = '30-40' THEN 4
+                                    WHEN intervall = '40-50' THEN 5
+                                    WHEN intervall = '50-60' THEN 6
+                                    WHEN intervall = '60-70' THEN 7
+                                    ELSE 8
+                                END;
+                        """
+
+        self._barplot(
+            sql=sql,
+            figure=figure,
+            title='Verteilung der Haltungslängen',
+            ylabel='Haltungslänge (m)',
+            xlabel='Gesamtlänge (km)',
+            pos=gs[2]
+        )
+
+        self.canv_8.draw()
+        self.fig_8.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
+
         #Haltungen nach Zustandsklasse
         # Karteikarte 3 initialisieren
         figure_3 = self.fig_3
@@ -1079,43 +1305,492 @@ class Info:
                 figure_3.clf()
         figure_3.tight_layout()
 
-        # #Zustandsdaten Schächte
-        # l_bezeich = []
-        # sql = """select count() from schaechte_untersucht"""
-        #
-        # if not self.db_qkan.sql(sql):
-        #     return
-        #
-        # sql = """select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from schaechte_untersucht """
-        #
-        # if not self.db_qkan.sql(sql):
-        #     return
-        #
-        # for i in self.db_qkan.fetchall():
-        #     i = str(i[0])
-        #     l_bezeich.append(i)
-        #
-        # data = {k: None for k in l_bezeich}
-        #
-        # for i in data.keys():
-        #     if i != 'None':
-        #         sql = f"""select count() from schaechte_untersucht WHERE MIN(max_ZD,max_ZS,max_ZB) = {i}"""
-        #
-        #         if not self.db_qkan.sql(sql):
-        #             return
-        #
-        #         anz = self.db_qkan.fetchall()[0][0]
-        #
-        #         data[i] = anz
-        # if 'None' in data.keys():
-        #     del data['None']
-        # names = list(data.keys())
-        # values = list(data.values())
-        # # Plot
-        # new_plot_2 = figure_3.add_subplot(gs[3])
-        # new_plot_2.pie(values, labels=names, shadow=self.shadow, wedgeprops=self.abstand, autopct=lambda pct: self.func(pct, values))
-        # new_plot_2.set_title('Zustandsklasse Schächte')
-        # self.canv_3.draw()
+        #Schächte nach Zustandsklasse
+        # Karteikarte 9 initialisieren
+        figure_10 = self.fig_10
+        figure_10.clear()
+
+        # testen ob tabelle vorhanden:
+        if self.combo == 'Originale Bewertung':
+            gs = GridSpec(2, 2, figure=figure_10, wspace=0.15, width_ratios=[2, 1])
+
+            sql = f"""
+                        WITH liste AS (
+                                            SELECT
+                                                CASE
+                                                 WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
+                                                    WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                    ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
+                                                END AS Zustandszahl,
+                                                COUNT(*) AS anzahl
+                                            FROM schaechte_untersucht  
+                                            LEFT JOIN schaechte h ON schaechte_untersucht.schnam = h.schnam
+                                            {self.abfrage_where}
+                                            GROUP BY CASE
+                                            WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
+                                                WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                ELSE MIN(max_ZD, max_ZS, max_ZB)
+                                            END
+                                        )
+                                        SELECT *
+                                        FROM liste
+                                        WHERE Zustandszahl = 'sonstige'
+                                        ORDER BY Zustandszahl
+                    """
+
+            self._barplot(
+                sql=sql,
+                figure=figure_10,
+                title='Anzahl je Zustandsklasse',
+                ylabel='Zustandsklasse',
+                xlabel='Anzahl',
+                pos=gs[0]
+            )
+
+            # Schäden
+            # Karteikarte 3 initialisieren
+
+            sql = """
+                                 select kuerzel,count(*) from untersuchdat_schacht group by kuerzel
+                            """
+
+            self._barplot(
+                sql=sql,
+                figure=figure_10,
+                title='Anzahl der Schäden nach Schadenskürzel',
+                ylabel='Art',
+                xlabel='Anzahl',
+                pos=gs[2]
+            )
+
+            # plt.figure(figure_3.number)
+            new_plot_2 = figure_10.add_subplot(gs[1])
+            l_bezeich = []
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from schaechte_untersucht LEFT JOIN schaechte h ON h.schnam = schaechte_untersucht.schnam {self.abfrage_where}"""
+
+            if not self.db_qkan.sql(sql):
+                return
+
+            for i in self.db_qkan.fetchall():
+                i1 = str(i[0])
+                l_bezeich.append(i1)
+
+            data = {k: None for k in l_bezeich}
+
+            for i in data.keys():
+                if i not in ['None', 63, '63']:
+                    sql = f"""select count(*) from schaechte_untersucht LEFT JOIN schaechte h ON h.schnam = schaechte_untersucht.schnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
+
+                    if not self.db_qkan.sql(sql):
+                        return
+
+                    anz = self.db_qkan.fetchall()[0][0]
+
+                    data[i] = anz
+
+            if 'None' in data.keys():
+                del data['None']
+            if '63' in data.keys():
+                del data['63']
+            names = list(data.keys())
+            values = list(data.values())
+            bar_colors = {
+                '0': 'red',
+                '1': 'orange',
+                '2': 'yellow',
+                '3': 'green',
+                '4': 'skyblue',
+                '5': 'steelblue',
+                'sonstige': 'grey'
+            }
+            farben = [bar_colors[attr] for attr in names]
+
+            # Plot
+            wedges, texts, autotexts = new_plot_2.pie(values, labels=None, shadow=self.shadow, wedgeprops=self.abstand,
+                                                      colors=farben, pctdistance=1.2,
+                                                      autopct=lambda pct: self.func(pct, values))
+            for autotext in autotexts:
+                autotext.set_color('black')
+                autotext.set_size(10)
+
+                # Innere Labels (Segmentnamen) nach außen
+            for wedge, label in zip(wedges, names):
+                angle = (wedge.theta2 + wedge.theta1) / 2  # Winkel der Segmente berechnen
+                x = 0.6 * wedge.r * cos(radians(angle))  # x-Position außen (mit math.cos)
+                y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
+                new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
+
+            new_plot_2.set_title('Zustandsklassenverteilung Schächte')
+            self.canv_10.draw()
+            self.fig_10.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
+
+        elif self.combo == 'Automatisierte Bewertung':
+            sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='schaechte_untersucht_bewertung'
+                                        """
+            if not self.db_qkan.sql(sql):
+                return
+            liste = self.db_qkan.fetchall()
+
+            if liste != []:
+                gs = GridSpec(2, 2, figure=figure_10, wspace=0.15, width_ratios=[2, 1])
+
+                sql = f"""
+                                        WITH liste AS (
+                                            SELECT
+                                                CASE
+                                                WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
+                                                    WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                    ELSE CAST(objektklasse_gesamt AS TEXT)
+                                                END AS Zustandszahl,
+                                                COUNT(*) AS anzahl
+                                            FROM schaechte_untersucht_bewertung  
+                                            LEFT JOIN schaechte h ON schaechte_untersucht_bewertung.schnam = h.schnam
+                                            {self.abfrage_where}
+                                            GROUP BY CASE
+                                                WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
+                                                WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                ELSE objektklasse_gesamt
+                                            END
+                                        )
+                                        SELECT *
+                                        FROM liste
+                                        WHERE Zustandszahl = 'sonstige'
+                                        ORDER BY Zustandszahl
+                                    """
+
+                self._barplot(
+                    sql=sql,
+                    figure=figure_10,
+                    title='Anzahl je Zustandsklasse',
+                    ylabel='Zustandsklasse',
+                    xlabel='Anzahl',
+                    pos=gs[0]
+                )
+
+                sql = f"""
+                                                 select kuerzel,count(*) from untersuchdat_schacht_bewertung LEFT JOIN schaechte h ON h.schnam = untersuchdat_schacht_bewertung.untersuchsch {self.abfrage_where} group by kuerzel
+                                            """
+
+                self._barplot(
+                    sql=sql,
+                    figure=figure_10,
+                    title='Anzahl der Schäden nach Schadenskürzel',
+                    ylabel='Art',
+                    xlabel='Anzahl',
+                    pos=gs[2]
+                )
+
+                # plt.figure(figure_3.number)
+                new_plot_2 = figure_10.add_subplot(gs[1])
+                l_bezeich = []
+                sql = f"""select DISTINCT objektklasse_gesamt from schaechte_untersucht_bewertung LEFT JOIN schaechte h ON h.schnam = untersuchdat_schacht_bewertung.untersuchsch {self.abfrage_where}"""
+
+                if not self.db_qkan.sql(sql):
+                    return
+
+                for i in self.db_qkan.fetchall():
+                    i1 = str(i[0])
+                    l_bezeich.append(i1)
+
+                data = {k: None for k in l_bezeich}
+
+                for i in data.keys():
+                    if i not in ['None', 63]:
+                        sql = f"""select count(*) from schaechte_untersucht_bewertung LEFT JOIN schaechte h ON h.schnam = untersuchdat_schacht_bewertung.untersuchsch WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
+
+                        if not self.db_qkan.sql(sql):
+                            return
+
+                        anz = self.db_qkan.fetchall()[0][0]
+
+                        data[i] = anz
+
+                if 'None' in data.keys():
+                    del data['None']
+                names = list(data.keys())
+                values = list(data.values())
+                bar_colors = {
+                    '0': 'red',
+                    '1': 'orange',
+                    '2': 'yellow',
+                    '3': 'green',
+                    '4': 'skyblue',
+                    '5': 'steelblue',
+                    'sonstige': 'grey'
+                }
+                farben = [bar_colors[attr] for attr in names]
+                # Plot
+                wedges, texts, autotexts = new_plot_2.pie(values, labels=None, shadow=self.shadow,
+                                                          wedgeprops=self.abstand, colors=farben, pctdistance=1.2,
+                                                          autopct=lambda pct: self.func(pct, values))
+                for autotext in autotexts:
+                    autotext.set_color('black')
+                    autotext.set_size(10)
+
+                    # Innere Labels (Segmentnamen) nach außen
+                for wedge, label in zip(wedges, names):
+                    angle = (wedge.theta2 + wedge.theta1) / 2  # Winkel der Segmente berechnen
+                    x = 0.6 * wedge.r * cos(radians(angle))  # x-Position außen (mit math.cos)
+                    y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
+                    new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
+
+                new_plot_2.set_title('Zustandsklassenverteilung Schächte')
+                self.canv_10.draw()
+                self.fig_10.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
+
+            else:
+                figure_10.clf()
+
+        # Anschlussleitugnen nach Zustandsklasse
+        # Karteikarte 8 initialisieren
+        figure_9 = self.fig_9
+        figure_9.clear()
+
+        # testen ob tabelle vorhanden:
+        if self.combo == 'Originale Bewertung':
+            gs = GridSpec(2, 2, figure=figure_9, wspace=0.15, width_ratios=[2, 1])
+
+            sql = f"""
+                        WITH liste AS (
+                                            SELECT
+                                                CASE
+                                                 WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
+                                                    WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                    ELSE CAST(MIN(max_ZD, max_ZS, max_ZB) AS TEXT)
+                                                END AS Zustandszahl,
+                                                COALESCE(ROUND(SUM(
+                                                    CASE 
+                                                        WHEN COALESCE(anschlussleitungen_untersucht.laenge, 0) = 0 THEN GLength(anschlussleitungen_untersucht.geom)
+                                                        ELSE anschlussleitungen_untersucht.laenge
+                                                    END
+                                                ) / 1000.0, 2),0) AS gesamtlaenge,
+                                                COUNT(*) AS anzahl
+                                            FROM anschlussleitungen_untersucht  
+                                            LEFT JOIN anschlussleitungen h ON anschlussleitungen_untersucht.leitnam = h.leitnam
+                                            {self.abfrage_where}
+                                            GROUP BY CASE
+                                            WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
+                                                WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                ELSE MIN(max_ZD, max_ZS, max_ZB)
+                                            END
+                                        )
+                                        SELECT *
+                                        FROM liste
+                                        WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
+                                        ORDER BY Zustandszahl
+                    """
+
+            self._barplot(
+                sql=sql,
+                figure=figure_9,
+                title='Gesamtlänge je Zustandsklasse',
+                ylabel='Zustandsklasse',
+                xlabel='Gesamtlänge (km)',
+                pos=gs[0]
+            )
+
+            # Schäden
+            # Karteikarte 3 initialisieren
+
+            sql = """
+                                 select kuerzel,count(*) from untersuchdat_anschlussleitung group by kuerzel
+                            """
+
+            self._barplot(
+                sql=sql,
+                figure=figure_9,
+                title='Anzahl der Schäden nach Schadenskürzel',
+                ylabel='Art',
+                xlabel='Anzahl',
+                pos=gs[2]
+            )
+
+            # plt.figure(figure_3.number)
+            new_plot_2 = figure_9.add_subplot(gs[1])
+            l_bezeich = []
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from anschlussleitungen_untersucht LEFT JOIN anschlussleitungen h ON h.leitnam = anschlussleitungen_untersucht.leitnam {self.abfrage_where}"""
+
+            if not self.db_qkan.sql(sql):
+                return
+
+            for i in self.db_qkan.fetchall():
+                i1 = str(i[0])
+                l_bezeich.append(i1)
+
+            data = {k: None for k in l_bezeich}
+
+            for i in data.keys():
+                if i not in ['None', 63, '63']:
+                    sql = f"""select count(*) from anschlussleitung_untersucht LEFT JOIN anschlussleitungen h ON h.leitnam = anschlussleitungen_untersucht.leitnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
+
+                    if not self.db_qkan.sql(sql):
+                        return
+
+                    anz = self.db_qkan.fetchall()[0][0]
+
+                    data[i] = anz
+
+            if 'None' in data.keys():
+                del data['None']
+            if '63' in data.keys():
+                del data['63']
+            names = list(data.keys())
+            values = list(data.values())
+            bar_colors = {
+                '0': 'red',
+                '1': 'orange',
+                '2': 'yellow',
+                '3': 'green',
+                '4': 'skyblue',
+                '5': 'steelblue',
+                'sonstige': 'grey'
+            }
+            farben = [bar_colors[attr] for attr in names]
+
+            # Plot
+            wedges, texts, autotexts = new_plot_2.pie(values, labels=None, shadow=self.shadow,
+                                                      wedgeprops=self.abstand,
+                                                      colors=farben, pctdistance=1.2,
+                                                      autopct=lambda pct: self.func(pct, values))
+            for autotext in autotexts:
+                autotext.set_color('black')
+                autotext.set_size(10)
+
+                # Innere Labels (Segmentnamen) nach außen
+            for wedge, label in zip(wedges, names):
+                angle = (wedge.theta2 + wedge.theta1) / 2  # Winkel der Segmente berechnen
+                x = 0.6 * wedge.r * cos(radians(angle))  # x-Position außen (mit math.cos)
+                y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
+                new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
+
+            new_plot_2.set_title('Zustandsklassenverteilung HA-Leitungen')
+            self.canv_10.draw()
+            self.fig_10.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
+
+        elif self.combo == 'Automatisierte Bewertung':
+            sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen_untersucht_bewertung'
+                                        """
+            if not self.db_qkan.sql(sql):
+                return
+            liste = self.db_qkan.fetchall()
+
+            if liste != []:
+                gs = GridSpec(2, 2, figure=figure_9, wspace=0.15, width_ratios=[2, 1])
+
+                sql = f"""
+                                        WITH liste AS (
+                                            SELECT
+                                                CASE
+                                                WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
+                                                    WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                    ELSE CAST(objektklasse_gesamt AS TEXT)
+                                                END AS Zustandszahl,
+                                                COALESCE(ROUND(SUM(
+                                                    CASE 
+                                                        WHEN COALESCE(anschlussleitungen_untersucht_bewertung.laenge, 0) = 0 THEN GLength(schaechte_untersucht.geom)
+                                                        ELSE anschlussleitungen_untersucht_bewertung.laenge
+                                                    END
+                                                ) / 1000.0, 2),0) AS gesamtlaenge,
+                                                COUNT(*) AS anzahl
+                                            FROM anschlussleitungen_untersucht_bewertung  
+                                            LEFT JOIN ansclhussleitungen h ON anschlussleitungen_untersucht_bewertung.leitnam = h.leitnam
+                                            {self.abfrage_where}
+                                            GROUP BY CASE
+                                                WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
+                                                WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
+                                                ELSE objektklasse_gesamt
+                                            END
+                                        )
+                                        SELECT *
+                                        FROM liste
+                                        WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
+                                        ORDER BY Zustandszahl
+                                    """
+
+                self._barplot(
+                    sql=sql,
+                    figure=figure_9,
+                    title='Gesamtlänge je Zustandsklasse',
+                    ylabel='Zustandsklasse',
+                    xlabel='Gesamtlänge (km)',
+                    pos=gs[0]
+                )
+
+                sql = f"""
+                                                 select kuerzel,count(*) from untersuchdat_anschlussleitungen_bewertung LEFT JOIN anschlussleitungen h ON h.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where} group by kuerzel
+                                            """
+
+                self._barplot(
+                    sql=sql,
+                    figure=figure_9,
+                    title='Anzahl der Schäden nach Schadenskürzel',
+                    ylabel='Art',
+                    xlabel='Anzahl',
+                    pos=gs[2]
+                )
+
+                # plt.figure(figure_3.number)
+                new_plot_2 = figure_9.add_subplot(gs[1])
+                l_bezeich = []
+                sql = f"""select DISTINCT objektklasse_gesamt from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen h ON h.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where}"""
+
+                if not self.db_qkan.sql(sql):
+                    return
+
+                for i in self.db_qkan.fetchall():
+                    i1 = str(i[0])
+                    l_bezeich.append(i1)
+
+                data = {k: None for k in l_bezeich}
+
+                for i in data.keys():
+                    if i not in ['None', 63]:
+                        sql = f"""select count(*) from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen h ON h.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
+
+                        if not self.db_qkan.sql(sql):
+                            return
+
+                        anz = self.db_qkan.fetchall()[0][0]
+
+                        data[i] = anz
+
+                if 'None' in data.keys():
+                    del data['None']
+                names = list(data.keys())
+                values = list(data.values())
+                bar_colors = {
+                    '0': 'red',
+                    '1': 'orange',
+                    '2': 'yellow',
+                    '3': 'green',
+                    '4': 'skyblue',
+                    '5': 'steelblue',
+                    'sonstige': 'grey'
+                }
+                farben = [bar_colors[attr] for attr in names]
+                # Plot
+                wedges, texts, autotexts = new_plot_2.pie(values, labels=None, shadow=self.shadow,
+                                                          wedgeprops=self.abstand, colors=farben,
+                                                          pctdistance=1.2,
+                                                          autopct=lambda pct: self.func(pct, values))
+                for autotext in autotexts:
+                    autotext.set_color('black')
+                    autotext.set_size(10)
+
+                    # Innere Labels (Segmentnamen) nach außen
+                for wedge, label in zip(wedges, names):
+                    angle = (wedge.theta2 + wedge.theta1) / 2  # Winkel der Segmente berechnen
+                    x = 0.6 * wedge.r * cos(radians(angle))  # x-Position außen (mit math.cos)
+                    y = 0.6 * wedge.r * sin(radians(angle))  # y-Position außen (mit math.sin)
+                    new_plot_2.text(x, y, label, ha='center', va='center', fontsize=12, color='black')
+
+                new_plot_2.set_title('Zustandsklassenverteilung HA-Leitungen')
+                self.canv_9.draw()
+                self.fig_9.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
+
+            else:
+                figure_9.clf()
+
 
 
         # Darstellung Schächte nach Entwässerungsart
