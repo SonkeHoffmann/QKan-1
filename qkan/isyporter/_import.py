@@ -54,9 +54,9 @@ class Schacht_untersucht(ClassObject):
     bewertungsart: str = ""
     bewertungstag: str = ""
     datenart: str = ""
-    max_ZD: int = 63
-    max_ZB: int = 63
-    max_ZS: int = 63
+    max_ZD: int = None
+    max_ZB: int = None
+    max_ZS: int = None
     geop: QByteArray = None
     xsch: float = 0.0
     ysch: float = 0.0
@@ -83,9 +83,9 @@ class Untersuchdat_schacht(ClassObject):
     ordner: str = ""
     film_dateiname: str = ""
     ordner_video: str = ""
-    ZD: int = 63
-    ZB: int = 63
-    ZS: int = 63
+    ZD: int = None
+    ZB: int = None
+    ZS: int = None
 
 class Haltung(ClassObject):
     haltnam: str = ""
@@ -131,9 +131,9 @@ class Haltung_untersucht(ClassObject):
     bewertungsart: str = ""
     bewertungstag: str = ""
     datenart: str = ""
-    max_ZD: int = 63
-    max_ZB: int = 63
-    max_ZS: int = 63
+    max_ZD: int = None
+    max_ZB: int = None
+    max_ZS: int = None
     geom: QByteArray = None
     xschob: float = 0.0
     yschob: float = 0.0
@@ -165,9 +165,9 @@ class Untersuchdat_haltung(ClassObject):
     bandnr: int = 0
     ordner_bild: str = ""
     ordner_video: str = ""
-    ZD: int = 63
-    ZB: int = 63
-    ZS: int = 63
+    ZD: int = None
+    ZB: int = None
+    ZS: int = None
     geom: QByteArray = None
     xschob: float = 0.0
     yschob: float = 0.0

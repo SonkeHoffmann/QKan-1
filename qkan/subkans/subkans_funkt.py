@@ -41,8 +41,8 @@ class Subkans_funkt:
             self.bewertung_dwa_neu_haltung()
 
         if check_cb['cb3']:
-            self.bewertung_subkans()
-            self.schadens_ueberlagerung()
+            #self.bewertung_subkans()
+            #self.schadens_ueberlagerung()
             self.subkans()
 
     # jh: besser round(n, decimals), weil round_up_down bei negativen Zahlen falsch rundet...
@@ -3141,7 +3141,6 @@ class Subkans_funkt:
 
 
     def bewertung_subkans(self):
-        self.start_time = time.time()
         date = self.date + '%'
         db = self.db
         db_x = db
@@ -3153,7 +3152,7 @@ class Subkans_funkt:
         #curs1 = db1.cursl()
 
         # nach SubKans
-
+        logger.debug(f'Start der Zuordnung von Schadensart und Schadensauspraegung: {datetime.now()}')
         data = db
         #db = spatialite_connect(data)
         #curs = db.cursor()
@@ -3358,7 +3357,7 @@ class Subkans_funkt:
         db1 = self.db
         #curs1 = db1.cursl()
 
-        logger.debug(f'Start_Bewertung_Haltungen.liste: {datetime.now()}')
+
         # nach DWA
 
         sql = """CREATE TABLE IF NOT EXISTS substanz_haltung_bewertung AS 
@@ -5587,6 +5586,7 @@ class Subkans_funkt:
 
 
         QgsProject.instance().addMapLayer(vlayer)
+        logger.debug(f'Ende der Zuordnung von Schadensart und Schadensauspraegung: {datetime.now()}')
 
 
     def schadens_ueberlagerung(self):
@@ -5596,10 +5596,6 @@ class Subkans_funkt:
 
         #Überlagerung SOB bei Punkt und Umfangschäden werden SOB nicht überlagert
         #Streckenschäden SOB werden nicht überlagert.
-        zeit = time.time()
-        iface.messageBar().pushMessage("Error",
-                                       str(zeit),
-                                       level=Qgis.Critical)
         date = self.date + '%'
         db = self.db
         crs = self.crs
@@ -5615,7 +5611,7 @@ class Subkans_funkt:
         # db = spatialite_connect(db_x)
         # curs = db.cursor()
 
-        logger.debug(f'Start_Bewertung_Haltungen.liste: {datetime.now()}')
+        logger.debug(f'Start der SChadensueberlagerung: {datetime.now()}')
         # nach DWA
 
         try:
@@ -5886,11 +5882,11 @@ class Subkans_funkt:
 
             for attr in db.fetchall():
 
-                sl = float(attr[28])
+                sl = attr[28]
 
                 sg = 0
                 kg = 0
-                stg = 0
+                #stg = 0
 
                 # Klassengewichte
                 if int(attr[27]) == 0:
@@ -5927,7 +5923,7 @@ class Subkans_funkt:
                         if sg < (8 * kg * 0.3):
 
                             stg_neu = (8 * kg * 0.3) / sg
-                            sg = sl * stg_neu * kg
+                            sg = float(sl) * stg_neu * kg
                             stg = stg_neu
 
                 sql = """UPDATE substanz_haltung_bewertung SET Startgewicht = ? WHERE substanz_haltung_bewertung.pk = ?"""
@@ -7231,10 +7227,7 @@ class Subkans_funkt:
                 db.commit()
             except:
                 pass
-        zeit = time.time()
-        iface.messageBar().pushMessage("Error",
-                                       str(zeit),
-                                       level=Qgis.Critical)
+            logger.debug(f'Ende der Schadensueberlagerung: {datetime.now()}')
 
     def subkans(self):
         #Berechnung der Substanzklassen
@@ -7387,7 +7380,7 @@ class Subkans_funkt:
 
         for attr in db1.fetchall():
 
-            sl = float(attr[28])
+            sl = attr[28]
             # iface.messageBar().pushMessage("Error",
             #                                str(sl),
             #                                level=Qgis.Critical)
@@ -7509,11 +7502,8 @@ class Subkans_funkt:
         except:
             pass
 
-        self.end_time = time.time()
-        zeit= self.end_time - self.start_time
-        iface.messageBar().pushMessage("Error",
-                                      str(zeit),
-                                       level=Qgis.Critical)
+        logger.debug(f'Ende der Substanzklassifizierung: {datetime.now()}')
+
 
         uri = QgsDataSourceUri()
         uri.setDatabase(db.dbname)
