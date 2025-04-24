@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>380</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>500</width>
-    <height>380</height>
+    <height>400</height>
    </size>
   </property>
   <property name="font">
@@ -24,11 +24,15 @@
   <property name="windowTitle">
    <string>QKan-Projektdatei übertragen</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>330</y>
+     <y>350</y>
      <width>451</width>
      <height>32</height>
     </rect>
@@ -58,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>230</y>
+     <y>250</y>
      <width>451</width>
      <height>81</height>
     </rect>
@@ -165,7 +169,7 @@
      <x>20</x>
      <y>20</y>
      <width>451</width>
-     <height>81</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="font">
@@ -188,6 +192,33 @@
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <widget class="QCheckBox" name="cb_qkanDBUpdate">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>321</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Struktur der QKan-Datenbank wird auf den aktuellen Stand angepasst. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>Struktur der QKan-Datenbank wird auf den aktuellen Stand angepasst.</string>
+    </property>
+    <property name="text">
+     <string>QKan-Datenbank aktualisieren, falls ältere Version</string>
+    </property>
+   </widget>
    <widget class="QLineEdit" name="tf_qkanDB">
     <property name="geometry">
      <rect>
@@ -247,7 +278,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>110</y>
+     <y>130</y>
      <width>451</width>
      <height>111</height>
     </rect>

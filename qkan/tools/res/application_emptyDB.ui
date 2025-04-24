@@ -24,6 +24,10 @@
   <property name="windowTitle">
    <string>Neue QKan-Datenbank anlegen</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>

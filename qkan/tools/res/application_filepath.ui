@@ -24,6 +24,10 @@
   <property name="windowTitle">
    <string>Dateipfad</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QCheckBox" name="checkBox">

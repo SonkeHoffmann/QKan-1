@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Zustandsklassen</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QScrollArea" name="scrollArea">

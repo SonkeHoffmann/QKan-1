@@ -24,6 +24,10 @@
   <property name="windowTitle">
    <string>Export nach Hystem-Extran</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <property name="toolTip">
    <string>Export der aktuell geladenen Kanaldaten in eine Mike+-Datenbank</string>
   </property>

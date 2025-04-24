@@ -27,6 +27,10 @@
   <property name="windowTitle">
    <string>Plausibilitätsprüfungen</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
@@ -93,7 +97,7 @@
     </font>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Blau hinterlegt = Auswahl für die Plausibilitätsabfragen. Ergebnisse siehe Layer &amp;quot;Fehlerliste&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auswahl des Themas für die Plausibilitätsabfragen. Ergebnisse siehe Layer &amp;quot;Fehlerliste&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="statusTip">
     <string extracomment="Auswahl der zu bearbeitenden Teilgebiete. Alle auswählen mit [Strg]+A">Auswahl der Plausibilitätsabfragen</string>

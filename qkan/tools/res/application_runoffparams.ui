@@ -24,6 +24,10 @@
   <property name="windowTitle">
    <string>Berechnung der Oberflächenabflussparameter</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <property name="toolTip">
    <string>Export der aktuell geladenen Kanaldaten in eine DYNA-Datei</string>
   </property>
