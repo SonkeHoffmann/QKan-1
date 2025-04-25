@@ -128,10 +128,18 @@ class ResultsTask:
                 logger.debug(f"(2) uri.database(): {uri.database()}")
                 vlayer = QgsVectorLayer(uri.uri(), "Überstau Schächte", "spatialite")
 
-                root = project.layerTreeRoot()
-                group = root.addGroup("Ergebnisse")
-                project.addMapLayer(vlayer, False)
-                group.addLayer(vlayer)
+                #root = project.layerTreeRoot()
+                #group = root.addGroup("Ergebnisse")
+                #project.addMapLayer(vlayer, False)
+                #group.addLayer(vlayer)
+
+                group = 'Ergebnisse'
+                layersRoot = QgsProject.instance().layerTreeRoot()
+                QgsProject.instance().addMapLayer(vlayer, False)
+                atcGroup = layersRoot.findGroup(group)
+                if atcGroup is None:
+                    atcGroup = layersRoot.addGroup(group)
+                atcGroup.addLayer(vlayer)
 
                 # Stilvorlage nach Benutzerwahl laden
                 templatepath = os.path.join(pluginDirectory("qkan"), "templates")

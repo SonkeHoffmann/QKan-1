@@ -3136,7 +3136,14 @@ class Subkans_funkt:
 
         x = os.path.dirname(os.path.abspath(__file__))
         vlayer.loadNamedStyle(x + '/substanz_haltung_bewertung_dwa.qml')
-        QgsProject.instance().addMapLayer(vlayer)
+        #QgsProject.instance().addMapLayer(vlayer)
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
 
 
 
@@ -5585,7 +5592,14 @@ class Subkans_funkt:
             pass
 
 
-        QgsProject.instance().addMapLayer(vlayer)
+        #QgsProject.instance().addMapLayer(vlayer)
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
         logger.debug(f'Ende der Zuordnung von Schadensart und Schadensauspraegung: {datetime.now()}')
 
 
@@ -7521,4 +7535,11 @@ class Subkans_funkt:
 
         x = os.path.dirname(os.path.abspath(__file__))
         vlayer.loadNamedStyle(x + '/haltungen_subkans.qml')
-        QgsProject.instance().addMapLayer(vlayer)
+        #QgsProject.instance().addMapLayer(vlayer)
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
