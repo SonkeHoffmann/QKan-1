@@ -43,7 +43,6 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     pb_openLogfile: QPushButton
     pb_openOptionsfile: QPushButton
     pb_selectLogeditor: QPushButton
-    pb_panoramoplayer: QPushButton
 
     qsw_epsg: QgsProjectionSelectionWidget
 
@@ -74,7 +73,6 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         self.pb_openLogfile.clicked.connect(self.click_open_log)
         self.pb_openOptionsfile.clicked.connect(self.click_open_settings)
         self.pb_selectLogeditor.clicked.connect(self.select_log_editor)
-        self.pb_panoramoplayer.clicked.connect(self.select_panoramo)
         # self.rb_itwh.toggled.connect(self.dlgro_activatedyna)
         self.tf_fangradius.textChanged.connect(self.changed_tf_fangradius)
         self.tf_abstand_zustandstexte.textChanged.connect(self.changed_tf_abstand_zustandstexte)
@@ -153,21 +151,6 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             # Textfeld wieder deaktivieren
             self.tf_logeditor.setEnabled(False)
 
-    def select_panoramo(self) -> None:
-        """Panoramo Viewer wählen"""
-
-        self.tf_panoramoplayer.setEnabled(True)
-
-        # noinspection PyArgumentList,PyCallByClass
-        filename, __ = QFileDialog.getOpenFileName(
-            self, "PANORAMO Viewer wählen", "c:/", "*.exe"
-        )
-        QKan.config.tools.logeditor = filename
-        self.tf_panoramoplayer.setText(filename)
-        if os.path.dirname(filename) == "":
-            # Textfeld wieder deaktivieren
-            self.tf_panoramoplayer.setEnabled(False)
-
     def changed_tf_fangradius(self) -> None:
         """Gibt eine Warnung, falls Fangradius zu groß"""
         try:
@@ -201,17 +184,17 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             self.tf_abstand_zustandstexte.setStyleSheet("border: 2px solid red; color: red")
             self.lf_warning1.setText("Wert zu klein!")
             self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_unit_abstand_zustandstexte.setStyleSheet("color: red")
+            self.lf_abstand_zustandstexte.setStyleSheet("color: red")
         elif abstand_zustandstexte > abstand_zustandsbloecke:
             self.tf_abstand_zustandstexte.setStyleSheet("border: 2px solid red; color: red")
             self.lf_warning1.setText("Wert sollte nicht größer als Abstand zwischen Textblöcken sein!")
             self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_unit_abstand_zustandstexte.setStyleSheet("color: red")
+            self.lf_abstand_zustandstexte.setStyleSheet("color: red")
         else:
             self.tf_abstand_zustandstexte.setStyleSheet("border: 1px solid black;")
             self.lf_warning1.setText("")
             self.lf_warning1.setStyleSheet("color: black; font: bold;")
-            self.lf_unit_abstand_zustandstexte.setStyleSheet("color: black")
+            self.lf_abstand_zustandstexte.setStyleSheet("color: black")
 
     def changed_tf_abstand_zustandsbloecke(self):
         """Gibt eine Warnung, falls Fangradius unsinnig"""
@@ -224,19 +207,19 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 2px solid red; color: red")
             self.lf_warning1.setText("Wert zu groß!")
             self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_unit_abstand_zustandsbloecke.setStyleSheet("color: red")
+            self.tf_abstand_zustandsbloecke.setStyleSheet("color: red")
         elif abstand_zustandsbloecke < 0.01:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 2px solid red; color: red")
             self.lf_warning1.setText("Wert zu klein!")
             self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_unit_abstand_zustandsbloecke.setStyleSheet("color: red")
+            self.tf_abstand_zustandsbloecke.setStyleSheet("color: red")
         elif abstand_zustandsbloecke < abstand_zustandstexte:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 2px solid red; color: red")
             self.lf_warning1.setText("Wert sollte nicht kleiner als Abstand zwischen Zustandstexten sein!")
             self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_unit_abstand_zustandsbloecke.setStyleSheet("color: red")
+            self.tf_abstand_zustandsbloecke.setStyleSheet("color: red")
         else:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 1px solid black;")
             self.lf_warning1.setText("")
             self.lf_warning1.setStyleSheet("color: black; font: bold;")
-            self.lf_unit_abstand_zustandsbloecke.setStyleSheet("color: black")
+            self.tf_abstand_zustandsbloecke.setStyleSheet("color: black")
