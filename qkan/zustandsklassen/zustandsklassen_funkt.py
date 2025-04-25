@@ -1347,7 +1347,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def bewertungstexte_leitung(self):
 		date = self.date+'%'
@@ -2512,7 +2519,15 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 	def bewertungstexte_schacht(self):
@@ -3628,7 +3643,15 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_schacht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 	def bewertung_dwa_neu_haltung(self):
@@ -3900,7 +3923,15 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -3918,7 +3949,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def bewertung_dwa_neu_leitung(self):
 		date = self.date+'%'
@@ -4118,7 +4156,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -4136,7 +4181,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def bewertung_dwa_neu_schaechte(self):
 		date = self.date+'%'
@@ -4310,7 +4362,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_schacht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -4328,7 +4387,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/schaechte_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def bewertung_dwa_haltung(self):
 		date = self.date+'%'
@@ -7284,7 +7350,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 
@@ -7304,7 +7377,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 	def bewertung_dwa_leitung(self):
@@ -10180,7 +10260,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 
@@ -10200,7 +10287,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 	def bewertung_dwa_schacht(self):
@@ -13648,7 +13742,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_schacht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -13666,7 +13767,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/schaechte_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 
 	def bewertung_isy_haltung(self):
@@ -16182,7 +16290,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_isy.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		sql = """CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
 		curs.execute(sql)
@@ -16247,7 +16362,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_isy.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def bewertung_isy_leitung(self):
 		date = self.date+'%'
@@ -18680,7 +18802,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_anschlussleitung_bewertung_isy.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
 		curs.execute(sql)
@@ -18745,7 +18874,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_isy.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def bewertung_isy_schacht(self):
 		date = self.date+'%'
@@ -21856,7 +21992,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_schacht_bewertung_isy.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		sql = """CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht"""
 		curs.execute(sql)
@@ -21915,7 +22058,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/schaechte_untersucht_bewertung_isy.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def einzelfallbetrachtung_haltung(self):
 
@@ -24313,7 +24463,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -24331,7 +24488,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def einzelfallbetrachtung_leitung(self):
 
@@ -26641,7 +26805,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -26659,7 +26830,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/haltungen_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def einzelfallbetrachtung_schacht(self):
 		date = self.date+'%'
@@ -29658,7 +29836,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/Untersuchdat_schacht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
 		uri.setDatabase(db_x)
@@ -29676,7 +29861,14 @@ class Zustandsklassen_funkt:
 
 		x = os.path.dirname(os.path.abspath(__file__))
 		vlayer.loadNamedStyle(x + '/schaechte_untersucht_bewertung_dwa.qml')
-		QgsProject.instance().addMapLayer(vlayer)
+		#QgsProject.instance().addMapLayer(vlayer)
+		group = 'Ergebnisse'
+		layersRoot = QgsProject.instance().layerTreeRoot()
+		QgsProject.instance().addMapLayer(vlayer, False)
+		atcGroup = layersRoot.findGroup(group)
+		if atcGroup is None:
+			atcGroup = layersRoot.addGroup(group)
+		atcGroup.addLayer(vlayer)
 
 	def tab_dwa_haltung(self):
 		#tabellen DWA anlegen und vorhandene Zustandsklassen in richtige Spalte kopieren
