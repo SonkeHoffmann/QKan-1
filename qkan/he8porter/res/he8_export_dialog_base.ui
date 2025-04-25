@@ -24,6 +24,10 @@
   <property name="windowTitle">
    <string>Export nach Hystem-Extran 8</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <property name="toolTip">
    <string>Export der aktuell geladenen Kanaldaten in eine Hystem-Extran-Datenbank</string>
   </property>
@@ -1216,7 +1220,7 @@ verschneiden</string>
      </font>
     </property>
     <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
+     <enum>QFrame::Panel</enum>
     </property>
     <property name="text">
      <string>0</string>
@@ -1243,7 +1247,7 @@ verschneiden</string>
      </font>
     </property>
     <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
+     <enum>QFrame::Panel</enum>
     </property>
     <property name="text">
      <string>0</string>
@@ -1270,7 +1274,7 @@ verschneiden</string>
      </font>
     </property>
     <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
+     <enum>QFrame::Panel</enum>
     </property>
     <property name="text">
      <string>0</string>

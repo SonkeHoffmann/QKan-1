@@ -61,6 +61,8 @@ class InfoDialog(_Dialog, INFO_CLASS):  # type: ignore
     lineEdit_3: QLineEdit
     comboBox_2: QComboBox
     comboBox_3: QComboBox
+    comboBox_8: QComboBox
+    comboBox_9: QComboBox
     checkBox: QCheckBox
 
 

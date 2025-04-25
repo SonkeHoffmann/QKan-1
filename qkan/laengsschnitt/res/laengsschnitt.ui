@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Längsschnitt</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <property name="modal">
    <bool>false</bool>
   </property>

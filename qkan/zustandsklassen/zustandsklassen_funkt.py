@@ -3853,13 +3853,17 @@ class Zustandsklassen_funkt:
 								haltungen_untersucht_bewertung
 								SET
 								objektklasse_gesamt =
-								(Case
-								 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-								 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-								 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-								 Else NULL
-								 END
-								 );""")
+								(
+								   SELECT MIN(wert)
+								   FROM (
+									   SELECT objektklasse_dichtheit AS wert
+									   UNION ALL
+									   SELECT objektklasse_standsicherheit
+									   UNION ALL
+									   SELECT objektklasse_betriebssicherheit
+								   )
+								   WHERE wert IS NOT NULL
+							   );""")
 			db.commit()
 		except:
 			pass
@@ -4067,13 +4071,17 @@ class Zustandsklassen_funkt:
 								anschlussleitungen_untersucht_bewertung
 								SET
 								objektklasse_gesamt =
-								(Case
-								 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-								 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-								 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-								 Else NULL
-								 END
-								 );""")
+								(
+								   SELECT MIN(wert)
+								   FROM (
+									   SELECT objektklasse_dichtheit AS wert
+									   UNION ALL
+									   SELECT objektklasse_standsicherheit
+									   UNION ALL
+									   SELECT objektklasse_betriebssicherheit
+								   )
+								   WHERE wert IS NOT NULL
+							   );""")
 			db.commit()
 		except:
 			pass
@@ -4255,13 +4263,17 @@ class Zustandsklassen_funkt:
 									schaechte_untersucht_bewertung
 									set
 									objektklasse_gesamt =
-									(Case
-									 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-									 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-									 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-									 Else NULL
-									 END
-									 );""")
+									(
+									   SELECT MIN(wert)
+									   FROM (
+										   SELECT objektklasse_dichtheit AS wert
+										   UNION ALL
+										   SELECT objektklasse_standsicherheit
+										   UNION ALL
+										   SELECT objektklasse_betriebssicherheit
+									   )
+									   WHERE wert IS NOT NULL
+								   );""")
 			db.commit()
 		except:
 			pass
@@ -7223,13 +7235,17 @@ class Zustandsklassen_funkt:
 							haltungen_untersucht_bewertung
 							SET
 							objektklasse_gesamt =
-							(Case
-							 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-							 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-							 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-							 Else NULL
-							 END
-							 );""")
+							(
+							   SELECT MIN(wert)
+							   FROM (
+								   SELECT objektklasse_dichtheit AS wert
+								   UNION ALL
+								   SELECT objektklasse_standsicherheit
+								   UNION ALL
+								   SELECT objektklasse_betriebssicherheit
+							   )
+							   WHERE wert IS NOT NULL
+						   );""")
 			db.commit()
 		except:
 			pass
@@ -10115,13 +10131,17 @@ class Zustandsklassen_funkt:
 							anschlussleitungen_untersucht_bewertung
 							SET
 							objektklasse_gesamt =
-							(Case
-							 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-							 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-							 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-							 Else NULL
-							 END
-							 );""")
+							(
+							   SELECT MIN(wert)
+							   FROM (
+								   SELECT objektklasse_dichtheit AS wert
+								   UNION ALL
+								   SELECT objektklasse_standsicherheit
+								   UNION ALL
+								   SELECT objektklasse_betriebssicherheit
+							   )
+							   WHERE wert IS NOT NULL
+						   );""")
 			db.commit()
 		except:
 			pass
@@ -13579,13 +13599,17 @@ class Zustandsklassen_funkt:
 									schaechte_untersucht_bewertung
 									set
 									objektklasse_gesamt =
-									(Case
-									 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-									 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-									 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-									 Else NULL
-									 END
-									 );""")
+									(
+									   SELECT MIN(wert)
+									   FROM (
+										   SELECT objektklasse_dichtheit AS wert
+										   UNION ALL
+										   SELECT objektklasse_standsicherheit
+										   UNION ALL
+										   SELECT objektklasse_betriebssicherheit
+									   )
+									   WHERE wert IS NOT NULL
+								   );""")
 			db.commit()
 		except:
 			pass
@@ -29878,13 +29902,17 @@ class Zustandsklassen_funkt:
 									haltungen_untersucht_bewertung
 									SET
 									objektklasse_gesamt =
-									(Case
-									 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-									 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-									 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-									 Else NULL
-									 END
-									 );""")
+									(
+									   SELECT MIN(wert)
+									   FROM (
+										   SELECT objektklasse_dichtheit AS wert
+										   UNION ALL
+										   SELECT objektklasse_standsicherheit
+										   UNION ALL
+										   SELECT objektklasse_betriebssicherheit
+									   )
+									   WHERE wert IS NOT NULL
+								   );""")
 			db.commit()
 		except:
 			pass
@@ -30127,13 +30155,17 @@ class Zustandsklassen_funkt:
 									anschlussleitungen_untersucht_bewertung
 									SET
 									objektklasse_gesamt =
-									(Case
-									 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-									 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-									 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-									 Else NULL
-									 END
-									 );""")
+									(
+								   SELECT MIN(wert)
+								   FROM (
+									   SELECT objektklasse_dichtheit AS wert
+									   UNION ALL
+									   SELECT objektklasse_standsicherheit
+									   UNION ALL
+									   SELECT objektklasse_betriebssicherheit
+								   )
+								   WHERE wert IS NOT NULL
+							   );""")
 			db.commit()
 		except:
 			pass
@@ -30376,13 +30408,17 @@ class Zustandsklassen_funkt:
 									schaechte_untersucht_bewertung
 									set
 									objektklasse_gesamt =
-									(Case
-									 When objektklasse_dichtheit <= objektklasse_standsicherheit And objektklasse_dichtheit <= objektklasse_betriebssicherheit Then objektklasse_dichtheit
-									 When objektklasse_standsicherheit <= objektklasse_dichtheit And objektklasse_standsicherheit <= objektklasse_betriebssicherheit Then objektklasse_standsicherheit
-									 When objektklasse_betriebssicherheit <= objektklasse_dichtheit And objektklasse_betriebssicherheit <= objektklasse_standsicherheit Then objektklasse_betriebssicherheit
-									 Else NULL
-									 END
-									 );""")
+									(
+									   SELECT MIN(wert)
+									   FROM (
+										   SELECT objektklasse_dichtheit AS wert
+										   UNION ALL
+										   SELECT objektklasse_standsicherheit
+										   UNION ALL
+										   SELECT objektklasse_betriebssicherheit
+									   )
+									   WHERE wert IS NOT NULL
+								   );""")
 			db.commit()
 		except:
 			pass

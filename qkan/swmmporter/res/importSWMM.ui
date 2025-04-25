@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Import aus SWMM-Datei</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
@@ -378,7 +382,7 @@
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QgsProjectionSelectionWidget" name="epsg" native="true">
+   <widget class="QgsProjectionSelectionWidget" name="epsg">
     <property name="geometry">
      <rect>
       <x>130</x>

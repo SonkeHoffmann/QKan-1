@@ -50,9 +50,9 @@ class Schacht_untersucht(ClassObject):
     bewertungsart: str = ""
     bewertungstag: str = ""
     datenart: str = ""
-    max_ZD: int = 63
-    max_ZB: int = 63
-    max_ZS: int = 63
+    max_ZD: int = None
+    max_ZB: int = None
+    max_ZS: int = None
     geop: QByteArray = None
 
 class Untersuchdat_schacht(ClassObject):
@@ -79,9 +79,9 @@ class Untersuchdat_schacht(ClassObject):
     ordner: str = ""
     film_dateiname: str = ""
     ordner_video: str = ""
-    ZD: int = 63
-    ZB: int = 63
-    ZS: int = 63
+    ZD: int = None
+    ZB: int = None
+    ZS: int = None
 
 class Haltung(ClassObject):
     haltnam: str = ""
@@ -123,9 +123,9 @@ class Haltung_untersucht(ClassObject):
     bewertungsart: str = ""
     bewertungstag: str = ""
     datenart: str = ""
-    max_ZD: int = 63
-    max_ZB: int = 63
-    max_ZS: int = 63
+    max_ZD: int = None
+    max_ZB: int = None
+    max_ZS: int = None
     geom: QByteArray = None
 
 class Untersuchdat_haltung(ClassObject):
@@ -153,9 +153,9 @@ class Untersuchdat_haltung(ClassObject):
     film_dateiname: str = ""
     ordner_bild: str = ""
     ordner_video: str = ""
-    ZD: int = 63
-    ZB: int = 63
-    ZS: int = 63
+    ZD: int = None
+    ZB: int = None
+    ZS: int = None
     geom: QByteArray = None
 
 class Anschlussleitung(ClassObject):
@@ -1182,9 +1182,9 @@ class ImportTask(Schadenstexte):
             pos_bis = 0
             bereich = ""
             foto_dateiname = ""
-            ZD = 63
-            ZB = 63
-            ZS = 63
+            ZD = None
+            ZB = None
+            ZS = None
 
             for block in blocks:
 

@@ -24,6 +24,10 @@
   <property name="windowTitle">
    <string>Export in SWMM-Datei</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+  </property>
   <property name="toolTip">
    <string>Export der aktuell geladenen Kanaldaten in eine Hystem-Extran-Datenbank</string>
   </property>
@@ -690,7 +694,7 @@
     </font>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Panel</enum>
    </property>
    <property name="text">
     <string>0</string>
@@ -738,7 +742,7 @@
     </font>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Panel</enum>
    </property>
    <property name="text">
     <string>0</string>
@@ -786,7 +790,7 @@
     </font>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Panel</enum>
    </property>
    <property name="text">
     <string>0</string>
