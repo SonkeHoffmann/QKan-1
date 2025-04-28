@@ -419,7 +419,7 @@
       <Option name="QFieldSync/tracking_time_requirement_interval_seconds" type="int" value="30"/>
       <Option name="QFieldSync/value_map_button_interface_threshold" type="int" value="0"/>
       <Option name="dualview/previewExpressions" type="List">
-        <Option type="QString" value="haltnam || ' (' || untersuchtag || ')'"/>
+        <Option type="QString" value="leitnam + ' (' + untersuchtag + ')'"/>
       </Option>
       <Option name="embeddedWidgets/count" type="int" value="0"/>
       <Option name="variableNames"/>
@@ -437,7 +437,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="haltnam" configurationFlags="None">
+    <field name="leitnam" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -644,7 +644,7 @@
   </fieldConfiguration>
   <aliases>
     <alias name="" index="0" field="pk"/>
-    <alias name="Name" index="1" field="haltnam"/>
+    <alias name="" index="1" field="leitnam"/>
     <alias name="Bezugspunkt" index="2" field="bezugspunkt"/>
     <alias name="Anfangsschacht" index="3" field="schoben"/>
     <alias name="Endschacht" index="4" field="schunten"/>
@@ -674,7 +674,7 @@
   </aliases>
   <defaults>
     <default expression="" field="pk" applyOnUpdate="0"/>
-    <default expression="" field="haltnam" applyOnUpdate="0"/>
+    <default expression="" field="leitnam" applyOnUpdate="0"/>
     <default expression="" field="bezugspunkt" applyOnUpdate="0"/>
     <default expression="" field="schoben" applyOnUpdate="0"/>
     <default expression="" field="schunten" applyOnUpdate="0"/>
@@ -700,11 +700,11 @@
     <default expression="" field="xschun" applyOnUpdate="0"/>
     <default expression="" field="yschun" applyOnUpdate="0"/>
     <default expression="" field="kommentar" applyOnUpdate="0"/>
-    <default expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat" applyOnUpdate="0"/>
+    <default expression="" field="createdat" applyOnUpdate="0"/>
   </defaults>
   <constraints>
-    <constraint constraints="3" unique_strength="2" notnull_strength="2" exp_strength="0" field="pk"/>
-    <constraint constraints="0" unique_strength="0" notnull_strength="0" exp_strength="0" field="haltnam"/>
+    <constraint constraints="3" unique_strength="1" notnull_strength="1" exp_strength="0" field="pk"/>
+    <constraint constraints="0" unique_strength="0" notnull_strength="0" exp_strength="0" field="leitnam"/>
     <constraint constraints="0" unique_strength="0" notnull_strength="0" exp_strength="0" field="bezugspunkt"/>
     <constraint constraints="0" unique_strength="0" notnull_strength="0" exp_strength="0" field="schoben"/>
     <constraint constraints="0" unique_strength="0" notnull_strength="0" exp_strength="0" field="schunten"/>
@@ -734,7 +734,7 @@
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="pk"/>
-    <constraint exp="" desc="" field="haltnam"/>
+    <constraint exp="" desc="" field="leitnam"/>
     <constraint exp="" desc="" field="bezugspunkt"/>
     <constraint exp="" desc="" field="schoben"/>
     <constraint exp="" desc="" field="schunten"/>
@@ -765,15 +765,17 @@
   <expressionfields/>
   <attributeactions>
     <defaultAction value="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" key="Canvas"/>
-    <actionsetting name="Aktuelle Zustandsdaten für alle Haltungen anzeigen" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" isEnabledOnlyWhenEditable="0" type="1" icon="" capture="1" id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}">
+    <actionsetting name="Aktuelle Zustandsdaten für alle Hausanschlussleitungen anzeigen" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden(id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" shortTitle="Aktuelle Zustandsdaten für alle Hausanschlussleitungen" notificationMessage="" isEnabledOnlyWhenEditable="0" type="1" icon="" capture="1" id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}">
       <actionScope id="Feature"/>
+      <actionScope id="Layer"/>
       <actionScope id="Canvas"/>
     </actionsetting>
-    <actionsetting name="Alle Zustandsdaten für alle Haltungen anzeigen" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden()&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" shortTitle="Alle Zustandsdaten" notificationMessage="" isEnabledOnlyWhenEditable="0" type="1" icon="" capture="1" id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}">
+    <actionsetting name="Alle Zustandsdaten für alle Hausanschlussleitungen anzeigen" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden()&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" shortTitle="Alle Zustandsdaten für alle Hausanschlussleitungen" notificationMessage="" isEnabledOnlyWhenEditable="0" type="1" icon="" capture="1" id="{f0ac47bb-207a-48d1-8d1d-b983bc11a172}">
       <actionScope id="Feature"/>
+      <actionScope id="Layer"/>
       <actionScope id="Canvas"/>
     </actionsetting>
-    <actionsetting name="Zustandsdaten zu Haltung und Untersuchungsdatum anzeigen" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(haltnam = '[%haltnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" shortTitle="Zustandsdaten zu Haltung und Untersuchungsdatum" notificationMessage="" isEnabledOnlyWhenEditable="0" type="1" icon="" capture="1" id="{9a8adc00-698b-4b5b-af2b-fbfa3b93d012}">
+    <actionsetting name="Zustandsdaten zu Hausanschlussleitung und Untersuchungsdatum anzeigen" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden(untersuchleit = '[%leitnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;&#xd;&#xa;" shortTitle="Zustandsdaten zu Hausanschlussleitung und Untersuchungsdatum" notificationMessage="" isEnabledOnlyWhenEditable="0" type="1" icon="" capture="1" id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}">
       <actionScope id="Feature"/>
       <actionScope id="Canvas"/>
     </actionsetting>
@@ -781,32 +783,32 @@
   <attributetableconfig sortOrder="1" actionWidgetStyle="dropDown" sortExpression="&quot;haltnam&quot;">
     <columns>
       <column name="pk" type="field" hidden="0" width="-1"/>
-      <column name="haltnam" type="field" hidden="0" width="-1"/>
-      <column name="bezugspunkt" type="field" hidden="0" width="151"/>
+      <column name="leitnam" type="field" hidden="0" width="-1"/>
+      <column name="bezugspunkt" type="field" hidden="0" width="-1"/>
       <column name="schoben" type="field" hidden="0" width="-1"/>
       <column name="schunten" type="field" hidden="0" width="-1"/>
       <column name="hoehe" type="field" hidden="0" width="-1"/>
       <column name="breite" type="field" hidden="0" width="-1"/>
       <column name="laenge" type="field" hidden="0" width="-1"/>
       <column name="baujahr" type="field" hidden="0" width="-1"/>
-      <column name="id" type="field" hidden="0" width="119"/>
-      <column name="untersuchtag" type="field" hidden="0" width="100"/>
-      <column name="untersucher" type="field" hidden="0" width="142"/>
-      <column name="untersuchrichtung" type="field" hidden="0" width="146"/>
+      <column name="id" type="field" hidden="0" width="-1"/>
+      <column name="untersuchtag" type="field" hidden="0" width="-1"/>
+      <column name="untersucher" type="field" hidden="0" width="-1"/>
+      <column name="untersuchrichtung" type="field" hidden="0" width="-1"/>
       <column name="wetter" type="field" hidden="0" width="-1"/>
       <column name="bewertungsart" type="field" hidden="0" width="-1"/>
       <column name="bewertungstag" type="field" hidden="0" width="-1"/>
       <column name="strasse" type="field" hidden="0" width="-1"/>
       <column name="datenart" type="field" hidden="0" width="-1"/>
-      <column name="auftragsbezeichnung" type="field" hidden="0" width="166"/>
+      <column name="auftragsbezeichnung" type="field" hidden="0" width="-1"/>
       <column name="max_ZD" type="field" hidden="0" width="-1"/>
       <column name="max_ZB" type="field" hidden="0" width="-1"/>
       <column name="max_ZS" type="field" hidden="0" width="-1"/>
       <column name="xschob" type="field" hidden="0" width="-1"/>
-      <column name="yschob" type="field" hidden="0" width="100"/>
-      <column name="xschun" type="field" hidden="0" width="100"/>
-      <column name="yschun" type="field" hidden="0" width="100"/>
-      <column name="kommentar" type="field" hidden="0" width="100"/>
+      <column name="yschob" type="field" hidden="0" width="-1"/>
+      <column name="xschun" type="field" hidden="0" width="-1"/>
+      <column name="yschun" type="field" hidden="0" width="-1"/>
+      <column name="kommentar" type="field" hidden="0" width="-1"/>
       <column name="createdat" type="field" hidden="0" width="-1"/>
       <column type="actions" hidden="1" width="-1"/>
     </columns>
@@ -816,7 +818,7 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
-  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\qkan_haltungen_untersucht.ui</editform>
+  <editform tolerant="1">Users/hoettges/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/qkan/forms/qkan_hausanschluesse_untersucht.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -853,6 +855,7 @@ def my_form_open(dialog, layer, feature):
     <field name="id" editable="1"/>
     <field name="kommentar" editable="1"/>
     <field name="laenge" editable="1"/>
+    <field name="leitnam" editable="1"/>
     <field name="max_ZB" editable="1"/>
     <field name="max_ZD" editable="1"/>
     <field name="max_ZS" editable="1"/>
@@ -883,6 +886,7 @@ def my_form_open(dialog, layer, feature):
     <field name="id" labelOnTop="0"/>
     <field name="kommentar" labelOnTop="0"/>
     <field name="laenge" labelOnTop="0"/>
+    <field name="leitnam" labelOnTop="0"/>
     <field name="max_ZB" labelOnTop="0"/>
     <field name="max_ZD" labelOnTop="0"/>
     <field name="max_ZS" labelOnTop="0"/>
@@ -913,6 +917,7 @@ def my_form_open(dialog, layer, feature):
     <field name="id" reuseLastValue="0"/>
     <field name="kommentar" reuseLastValue="0"/>
     <field name="laenge" reuseLastValue="0"/>
+    <field name="leitnam" reuseLastValue="0"/>
     <field name="max_ZB" reuseLastValue="0"/>
     <field name="max_ZD" reuseLastValue="0"/>
     <field name="max_ZS" reuseLastValue="0"/>
@@ -931,7 +936,7 @@ def my_form_open(dialog, layer, feature):
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>
-  <previewExpression>haltnam || ' (' || untersuchtag || ')'</previewExpression>
-  <mapTip>[% haltnam || ' (' || untersuchtag || ')' %]</mapTip>
+  <previewExpression>leitnam + ' (' + untersuchtag + ')'</previewExpression>
+  <mapTip>[% leitnam + ' (' + untersuchtag + ')' %]</mapTip>
   <layerGeometryType>1</layerGeometryType>
 </qgis>

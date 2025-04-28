@@ -1116,7 +1116,7 @@ CREATE TABLE symbolkatalog (
     kommentar TEXT);"
 
 database_insert_symbolkatalog: "
-INSERT INTO symbolkatalog (bezeichnung, kommentar) VALUES
+INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar) VALUES
 ('KA gepl', 'ABK NRW', NULL),
 ('KA vorh', 'ABK NRW', NULL),
 ('KKA', 'ABK NRW', NULL),

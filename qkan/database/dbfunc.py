@@ -51,20 +51,21 @@ class DBConnection:
                                  - Falls angegeben und nicht vorhanden, wird es angelegt.
                                  - Falls nicht angegeben, wird die Datenbank aus den Layern "Schächte" und
                                    "Flächen" gelesen und verbunden
-        :type dbname:           String
+        :type dbname:           str
 
         :param epsg:            EPSG-Code aller Tabellen in einer neuen Datenbank
+        :type epsg:             int
 
         :param qkan_db_update:  Bei veralteter Datenbankversion automatisch Update durchführen. Achtung:
                                 Nach Durchführung muss k_layersadapt ausgeführt werden.
                                 Diese Option ist insbesondere für die Testläufe notwendig
-        :type qkan_db_update:   Boolean
+        :type qkan_db_update:   bool
 
         :param writeQgsBackup:  Soll beim Update der Datenbank eine Sicherungskopie der Projektdatei angelegt werden?
-        :type writeQgsBackup:   Boolean
+        :type writeQgsBackup:   bool
 
         :param writeDbBackup:   Soll beim Update der Datenbank eine Sicherungskopie der Datenbank angelegt werden?
-        :type writeDbBackup:    Boolean
+        :type writeDbBackup:    bool
 
 
         public attributes:
@@ -462,8 +463,8 @@ class DBConnection:
                 # für Nachführung von Attributen in Haltungen bei Änderung in Referenztabellen
 
                 tablis = [
-                    "new_hal",  # Fangen von Haltungen auf Schächte
-                    "mod_hal",
+                    # "new_hal",  # Fangen von Haltungen auf Schächte
+                    # "mod_hal",
 
                     "update_simulationsstatus",  # Änderung in Referenztabelle
                     "update_material",
@@ -492,6 +493,7 @@ class DBConnection:
                     "wetter",
                     "bewertungsart",
                     "pumpentypen",
+                    "symbolkatalog",
                 ]
 
                 for tabnam in tablis:
