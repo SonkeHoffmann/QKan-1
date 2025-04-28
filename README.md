@@ -8,8 +8,9 @@ QKan besteht aus zahlreichen Plugins für das Open-Source-GIS QGIS und
 speichert die Daten in der Datenbank SpatiaLite, die eine GIS-Erweiterung 
 der weltweit am meisten verwendeten Datenbank SQLite darstellt. 
 
-Mit QKan können Kanaldaten mit den Berechnungsprogrammen "HYSTEM-EXTRAN" und 
-"Kanal++" (noch in Bearbeitung) ausgetauscht werden. Damit besteht zum Einen 
+Mit QKan können Kanaldaten aus den Berechnungsprogrammen "HYSTEM-EXTRAN", 
+Mike+ und "Kanal++" (noch in Bearbeitung) sowie aus dem Kanalkataster 
+STRAKAT gelesen sowie für "HYSTEM-EXTRAN" geschrieben werden. Damit besteht zum Einen 
 die Möglichkeit, Kanaldaten aus anderen Quellen zu importieren und für die 
 Berechnung aufzubereiten, aber auch die Kanaldaten aus dem 
 Berechnungsprogramm zu exportieren, um im GIS weitere Datenaufbereitungen 
