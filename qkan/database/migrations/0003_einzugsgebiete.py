@@ -8,7 +8,7 @@ logger = get_logger("QKan.database.migrations")
 
 def run(dbcon: DBConnection) -> bool:
     attrlis = dbcon.attrlist("einleit")
-    if not attrlis:
+    if attrlis == []:
         return False
     elif "ew" not in attrlis:
         logger.debug("einleit.ew ist nicht in: {}".format(str(attrlis)))

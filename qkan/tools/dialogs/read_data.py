@@ -130,7 +130,7 @@ class ReadData:  # type: ignore
         """Reads QKan data from clipboard and inserts proper columns into table 'table_name'"""
         # Fetch data from clipboard
         data = QgsApplication.clipboard().text()
-        if not data:
+        if data is None or data == '':
             return
 
         # read data from clipboard

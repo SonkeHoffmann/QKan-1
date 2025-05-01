@@ -10,7 +10,7 @@ logger = get_logger("QKan.database.migrations")
 def run(dbcon: DBConnection) -> bool:
     # Spalte "teilgebiet" in Tabelle "pumpen" ergänzen
     attrlis = dbcon.attrlist("pumpen")
-    if not attrlis:
+    if attrlis == []:
         fehlermeldung(
             "dbfunc.DBConnection.version (3.0.1):",
             "attrlis für pumpen ist leer",
@@ -42,7 +42,7 @@ def run(dbcon: DBConnection) -> bool:
 
     # Spalte "teilgebiet" in Tabelle "wehre" ergänzen
     attrlis = dbcon.attrlist("wehre")
-    if not attrlis:
+    if attrlis == []:
         fehlermeldung(
             "dbfunc.DBConnection.version (3.0.1):",
             "attrlis für wehre ist leer",

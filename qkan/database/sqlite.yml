@@ -344,7 +344,7 @@ CREATE TABLE schaechte (
     schnam TEXT,
     sohlhoehe REAL,
     deckelhoehe REAL,
-    durchm REAL,
+    durchm REAL,                                    /* Schachtdurchmesser (m) */
     druckdicht INTEGER, 
     ueberstauflaeche REAL DEFAULT 0,
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
@@ -378,7 +378,7 @@ database_create_schaechte_untersucht: "
 CREATE TABLE schaechte_untersucht (
     pk INTEGER PRIMARY KEY,
     schnam TEXT, 
-    durchm REAL,
+    durchm REAL,                                    /* Schachtdurchmesser (m) */
     baujahr INTEGER,
     bezugspunkt TEXT,
     id INTEGER,                                     /* absolute Nummer der Inspektion */
@@ -1199,7 +1199,7 @@ VALUES (
     END,
     CASE WHEN :geom IS NULL
         THEN CastToMultiPolygon(MakePolygon(
-            MakeCircle(:xsch,:ysch,coalesce(:durchm, 1.0)/2.0, :epsg)))
+            MakeCircle(:xsch,:ysch,coalesce(iif(:durchm>200.0,:durchm/1000.0,:durchm), 1.0)/2.0, :epsg)))
         ELSE GeomFromWKB(:geom, :epsg)
     END);"
 

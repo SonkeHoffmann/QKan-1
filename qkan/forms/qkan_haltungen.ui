@@ -933,6 +933,9 @@
      <property name="text">
       <string>Transportleitung</string>
      </property>
+     <property name="tristate">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QLabel" name="label_67">
      <property name="geometry">

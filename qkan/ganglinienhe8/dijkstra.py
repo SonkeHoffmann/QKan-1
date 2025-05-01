@@ -26,11 +26,11 @@ class Netz:
         erstellt werden können"""
 
         self.netz = netz
-        if self.netz:
+        if self.netz is not None:
             if Netz.links == {}:
                 # Nur beim ersten Aufruf
                 for (name, schob, schun, laenge) in self.netz:
-                    if not laenge:
+                    if laenge is None or laenge == 0:
                         laenge = 2.
                     # In Fließrichtung
                     if schob in Netz.links:

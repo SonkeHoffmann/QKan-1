@@ -38,10 +38,22 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
  'Haltungen', 'pk'),
 
 ('Kreuzende Haltungen (im Plan)', 'Zwei Haltungen kreuzen sich', 'Fehler', 9,
-    'WITH haltungen_selected AS (SELECT * FROM haltungen WHERE not transport AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL))
+    'WITH haltungen_selected AS (SELECT ROWID, pk, geom, haltnam, schoben, schunten FROM haltungen WHERE not transport AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)),
+    fls AS (SELECT ROWID, pk, geom, haltnam, schoben, schunten,
+		MakePolygon(AddPoint(AddPoint(AddPoint(
+						MakeLine(pointn(geom,1),makepoint(x(centroid(geom))-(y(pointn(geom,-1))-y(pointn(geom,1)))*0.01,y(centroid(geom))+(x(pointn(geom,-1))-x(pointn(geom,1)))*0.01)),
+						pointn(geom,-1)),
+					makepoint(x(centroid(geom))+(y(pointn(geom,-1))-y(pointn(geom,1)))*0.01,y(centroid(geom))-(x(pointn(geom,-1))-x(pointn(geom,1)))*0.01)),pointn(geom,1))
+		) AS geof
+	FROM
+		haltungen_selected 
+    )
     SELECT n1.pk AS objid, printf(''Haltung "%s" und "%s" kreuzen sich. Eine von beiden muss als Transporthaltung markiert werden!'', n1.haltnam, n2.haltnam) AS bemerkung
-    FROM haltungen_selected AS n1 JOIN haltungen_selected AS n2 ON ST_Intersects(n1.geom, n2.geom) = 1
-    WHERE n1.schoben not in (n2.schunten, n2.schoben)
+    FROM fls AS n1 JOIN fls AS n2 ON ST_Intersects(n1.geof, n2.geof) = 1
+    WHERE 
+    	n1.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name=''haltungen'' AND search_frame=n2.geof) 
+      AND n1.pk <> n2.pk
+      AND n1.schoben not in (n2.schunten, n2.schoben)
       AND n2.schoben not in (n1.schunten, n1.schoben)
       AND n1.schunten not in (n2.schunten, n2.schoben)
       AND n2.schunten not in (n1.schunten, n1.schoben)',

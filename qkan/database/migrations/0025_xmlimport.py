@@ -530,13 +530,13 @@ def run(dbcon: DBConnection) -> bool:
         logger.debug(f"Fehler bei Migration zu Version {VERSION}")
         return False
 
-    sql = "SELECT AddGeometryColumn('Untersuchdat_schacht','geop',{},'POINT',2);".format(dbcon.epsg)
+    sql = "SELECT AddGeometryColumn('Untersuchdat_schacht','geom',{},'POINT',2);".format(dbcon.epsg)
     if not dbcon.sql(sql):
         logger.debug(f"Fehler bei Migration zu Version {VERSION}")
         return False
     dbcon.commit()
 
-    sqlindex = "SELECT CreateSpatialIndex('Untersuchdat_schacht','geop')"
+    sqlindex = "SELECT CreateSpatialIndex('Untersuchdat_schacht','geom')"
     if not dbcon.sql(sqlindex):
         logger.debug(f"Fehler bei Migration zu Version {VERSION}")
         return False
@@ -557,7 +557,7 @@ def run(dbcon: DBConnection) -> bool:
               BEGIN
                 INSERT INTO Untersuchdat_schacht
                   (untersuchsch, id, videozaehler, timecode, kuerzel, 
-                    charakt1, charakt2, quantnr1, quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, vertikale_lage, inspektionslaenge, bereich, foto_dateiname, ordner, createdat, geop)
+                    charakt1, charakt2, quantnr1, quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, vertikale_lage, inspektionslaenge, bereich, foto_dateiname, ordner, createdat, geom)
                 SELECT 
                   new.untersuchsch, new.id, new.videozaehler, new.timecode, new.kuerzel, 
                     new.charakt1, new.charakt2, new.quantnr1, new.quantnr2, new.streckenschaden, new.streckenschaden_lfdnr, new.pos_von, new.pos_bis, new.vertikale_lage, new.inspektionslaenge,

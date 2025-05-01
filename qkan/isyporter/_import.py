@@ -1318,7 +1318,7 @@ class ImportTask(Schadenstexte):
                     self.NS,
                 )
 
-                if not smp:
+                if smp is None:
                     fehlermeldung(
                         "Fehler beim XML-Import: Speicher",
                         f'Keine Geometrie "KOP" für Becken {name}',

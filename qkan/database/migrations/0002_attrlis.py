@@ -9,7 +9,7 @@ logger = get_logger("QKan.database.migrations")
 
 def run(dbcon: DBConnection) -> bool:
     attrlis = dbcon.attrlist("linksw")
-    if not attrlis:
+    if attrlis == []:
         fehlermeldung(
             "dbfunc.DBConnection.version (2.0.2):",
             "attrlis für linksw ist leer",
@@ -25,7 +25,7 @@ def run(dbcon: DBConnection) -> bool:
         dbcon.commit()
 
     attrlis = dbcon.attrlist("linkfl")
-    if not attrlis:
+    if attrlis == []:
         fehlermeldung(
             "dbfunc.DBConnection.version (2.0.2):",
             "attrlis für linkfl ist leer",

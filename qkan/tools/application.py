@@ -167,7 +167,7 @@ class QKanTools(QKanPlugin):
         get_database_QKan(silent=True)
         self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
-        if self.database_name:
+        if self.database_name is not None and self.database_name != '':
             self.default_dir = os.path.dirname(
                 self.database_name
             )  # bereits geladene QKan-Datenbank übernehmen
@@ -203,7 +203,7 @@ class QKanTools(QKanPlugin):
                 project_template = self.dlgpr.tf_projectTemplate.text()
 
             # Konfigurationsdaten schreiben -----------------------------
-            if self.database_name:
+            if self.database_name is not None and self.database_name != '':
                 QKan.config.database.qkan = self.database_name
             QKan.config.project.file = project_file
             QKan.config.project.template = project_template
@@ -536,7 +536,7 @@ class QKanTools(QKanPlugin):
                 # Konfigurationsdaten schreiben
                 QKan.config.selections.abflussparameter = liste_abflussparameter
                 QKan.config.selections.teilgebiete = liste_teilgebiete
-                if database_qkan:
+                if database_qkan != '':
                     QKan.config.database.qkan = database_qkan
                 QKan.config.tools.runoffmodeltype_choice = runoffmodeltype_choice
                 QKan.config.tools.runoffparamstype_choice = runoffparamstype_choice
@@ -573,7 +573,7 @@ class QKanTools(QKanPlugin):
         project = QgsProject.instance()
 
         if project.count() == 0:
-            logging.warning("Es ist kein Projekt geladen.")
+            logger.warning("Es ist kein Projekt geladen.")
             return
 
         # Formularfelder setzen -------------------------------------------------------------------------
@@ -584,7 +584,7 @@ class QKanTools(QKanPlugin):
         get_database_QKan(silent=True)
         self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
-        if self.database_name:
+        if self.database_name is not None and self.database_name != '':
             self.default_dir = os.path.dirname(
                 self.database_name
             )  # bereits geladene QKan-Datenbank übernehmen
@@ -601,7 +601,7 @@ class QKanTools(QKanPlugin):
             self.db_is_uptodate = db_qkan.isCurrentDbVersion
 
         if not self.db_is_uptodate:
-            logging.error("Versionskontrolle: Die QKan-Datenbank ist nicht aktuell")
+            logger.error("Versionskontrolle: Die QKan-Datenbank ist nicht aktuell")
             return
 
         # Option: Suchpfad für Vorlagedatei auf template-Verzeichnis setzen
@@ -758,7 +758,7 @@ class QKanTools(QKanPlugin):
         get_database_QKan(silent=True)
         self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
-        if self.database_name:
+        if self.database_name is not None and self.database_name != '':
             self.default_dir = os.path.dirname(
                 self.database_name
             )  # bereits geladene QKan-Datenbank übernehmen
