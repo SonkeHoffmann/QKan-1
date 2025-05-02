@@ -34,7 +34,7 @@ CREATE TABLE haltungen (
     ks REAL DEFAULT 1.5,                            /* abs. Rauheit (Prandtl-Colebrook) */
     haltungstyp TEXT DEFAULT 'Haltung',             /* join haltungstypen.bezeichnung */
     simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
-    transport INTEGER DEFAULT 0,                    /* Transporthaltung? */
+    transport INTEGER,                              /* Transporthaltung? muss für nicht-RW/MW etc. NULL sein*/
     druckdicht INTEGER DEFAULT 0,                   /* Druckleitung? */
     xschob REAL,
     yschob REAL,
