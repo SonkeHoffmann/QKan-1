@@ -23,8 +23,16 @@ repository=https://github.com/hoettges/QKan
 # Recommended items:
 
 # Uncomment the following line and add your changelog:
-changelog= Aktuelle Version abwärtskompatibel bis QGIS Version 3.28
-3.4.6: Änderung einiger Layerbezeichnungen und Tabellen, Modul zur Ermittlung der  Substanzbewertung, Erweiterung der Darstellung um ABK Symbole, Erweiterung der Plausibilitätsabfragen
+
+changelog= 
+	Aktuelle Version abwärtskompatibel bis QGIS Version 3.28
+	3.4.6:	
+		- Änderung einiger Layerbezeichnungen und Tabellen
+		- Modul zur Ermittlung der  Substanzbewertung
+		- Erweiterung der Darstellung um ABK Symbole
+		- Erweiterung der Plausibilitätsabfragen
+		- Verbesserung der Voronoi-Flächen
+		- Überarbeitung des Plugins zur Nutzung unter macOS
 
 
 # Tags are comma separated with spaces allowed

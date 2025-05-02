@@ -23,6 +23,9 @@
     Qkan_workflow
     Qkan_qfield
     Qkan_edit
+	QKan_Zustandsklassifizierung
+	QKan_Sanierungsbedarfszahl
+	QKan_Substanzklassifizierung
     
  
 .. toctree::
