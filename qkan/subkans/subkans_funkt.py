@@ -41,8 +41,8 @@ class Subkans_funkt:
             self.bewertung_dwa_neu_haltung()
 
         if check_cb['cb3']:
-            #self.bewertung_subkans()
-            #self.schadens_ueberlagerung()
+            self.bewertung_subkans()
+            self.schadens_ueberlagerung()
             self.subkans()
 
     # jh: besser round(n, decimals), weil round_up_down bei negativen Zahlen falsch rundet...

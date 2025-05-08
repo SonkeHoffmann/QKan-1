@@ -4683,8 +4683,8 @@ class Zustandsklassen_funkt:
 		for attr in curs.fetchall():
 
 			# Tab A.2
-			if (attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "A") or (
-					attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "B"):
+			if (attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "A") or (
+					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
 				if attr[13] >= 7:
 					z = '0'
 				elif 4 <= attr[13] < 7:
@@ -5617,6 +5617,8 @@ class Zustandsklassen_funkt:
 						z = '4'
 					else:
 						z = '5'
+				else:
+					z = 'Bitte prüfen!'
 				sql = f"""
 						UPDATE untersuchdat_haltung_bewertung
 						SET Zustandsklasse_B = ?
@@ -7594,8 +7596,8 @@ class Zustandsklassen_funkt:
 
 
 			# Tab A.2
-			if (attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "A") or (
-					attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "B"):
+			if (attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "A") or (
+					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
 				if attr[13] >= 7:
 					z = '0'
 				elif 4 <= attr[13] < 7:
@@ -14056,8 +14058,8 @@ class Zustandsklassen_funkt:
 
 		for attr in curs.fetchall():
 
-			if (attr[21] == "biegessteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
-					attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "B"):
+			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
+					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
 				if attr[13] < 6:
 					z = '3'
 				elif 6 <= attr[13] < 15:
@@ -16568,8 +16570,8 @@ class Zustandsklassen_funkt:
 		for attr in curs.fetchall():
 
 
-			if (attr[21] == "biegessteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
-					attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "B"):
+			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
+					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
 				if attr[13] < 6:
 					z = '3'
 				elif 6 <= attr[13] < 15:
@@ -22269,8 +22271,8 @@ class Zustandsklassen_funkt:
 		for attr in curs.fetchall():
 			liste_pk.append(attr[0])
 
-			if (attr[21] == "biegessteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
-					attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "B"):
+			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
+					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
 				if attr[13] < 6:
 					z = '3_isy'
 				elif 6 <= attr[13] < 15:
@@ -24611,8 +24613,8 @@ class Zustandsklassen_funkt:
 		for attr in curs.fetchall():
 			liste_pk.append(attr[0])
 
-			if (attr[21] == "biegessteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
-					attr[21] == "biegessteif" and attr[10] == "BAA" and attr[11] == "B"):
+			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
+					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
 				if attr[13] < 6:
 					z = '3_isy'
 				elif 6 <= attr[13] < 15:
