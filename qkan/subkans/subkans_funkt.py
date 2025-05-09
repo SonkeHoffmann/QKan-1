@@ -3553,7 +3553,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3566,7 +3566,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3580,7 +3580,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3593,7 +3593,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3611,7 +3611,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql, parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3624,7 +3624,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3638,7 +3638,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3651,7 +3651,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3668,7 +3668,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3681,7 +3681,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3698,7 +3698,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3711,7 +3711,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3725,7 +3725,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3738,7 +3738,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3755,7 +3755,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3768,7 +3768,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3782,7 +3782,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3795,7 +3795,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3811,7 +3811,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3824,7 +3824,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3841,7 +3841,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3854,7 +3854,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3868,7 +3868,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -3881,7 +3881,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -3898,7 +3898,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3911,7 +3911,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3925,7 +3925,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3938,7 +3938,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3955,7 +3955,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3968,7 +3968,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -3982,7 +3982,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -3995,7 +3995,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4012,7 +4012,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4025,7 +4025,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4039,7 +4039,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4052,7 +4052,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4070,7 +4070,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4083,7 +4083,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4097,7 +4097,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4110,7 +4110,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4126,7 +4126,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4139,7 +4139,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4157,7 +4157,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4170,7 +4170,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4185,7 +4185,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4198,7 +4198,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4214,7 +4214,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -4227,7 +4227,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -4244,7 +4244,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -4257,7 +4257,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -4274,7 +4274,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -4287,7 +4287,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -4303,7 +4303,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -4316,7 +4316,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -4335,7 +4335,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4348,7 +4348,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4362,7 +4362,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4375,7 +4375,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4393,7 +4393,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4406,7 +4406,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4420,7 +4420,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4433,7 +4433,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4452,7 +4452,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4465,7 +4465,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4479,7 +4479,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4492,7 +4492,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4510,7 +4510,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4523,7 +4523,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4537,7 +4537,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4550,7 +4550,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4568,7 +4568,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4581,7 +4581,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4595,7 +4595,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4608,7 +4608,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4624,7 +4624,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4637,7 +4637,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4654,7 +4654,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4667,7 +4667,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4681,7 +4681,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -4694,7 +4694,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -4711,7 +4711,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4724,7 +4724,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4738,7 +4738,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4751,7 +4751,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4768,7 +4768,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4781,7 +4781,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4795,7 +4795,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4808,7 +4808,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                       # db.commit()
                         continue
                     except:
                         pass
@@ -4825,7 +4825,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4838,7 +4838,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4852,7 +4852,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4865,7 +4865,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4882,7 +4882,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4895,7 +4895,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4909,7 +4909,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4922,7 +4922,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4939,7 +4939,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4952,7 +4952,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4966,7 +4966,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -4979,7 +4979,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -4996,7 +4996,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5009,7 +5009,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5023,7 +5023,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5036,7 +5036,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5053,7 +5053,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5066,7 +5066,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5080,7 +5080,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5093,7 +5093,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5110,7 +5110,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5123,7 +5123,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5137,7 +5137,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5150,7 +5150,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5167,7 +5167,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5180,7 +5180,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5197,7 +5197,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -5210,7 +5210,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -5224,7 +5224,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -5237,7 +5237,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -5253,7 +5253,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -5266,7 +5266,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -5282,7 +5282,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -5295,7 +5295,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -5311,7 +5311,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                 except:
                     pass
 
@@ -5324,7 +5324,7 @@ class Subkans_funkt:
                 data = (z, attr[0])
                 try:
                     db.sql(sql,parameters=data)
-                    db.commit()
+                    #db.commit()
                     continue
                 except:
                     pass
@@ -5341,7 +5341,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5354,7 +5354,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5370,7 +5370,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5383,7 +5383,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5400,7 +5400,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -5413,7 +5413,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -5427,7 +5427,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                         except:
                             pass
 
@@ -5440,7 +5440,7 @@ class Subkans_funkt:
                         data = (z, attr[0])
                         try:
                             db.sql(sql,parameters=data)
-                            db.commit()
+                            #db.commit()
                             continue
                         except:
                             pass
@@ -5456,7 +5456,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5469,7 +5469,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5491,7 +5491,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5504,7 +5504,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5524,7 +5524,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5537,7 +5537,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
@@ -5551,7 +5551,7 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                     except:
                         pass
 
@@ -5564,10 +5564,15 @@ class Subkans_funkt:
                     data = (z, attr[0])
                     try:
                         db.sql(sql,parameters=data)
-                        db.commit()
+                        #db.commit()
                         continue
                     except:
                         pass
+
+        try:
+            db.commit()
+        except:
+            pass
 
         sql = """SELECT RecoverGeometryColumn('substanz_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
         data = (crs,)
@@ -7437,14 +7442,14 @@ class Subkans_funkt:
                     substanz_haltung_bewertung.untersuchhal,
                     SUM(substanz_haltung_bewertung.Schadensgewicht) AS Gesamtschadensgewicht,
                     haltungen_untersucht.haltnam,
-                    MIN(
+                    coalesce(MIN(
                         CASE 
                             WHEN substanz_haltung_bewertung.kuerzel = 'BCE' 
                                  AND substanz_haltung_bewertung.station < haltungen_untersucht.laenge  
                             THEN substanz_haltung_bewertung.station
                             ELSE haltungen_untersucht.laenge
                         END
-                    ),  
+                    ),haltungen.laenge),  
                 haltungen_substanz_bewertung.pk,
                 haltungen_substanz_bewertung.objektklasse_gesamt
                 FROM 
