@@ -115,6 +115,9 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         list_schacht = ["Zufluss", "Wasserstand", "Wassertiefe", "Durchfluss"]
         list_haltung = ["Durchfluss", "Geschwindigkeit", "Auslastung", "Wassertiefe"]
         layer = iface.activeLayer()
+        if layer is None:
+            logger.warning("Bitte wählen Sie für den Längsschnitt Haltungen oder Schächte aus")
+            return
         x = layer.source()
 
         dbname, table, geom, sql = get_qkanlayer_attributes(x)

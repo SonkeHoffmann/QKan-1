@@ -3204,10 +3204,8 @@ class Subkans_funkt:
                                     haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
                                     AND ((substanz_haltung_bewertung.kuerzel = 'BCA') OR ( substanz_haltung_bewertung.kuerzel = 'BCB'))
                                      AND substanz_haltung_bewertung.untersuchtag like ? """
-            data = (date,)
-            db.sql(sql,parameters=data)
 
-        if self.datetype == 'Importdatum':
+        elif self.datetype == 'Importdatum':
 
             sql = """SELECT
                                     substanz_haltung_bewertung.pk,
@@ -3246,8 +3244,12 @@ class Subkans_funkt:
                                     haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
                                     AND ((substanz_haltung_bewertung.kuerzel = 'BCA') OR ( substanz_haltung_bewertung.kuerzel = 'BCB'))
                                      AND substanz_haltung_bewertung.createdat like ? """
-            data = (date,)
-            db.sql(sql,parameters=data)
+        else:
+            logger.error_code(f"{self.datetype=} ist ungültig")
+            raise BaseException
+
+        data = (date,)
+        db.sql(sql,parameters=data)
 
         for attr in db.fetchall():
             if attr[10] == "BCA" and (attr[11] == "C" or attr[11] == "E"):
@@ -3454,6 +3456,8 @@ class Subkans_funkt:
         except:
             pass
 
+        db.commit()
+
         if self.datetype == 'Befahrungsdatum':
 
             sql = """
@@ -3491,7 +3495,7 @@ class Subkans_funkt:
                """
 
 
-        if self.datetype == 'Importdatum':
+        elif self.datetype == 'Importdatum':
 
             sql = """
                    SELECT
@@ -3525,7 +3529,9 @@ class Subkans_funkt:
                    FROM substanz_haltung_bewertung, haltungen
                    WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? AND Zustandsklasse_ges IN (0,1,2,3,4)
                """
-
+        else:
+            logger.error_code(f"{self.datetype=} ist ungültig")
+            raise BaseException
 
             # if not self.db.sqlyml(
             #         'subkans_zustand_bc_ab_createdat',
@@ -3534,9 +3540,7 @@ class Subkans_funkt:
             # ):
             #     return False
         data = (date,)
-
         db.sql(sql, parameters=data)
-        db.commit()
 
 
         for attr in db.fetchall():
@@ -5630,7 +5634,7 @@ class Subkans_funkt:
         # db = spatialite_connect(db_x)
         # curs = db.cursor()
 
-        logger.debug(f'Start der SChadensueberlagerung: {datetime.now()}')
+        logger.debug(f'Start der Schadensueberlagerung: {datetime.now()}')
         # nach DWA
 
         try:
@@ -5701,10 +5705,6 @@ class Subkans_funkt:
                                                                AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                            """
-            data = (date, )
-
-            db.sql(sql,parameters=data)
-
         elif self.datetype == 'Importdatum':
             sql = """
                                                                SELECT
@@ -5748,9 +5748,12 @@ class Subkans_funkt:
                                                                AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                            """
-            data = (date,)
+        else:
+            logger.error_code(f"{self.datetype=} ist ungültig")
+            raise BaseException
 
-            db.sql(sql,parameters=data)
+        data = (date,)
+        db.sql(sql,parameters=data)
 
         dictionary = {}
         entf_list = []
@@ -5848,9 +5851,6 @@ class Subkans_funkt:
                                                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                                        """
-                data = (date,)
-
-                db.sql(sql,parameters=data)
 
             elif self.datetype == 'Importdatum':
                 sql = """
@@ -5895,9 +5895,12 @@ class Subkans_funkt:
                                                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                                        """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             for attr in db.fetchall():
 
@@ -6007,11 +6010,7 @@ class Subkans_funkt:
                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                        """
-                data = (date,)
-
-                db.sql(sql,parameters=data)
-
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                            SELECT
                                substanz_haltung_bewertung.pk,
@@ -6055,9 +6054,12 @@ class Subkans_funkt:
                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                        """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             dictionary = {}
             entf_list = []
@@ -6437,11 +6439,7 @@ class Subkans_funkt:
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
                                    """
-                data = (date,)
-
-                db.sql(sql,parameters=data)
-
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                                        SELECT
                                            substanz_haltung_bewertung.pk,
@@ -6485,9 +6483,12 @@ class Subkans_funkt:
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
                                    """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             dictionary = {}
             entf_list = []
@@ -6682,11 +6683,7 @@ class Subkans_funkt:
                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                                        """
-                data = (date,)
-
-                db.sql(sql,parameters=data)
-
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                                            SELECT
                                                substanz_haltung_bewertung.pk,
@@ -6729,9 +6726,12 @@ class Subkans_funkt:
                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                                        """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             dictionary = {}
             entf_list = []
@@ -6835,11 +6835,7 @@ class Subkans_funkt:
                                                    AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                    AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                """
-                data = (date, )
-
-                db.sql(sql,parameters=data)
-
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                                                    SELECT
                                                        substanz_haltung_bewertung.pk,
@@ -6882,9 +6878,12 @@ class Subkans_funkt:
                                                    AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                    AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             dictionary = {}
             entf_list = []
@@ -6987,11 +6986,7 @@ class Subkans_funkt:
                                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                    """
-                data = (date,)
-
-                db.sql(sql,parameters=data)
-
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                                                        SELECT
                                                            substanz_haltung_bewertung.pk,
@@ -7034,9 +7029,12 @@ class Subkans_funkt:
                                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                    """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             dictionary = {}
             entf_list = []
@@ -7139,11 +7137,7 @@ class Subkans_funkt:
                                                                AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                            """
-                data = (date, )
-
-                db.sql(sql,parameters=data)
-
-            if self.datetype == 'Importdatum':
+            elif self.datetype == 'Importdatum':
                 sql = """
                                                                SELECT
                                                                    substanz_haltung_bewertung.pk,
@@ -7186,9 +7180,12 @@ class Subkans_funkt:
                                                                AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                            """
-                data = (date,)
+            else:
+                logger.error_code(f"{self.datetype=} ist ungültig")
+                raise BaseException
 
-                db.sql(sql,parameters=data)
+            data = (date,)
+            db.sql(sql,parameters=data)
 
             dictionary = {}
             entf_list = []
@@ -7344,11 +7341,7 @@ class Subkans_funkt:
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
                                    """
-                data = (date, )
-
-                db.sql(sql,parameters=data)
-
-        if self.datetype == 'Importdatum':
+        elif self.datetype == 'Importdatum':
             if haltung:
                 sql = """
                                        SELECT
@@ -7393,9 +7386,11 @@ class Subkans_funkt:
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
                                    """
-                data = (date,)
-
-                db.sql(sql,parameters=data)
+        else:
+            logger.error_code(f"{self.datetype=} ist ungültig")
+            raise BaseException
+        data = (date,)
+        db.sql(sql,parameters=data)
 
         for attr in db1.fetchall():
 
