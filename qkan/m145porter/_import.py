@@ -369,26 +369,26 @@ class ImportTask:
 
         # Hinweis: 'None' bewirkt beim Import eine Zuordnung unabhängig vom Wert
         daten = [
-            ('Regenwasser', 'R', 'Regenwasser', 1, 2, 3, 'KR', 0, 0),
-            ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1,2, 'KS', 0, 0),
-            ('Mischwasser', 'M', 'Mischwasser', 0, 0, 1, 'KM', 0, 0),
-            ('RW Druckleitung', 'RD', 'Transporthaltung ohne Anschlüsse', 1, 2, None, 'DR', 1, 1),
-            ('SW Druckleitung', 'SD', 'Transporthaltung ohne Anschlüsse', 2, 1, None, 'DS', 1, 1),
-            ('MW Druckleitung', 'MD', 'Transporthaltung ohne Anschlüsse', 0, 0, None, 'DW', 1, 1),
-            ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse', 1, 2, None, None, 1, 0),
-            ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse', 0, 0, None, None, 1, 0),
-            ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, 'Ge', None, 0, None),
-            ('Grund-/Schichtenwasser', 'GS', 'Grund-/Schichtenwasser', None, None, 'Gr', None, 0, None),
-            ('Sonstige', 'SO', 'Sonstige', None, None, 'So', None, 0, None),
-            ('Entlastungshaltung', 'E', 'Entlastungshaltung', None, None, 'E', None, 0, None),
-            ('Drainagewasser', 'DW', 'Drainagewasser', None, None, 'D', None, 0, None),
-            ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None, 0, None),
+            ('Regenwasser', 'R', 'Regenwasser', 1, 2, 3, 'KR'),
+            ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1,2, 'KS'),
+            ('Mischwasser', 'M', 'Mischwasser', 0, 0, 1, 'KM'),
+            ('RW Druckleitung', 'RD', 'Transporthaltung ohne Anschlüsse', 1, 2, None, 'DR'),
+            ('SW Druckleitung', 'SD', 'Transporthaltung ohne Anschlüsse', 2, 1, None, 'DS'),
+            ('MW Druckleitung', 'MD', 'Transporthaltung ohne Anschlüsse', 0, 0, None, 'DW'),
+            ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse', 1, 2, None, None),
+            ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse', 0, 0, None, None),
+            ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, 'Ge', None),
+            ('Grund-/Schichtenwasser', 'GS', 'Grund-/Schichtenwasser', None, None, 'Gr', None),
+            ('Sonstige', 'SO', 'Sonstige', None, None, 'So', None),
+            ('Entlastungshaltung', 'E', 'Entlastungshaltung', None, None, 'E', None),
+            ('Drainagewasser', 'DW', 'Drainagewasser', None, None, 'D', None),
+            ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None),
         ]
 
         daten = [el + (el[0],) for el in daten]         # repeat last argument for ? after WHERE in SQL
         sql = """INSERT INTO entwaesserungsarten (
-                    bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m145, isybau, transport, druckdicht)
-                    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m145, isybau)
+                    SELECT ?, ?, ?, ?, ?, ?, ?
                     WHERE ? NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"""
         if not self.db_qkan.sql(sql, "he8_import Referenzliste entwaesserungsarten", daten, many=True):
             return False

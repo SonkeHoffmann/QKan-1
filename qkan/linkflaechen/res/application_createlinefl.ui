@@ -549,7 +549,7 @@ berücksichtigen</string>
      <string extracomment="Anzahl der abhängig von den Filteroptionen zu berücksichtigenden ganzen Flächen"/>
     </property>
     <property name="text">
-     <string>ohne &quot;Transport&quot;-Haltungen</string>
+     <string>nur Haltungen mit RW-Anschluss</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

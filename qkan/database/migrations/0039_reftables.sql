@@ -63,7 +63,7 @@ DROP TRIGGER IF EXISTS trig_new_hal;
 DROP TRIGGER IF EXISTS trig_mod_hal;
 
 -- Tabelle Symbole ergänzen
-CREATE TABLE symbole (
+CREATE TABLE IF NOT EXISTS symbole (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
     art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
@@ -76,7 +76,7 @@ SELECT AddGeometryColumn('symbole', 'geom', {epsg}, 'POINT', 2);
 
 SELECT CreateSpatialIndex('symbole', 'geom');
 
-CREATE TABLE symbolkatalog (
+CREATE TABLE IF NOT EXISTS symbolkatalog (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
     gruppe TEXT,                            /* zur Aufteilung auf verschiedene Layer */

@@ -199,10 +199,10 @@ def layersadapt(
                     del dbQK
                     return
                 project.addMapLayer(layer, False)
-                atcGroup = layersRoot.findGroup(group)
-                if atcGroup is None:
-                    atcGroup = layersRoot.addGroup(group)
-                atcGroup.addLayer(layer)
+                actGroup = layersRoot.findGroup(group)
+                if actGroup is None:
+                    actGroup = layersRoot.addGroup(group)
+                actGroup.addLayer(layer)
 
                 layer_exists = True
                 logger.debug("k_layersadapt: Layer ergänzt: {}".format(layername))

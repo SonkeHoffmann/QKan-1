@@ -132,7 +132,7 @@ class SurfaceTask:
 
             sql = """
                 WITH haltungen_selected AS (SELECT ROWID, pk, geom, haltnam, schoben, schunten 
-                    FROM haltungen WHERE not transport AND (haltungstyp = 'Haltung' OR haltungstyp IS NULL)),
+                    FROM haltungen WHERE rwanschluss = 1 AND (haltungstyp = 'Haltung' OR haltungstyp IS NULL)),
                     fls AS (SELECT ROWID, pk, geom, haltnam, schoben, schunten,
                         MakePolygon(AddPoint(AddPoint(AddPoint(
                             MakeLine(pointn(geom,1),
@@ -146,7 +146,7 @@ class SurfaceTask:
                         haltungen_selected 
                     )
                     SELECT n1.pk AS objid,
-                    printf('Haltung "%s" und "%s" kreuzen sich. Eine von beiden muss als Transporthaltung markiert werden!', 
+                    printf('Haltung "%s" und "%s" kreuzen sich. Bei einer von beiden muss der Status RW-Anschlüsse deaktiviert werden!', 
                         n1.haltnam, n2.haltnam) AS bemerkung
                     FROM fls AS n1 JOIN fls AS n2 ON ST_Intersects(n1.geof, n2.geof) = 1
                     WHERE 
@@ -211,7 +211,7 @@ class SurfaceTask:
                 "native:geometrybyexpression",
                 {
                     'INPUT': f'spatialite://dbname=\'{self.database_qkan}\' table="haltungen" (geom) '
-                             f'sql=(haltungstyp IS NULL or haltungstyp = \'Haltung\') and not transport and '
+                             f'sql=(haltungstyp IS NULL or haltungstyp = \'Haltung\') and rwanschluss = 1 and '
                              f'geom IS NOT NULL{auswahl_hal}',
                     'OUTPUT_GEOMETRY': 0,
                     'WITH_Z': False,

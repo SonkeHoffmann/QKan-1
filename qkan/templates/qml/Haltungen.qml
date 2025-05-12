@@ -2312,11 +2312,12 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="sohleunten"/>
     <field editable="1" name="strasse"/>
     <field editable="1" name="teilgebiet"/>
-    <field editable="1" name="transport"/>
+    <field editable="1" name="rwanschluss"/>
     <field editable="1" name="xschob"/>
     <field editable="1" name="xschun"/>
     <field editable="1" name="yschob"/>
     <field editable="1" name="yschun"/>
+    <field editable="1" name="transport"/>
   </editable>
   <labelOnTop>
     <field labelOnTop="0" name="aussendurchmesser"/>
@@ -2349,11 +2350,12 @@ def my_form_open(dialog, layer, feature):
     <field labelOnTop="0" name="sohleunten"/>
     <field labelOnTop="0" name="strasse"/>
     <field labelOnTop="0" name="teilgebiet"/>
-    <field labelOnTop="0" name="transport"/>
+    <field labelOnTop="0" name="rwanschluss"/>
     <field labelOnTop="0" name="xschob"/>
     <field labelOnTop="0" name="xschun"/>
     <field labelOnTop="0" name="yschob"/>
     <field labelOnTop="0" name="yschun"/>
+    <field labelOnTop="0" name="transport"/>
   </labelOnTop>
   <reuseLastValue>
     <field reuseLastValue="0" name="aussendurchmesser"/>
@@ -2383,11 +2385,12 @@ def my_form_open(dialog, layer, feature):
     <field reuseLastValue="0" name="sohleunten"/>
     <field reuseLastValue="0" name="strasse"/>
     <field reuseLastValue="0" name="teilgebiet"/>
-    <field reuseLastValue="0" name="transport"/>
+    <field reuseLastValue="0" name="rwanschluss"/>
     <field reuseLastValue="0" name="xschob"/>
     <field reuseLastValue="0" name="xschun"/>
     <field reuseLastValue="0" name="yschob"/>
     <field reuseLastValue="0" name="yschun"/>
+    <field reuseLastValue="0" name="transport"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

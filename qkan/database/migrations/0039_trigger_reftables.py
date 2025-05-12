@@ -1,7 +1,8 @@
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
 from qgis.utils import pluginDirectory
-from qkan import QKan
+from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
+from qkan import QKan, enums
 import os
 
 VERSION = "3.4.3"  # must be higher than previous one and correspond with qkan_database.py: __dbVersion__
@@ -21,6 +22,114 @@ def run(dbcon: DBConnection) -> bool:
         logger.debug(f"Fehler in {__name__}.trigger reftables, {sql_file =}")
         return False
 
+    sql = "ALTER TABLE haltungen ADD COLUMN rwanschluss INTEGER DEFAULT 0"
+    if not dbcon.sql(sql, 'migration_0039 add rwanschluss'):
+        logger.error_code("migration_0039 add col failed")
+
+    sql = "UPDATE haltungen SET rwanschluss = NOT transport"
+    if not dbcon.sql(sql, 'migration_0039 set rwanschluss'):
+        logger.error_code("migration_0039 set rwanschluss failed")
+
+    if not dbcon.alter_table(
+        "haltungen",
+        [
+            "haltnam TEXT",
+            "schoben TEXT                                    /* join schaechte.schnam */",
+            "schunten TEXT                                   /* join schaechte.schnam */",
+            "hoehe REAL                                      /* Profilhoehe (mm) */",
+            "breite REAL                                     /* Profilbreite (mm) */",
+            "laenge REAL                                     /* abweichende Haltungslänge (m) */",
+            "aussendurchmesser REAL",
+            "sohleoben REAL                                  /* abweichende Sohlhöhe oben (m) */",
+            "sohleunten REAL                                 /* abweichende Sohlhöhe unten (m) */",
+            "baujahr INT",
+            "eigentum TEXT                                   /* join eigentum.name */",
+            "teilgebiet TEXT                                 /* join teilgebiet.tgnam */",
+            "strasse TEXT                                    /* für ISYBAU benötigt */",
+            "profilnam TEXT DEFAULT 'Kreisquerschnitt'       /* join profile.profilnam */",
+            "entwart TEXT DEFAULT 'Regenwasser'              /* join entwaesserungsarten.bezeichnung */",
+            "material TEXT                                   /* join material.bezeichnung */",
+            "profilauskleidung TEXT",
+            "innenmaterial TEXT",
+            "ks REAL DEFAULT 1.5                             /* abs. Rauheit (Prandtl-Colebrook) */",
+            "haltungstyp TEXT DEFAULT 'Haltung'              /* join haltungstypen.bezeichnung */",
+            "simstatus TEXT DEFAULT 'vorhanden'              /* join simulationsstatus.bezeichnung */",
+            "rwanschluss INTEGER DEFAULT 0                   /* soll bei TEZG-Erstellung berücksichtigt werden */",
+            "druckdicht INTEGER DEFAULT 0                    /* Druckleitung */",
+            "xschob REAL",
+            "yschob REAL",
+            "xschun REAL",
+            "yschun REAL",
+            "kommentar TEXT",
+            "createdat TEXT DEFAULT CURRENT_TIMESTAMP",
+            "transport INTEGER",
+        ]
+    ):
+        logger.error_code(
+            f"Fehler bei Migration zu Version {VERSION}: "
+            "Hinzufügen von Attribut rwanschluss in Tabelle haltungen fehlgeschlagen"
+        )
+
+    logger.info('Attribut "rwanschluss" in Tabelle "haltungen" ergänzt')
+
     dbcon.commit()
+
+    project = QgsProject.instance()
+    layerbez = enums.LAYERBEZ.HALTUNGEN.value
+
+    uri = QgsDataSourceUri()
+    uri.setDatabase(QKan.config.database.qkan)
+    schema = ''
+    table = 'haltungen'
+    geom_column = 'geom'
+    uri.setDataSource(schema, table, geom_column)
+    layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
+    x = QgsProject.instance()
+    try:
+        x.removeMapLayer(x.mapLayersByName(layerbez)[0].id())
+    except:
+        pass
+
+    templatepath = os.path.join(pluginDirectory("qkan"), "templates")
+    qmlpath = os.path.join(templatepath, "qml", "Haltungen.qml")
+    formsDir = os.path.join(pluginDirectory("qkan"), "forms")
+
+    try:
+        layer.loadNamedStyle(qmlpath)
+        layer.triggerRepaint()
+    except:
+        logger.error_code('Stildatei "Haltungen.qml" wurde nicht gefunden!\nAbbruch!')
+
+    # Adapt path to forms directory
+    editFormConfig = layer.editFormConfig()
+    editFormConfig.setUiForm(os.path.join(formsDir, 'qkan_haltungen.ui'))
+    layer.setEditFormConfig(editFormConfig)
+    QgsProject.instance().addMapLayer(layer, False)
+
+    group = 'Haltungen'
+    layersRoot = QgsProject.instance().layerTreeRoot()
+    actGroup = layersRoot.findGroup(group)
+    if actGroup is None:
+        actGroup = layersRoot.addGroup(group)
+    actGroup.insertLayer(0, layer)
+
+    # Alias für hinzugefügtes Feld "rwanschluss"
+    # project = QgsProject.instance()
+    # layers = project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)
+    # for layer in layers:
+    #     index = layer.fields().indexFromName('rwanschluss')
+    #     layer.setFieldAlias(index, 'RW-Anschlüsse')
+    #
+    #     tableconfig = layer.attributeTableConfig()
+    #     columns = tableconfig.columns()
+    #     names = [col.name for col in columns]
+    #     # rwanschluss zu Pos. 15 verschieben
+    #     index = names.index('rwanschluss')
+    #     columns.insert(15, columns.pop(index))
+    #     # transport ans Ende verschieben
+    #     index = names.index('transport')
+    #     columns.append(columns.pop(index))
+    #     tableconfig.setColumns(columns)
+    #     layer.setAttributeTabelConfig(tableconfig)
 
     return True

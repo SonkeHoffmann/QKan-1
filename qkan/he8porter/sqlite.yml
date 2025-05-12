@@ -3,8 +3,8 @@ ATTACH DATABASE '{filnam}' AS he"
 
 he8_insert_entwaesserungsarten: "
 INSERT INTO entwaesserungsarten (
-bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau, transport, druckdicht)
-SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau)
+SELECT ?, ?, ?, ?, ?, ?, ?
 WHERE ? NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"
 
 he8_insert_haltungstypen: "
@@ -30,16 +30,6 @@ SELECT
 WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM simulationsstatus)"
 
 he8_insert_schaechte: "
-WITH ea AS (
-    SELECT 
-        bezeichnung, 
-        he_nr, 
-        CASE WHEN transport IS NULL THEN 0 ELSE transport END AS transport, 
-        CASE WHEN druckdicht IS NULL THEN 0 ELSE druckdicht END AS druckdicht
-    FROM entwaesserungsarten 
-    WHERE he_nr IS NOT NULL
-    GROUP BY he_nr, transport, druckdicht
-)
 INSERT INTO schaechte (
     schnam, xsch, ysch, 
     sohlhoehe, deckelhoehe, 
@@ -69,10 +59,8 @@ SELECT
                        )
     ) AS geom
 FROM he.Schacht AS sh
-LEFT JOIN ea 
-ON ea.he_nr = sh.Kanalart AND 
-    sh.DruckdichterDeckel = ea.druckdicht AND
-    ea.transport = 0 
+LEFT JOIN entwaesserungsarten AS ea 
+ON ea.he_nr = sh.Kanalart
 LEFT JOIN simulationsstatus AS si 
 ON si.he_nr = sh.Planungsstatus
 LEFT JOIN schaechte AS sq
@@ -142,16 +130,6 @@ ON sh.Name = sq.schnam
 WHERE sq.pk IS NULL"
 
 he8_insert_haltungen: "
-WITH ea AS (
-    SELECT 
-        bezeichnung, 
-        he_nr, 
-        CASE WHEN transport IS NULL THEN 0 ELSE transport END AS transport, 
-        CASE WHEN druckdicht IS NULL THEN 0 ELSE druckdicht END AS druckdicht
-    FROM entwaesserungsarten 
-    WHERE he_nr IS NOT NULL
-    GROUP BY he_nr, transport, druckdicht
-)
 INSERT INTO haltungen (
     haltnam, schoben, schunten, 
     hoehe, breite, laenge, 
@@ -184,10 +162,8 @@ SELECT
 FROM he.Rohr AS ro
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON ro.Profiltyp = pr.he_nr
-LEFT JOIN ea 
-ON ea.he_nr = ro.Kanalart AND 
-    ea.druckdicht = (ro.Abflussart % 2) AND
-    ea.transport = ro.Transporthaltung 
+LEFT JOIN entwaesserungsarten AS ea 
+ON ea.he_nr = ro.Kanalart
 LEFT JOIN simulationsstatus AS si 
 ON si.he_nr = ro.Planungsstatus
 LEFT JOIN haltungen AS ha
@@ -312,16 +288,6 @@ ON ha.haltnam = sr.Name
 WHERE ha.pk IS NULL"
 
 he8_insert_qregler: "
-WITH ea AS (
-    SELECT 
-        bezeichnung, 
-        he_nr, 
-        CASE WHEN transport IS NULL THEN 0 ELSE transport END AS transport, 
-        CASE WHEN druckdicht IS NULL THEN 0 ELSE druckdicht END AS druckdicht
-    FROM entwaesserungsarten 
-    WHERE he_nr IS NOT NULL
-    GROUP BY he_nr, transport, druckdicht
-)
 INSERT INTO haltungen (
     haltnam, schoben, schunten, 
     hoehe, breite, laenge, 
@@ -352,10 +318,8 @@ SELECT
 FROM he.qRegler AS qr
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON qr.Profiltyp = pr.he_nr
-LEFT JOIN ea 
-ON ea.he_nr = qr.Kanalart AND 
-    ea.druckdicht = (qr.Abflussart % 2) AND
-    ea.transport = qr.Transporthaltung 
+LEFT JOIN entwaesserungsarten AS ea 
+ON ea.he_nr = qr.Kanalart
 LEFT JOIN simulationsstatus AS si 
 ON si.he_nr = qr.Planungsstatus
 LEFT JOIN haltungen AS ha
@@ -363,16 +327,6 @@ ON ha.haltnam = qr.Name
 WHERE ha.pk IS NULL"
 
 he8_insert_hregler: "
-WITH ea AS (
-    SELECT 
-        bezeichnung, 
-        he_nr, 
-        CASE WHEN transport IS NULL THEN 0 ELSE transport END AS transport, 
-        CASE WHEN druckdicht IS NULL THEN 0 ELSE druckdicht END AS druckdicht
-    FROM entwaesserungsarten 
-    WHERE he_nr IS NOT NULL
-    GROUP BY he_nr, transport, druckdicht
-)
 INSERT INTO haltungen (
     haltnam, schoben, schunten, 
     hoehe, breite, laenge, 
@@ -403,10 +357,8 @@ SELECT
 FROM he.hRegler AS hr
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON hr.Profiltyp = pr.he_nr
-LEFT JOIN ea 
-ON ea.he_nr = hr.Kanalart AND 
-    ea.druckdicht = (hr.Abflussart % 2) AND
-    ea.transport = hr.Transporthaltung 
+LEFT JOIN entwaesserungsarten AS ea 
+ON ea.he_nr = hr.Kanalart
 LEFT JOIN simulationsstatus AS si 
 ON si.he_nr = hr.Planungsstatus
 LEFT JOIN haltungen AS ha

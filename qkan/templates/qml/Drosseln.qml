@@ -613,7 +613,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="transport" configurationFlags="None">
+    <field name="rwanschluss" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>

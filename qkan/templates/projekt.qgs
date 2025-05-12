@@ -19184,7 +19184,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -19270,7 +19270,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Verlustbeiwert"/>
         <alias index="20" field="haltungstyp" name="Haltungstyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name=""/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name="x_anf"/>
         <alias index="25" field="yschob" name="y_anf"/>
@@ -19302,7 +19302,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="1" field="haltungstyp" expression="'Drossel'"/>
         <default applyOnUpdate="0" field="simstatus" expression="'vorhanden'"/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -19334,7 +19334,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -19366,7 +19366,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -19409,7 +19409,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="strasse"/>
           <column width="-1" hidden="0" type="field" name="profilauskleidung"/>
           <column width="-1" hidden="0" type="field" name="innenmaterial"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="1" type="actions"/>
         </columns>
@@ -19469,7 +19469,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="xschob"/>
         <field editable="1" name="xschun"/>
         <field editable="1" name="yschob"/>
@@ -19504,7 +19504,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
         <field name="xschun" labelOnTop="0"/>
         <field name="yschob" labelOnTop="0"/>
@@ -19539,7 +19539,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
         <field name="xschun" reuseLastValue="0"/>
         <field name="yschob" reuseLastValue="0"/>
@@ -20862,20 +20862,6 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
-          <editWidget type="Hidden">
-            <config>
-              <Option/>
-            </config>
-          </editWidget>
-        </field>
-        <field name="druckdicht" configurationFlags="None">
-          <editWidget type="Hidden">
-            <config>
-              <Option/>
-            </config>
-          </editWidget>
-        </field>
       </fieldConfiguration>
       <aliases>
         <alias index="0" field="pk" name=""/>
@@ -20887,8 +20873,6 @@ def my_form_open(dialog, layer, feature):
         <alias index="6" field="m150" name="Bez (DWA-M 150)"/>
         <alias index="7" field="m145" name="Bez (DWA-M 145)"/>
         <alias index="8" field="bemerkung" name="Bemerkung"/>
-        <alias index="9" field="transport" name="Transport"/>
-        <alias index="10" field="druckdicht" name=""/>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" field="pk" expression=""/>
@@ -20900,8 +20884,6 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="m150" expression=""/>
         <default applyOnUpdate="0" field="m145" expression=""/>
         <default applyOnUpdate="0" field="bemerkung" expression=""/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
-        <default applyOnUpdate="0" field="druckdicht" expression=""/>
       </defaults>
       <constraints>
         <constraint exp_strength="0" unique_strength="2" field="pk" notnull_strength="2" constraints="3"/>
@@ -20913,8 +20895,6 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="m150" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="m145" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="bemerkung" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
       </constraints>
       <constraintExpressions>
         <constraint desc="" field="pk" exp=""/>
@@ -20926,8 +20906,6 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="m150" exp=""/>
         <constraint desc="" field="m145" exp=""/>
         <constraint desc="" field="bemerkung" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
-        <constraint desc="" field="druckdicht" exp=""/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
@@ -20938,14 +20916,12 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="pk"/>
           <column width="-1" hidden="0" type="field" name="bezeichnung"/>
           <column width="-1" hidden="0" type="field" name="kuerzel"/>
-          <column width="194" hidden="0" type="field" name="bemerkung"/>
           <column width="139" hidden="0" type="field" name="he_nr"/>
           <column width="-1" hidden="0" type="field" name="kp_nr"/>
-          <column width="-1" hidden="0" type="field" name="m145"/>
           <column width="-1" hidden="0" type="field" name="isybau"/>
-          <column width="-1" hidden="1" type="field" name="transport"/>
-          <column width="-1" hidden="1" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="m150"/>
+          <column width="-1" hidden="0" type="field" name="m145"/>
+          <column width="194" hidden="0" type="field" name="bemerkung"/>
           <column width="-1" hidden="1" type="actions"/>
         </columns>
       </attributetableconfig>
@@ -20988,7 +20964,6 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="m145"/>
         <field editable="1" name="m150"/>
         <field editable="1" name="pk"/>
-        <field editable="1" name="transport"/>
       </editable>
       <labelOnTop>
         <field name="bemerkung" labelOnTop="0"/>
@@ -21001,7 +20976,6 @@ def my_form_open(dialog, layer, feature):
         <field name="m145" labelOnTop="0"/>
         <field name="m150" labelOnTop="0"/>
         <field name="pk" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
       </labelOnTop>
       <reuseLastValue>
         <field name="bemerkung" reuseLastValue="0"/>
@@ -21014,7 +20988,6 @@ def my_form_open(dialog, layer, feature):
         <field name="m145" reuseLastValue="0"/>
         <field name="m150" reuseLastValue="0"/>
         <field name="pk" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
       </reuseLastValue>
       <dataDefinedFieldProperties/>
       <widgets/>
@@ -22118,7 +22091,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -22204,7 +22177,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Verlustbeiwert"/>
         <alias index="20" field="haltungstyp" name="Haltungstyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name=""/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name="x_anf"/>
         <alias index="25" field="yschob" name="y_anf"/>
@@ -22236,7 +22209,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="1" field="haltungstyp" expression="'GrundSeitenauslass'"/>
         <default applyOnUpdate="0" field="simstatus" expression="'vorhanden'"/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -22268,7 +22241,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -22300,7 +22273,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -22341,7 +22314,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="strasse"/>
           <column width="-1" hidden="0" type="field" name="profilauskleidung"/>
           <column width="-1" hidden="0" type="field" name="innenmaterial"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="baujahr"/>
           <column width="-1" hidden="0" type="field" name="eigentum"/>
@@ -22403,7 +22376,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="xschob"/>
         <field editable="1" name="xschun"/>
         <field editable="1" name="yschob"/>
@@ -22438,7 +22411,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
         <field name="xschun" labelOnTop="0"/>
         <field name="yschob" labelOnTop="0"/>
@@ -22473,7 +22446,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
         <field name="xschun" reuseLastValue="0"/>
         <field name="yschob" reuseLastValue="0"/>
@@ -25043,7 +25016,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="CheckBox">
             <config>
               <Option type="Map">
@@ -25152,7 +25125,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Rauheitsbeiwert"/>
         <alias index="20" field="haltungstyp" name="Elementtyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name="Transporthaltung"/>
+        <alias index="22" field="rwanschluss" name="RW-Anschlüsse"/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name="x Anfang"/>
         <alias index="25" field="yschob" name="y Anfang"/>
@@ -25184,7 +25157,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="0" field="haltungstyp" expression=""/>
         <default applyOnUpdate="0" field="simstatus" expression=""/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -25216,7 +25189,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -25248,7 +25221,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -25285,7 +25258,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="ks"/>
           <column width="-1" hidden="0" type="field" name="haltungstyp"/>
           <column width="-1" hidden="0" type="field" name="simstatus"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="xschob"/>
           <column width="-1" hidden="0" type="field" name="yschob"/>
@@ -25353,7 +25326,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="xschob"/>
         <field editable="1" name="xschun"/>
         <field editable="1" name="yschob"/>
@@ -25390,7 +25363,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
         <field name="xschun" labelOnTop="0"/>
         <field name="yschob" labelOnTop="0"/>
@@ -25424,7 +25397,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
         <field name="xschun" reuseLastValue="0"/>
         <field name="yschob" reuseLastValue="0"/>
@@ -27414,7 +27387,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -27500,7 +27473,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Verlustbeiwert"/>
         <alias index="20" field="haltungstyp" name="Haltungstyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name=""/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name="x_anf"/>
         <alias index="25" field="yschob" name="y_anf"/>
@@ -27532,7 +27505,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="1" field="haltungstyp" expression="'H-Regler'"/>
         <default applyOnUpdate="0" field="simstatus" expression="'vorhanden'"/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -27564,7 +27537,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -27596,7 +27569,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -27637,7 +27610,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="strasse"/>
           <column width="-1" hidden="0" type="field" name="profilauskleidung"/>
           <column width="-1" hidden="0" type="field" name="innenmaterial"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="baujahr"/>
           <column width="-1" hidden="0" type="field" name="eigentum"/>
@@ -27699,7 +27672,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="xschob"/>
         <field editable="1" name="xschun"/>
         <field editable="1" name="yschob"/>
@@ -27734,7 +27707,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
         <field name="xschun" labelOnTop="0"/>
         <field name="yschob" labelOnTop="0"/>
@@ -27769,7 +27742,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
         <field name="xschun" reuseLastValue="0"/>
         <field name="yschob" reuseLastValue="0"/>
@@ -30896,7 +30869,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -30985,7 +30958,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Verlustbeiwert"/>
         <alias index="20" field="haltungstyp" name="Sonderelementtyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name="RW-Anschlüsse"/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name=""/>
         <alias index="25" field="yschob" name=""/>
@@ -31017,7 +30990,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="0" field="haltungstyp" expression=""/>
         <default applyOnUpdate="0" field="simstatus" expression=""/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -31049,7 +31022,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -31081,7 +31054,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -31118,7 +31091,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="ks"/>
           <column width="-1" hidden="0" type="field" name="haltungstyp"/>
           <column width="-1" hidden="0" type="field" name="simstatus"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="xschob"/>
           <column width="-1" hidden="0" type="field" name="yschob"/>
@@ -31190,7 +31163,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="steuersch"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="volanf"/>
         <field editable="1" name="volges"/>
         <field editable="1" name="xschob"/>
@@ -31233,7 +31206,7 @@ def my_form_open(dialog, layer, feature):
         <field name="steuersch" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="volanf" labelOnTop="0"/>
         <field name="volges" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
@@ -31276,7 +31249,7 @@ def my_form_open(dialog, layer, feature):
         <field name="steuersch" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="volanf" reuseLastValue="0"/>
         <field name="volges" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
@@ -32415,7 +32388,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -32501,7 +32474,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Verlustbeiwert"/>
         <alias index="20" field="haltungstyp" name="Haltungstyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name="RW-Anschlüsse"/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name="x_anf"/>
         <alias index="25" field="yschob" name="y_anf"/>
@@ -32533,7 +32506,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="1" field="haltungstyp" expression="'Q-Regler'"/>
         <default applyOnUpdate="0" field="simstatus" expression="'vorhanden'"/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -32565,7 +32538,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -32597,7 +32570,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -32638,7 +32611,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="strasse"/>
           <column width="-1" hidden="0" type="field" name="profilauskleidung"/>
           <column width="-1" hidden="0" type="field" name="innenmaterial"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="baujahr"/>
           <column width="-1" hidden="0" type="field" name="eigentum"/>
@@ -32700,7 +32673,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="xschob"/>
         <field editable="1" name="xschun"/>
         <field editable="1" name="yschob"/>
@@ -32735,7 +32708,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
         <field name="xschun" labelOnTop="0"/>
         <field name="yschob" labelOnTop="0"/>
@@ -32770,7 +32743,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
         <field name="xschun" reuseLastValue="0"/>
         <field name="yschob" reuseLastValue="0"/>
@@ -35962,7 +35935,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -36048,7 +36021,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Verlustbeiwert"/>
         <alias index="20" field="haltungstyp" name="Haltungstyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name=""/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name="x_anf"/>
         <alias index="25" field="yschob" name="y_anf"/>
@@ -36080,7 +36053,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="1" field="haltungstyp" expression="'Schieber'"/>
         <default applyOnUpdate="0" field="simstatus" expression="'vorhanden'"/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -36112,7 +36085,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -36144,7 +36117,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -36185,7 +36158,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="strasse"/>
           <column width="-1" hidden="0" type="field" name="profilauskleidung"/>
           <column width="-1" hidden="0" type="field" name="innenmaterial"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="0" type="field" name="baujahr"/>
           <column width="-1" hidden="0" type="field" name="eigentum"/>
@@ -36247,7 +36220,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="xschob"/>
         <field editable="1" name="xschun"/>
         <field editable="1" name="yschob"/>
@@ -36282,7 +36255,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="xschob" labelOnTop="0"/>
         <field name="xschun" labelOnTop="0"/>
         <field name="yschob" labelOnTop="0"/>
@@ -36317,7 +36290,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="xschob" reuseLastValue="0"/>
         <field name="xschun" reuseLastValue="0"/>
         <field name="yschob" reuseLastValue="0"/>
@@ -40465,7 +40438,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="transport" configurationFlags="None">
+        <field name="rwanschluss" configurationFlags="None">
           <editWidget type="TextEdit">
             <config>
               <Option/>
@@ -40554,7 +40527,7 @@ def my_form_open(dialog, layer, feature):
         <alias index="19" field="ks" name="Überfallbeiwert"/>
         <alias index="20" field="haltungstyp" name="Sonderelementtyp"/>
         <alias index="21" field="simstatus" name="Planungsstatus"/>
-        <alias index="22" field="transport" name=""/>
+        <alias index="22" field="rwanschluss" name=""/>
         <alias index="23" field="druckdicht" name=""/>
         <alias index="24" field="xschob" name=""/>
         <alias index="25" field="yschob" name=""/>
@@ -40586,7 +40559,7 @@ def my_form_open(dialog, layer, feature):
         <default applyOnUpdate="0" field="ks" expression=""/>
         <default applyOnUpdate="0" field="haltungstyp" expression="'Wehr'"/>
         <default applyOnUpdate="0" field="simstatus" expression="'vorhanden'"/>
-        <default applyOnUpdate="0" field="transport" expression=""/>
+        <default applyOnUpdate="0" field="rwanschluss" expression=""/>
         <default applyOnUpdate="0" field="druckdicht" expression=""/>
         <default applyOnUpdate="0" field="xschob" expression=""/>
         <default applyOnUpdate="0" field="yschob" expression=""/>
@@ -40618,7 +40591,7 @@ def my_form_open(dialog, layer, feature):
         <constraint exp_strength="0" unique_strength="0" field="ks" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="haltungstyp" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="simstatus" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="transport" notnull_strength="0" constraints="0"/>
+        <constraint exp_strength="0" unique_strength="0" field="rwanschluss" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="druckdicht" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="xschob" notnull_strength="0" constraints="0"/>
         <constraint exp_strength="0" unique_strength="0" field="yschob" notnull_strength="0" constraints="0"/>
@@ -40650,7 +40623,7 @@ def my_form_open(dialog, layer, feature):
         <constraint desc="" field="ks" exp=""/>
         <constraint desc="" field="haltungstyp" exp=""/>
         <constraint desc="" field="simstatus" exp=""/>
-        <constraint desc="" field="transport" exp=""/>
+        <constraint desc="" field="rwanschluss" exp=""/>
         <constraint desc="" field="druckdicht" exp=""/>
         <constraint desc="" field="xschob" exp=""/>
         <constraint desc="" field="yschob" exp=""/>
@@ -40693,7 +40666,7 @@ def my_form_open(dialog, layer, feature):
           <column width="-1" hidden="0" type="field" name="strasse"/>
           <column width="-1" hidden="0" type="field" name="profilauskleidung"/>
           <column width="-1" hidden="0" type="field" name="innenmaterial"/>
-          <column width="-1" hidden="0" type="field" name="transport"/>
+          <column width="-1" hidden="0" type="field" name="rwanschluss"/>
           <column width="-1" hidden="0" type="field" name="druckdicht"/>
           <column width="-1" hidden="1" type="actions"/>
         </columns>
@@ -40757,7 +40730,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="sohleunten"/>
         <field editable="1" name="strasse"/>
         <field editable="1" name="teilgebiet"/>
-        <field editable="1" name="transport"/>
+        <field editable="1" name="rwanschluss"/>
         <field editable="1" name="uebeiwert"/>
         <field editable="1" name="wehrtyp"/>
         <field editable="1" name="wnam"/>
@@ -40799,7 +40772,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" labelOnTop="0"/>
         <field name="strasse" labelOnTop="0"/>
         <field name="teilgebiet" labelOnTop="0"/>
-        <field name="transport" labelOnTop="0"/>
+        <field name="rwanschluss" labelOnTop="0"/>
         <field name="uebeiwert" labelOnTop="0"/>
         <field name="wehrtyp" labelOnTop="0"/>
         <field name="wnam" labelOnTop="0"/>
@@ -40841,7 +40814,7 @@ def my_form_open(dialog, layer, feature):
         <field name="sohleunten" reuseLastValue="0"/>
         <field name="strasse" reuseLastValue="0"/>
         <field name="teilgebiet" reuseLastValue="0"/>
-        <field name="transport" reuseLastValue="0"/>
+        <field name="rwanschluss" reuseLastValue="0"/>
         <field name="uebeiwert" reuseLastValue="0"/>
         <field name="wehrtyp" reuseLastValue="0"/>
         <field name="wnam" reuseLastValue="0"/>

@@ -55,21 +55,21 @@ class EmptyDBDialog(QKanDBDialog, QKanProjectDialog, FORM_CLASS_empty_db):  # ty
         """Referenztabellen mit Datensätzen für HE-Import füllen"""
 
         daten = [
-            ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR', 0, 0),
-            ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1, 'S', 'KS', 0, 0),
-            ('Mischwasser', 'M', 'Mischwasser', 0, 0, 'M', 'KM', 0, 0),
-            ('RW Druckleitung', 'RD', 'Transporthaltung ohne Anschlüsse', 1, 2, None, 'DR', 1, 1),
-            ('SW Druckleitung', 'SD', 'Transporthaltung ohne Anschlüsse', 2, 1, None, 'DS', 1, 1),
-            ('MW Druckleitung', 'MD', 'Transporthaltung ohne Anschlüsse', 0, 0, None, 'DW', 1, 1),
-            ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse', 1, 2, None, None, 1, 0),
-            ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse', 0, 0, None, None, 1, 0),
-            ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, None, None, 0, None),
-            ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None, 0, None),
+            ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR'),
+            ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1, 'S', 'KS'),
+            ('Mischwasser', 'M', 'Mischwasser', 0, 0, 'M', 'KM'),
+            ('RW Druckleitung', 'RD', 'Transporthaltung ohne Anschlüsse', 1, 2, None, 'DR'),
+            ('SW Druckleitung', 'SD', 'Transporthaltung ohne Anschlüsse', 2, 1, None, 'DS'),
+            ('MW Druckleitung', 'MD', 'Transporthaltung ohne Anschlüsse', 0, 0, None, 'DW'),
+            ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse', 1, 2, None, None),
+            ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse', 0, 0, None, None),
+            ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, None, None),
+            ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None),
         ]
 
         sql = """INSERT INTO entwaesserungsarten (
-                    bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau, transport, druckdicht)
-                    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?"""
+                    bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau)
+                    SELECT ?, ?, ?, ?, ?, ?, ?"""
         if not self.db_qkan.sql(sql, "he8_import Referenzlisten", daten, many=True):
             return False
 

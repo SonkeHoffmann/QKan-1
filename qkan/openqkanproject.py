@@ -1,6 +1,6 @@
 import os
 
-from qgis.core import Qgis, QgsMessageLog
+from qgis.core import Qgis, QgsMessageLog, QgsProject
 from qgis.utils import iface, pluginDirectory
 
 from qkan import QKan, enums
@@ -69,3 +69,12 @@ def initQKanProject():
         fehlende_layer_ergaenzen=False,
         anpassen_auswahl=enums.SelectedLayers.ALL,
     )
+
+    # Alias für hinzugefügtes Feld "rwanschluss", kann ab 1.2027 wieder entfernt werden
+    project = QgsProject.instance()
+    layers = project.mapLayersByName('Haltungen')
+    for layer in layers:
+        fields = layer.fields()
+        for i, field in enumerate(fields):
+            if field.name() == 'rwanschluss':
+                layer.setFieldAlias(i, 'hat RW-Anschlüsse')

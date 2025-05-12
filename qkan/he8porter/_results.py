@@ -136,10 +136,10 @@ class ResultsTask:
                 group = 'Ergebnisse'
                 layersRoot = QgsProject.instance().layerTreeRoot()
                 QgsProject.instance().addMapLayer(vlayer, False)
-                atcGroup = layersRoot.findGroup(group)
-                if atcGroup is None:
-                    atcGroup = layersRoot.addGroup(group)
-                atcGroup.addLayer(vlayer)
+                actGroup = layersRoot.findGroup(group)
+                if actGroup is None:
+                    actGroup = layersRoot.addGroup(group)
+                actGroup.addLayer(vlayer)
 
                 # Stilvorlage nach Benutzerwahl laden
                 templatepath = os.path.join(pluginDirectory("qkan"), "templates")

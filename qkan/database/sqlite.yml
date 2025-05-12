@@ -34,8 +34,8 @@ CREATE TABLE haltungen (
     ks REAL DEFAULT 1.5,                            /* abs. Rauheit (Prandtl-Colebrook) */
     haltungstyp TEXT DEFAULT 'Haltung',             /* join haltungstypen.bezeichnung */
     simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
-    transport INTEGER,                              /* Transporthaltung? muss für nicht-RW/MW etc. NULL sein*/
-    druckdicht INTEGER DEFAULT 0,                   /* Druckleitung? */
+    rwanschluss INTEGER DEFAULT 0,                  /* soll bei TEZG-Erstellung berücksichtigt werden */
+    druckdicht INTEGER DEFAULT 0,                   /* Druckleitung */
     xschob REAL,
     yschob REAL,
     xschun REAL,
@@ -49,7 +49,7 @@ SELECT AddGeometryColumn('haltungen', 'geom', :epsg, 'LINESTRING', 2)"
 database_createspatialindex_haltungen_geom: "
 SELECT CreateSpatialIndex('haltungen', 'geom')"
 
-# Datenuebernahme aus Schaechten
+# Datenuebernahme aus Schaechten -- aktuell deaktiviert
 database_haltungen_trig_new_hal: "
 CREATE TRIGGER IF NOT EXISTS trig_new_hal
 AFTER INSERT ON haltungen
@@ -101,7 +101,7 @@ BEGIN
     WHERE pk = new.pk AND (schunten = '' OR schunten IS NULL);
 END;"
 
-# Datenuebernahme aus Schaechten
+# Datenuebernahme aus Schaechten -- aktuell deaktiviert
 database_haltungen_trig_mod_hal: "
 CREATE TRIGGER IF NOT EXISTS trig_mod_hal
 AFTER UPDATE OF geom ON haltungen
@@ -395,7 +395,7 @@ CREATE TABLE schaechte_untersucht (
     max_ZS INTEGER, 
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP
-    )"
+);"
 
 database_add_schaechte_untersucht_geop: "
 SELECT AddGeometryColumn('schaechte_untersucht', 'geop', :epsg, 'POINT',2);"
@@ -437,7 +437,7 @@ CREATE TABLE untersuchdat_schacht (
     ZS INTEGER,
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP
-    )"
+);"
 
 database_add_untersuchdat_schacht_geom: "
 SELECT AddGeometryColumn('untersuchdat_schacht', 'geom', :epsg, 'LINESTRING',2);"
@@ -525,7 +525,7 @@ CREATE TABLE linkfl (
     fliesszeitkanal REAL,       /* HE8 LaengsteFliesszeitKanal (Typ 1) */
     fliesszeitflaeche REAL      /* HE8 FliesszeitOberflaeche (Typ 1) oder */
                                 /* Schwerpunktlaufzeit (Typ 2) */
-    )"
+);"
 
 database_add_linkfl_geom: "
 SELECT AddGeometryColumn('linkfl', 'geom', :epsg, 'MULTIPOLYGON',2)"
@@ -911,7 +911,7 @@ CREATE TABLE profile (
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT
-    )"
+);"
 
 # Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
 database_haltungen_trig_update_profile: "
@@ -935,10 +935,8 @@ CREATE TABLE entwaesserungsarten (
     isybau TEXT,                        /* BFR Abwasser */
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
-    bemerkung TEXT, 
-    transport INTEGER,                  /* Transporthaltung? - deprecated */
-    druckdicht INTEGER                  /* Druckleitung? - deprecated */
-    )"
+    bemerkung TEXT
+);"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
 database_haltungen_trig_update_entwaesserungsarten: "
@@ -1078,7 +1076,7 @@ CREATE TABLE IF NOT EXISTS reflist_zustand (
     charakterisierung1 TEXT,
     charakterisierung2 TEXT,
     bereich TEXT
-    )"
+);"
 
 database_create_info: "
 CREATE TABLE info (
@@ -1093,7 +1091,7 @@ subject, value)
 VALUES ('version', ?);"
 
 database_create_symbole: "
-CREATE TABLE symbole (
+CREATE TABLE IF NOT EXISTS symbole (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
     art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
@@ -1109,7 +1107,7 @@ database_createspatialindex_symbole_geom: "
 SELECT CreateSpatialIndex('symbole', 'geom')"
 
 database_create_symbolkatalog: "
-CREATE TABLE symbolkatalog (
+CREATE TABLE IF NOT EXISTS symbolkatalog (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
     gruppe TEXT,                            /* zur Aufteilung auf verschiedene Layer */

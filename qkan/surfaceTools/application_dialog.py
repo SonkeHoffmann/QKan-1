@@ -137,7 +137,7 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
         self.lw_teilgebiete.itemClicked.connect(self.click_lw_teilgebiete)
         self.cb_selHalActive.stateChanged.connect(self.click_hal_selection)
         self.cb_selTgbActive.stateChanged.connect(self.click_tgb_selection)
-        self.pb_cleanup_transport.clicked.connect(self.click_pb_cleanup)
+        self.pb_ueberlappende_haltungen.clicked.connect(self.click_pb_ueberlappende_haltungen)
         self.button_box.helpRequested.connect(self.click_help)
 
     def click_lw_hal_entw(self) -> None:
@@ -186,37 +186,48 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
             # Anzahl in der Anzeige aktualisieren
             self.count_selection()
 
-    def click_pb_cleanup(self) -> None:
+    def click_pb_ueberlappende_haltungen(self) -> None:
         """Bereinigung des Haltungsstatus angeschlossen
 
         Für nicht berücksichtigte Entwässerungsarten muss dieser undefiniert sein,
         damit sie in der entsprechenden Plausibilitätsabfrage nicht berücksichtigt werden.
         """
 
+        liste_hal_entw: List[str] = list_selected_items(self.lw_hal_entw)
+        liste_teilgebiete: List[str] = list_selected_items(self.lw_teilgebiete)
+
         with DBConnection(dbname=self.database_qkan) as db_qkan:
             if not db_qkan.connected:
                 logger.error(
-                    "Fehler in surfaceTools.application_dialog.VoronoiDialog.click_pb_cleanup:\n"
+                    "Fehler in surfaceTools.application_dialog.VoronoiDialog.click_pb_ueberlappende_haltungen:\n"
                     "QKan-Datenbank %s wurde nicht"
                     " gefunden oder war nicht aktuell!\nAbbruch!", self.database_qkan
                 )
                 return
 
-            liste_teilgebiete: List[str] = list_selected_items(self.lw_teilgebiete)
-
-            if len(liste_teilgebiete) == 0:
-                # keine Änderung nötig
+            if len(liste_teilgebiete) == 0 or len(liste_hal_entw) == 0:
+                # keine Prüfung
                 return
             else:
-                auswahl = "('{}')".format("', '".join(liste_teilgebiete))
+                if len(liste_hal_entw) == 0:
+                    auswahl = ""
+                else:
+                    auswahl = " and haltungen.entwart in ('{}')".format(
+                        "', '".join(liste_hal_entw)
+                    )
 
-                sql = f"UPDATE haltungen SET transport = NULL WHERE NOT IN {auswahl}"
-                if not db_qkan.sql(sql, mute_logger=True):
+                if len(liste_teilgebiete) != 0:
+                    auswahl += " and haltungen.teilgebiet in ('{}')".format(
+                        "', '".join(liste_teilgebiete)
+                    )
+
+                sql = f"SELECT count(*) AS anzahl FROM haltungen WHERE (rwanschluss = 1) {auswahl}"
+                if not db_qkan.sql(sql, "ueberlappende_haltungen"):
                     return
 
-    def selected_entwarten(self) -> list[str]:
-        """Liest die im Formularfeld 'Zur berücksichtigende Entwässerungsarten' ausgewählten
-        Entwässerungsarten"""
+        anz_ueberlappend = db_qkan.fetchone()
+        self.lf_anzahl_ueberlappend.setText(str(anz_ueberlappend[0]))
+
 
     def count_selection(self) -> None:
         """Zählt nach Änderung der Auswahl in der Liste im Formular die Anzahl
@@ -262,7 +273,7 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
                     "', '".join(liste_teilgebiete)
                 )
 
-            sql = f"SELECT count(*) AS anzahl FROM haltungen WHERE (transport = 0) {auswahl}"
+            sql = f"SELECT count(*) AS anzahl FROM haltungen WHERE (rwanschluss = 1) {auswahl}"
             if not db_qkan.sql(sql, "count_selection"):
                 return
             anz_haltungen = db_qkan.fetchone()
@@ -322,7 +333,7 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
             sql = """INSERT INTO teilgebiete (tgnam)
                     SELECT teilgebiet FROM haltungen 
                     WHERE teilgebiet IS NOT NULL AND teilgebiet <> ''
-                    AND (transport = 0)
+                    AND (rwanschluss = 1)
                     AND teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
                     GROUP BY teilgebiet"""
             if not db_qkan.sql(sql, "QKan_LinkFlaechen (1)"):
@@ -331,7 +342,7 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
             db_qkan.commit()
 
             # Abfragen der Tabelle haltungen nach vorhandenen Entwässerungsarten
-            sql = 'SELECT "entwart" FROM "haltungen" WHERE transport = 0 GROUP BY "entwart"'
+            sql = 'SELECT "entwart" FROM "haltungen" WHERE rwanschluss = 1 GROUP BY "entwart"'
             if not db_qkan.sql(sql, "{__name__}.VoronoiDialog.prepareDialog(1)", mute_logger=True):
                 return False
             daten = db_qkan.fetchall()

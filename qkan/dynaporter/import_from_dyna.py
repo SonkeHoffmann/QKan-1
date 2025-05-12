@@ -697,22 +697,22 @@ def _reftables(db_qkan: DBConnection) -> bool:
     # 1. add data to table entwaesserungsarten
 
     daten = [
-        ('Regenwasser', 'R', 'Freispiegelabfluss im geschlossenen Profil, Regenwassersystem', 1, 2, 'R', 'KR', 0, 0),
-        ('Schmutzwasser', 'S', 'Freispiegelabfluss im geschlossenen Profil, Schmutzwassersystem', 2, 1, 'S', 'KS', 0, 0),
-        ('Mischwasser', 'M', 'Freispiegelabfluss im geschlossenen Profil, Mischwassersystem', 0, 0, 'M', 'KM', 0, 0),
-        ('RW Druckleitung', 'RD', 'Druckabfluss, Regenwassersystem', 1, None, None, 'DR', 1, 1),
-        ('SW Druckleitung', 'SD', 'Druckabfluss, Schmutzwassersystem', 2, None, None, 'DS', 1, 1),
-        ('MW Druckleitung', 'MD', 'Druckabfluss, Mischwassersystem', 0, None, None, 'DM', 1, 1),
-        ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse, Regenwassersystem', 1, 2, None, None, 1, 0),
-        ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse, Mischwassersystem', 0, 0, None, None, 1, 0),
-        ('Rinne/Graben', 'RG', 'Abfluss im offenen Profil, Regenwassersystem (Rinnen, Gerinne, z.B. Entwässerungsgräben)', None, None, None, 'GR', None, None),
-        ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None, None, None),
+        ('Regenwasser', 'R', 'Freispiegelabfluss im geschlossenen Profil, Regenwassersystem', 1, 2, 'R', 'KR'),
+        ('Schmutzwasser', 'S', 'Freispiegelabfluss im geschlossenen Profil, Schmutzwassersystem', 2, 1, 'S', 'KS'),
+        ('Mischwasser', 'M', 'Freispiegelabfluss im geschlossenen Profil, Mischwassersystem', 0, 0, 'M', 'KM'),
+        ('RW Druckleitung', 'RD', 'Druckabfluss, Regenwassersystem', 1, None, None, 'DR'),
+        ('SW Druckleitung', 'SD', 'Druckabfluss, Schmutzwassersystem', 2, None, None, 'DS'),
+        ('MW Druckleitung', 'MD', 'Druckabfluss, Mischwassersystem', 0, None, None, 'DM'),
+        ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse, Regenwassersystem', 1, 2, None, None),
+        ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse, Mischwassersystem', 0, 0, None, None),
+        ('Rinne/Graben', 'RG', 'Abfluss im offenen Profil, Regenwassersystem (Rinnen, Gerinne, z.B. Entwässerungsgräben)', None, None, None, 'GR'),
+        ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None),
     ]
 
     daten = [el + (el[0],) for el in daten]  # trick: repeat last argument for ? after WHERE in SQL
     sql = """INSERT INTO entwaesserungsarten (
-                bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau, transport, druckdicht)
-                SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+                bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau)
+                SELECT ?, ?, ?, ?, ?, ?, ?
                 WHERE ? NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"""
     if not db_qkan.sql(sql, "dyna_import Referenzliste entwaesserungsarten", daten, many=True):
         return False
