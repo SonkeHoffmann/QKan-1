@@ -7,13 +7,13 @@ from typing import Any, cast
 
 from qgis.core import QgsMessageLog, Qgis
 
-LOG_NOTICE = logging.DEBUG + 1
-LOG_ERROR_USER = logging.ERROR + 1
-LOG_ERROR_DATA = logging.ERROR + 1
+LOG_NOTICE = logging.INFO + 1
 LOG_ERROR_CODE = logging.ERROR + 1
+LOG_ERROR_DATA = logging.ERROR + 2
+LOG_ERROR_USER = logging.ERROR + 3
 
 
-def _translate_level(level: int) -> Qgis.MessageLevel:
+def _translate_level(level: int) -> int:
     """Translate logging level to Qgis logging level."""
     return {
         logging.CRITICAL: Qgis.Critical,
@@ -22,6 +22,11 @@ def _translate_level(level: int) -> Qgis.MessageLevel:
         logging.INFO: Qgis.Info,
         logging.DEBUG: Qgis.Info,
         logging.NOTSET: Qgis.NoLevel,
+        # custom levels
+        LOG_NOTICE: Qgis.Info,
+        LOG_ERROR_CODE: Qgis.Critical,
+        LOG_ERROR_DATA: Qgis.Critical,
+        LOG_ERROR_USER: Qgis.Critical,
     }.get(level, Qgis.NoLevel)
 
 
@@ -29,20 +34,27 @@ class QgisPanelLogger(StreamHandler):
     def __init__(self, iface):
         super().__init__()
         self.iface = iface
+
     def emit(self, record: LogRecord) -> None:
         msg = self.format(record)
 
-        # Notify user about warnings and above
+        # noinspection PyArgumentList
         QgsMessageLog.logMessage(
             tag="QKan",
             message=msg,
-            notifyUser=record.levelno >= 30,
+            # notify user on notice or about warnings and above
+            notifyUser=(
+                record.levelno == LOG_NOTICE or record.levelno >= logging.WARNING
+            ),
             level=_translate_level(record.levelno),
         )
-        self.iface.openMessageLog()
+
+        if record.levelno >= logging.WARNING:
+            self.iface.openMessageLog()
 
 
 class QKanLogger(logging.Logger):
+    # todo: remove exceptions, raise explicitly instead
     def notice(self, msg: str, *args: Any, **kwargs: Any):
         self._log(LOG_NOTICE, msg, args, **kwargs)
 
@@ -86,9 +98,9 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
     # register custom logging levels
     for level, name in [
         (LOG_NOTICE, "NOTICE"),
-        (LOG_ERROR_USER, "ERROR_USER"),
-        (LOG_ERROR_DATA, "ERROR_DATA"),
         (LOG_ERROR_CODE, "ERROR_CODE"),
+        (LOG_ERROR_DATA, "ERROR_DATA"),
+        (LOG_ERROR_USER, "ERROR_USER"),
     ]:
         logging.addLevelName(level, name)
 
