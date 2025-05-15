@@ -7453,6 +7453,8 @@ class Subkans_funkt:
                     haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
                 JOIN 
                     haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = haltungen_untersucht.haltnam
+                JOIN 
+                    haltungen ON haltungen_substanz_bewertung.haltnam = haltungen.haltnam
                 GROUP BY 
                     substanz_haltung_bewertung.untersuchhal;"""
 

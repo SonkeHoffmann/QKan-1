@@ -13,6 +13,7 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
     QgsDataSourceUri,
+    QgsFeatureRequest,
 )
 from qgis.utils import iface, spatialite_connect
 
@@ -170,19 +171,6 @@ class Info:
 
         new_plot.set_title(title, fontsize=9, fontweight='bold', pad=25)
 
-    def _barofpie(self, figure, title, values, pos):
-
-        new_plot = figure.add_subplot(pos)
-        y_pos = np.arange(len(values))
-        box = new_plot.get_position()
-        #new_plot.set_position([box.x0 + 0.05, box.y0, box.width * 0.5, box.height * 0.75])
-        new_plot.barh(y_pos, values, align='center')
-        new_plot.set_yticks(y_pos)
-        new_plot.set_yticklabels(values)
-        new_plot.invert_yaxis()
-        new_plot.set_xlabel('Durchmesser')
-        new_plot.set_title(title)
-        #TODO: Verbindungslinien zwischen plot und bar zeichnen
 
 
     def _pieplot(self, sql, figure, title, pos, pos2):
@@ -251,7 +239,7 @@ class Info:
         new_plot = figure.add_subplot(pos)
         #figure.subplots_adjust(left=0.05, right=0.95, wspace=1.5, hspace=2)
 
-        if title == 'Gesamtlänge je Zustandsklasse':
+        if title == 'Gesamtlänge je Zustandsklasse (Haltung)':
 
             bar_colors = {
                 '0': 'red',
@@ -288,6 +276,91 @@ class Info:
             patch_5 = mpatches.Patch(color='steelblue', label='ZK 5: schadensfrei')
             patch_6 = mpatches.Patch(color='grey', label='ZK -: keine verewertbare Inspektion')
             new_plot.legend(handles=[patch_0,patch_1,patch_2,patch_3,patch_4,patch_5,patch_6], fontsize=8)
+
+            # if self.combo == 'Originale Bewertung':
+            #     def onclick(event):
+            #         # for layer in QgsProject.instance().mapLayers().values():
+            #         #     if isinstance(layer, QgsVectorLayer):
+            #         #         layer.removeSelection()
+            #         for i, bar in enumerate(bars):
+            #             if bar.contains(event)[0]:
+            #                 layer = QgsProject.instance().mapLayersByName('Zustand_Haltungen_gesamt')[0]
+            #                 if layer is not None:
+            #                     value = str(labels[i])
+            #                     field = "Baujahr"
+            #
+            #                     if value == 'None':
+            #                         expr = f'"{field}" IS NULL'
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #                     else:
+            #                         expr = f'"{field}" = \'{value}\''
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #
+            #                 return
+            #
+            #     figure.canvas.mpl_connect('button_press_event', onclick)
+            # elif self.combo == 'Automatisierte Bewertung':
+            #     def onclick(event):
+            #         # for layer in QgsProject.instance().mapLayers().values():
+            #         #     if isinstance(layer, QgsVectorLayer):
+            #         #         layer.removeSelection()
+            #         for i, bar in enumerate(bars):
+            #             if bar.contains(event)[0]:
+            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+            #                 if layer is not None:
+            #                     value = str(labels[i])
+            #                     field = "Baujahr"
+            #
+            #                     if value == 'None':
+            #                         expr = f'"{field}" IS NULL'
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #                     else:
+            #                         expr = f'"{field}" = \'{value}\''
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #
+            #                 return
+            #
+            #     figure.canvas.mpl_connect('button_press_event', onclick)
+            # elif self.combo == 'Bewertung nach SubKanS':
+            #     def onclick(event):
+            #         # for layer in QgsProject.instance().mapLayers().values():
+            #         #     if isinstance(layer, QgsVectorLayer):
+            #         #         layer.removeSelection()
+            #         for i, bar in enumerate(bars):
+            #             if bar.contains(event)[0]:
+            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+            #                 if layer is not None:
+            #                     value = str(labels[i])
+            #                     field = "Baujahr"
+            #
+            #                     if value == 'None':
+            #                         expr = f'"{field}" IS NULL'
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #                     else:
+            #                         expr = f'"{field}" = \'{value}\''
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #
+            #                 return
+            #
+            #     figure.canvas.mpl_connect('button_press_event', onclick)
 
         elif title == 'Anzahl je Zustandsklasse':
 
@@ -327,6 +400,92 @@ class Info:
             patch_6 = mpatches.Patch(color='grey', label='ZK -: keine verewertbare Inspektion')
             new_plot.legend(handles=[patch_0,patch_1,patch_2,patch_3,patch_4,patch_5,patch_6], fontsize=8)
 
+            # if self.combo == 'Originale Bewertung':
+            #     def onclick(event):
+            #         # for layer in QgsProject.instance().mapLayers().values():
+            #         #     if isinstance(layer, QgsVectorLayer):
+            #         #         layer.removeSelection()
+            #         for i, bar in enumerate(bars):
+            #             if bar.contains(event)[0]:
+            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+            #                 if layer is not None:
+            #                     value = str(labels[i])
+            #                     field = "Baujahr"
+            #
+            #                     if value == 'None':
+            #                         expr = f'"{field}" IS NULL'
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #                     else:
+            #                         expr = f'"{field}" = \'{value}\''
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #
+            #                 return
+            #
+            #     figure.canvas.mpl_connect('button_press_event', onclick)
+            # elif self.combo == 'Automatisierte Bewertung':
+            #     def onclick(event):
+            #         # for layer in QgsProject.instance().mapLayers().values():
+            #         #     if isinstance(layer, QgsVectorLayer):
+            #         #         layer.removeSelection()
+            #         for i, bar in enumerate(bars):
+            #             if bar.contains(event)[0]:
+            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+            #                 if layer is not None:
+            #                     value = str(labels[i])
+            #                     field = "Baujahr"
+            #
+            #                     if value == 'None':
+            #                         expr = f'"{field}" IS NULL'
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #                     else:
+            #                         expr = f'"{field}" = \'{value}\''
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #
+            #                 return
+            #
+            #     figure.canvas.mpl_connect('button_press_event', onclick)
+            # elif self.combo == 'Bewertung nach SubKanS':
+            #     def onclick(event):
+            #         # for layer in QgsProject.instance().mapLayers().values():
+            #         #     if isinstance(layer, QgsVectorLayer):
+            #         #         layer.removeSelection()
+            #         for i, bar in enumerate(bars):
+            #             if bar.contains(event)[0]:
+            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+            #                 if layer is not None:
+            #                     value = str(labels[i])
+            #                     field = "Baujahr"
+            #
+            #                     if value == 'None':
+            #                         expr = f'"{field}" IS NULL'
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #                     else:
+            #                         expr = f'"{field}" = \'{value}\''
+            #                         request = QgsFeatureRequest().setFilterExpression(expr)
+            #                         ids = [f.id() for f in layer.getFeatures(request)]
+            #                         layer.setSelectedFeatures(ids)
+            #                         iface.mapCanvas().zoomToSelected(layer)
+            #
+            #                 return
+            #
+            #     figure.canvas.mpl_connect('button_press_event', onclick)
+
+
         elif title == 'Gesamtlänge je Substanzklasse':
 
             bar_colors = {
@@ -365,17 +524,141 @@ class Info:
             patch_6 = mpatches.Patch(color='grey', label='SK -: keine verwertbare Inspektion')
             new_plot.legend(handles=[patch_0, patch_1, patch_2, patch_3, patch_4, patch_5, patch_6], fontsize=8)
 
-        elif title == 'Baujahre':
+            # def onclick(event):
+            #     # for layer in QgsProject.instance().mapLayers().values():
+            #     #     if isinstance(layer, QgsVectorLayer):
+            #     #         layer.removeSelection()
+            #     for i, bar in enumerate(bars):
+            #         if bar.contains(event)[0]:
+            #             layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+            #             if layer is not None:
+            #                 value = str(labels[i])
+            #                 field = "Baujahr"
+            #
+            #                 if value == 'None':
+            #                     expr = f'"{field}" IS NULL'
+            #                     request = QgsFeatureRequest().setFilterExpression(expr)
+            #                     ids = [f.id() for f in layer.getFeatures(request)]
+            #                     layer.setSelectedFeatures(ids)
+            #                     iface.mapCanvas().zoomToSelected(layer)
+            #                 else:
+            #                     expr = f'"{field}" = \'{value}\''
+            #                     request = QgsFeatureRequest().setFilterExpression(expr)
+            #                     ids = [f.id() for f in layer.getFeatures(request)]
+            #                     layer.setSelectedFeatures(ids)
+            #                     iface.mapCanvas().zoomToSelected(layer)
+            #
+            #
+            #
+            #             return
+            # figure.canvas.mpl_connect('button_press_event', onclick)
+
+        elif title == 'Baujahre Haltungen':
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
-            # iface.messageBar().pushMessage("Error",
-            #                                str(labels),
-            #                                level=Qgis.Critical)
+
             if len(labels)>1:
-                label = [str(baujahr) if baujahr % 50 == 0 else '' for baujahr in labels]
+                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
                 new_plot.set_xticklabels(label)
-            new_plot.bar(y_pos, values, align='center')
+            else:
+                new_plot.set_xticklabels(labels)
+
+            #new_plot.bar(y_pos, values, align='center')
+            bars = new_plot.bar(y_pos, values, align='center')
+            new_plot.set_xticks(y_pos)
+            new_plot.set_xlabel(ylabel)
+            new_plot.set_ylabel(xlabel)
+            new_plot.set_title(title)
+            new_plot.autoscale()
+
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+                            field = "Baujahr"
+
+                            if value == 'None':
+                                expr = f'"{field}" IS NULL'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.setSelectedFeatures(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                expr = f'"{field}" = \'{value}\''
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.setSelectedFeatures(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+
+
+                        return
+            figure.canvas.mpl_connect('button_press_event', onclick)
+
+        elif title == 'Baujahre HA-Leitungen':
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+
+            if len(labels)>1:
+                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
+                new_plot.set_xticklabels(label)
+            else:
+                new_plot.set_xticklabels(labels)
+            #new_plot.bar(y_pos, values, align='center')
+            bars = new_plot.bar(y_pos, values, align='center')
+            new_plot.set_xticks(y_pos)
+            new_plot.set_xlabel(ylabel)
+            new_plot.set_ylabel(xlabel)
+            new_plot.set_title(title)
+            new_plot.autoscale()
+
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('HA-Leitungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+                            field = "Baujahr"
+
+                            if value == 'None':
+                                expr = f'"{field}" IS NULL'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                expr = f'"{field}" = \'{value}\''
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+
+
+                        return
+            figure.canvas.mpl_connect('button_press_event', onclick)
+
+        elif title == 'Baujahre der Schächte':
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+
+            if len(labels)>1:
+                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
+                new_plot.set_xticklabels(label)
+            else:
+                new_plot.set_xticklabels(labels)
+            bars = new_plot.bar(y_pos, values, align='center')
             new_plot.set_xticks(y_pos)
             #new_plot.invert_yaxis()
             new_plot.set_xlabel(ylabel)
@@ -383,23 +666,32 @@ class Info:
             new_plot.set_title(title)
             new_plot.autoscale()
 
-        elif title == 'Baujahre der Schächte':
-            y_pos = np.arange(len(values))
-            box = new_plot.get_position()
-            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
-            # iface.messageBar().pushMessage("Error",
-            #                                str(labels),
-            #                                level=Qgis.Critical)
-            if len(labels)>1:
-                label = [str(baujahr) if baujahr % 50 == 0 else '' for baujahr in labels]
-                new_plot.set_xticklabels(label)
-            new_plot.bar(y_pos, values, align='center')
-            new_plot.set_xticks(y_pos)
-            #new_plot.invert_yaxis()
-            new_plot.set_xlabel(ylabel)
-            new_plot.set_ylabel(xlabel)
-            new_plot.set_title(title)
-            new_plot.autoscale()
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('Schächte')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+                            field = 'baujahr'
+
+                            if value == 'None':
+                                expr = f'"{field}" IS NULL'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                expr = f'"{field}" = \'{value}\''
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+                        return
+            figure.canvas.mpl_connect('button_press_event', onclick)
 
         elif title == 'Anzahl der Schäden nach Schadenskürzel' or title == 'Gesamtschadenslänge je Schaden':
             y_pos = np.arange(len(values))
@@ -420,11 +712,11 @@ class Info:
             # plt.title("Back-to-Back Bar Chart")
             # plt.show()
 
-        elif title == 'Gesamtlänge je Durchmesser' or title == 'Gesamtlänge je Profil' or title == 'Verteilung der Haltungslängen':
+        elif title == 'Gesamtlänge je Durchmesser (Haltung)' or title == 'Gesamtlänge je Profil (Haltung)' or title == 'Verteilung der Haltungslängen':
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
-            new_plot.bar(y_pos, values, align='center')
+            bars = new_plot.bar(y_pos, values, align='center')
             new_plot.set_xticks(y_pos)
             new_plot.set_xticklabels(labels, rotation=90)
             #new_plot.invert_yaxis()
@@ -433,11 +725,194 @@ class Info:
             new_plot.set_title(title)
             new_plot.autoscale()
 
-        else:
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+
+                            if ylabel == 'Durchmesser bis mm':
+                                field = 'Breite'
+                                if value == 'bis 200':
+                                    min_value = 0
+                                    max_value = 200
+                                elif value == 'bis 300':
+                                    min_value = 200
+                                    max_value = 300
+                                elif value == 'bis 300':
+                                    min_value = 200
+                                    max_value = 300
+                                elif value == 'bis 400':
+                                    min_value = 300
+                                    max_value = 400
+                                elif value == 'bis 500':
+                                    min_value = 400
+                                    max_value = 500
+                                elif value == 'bis 750':
+                                    min_value = 500
+                                    max_value = 750
+                                elif value == 'bis 1000':
+                                    min_value = 750
+                                    max_value = 1000
+                                elif value == 'bis 1250':
+                                    min_value = 1000
+                                    max_value = 1250
+
+                                expr = f'"{field}" >= {min_value} AND "{field}" <= {max_value}'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            elif ylabel == 'Profil':
+                                field = 'Profilbezeichnung'
+                                value = str(labels[i])
+                                expr = f'"{field}" = \'{value}\''
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                field = 'Haltungslänge'
+                                if value == '0-10':
+                                    min_value = 0
+                                    max_value = 10
+                                elif value == '10-20':
+                                    min_value = 10
+                                    max_value = 20
+                                elif value == '20-30':
+                                    min_value = 20
+                                    max_value = 30
+                                elif value == '30-40':
+                                    min_value = 30
+                                    max_value = 40
+                                elif value == '40-50':
+                                    min_value = 40
+                                    max_value = 50
+                                elif value == '50-60':
+                                    min_value = 50
+                                    max_value = 60
+                                elif value == '60-7ß':
+                                    min_value = 60
+                                    max_value = 70
+                                elif value == '70+':
+                                    min_value = 70
+                                    max_value = 10000
+                                expr = f'"{field}" >= {min_value} AND "{field}" <= {max_value}'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+
+                        return
+            figure.canvas.mpl_connect('button_press_event', onclick)
+        elif title == 'Gesamtlänge je Durchmesser (HA-Leitung)' or title == 'Gesamtlänge je Profil (HA-Leitung)' or title == 'Verteilung der HA-Längen':
             y_pos = np.arange(len(values))
             box = new_plot.get_position()
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
-            new_plot.barh(y_pos, values, align='center')
+            bars = new_plot.bar(y_pos, values, align='center')
+            new_plot.set_xticks(y_pos)
+            new_plot.set_xticklabels(labels, rotation=90)
+            #new_plot.invert_yaxis()
+            new_plot.set_xlabel(ylabel)
+            new_plot.set_ylabel(xlabel, rotation=90)
+            new_plot.set_title(title)
+            new_plot.autoscale()
+
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('HA-Leitungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+
+                            if ylabel == 'Durchmesser bis mm':
+                                field = 'Breite'
+                                if value == 'bis 200':
+                                    min_value = 0
+                                    max_value = 200
+                                elif value == 'bis 300':
+                                    min_value = 200
+                                    max_value = 300
+                                elif value == 'bis 300':
+                                    min_value = 200
+                                    max_value = 300
+                                elif value == 'bis 400':
+                                    min_value = 300
+                                    max_value = 400
+                                elif value == 'bis 500':
+                                    min_value = 400
+                                    max_value = 500
+                                elif value == 'bis 750':
+                                    min_value = 500
+                                    max_value = 750
+                                elif value == 'bis 1000':
+                                    min_value = 750
+                                    max_value = 1000
+                                elif value == 'bis 1250':
+                                    min_value = 1000
+                                    max_value = 1250
+
+                                expr = f'"{field}" >= {min_value} AND "{field}" <= {max_value}'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            elif ylabel == 'Profil':
+                                field = 'profilnam'
+                                value = str(labels[i])
+                                expr = f'"{field}" = \'{value}\''
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                field = 'laenge'
+                                if value == '0-10':
+                                    min_value = 0
+                                    max_value = 10
+                                elif value == '10-20':
+                                    min_value = 10
+                                    max_value = 20
+                                elif value == '20-30':
+                                    min_value = 20
+                                    max_value = 30
+                                elif value == '30-40':
+                                    min_value = 30
+                                    max_value = 40
+                                elif value == '40-50':
+                                    min_value = 40
+                                    max_value = 50
+                                elif value == '50-60':
+                                    min_value = 50
+                                    max_value = 60
+                                elif value == '60-7ß':
+                                    min_value = 60
+                                    max_value = 70
+                                elif value == '70+':
+                                    min_value = 70
+                                    max_value = 10000
+                                expr = f'"{field}" >= {min_value} AND "{field}" <= {max_value}'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+                        return
+            figure.canvas.mpl_connect('button_press_event', onclick)
+
+        elif title == 'Gesamtlänge je Material (Haltung)':
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+            bars = new_plot.barh(y_pos, values, align='center')
             new_plot.set_yticks(y_pos)
             new_plot.set_yticklabels(labels)
             new_plot.invert_yaxis()
@@ -446,27 +921,118 @@ class Info:
             new_plot.set_title(title)
             new_plot.autoscale()
 
-    #TODO: Wenn auf Balken oder Pie geklickt wird soll die Auswahl in QGIS angezeigt werden
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
 
-    # def make_picker(fig, wedges):
-    #
-    #     def onclick(event):
-    #         wedge = event.artist
-    #         label = wedge.get_label()
-    #         print(label)
-    #
-    #     # Make wedges selectable
-    #     for wedge in wedges:
-    #         wedge.set_picker(True)
-    #
-    #     fig.canvas.mpl_connect('pick_event', onclick)
+                            field = ylabel
+                            expr = f'"{field}" = \'{value}\''
 
-    # def handle_click(event, pie_wedges, run_script_callback):
-    #     # TODO: Anpassen, sodass beim Anklicken der Grafik die jeweiligen Daten in QGIS ausgewählt werden!
-    #     for wedge in pie_wedges:
-    #         if wedge.contains_point([event.x, event.y]):
-    #             run_script_callback()
-    #             break
+                            request = QgsFeatureRequest().setFilterExpression(expr)
+                            ids = [f.id() for f in layer.getFeatures(request)]
+                            layer.selectByIds(ids)
+                            iface.mapCanvas().zoomToSelected(layer)
+
+                        return
+
+            figure.canvas.mpl_connect('button_press_event', onclick)
+
+        elif title == 'Gesamtlänge je Material (HA-Leitung)':
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+            bars = new_plot.barh(y_pos, values, align='center')
+            new_plot.set_yticks(y_pos)
+            new_plot.set_yticklabels(labels)
+            new_plot.invert_yaxis()
+            new_plot.set_xlabel(xlabel)
+            new_plot.set_ylabel(ylabel)
+            new_plot.set_title(title)
+            new_plot.autoscale()
+
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('HA-Leitungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+
+                            field = ylabel
+                            expr = f'"{field}" = \'{value}\''
+
+                            request = QgsFeatureRequest().setFilterExpression(expr)
+                            ids = [f.id() for f in layer.getFeatures(request)]
+                            layer.selectByIds(ids)
+                            iface.mapCanvas().zoomToSelected(layer)
+
+                        return
+
+            figure.canvas.mpl_connect('button_press_event', onclick)
+
+        elif title == 'Material der Schächte':
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+            bars = new_plot.barh(y_pos, values, align='center')
+            new_plot.set_yticks(y_pos)
+            new_plot.set_yticklabels(labels)
+            new_plot.invert_yaxis()
+            new_plot.set_xlabel(xlabel)
+            new_plot.set_ylabel(ylabel)
+            new_plot.set_title(title)
+            new_plot.autoscale()
+
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('Schächte')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+                            if value == 'sonstige':
+                                field = ylabel
+                                expr = f'"{field}" IS NULL'
+
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                field = ylabel
+                                expr = f'"{field}" = \'{value}\''
+
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+                        return
+
+            figure.canvas.mpl_connect('button_press_event', onclick)
+
+        else:
+            y_pos = np.arange(len(values))
+            box = new_plot.get_position()
+            new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
+            bars = new_plot.barh(y_pos, values, align='center')
+            new_plot.set_yticks(y_pos)
+            new_plot.set_yticklabels(labels)
+            new_plot.invert_yaxis()
+            new_plot.set_xlabel(xlabel)
+            new_plot.set_ylabel(ylabel)
+            new_plot.set_title(title)
+            new_plot.autoscale()
 
     def _infos(self) -> None:
 
@@ -525,29 +1091,35 @@ class Info:
 
 
         # #Infos Anschlussleitungen nach Entwässerungsarten -------------------------------------------
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
+                                                """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        sql = f"""
-                    WITH liste AS (
-                        SELECT
-                            entwart,
-                            round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
-                            count() AS anzahl
-                        FROM anschlussleitungen
-                        WHERE entwart IS NOT NULL {self.abfrage_and}
-                        GROUP BY entwart
-                    )
-                    SELECT *
-                    FROM liste
-                    WHERE entwart NOT LIKE '%still%' 
-                    ORDER BY gesamtlaenge DESC
-                """
-        # pos=111
-        self._tableplot(
-            figure=figure,
-            sql=sql,
-            title="Anschlussleitungen (Entwässerungsart)",
-            pos=gs[2]
-        )
+        if liste != []:
+            sql = f"""
+                        WITH liste AS (
+                            SELECT
+                                entwart,
+                                round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
+                                count() AS anzahl
+                            FROM anschlussleitungen
+                            WHERE entwart IS NOT NULL {self.abfrage_and}
+                            GROUP BY entwart
+                        )
+                        SELECT *
+                        FROM liste
+                        WHERE entwart NOT LIKE '%still%' 
+                        ORDER BY gesamtlaenge DESC
+                    """
+            # pos=111
+            self._tableplot(
+                figure=figure,
+                sql=sql,
+                title="Anschlussleitungen (Entwässerungsart)",
+                pos=gs[2]
+            )
 
 
         #Infos Teilgebiete -------------------------------------------------------------------
@@ -600,11 +1172,12 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure,
-            title='Baujahre',
+            title='Baujahre Haltungen',
             ylabel='Baujahre',
             xlabel='Gesamtlänge (km)',
             pos=gs[1]
         )
+
 
         #TODO:Darstellung nach Tiefenlage?
 
@@ -629,7 +1202,7 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure,
-            title='Gesamtlänge je Material',
+            title='Gesamtlänge je Material (Haltung)',
             ylabel='Material',
             xlabel='Gesamtlänge (km)',
             pos=gs[0]
@@ -650,7 +1223,7 @@ class Info:
         sql = f"""
             WITH liste AS (
                 SELECT
-                    iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(hoehe/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
+                    iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(breite/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
                     iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
                 FROM haltungen {self.abfrage_where}
             )
@@ -665,7 +1238,7 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure,
-            title='Gesamtlänge je Durchmesser',
+            title='Gesamtlänge je Durchmesser (Haltung)',
             ylabel='Durchmesser bis mm',
             xlabel='Gesamtlänge (km)',
             pos=gs[0]
@@ -691,7 +1264,7 @@ class Info:
         self._barplot(
             sql=sql,
             figure=figure,
-            title='Gesamtlänge je Profil',
+            title='Gesamtlänge je Profil (Haltung)',
             ylabel='Profil',
             xlabel='Gesamtlänge (km)',
             pos=gs[1]
@@ -760,63 +1333,77 @@ class Info:
         gs = GridSpec(1, 2, figure=figure, wspace=0.15)
 
         # Darstellungen Haltungen nach Baujahr
-        sql = f"""
-                            WITH liste AS (
-                                SELECT
-                                    iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
-                                    baujahr
-                                    FROM anschlussleitungen
-                                    {self.abfrage_where}
-                            )
-                            SELECT
-                                baujahr,
-                                round(sum(laenge)/1000.0 ,2) AS gesamtlaenge
-                            FROM liste
-                            GROUP BY baujahr
-                            ORDER BY baujahr
-                        """
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
+                                                """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        self._barplot(
-            sql=sql,
-            figure=figure,
-            title='Baujahre',
-            ylabel='Baujahre',
-            xlabel='Gesamtlänge (km)',
-            pos=gs[1]
-        )
+        if liste != []:
+            sql = f"""
+                                WITH liste AS (
+                                    SELECT
+                                        iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
+                                        baujahr
+                                        FROM anschlussleitungen
+                                        {self.abfrage_where}
+                                )
+                                SELECT
+                                    baujahr,
+                                    round(sum(laenge)/1000.0 ,2) AS gesamtlaenge
+                                FROM liste
+                                GROUP BY baujahr
+                                ORDER BY baujahr
+                            """
+
+            self._barplot(
+                sql=sql,
+                figure=figure,
+                title='Baujahre HA-Leitungen',
+                ylabel='Baujahre',
+                xlabel='Gesamtlänge (km)',
+                pos=gs[1]
+            )
 
         # TODO:Darstellung nach Tiefenlage?
 
         # Darstellungen Haltungen nach Material
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
+                                                """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        sql = f"""
-                    WITH liste AS (
-                        SELECT
-                            material,
-                            round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
-                        FROM anschlussleitungen
-                        WHERE material IS NOT NULL  {self.abfrage_and}
-                        GROUP BY material
-                    )
-                    SELECT *
-                    FROM liste
-                    WHERE gesamtlaenge > 0.01
-                    ORDER BY gesamtlaenge DESC
-                """
+        if liste != []:
 
-        self._barplot(
-            sql=sql,
-            figure=figure,
-            title='Gesamtlänge je Material',
-            ylabel='Material',
-            xlabel='Gesamtlänge (km)',
-            pos=gs[0]
-        )
+            sql = f"""
+                        WITH liste AS (
+                            SELECT
+                                material,
+                                round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
+                            FROM anschlussleitungen
+                            WHERE material IS NOT NULL  {self.abfrage_and}
+                            GROUP BY material
+                        )
+                        SELECT *
+                        FROM liste
+                        WHERE gesamtlaenge > 0.01
+                        ORDER BY gesamtlaenge DESC
+                    """
 
-        self.canv_7.draw()
-        self.fig_7.subplots_adjust(left=0.25, right=0.95, top=0.95, bottom=0.1, wspace=0.3, hspace=0.4)
+            self._barplot(
+                sql=sql,
+                figure=figure,
+                title='Gesamtlänge je Material (HA-Leitung)',
+                ylabel='Material',
+                xlabel='Gesamtlänge (km)',
+                pos=gs[0]
+            )
 
-        # Karteikarte 5 initialisieren HA-LEitungen 2
+            self.canv_7.draw()
+            self.fig_7.subplots_adjust(left=0.25, right=0.95, top=0.95, bottom=0.1, wspace=0.3, hspace=0.4)
+
+        # Karteikarte 5 initialisieren HA-Leitungen 2
         figure = self.fig_8
         figure.clear()
 
@@ -824,112 +1411,133 @@ class Info:
         # Darstellungen Haltungen nach Profiltyp
 
         # Darstellungen Haltungen nach Durchmesser
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
+                                                """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        sql = f"""
-                    WITH liste AS (
+        if liste != []:
+
+            sql = f"""
+                        WITH liste AS (
+                            SELECT
+                                iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(breite/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
+                                iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
+                            FROM anschlussleitungen {self.abfrage_where}
+                        )
                         SELECT
-                            iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(hoehe/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
-                            iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
-                        FROM anschlussleitungen {self.abfrage_where}
-                    )
-                    SELECT
-                        printf('bis %d', Hoehe) AS t_hoehe,
-                        round(sum(laenge)/1000.,2) AS gesamtlaenge
-                    FROM liste
-                    GROUP BY Hoehe
-                    ORDER BY Hoehe
-                """
+                            printf('bis %d', Hoehe) AS t_hoehe,
+                            round(sum(laenge)/1000.,2) AS gesamtlaenge
+                        FROM liste
+                        GROUP BY Hoehe
+                        ORDER BY Hoehe
+                    """
 
-        self._barplot(
-            sql=sql,
-            figure=figure,
-            title='Gesamtlänge je Durchmesser',
-            ylabel='Durchmesser bis mm',
-            xlabel='Gesamtlänge (km)',
-            pos=gs[0]
-        )
+            self._barplot(
+                sql=sql,
+                figure=figure,
+                title='Gesamtlänge je Durchmesser (HA-Leitung)',
+                ylabel='Durchmesser bis mm',
+                xlabel='Gesamtlänge (km)',
+                pos=gs[0]
+            )
 
         # Darstellungen Haltungen nach Profiltyp
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
+                                                """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        sql = f"""
-                    WITH liste AS (
-                        SELECT
-                            profilnam,
-                            round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
-                        FROM anschlussleitungen
-                        WHERE profilnam IS NOT NULL {self.abfrage_and}
-                        GROUP BY profilnam
-                    )
-                    SELECT *
-                    FROM liste
-                    WHERE gesamtlaenge > 0.01
-                    ORDER BY gesamtlaenge DESC
-                """
+        if liste != []:
 
-        self._barplot(
-            sql=sql,
-            figure=figure,
-            title='Gesamtlänge je Profil',
-            ylabel='Profil',
-            xlabel='Gesamtlänge (km)',
-            pos=gs[1]
-        )
+            sql = f"""
+                        WITH liste AS (
+                            SELECT
+                                profilnam,
+                                round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
+                            FROM anschlussleitungen
+                            WHERE profilnam IS NOT NULL {self.abfrage_and}
+                            GROUP BY profilnam
+                        )
+                        SELECT *
+                        FROM liste
+                        WHERE gesamtlaenge > 0.01
+                        ORDER BY gesamtlaenge DESC
+                    """
+
+            self._barplot(
+                sql=sql,
+                figure=figure,
+                title='Gesamtlänge je Profil (HA-Leitung)',
+                ylabel='Profil',
+                xlabel='Gesamtlänge (km)',
+                pos=gs[1]
+            )
 
         # Darstellungen Haltungen nach Länge
-        sql = f"""
-                                WITH liste AS (
-                                SELECT
-                                    laenge,
-                                    ROUND(SUM(IIF(COALESCE(laenge, 0) = 0, GLength(geom), laenge)), 2) AS gesamtlaenge
-                                FROM anschlussleitungen
-                                WHERE laenge IS NOT NULL {self.abfrage_and}
-                                GROUP BY laenge
-                            ),
-                            intervalle AS (
-                                SELECT
-                                    laenge,
-                                    gesamtlaenge,
-                                    CASE
-                                        WHEN laenge < 10 THEN '0-10'
-                                        WHEN laenge BETWEEN 10 AND 20 THEN '10-20'
-                                        WHEN laenge BETWEEN 20 AND 30 THEN '20-30'
-                                        WHEN laenge BETWEEN 30 AND 40 THEN '30-40'
-                                        WHEN laenge BETWEEN 40 AND 50 THEN '40-50'
-                                        WHEN laenge BETWEEN 50 AND 60 THEN '50-60'
-                                        WHEN laenge BETWEEN 60 AND 70 THEN '60-70'
-                                        ELSE '70+'
-                                    END AS intervall
-                                FROM liste
-                            )
-                            SELECT 
-                                intervall,
-                                ROUND(SUM(gesamtlaenge), 2)/1000 AS gesamtlaenge_km
-                            FROM intervalle
-                            GROUP BY intervall
-                            ORDER BY 
-                                CASE 
-                                    WHEN intervall = '0-10' THEN 1
-                                    WHEN intervall = '10-20' THEN 2
-                                    WHEN intervall = '20-30' THEN 3
-                                    WHEN intervall = '30-40' THEN 4
-                                    WHEN intervall = '40-50' THEN 5
-                                    WHEN intervall = '50-60' THEN 6
-                                    WHEN intervall = '60-70' THEN 7
-                                    ELSE 8
-                                END;
-                        """
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
+                                        """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        self._barplot(
-            sql=sql,
-            figure=figure,
-            title='Verteilung der Haltungslängen',
-            ylabel='Haltungslänge (m)',
-            xlabel='Gesamtlänge (km)',
-            pos=gs[2]
-        )
+        if liste != []:
+            sql = f"""
+                                    WITH liste AS (
+                                    SELECT
+                                        laenge,
+                                        ROUND(SUM(IIF(COALESCE(laenge, 0) = 0, GLength(geom), laenge)), 2) AS gesamtlaenge
+                                    FROM anschlussleitungen
+                                    WHERE laenge IS NOT NULL {self.abfrage_and}
+                                    GROUP BY laenge
+                                ),
+                                intervalle AS (
+                                    SELECT
+                                        laenge,
+                                        gesamtlaenge,
+                                        CASE
+                                            WHEN laenge < 10 THEN '0-10'
+                                            WHEN laenge BETWEEN 10 AND 20 THEN '10-20'
+                                            WHEN laenge BETWEEN 20 AND 30 THEN '20-30'
+                                            WHEN laenge BETWEEN 30 AND 40 THEN '30-40'
+                                            WHEN laenge BETWEEN 40 AND 50 THEN '40-50'
+                                            WHEN laenge BETWEEN 50 AND 60 THEN '50-60'
+                                            WHEN laenge BETWEEN 60 AND 70 THEN '60-70'
+                                            ELSE '70+'
+                                        END AS intervall
+                                    FROM liste
+                                )
+                                SELECT 
+                                    intervall,
+                                    ROUND(SUM(gesamtlaenge), 2)/1000 AS gesamtlaenge_km
+                                FROM intervalle
+                                GROUP BY intervall
+                                ORDER BY 
+                                    CASE 
+                                        WHEN intervall = '0-10' THEN 1
+                                        WHEN intervall = '10-20' THEN 2
+                                        WHEN intervall = '20-30' THEN 3
+                                        WHEN intervall = '30-40' THEN 4
+                                        WHEN intervall = '40-50' THEN 5
+                                        WHEN intervall = '50-60' THEN 6
+                                        WHEN intervall = '60-70' THEN 7
+                                        ELSE 8
+                                    END;
+                            """
 
-        self.canv_8.draw()
-        self.fig_8.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
+            self._barplot(
+                sql=sql,
+                figure=figure,
+                title='Verteilung der HA-Längen',
+                ylabel='Haltungslänge (m)',
+                xlabel='Gesamtlänge (km)',
+                pos=gs[2]
+            )
+
+            self.canv_8.draw()
+            self.fig_8.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.3, wspace=0.3, hspace=0.4)
 
         #Haltungen nach Zustandsklasse
         # Karteikarte 3 initialisieren
@@ -973,7 +1581,7 @@ class Info:
             self._barplot(
                 sql=sql,
                 figure=figure_3,
-                title='Gesamtlänge je Zustandsklasse',
+                title='Gesamtlänge je Zustandsklasse (Haltung)',
                 ylabel='Zustandsklasse',
                 xlabel='Gesamtlänge (km)',
                 pos=gs[0]
@@ -1100,7 +1708,7 @@ class Info:
                 self._barplot(
                     sql=sql,
                     figure=figure_3,
-                    title='Gesamtlänge je Zustandsklasse',
+                    title='Gesamtlänge je Zustandsklasse (Haltung)',
                     ylabel='Zustandsklasse',
                     xlabel='Gesamtlänge (km)',
                     pos=gs[0]
@@ -1226,7 +1834,7 @@ class Info:
                 self._barplot(
                     sql=sql,
                     figure=figure_3,
-                    title='Gesamtlänge je Zustandsklasse',
+                    title='Gesamtlänge je Zustandsklasse (Haltung)',
                     ylabel='Zustandsklasse',
                     xlabel='Gesamtlänge (km)',
                     pos=gs[0]
@@ -1583,7 +2191,7 @@ class Info:
             self._barplot(
                 sql=sql,
                 figure=figure_9,
-                title='Gesamtlänge je Zustandsklasse',
+                title='Gesamtlänge je Zustandsklasse (HA-Leitung)',
                 ylabel='Zustandsklasse',
                 xlabel='Gesamtlänge (km)',
                 pos=gs[0]
@@ -1710,7 +2318,7 @@ class Info:
                 self._barplot(
                     sql=sql,
                     figure=figure_9,
-                    title='Gesamtlänge je Zustandsklasse',
+                    title='Gesamtlänge je Zustandsklasse (HA-Leitung)',
                     ylabel='Zustandsklasse',
                     xlabel='Gesamtlänge (km)',
                     pos=gs[0]
@@ -1847,7 +2455,8 @@ class Info:
                           ELSE baujahr
                             END AS baujahr
                             FROM schaechte
-                            {self.abfrage_where}      
+                            Where schachttyp = 'Schacht'
+                            {self.abfrage_and}      
                     )
                     SELECT
                         baujahr,
@@ -1875,7 +2484,8 @@ class Info:
                           ELSE CAST(material AS text)
                         END AS material
                         FROM schaechte
-                             {self.abfrage_where} 
+                        Where schachttyp = 'Schacht'
+                            {self.abfrage_and}
                            
                     )
                     SELECT
