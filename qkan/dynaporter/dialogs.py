@@ -24,9 +24,9 @@ from qkan.database.qkan_utils import (
     get_editable_layers,
 )
 from qkan.tools.dialogs import QKanDBDialog
+from qkan.utils import get_logger, QkanAbortError
 from .export_to_dyna import export_kanaldaten
 from .import_from_dyna import import_kanaldaten
-from ..utils import get_logger
 
 if TYPE_CHECKING:
     from qkan.dynaporter import DynaPorter
@@ -410,22 +410,24 @@ class ExportDialog(QKanDBDialog, EXPORT_CLASS):  # type: ignore
                         {max_loops},
                 )"""
                 )
-
-                export_kanaldaten(
-                    self.iface,
-                    dynafile,
-                    template_dyna,
-                    db_qkan,
-                    dynabef_choice,
-                    dynaprof_choice,
-                    liste_teilgebiete,
-                    profile_ergaenzen,
-                    autonummerierung_dyna,
-                    mit_verschneidung,
-                    fangradius,
-                    mindestflaeche,
-                    max_loops,
-                )
+                try:
+                    export_kanaldaten(
+                        self.iface,
+                        dynafile,
+                        template_dyna,
+                        db_qkan,
+                        dynabef_choice,
+                        dynaprof_choice,
+                        liste_teilgebiete,
+                        profile_ergaenzen,
+                        autonummerierung_dyna,
+                        mit_verschneidung,
+                        fangradius,
+                        mindestflaeche,
+                        max_loops,
+                    )
+                except QkanAbortError as e:
+                    logger.error("Fehler beim Export der Kanaldaten: %s", e)
 
 
     def click_help(self) -> None:
