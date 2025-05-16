@@ -7465,7 +7465,7 @@ class Subkans_funkt:
         sbk='-'
         abn='-'
 
-        for attr in db1.fetchall():
+        for attr in db.fetchall():
             # abn = bsl/länge*100
             if attr[2] not in ("","not found", None, None) and attr[3] not in ("","not found", None, None):
                 abn=self.round_up_down(float(attr[2])/float(attr[4])*100,2)

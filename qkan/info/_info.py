@@ -277,90 +277,90 @@ class Info:
             patch_6 = mpatches.Patch(color='grey', label='ZK -: keine verewertbare Inspektion')
             new_plot.legend(handles=[patch_0,patch_1,patch_2,patch_3,patch_4,patch_5,patch_6], fontsize=8)
 
-            # if self.combo == 'Originale Bewertung':
-            #     def onclick(event):
-            #         # for layer in QgsProject.instance().mapLayers().values():
-            #         #     if isinstance(layer, QgsVectorLayer):
-            #         #         layer.removeSelection()
-            #         for i, bar in enumerate(bars):
-            #             if bar.contains(event)[0]:
-            #                 layer = QgsProject.instance().mapLayersByName('Zustand_Haltungen_gesamt')[0]
-            #                 if layer is not None:
-            #                     value = str(labels[i])
-            #                     field = "Baujahr"
-            #
-            #                     if value == 'None':
-            #                         expr = f'"{field}" IS NULL'
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #                     else:
-            #                         expr = f'"{field}" = \'{value}\''
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #
-            #                 return
-            #
-            #     figure.canvas.mpl_connect('button_press_event', onclick)
-            # elif self.combo == 'Automatisierte Bewertung':
-            #     def onclick(event):
-            #         # for layer in QgsProject.instance().mapLayers().values():
-            #         #     if isinstance(layer, QgsVectorLayer):
-            #         #         layer.removeSelection()
-            #         for i, bar in enumerate(bars):
-            #             if bar.contains(event)[0]:
-            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
-            #                 if layer is not None:
-            #                     value = str(labels[i])
-            #                     field = "Baujahr"
-            #
-            #                     if value == 'None':
-            #                         expr = f'"{field}" IS NULL'
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #                     else:
-            #                         expr = f'"{field}" = \'{value}\''
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #
-            #                 return
-            #
-            #     figure.canvas.mpl_connect('button_press_event', onclick)
-            # elif self.combo == 'Bewertung nach SubKanS':
-            #     def onclick(event):
-            #         # for layer in QgsProject.instance().mapLayers().values():
-            #         #     if isinstance(layer, QgsVectorLayer):
-            #         #         layer.removeSelection()
-            #         for i, bar in enumerate(bars):
-            #             if bar.contains(event)[0]:
-            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
-            #                 if layer is not None:
-            #                     value = str(labels[i])
-            #                     field = "Baujahr"
-            #
-            #                     if value == 'None':
-            #                         expr = f'"{field}" IS NULL'
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #                     else:
-            #                         expr = f'"{field}" = \'{value}\''
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #
-            #                 return
-            #
-            #     figure.canvas.mpl_connect('button_press_event', onclick)
+            if self.combo == 'Originale Bewertung':
+                def onclick(event):
+                    # for layer in QgsProject.instance().mapLayers().values():
+                    #     if isinstance(layer, QgsVectorLayer):
+                    #         layer.removeSelection()
+                    for i, bar in enumerate(bars):
+                        if bar.contains(event)[0]:
+                            layer = QgsProject.instance().mapLayersByName('Zustandsdaten_Haltungen_gesamt')[0]
+                            if layer is not None:
+                                value = str(labels[i])
+                                #field = "Baujahr"
+                                ids=[]
+
+                                for feature in layer.getFeatures():
+                                    w1 = feature["max_ZD"]
+                                    w2 = feature["max_ZB"]
+                                    w3 = feature["max_ZS"]
+
+                                    max_val = max(w1, w2, w3)
+
+                                    if max_val == value:
+                                        ids.append(feature.id())
+
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+                            return
+
+                figure.canvas.mpl_connect('button_press_event', onclick)
+            elif self.combo == 'Automatisierte Bewertung':
+                def onclick(event):
+                    # for layer in QgsProject.instance().mapLayers().values():
+                    #     if isinstance(layer, QgsVectorLayer):
+                    #         layer.removeSelection()
+                    for i, bar in enumerate(bars):
+                        if bar.contains(event)[0]:
+                            layer = QgsProject.instance().mapLayersByName('Ergebnisse_ZK_Haltungen')[0]
+                            if layer is not None:
+                                value = str(labels[i])
+                                field = "objektklasse_gesamt"
+
+                                if value == 'None':
+                                    expr = f'"{field}" IS NULL'
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+                                else:
+                                    expr = f'"{field}" = \'{value}\''
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+
+                            return
+
+                figure.canvas.mpl_connect('button_press_event', onclick)
+            elif self.combo == 'Bewertung nach SubKanS':
+                def onclick(event):
+                    # for layer in QgsProject.instance().mapLayers().values():
+                    #     if isinstance(layer, QgsVectorLayer):
+                    #         layer.removeSelection()
+                    for i, bar in enumerate(bars):
+                        if bar.contains(event)[0]:
+                            layer = QgsProject.instance().mapLayersByName('Bewertung_Substanz_Haltungen')[0]
+                            if layer is not None:
+                                value = str(labels[i])
+                                field = "objektklasse_gesamt"
+
+                                if value == 'None':
+                                    expr = f'"{field}" IS NULL'
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+                                else:
+                                    expr = f'"{field}" = \'{value}\''
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+
+                            return
+                figure.canvas.mpl_connect('button_press_event', onclick)
 
         elif title == 'Anzahl je Zustandsklasse':
 
@@ -400,90 +400,91 @@ class Info:
             patch_6 = mpatches.Patch(color='grey', label='ZK -: keine verewertbare Inspektion')
             new_plot.legend(handles=[patch_0,patch_1,patch_2,patch_3,patch_4,patch_5,patch_6], fontsize=8)
 
-            # if self.combo == 'Originale Bewertung':
-            #     def onclick(event):
-            #         # for layer in QgsProject.instance().mapLayers().values():
-            #         #     if isinstance(layer, QgsVectorLayer):
-            #         #         layer.removeSelection()
-            #         for i, bar in enumerate(bars):
-            #             if bar.contains(event)[0]:
-            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
-            #                 if layer is not None:
-            #                     value = str(labels[i])
-            #                     field = "Baujahr"
-            #
-            #                     if value == 'None':
-            #                         expr = f'"{field}" IS NULL'
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #                     else:
-            #                         expr = f'"{field}" = \'{value}\''
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #
-            #                 return
-            #
-            #     figure.canvas.mpl_connect('button_press_event', onclick)
-            # elif self.combo == 'Automatisierte Bewertung':
-            #     def onclick(event):
-            #         # for layer in QgsProject.instance().mapLayers().values():
-            #         #     if isinstance(layer, QgsVectorLayer):
-            #         #         layer.removeSelection()
-            #         for i, bar in enumerate(bars):
-            #             if bar.contains(event)[0]:
-            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
-            #                 if layer is not None:
-            #                     value = str(labels[i])
-            #                     field = "Baujahr"
-            #
-            #                     if value == 'None':
-            #                         expr = f'"{field}" IS NULL'
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #                     else:
-            #                         expr = f'"{field}" = \'{value}\''
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #
-            #                 return
-            #
-            #     figure.canvas.mpl_connect('button_press_event', onclick)
-            # elif self.combo == 'Bewertung nach SubKanS':
-            #     def onclick(event):
-            #         # for layer in QgsProject.instance().mapLayers().values():
-            #         #     if isinstance(layer, QgsVectorLayer):
-            #         #         layer.removeSelection()
-            #         for i, bar in enumerate(bars):
-            #             if bar.contains(event)[0]:
-            #                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
-            #                 if layer is not None:
-            #                     value = str(labels[i])
-            #                     field = "Baujahr"
-            #
-            #                     if value == 'None':
-            #                         expr = f'"{field}" IS NULL'
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #                     else:
-            #                         expr = f'"{field}" = \'{value}\''
-            #                         request = QgsFeatureRequest().setFilterExpression(expr)
-            #                         ids = [f.id() for f in layer.getFeatures(request)]
-            #                         layer.setSelectedFeatures(ids)
-            #                         iface.mapCanvas().zoomToSelected(layer)
-            #
-            #                 return
-            #
-            #     figure.canvas.mpl_connect('button_press_event', onclick)
+            if self.combo == 'Originale Bewertung':
+                def onclick(event):
+                    # for layer in QgsProject.instance().mapLayers().values():
+                    #     if isinstance(layer, QgsVectorLayer):
+                    #         layer.removeSelection()
+                    for i, bar in enumerate(bars):
+                        if bar.contains(event)[0]:
+                            layer = QgsProject.instance().mapLayersByName('Zustandsdaten_Haltungen_gesamt')[0]
+                            if layer is not None:
+                                value = str(labels[i])
+                                # field = "Baujahr"
+                                ids = []
+
+                                for feature in layer.getFeatures():
+                                    w1 = feature["max_ZD"]
+                                    w2 = feature["max_ZB"]
+                                    w3 = feature["max_ZS"]
+
+                                    max_val = max(w1, w2, w3)
+
+                                    if max_val == value:
+                                        ids.append(feature.id())
+
+                                layer.selectByIds(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+                            return
+
+                figure.canvas.mpl_connect('button_press_event', onclick)
+            elif self.combo == 'Automatisierte Bewertung':
+                def onclick(event):
+                    # for layer in QgsProject.instance().mapLayers().values():
+                    #     if isinstance(layer, QgsVectorLayer):
+                    #         layer.removeSelection()
+                    for i, bar in enumerate(bars):
+                        if bar.contains(event)[0]:
+                            layer = QgsProject.instance().mapLayersByName('Ergebnisse_ZK_Haltungen')[0]
+                            if layer is not None:
+                                value = str(labels[i])
+                                field = "objektklasse_gesamt"
+
+                                if value == 'None':
+                                    expr = f'"{field}" IS NULL'
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+                                else:
+                                    expr = f'"{field}" = \'{value}\''
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+
+                            return
+
+                figure.canvas.mpl_connect('button_press_event', onclick)
+            elif self.combo == 'Bewertung nach SubKanS':
+                def onclick(event):
+                    # for layer in QgsProject.instance().mapLayers().values():
+                    #     if isinstance(layer, QgsVectorLayer):
+                    #         layer.removeSelection()
+                    for i, bar in enumerate(bars):
+                        if bar.contains(event)[0]:
+                            layer = QgsProject.instance().mapLayersByName('Bewertung_Substanz_Haltungen')[0]
+                            if layer is not None:
+                                value = str(labels[i])
+                                field = "objektklasse_gesamt"
+
+                                if value == 'None':
+                                    expr = f'"{field}" IS NULL'
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+                                else:
+                                    expr = f'"{field}" = \'{value}\''
+                                    request = QgsFeatureRequest().setFilterExpression(expr)
+                                    ids = [f.id() for f in layer.getFeatures(request)]
+                                    layer.setSelectedFeatures(ids)
+                                    iface.mapCanvas().zoomToSelected(layer)
+
+                            return
+
+                figure.canvas.mpl_connect('button_press_event', onclick)
 
 
         elif title == 'Gesamtlänge je Substanzklasse':
@@ -524,34 +525,34 @@ class Info:
             patch_6 = mpatches.Patch(color='grey', label='SK -: keine verwertbare Inspektion')
             new_plot.legend(handles=[patch_0, patch_1, patch_2, patch_3, patch_4, patch_5, patch_6], fontsize=8)
 
-            # def onclick(event):
-            #     # for layer in QgsProject.instance().mapLayers().values():
-            #     #     if isinstance(layer, QgsVectorLayer):
-            #     #         layer.removeSelection()
-            #     for i, bar in enumerate(bars):
-            #         if bar.contains(event)[0]:
-            #             layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
-            #             if layer is not None:
-            #                 value = str(labels[i])
-            #                 field = "Baujahr"
-            #
-            #                 if value == 'None':
-            #                     expr = f'"{field}" IS NULL'
-            #                     request = QgsFeatureRequest().setFilterExpression(expr)
-            #                     ids = [f.id() for f in layer.getFeatures(request)]
-            #                     layer.setSelectedFeatures(ids)
-            #                     iface.mapCanvas().zoomToSelected(layer)
-            #                 else:
-            #                     expr = f'"{field}" = \'{value}\''
-            #                     request = QgsFeatureRequest().setFilterExpression(expr)
-            #                     ids = [f.id() for f in layer.getFeatures(request)]
-            #                     layer.setSelectedFeatures(ids)
-            #                     iface.mapCanvas().zoomToSelected(layer)
-            #
-            #
-            #
-            #             return
-            # figure.canvas.mpl_connect('button_press_event', onclick)
+            def onclick(event):
+                # for layer in QgsProject.instance().mapLayers().values():
+                #     if isinstance(layer, QgsVectorLayer):
+                #         layer.removeSelection()
+                for i, bar in enumerate(bars):
+                    if bar.contains(event)[0]:
+                        layer = QgsProject.instance().mapLayersByName('Bewertung_Substanz_Haltungen')[0]
+                        if layer is not None:
+                            value = str(labels[i])
+                            field = "Substanzklasse"
+
+                            if value == 'None':
+                                expr = f'"{field}" IS NULL'
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.setSelectedFeatures(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+                            else:
+                                expr = f'"{field}" = \'{value}\''
+                                request = QgsFeatureRequest().setFilterExpression(expr)
+                                ids = [f.id() for f in layer.getFeatures(request)]
+                                layer.setSelectedFeatures(ids)
+                                iface.mapCanvas().zoomToSelected(layer)
+
+
+
+                        return
+            figure.canvas.mpl_connect('button_press_event', onclick)
 
         elif title == 'Baujahre Haltungen':
             y_pos = np.arange(len(values))
