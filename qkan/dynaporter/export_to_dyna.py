@@ -14,11 +14,12 @@ from qkan import enums
 from qkan.database.dbfunc import DBConnection
 from qkan.database.qkan_utils import fehlermeldung, formf, fortschritt, meldung
 from qkan.linkflaechen.updatelinks import updatelinkfl, updatelinksw
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanAbortError
 
 logger = get_logger("QKan.dynaporter.export_to_dyna")
 
 progress_bar: Optional[QProgressBar] = None
+
 
 
 # Hilfsfunktionen --------------------------------------------------------------------------
@@ -277,13 +278,11 @@ def write12(
             # kskey
             # ))
         except BaseException as err:
-            fehlermeldung(
-                "Fehler in export_to_dyna.write12 (2): {}".format(err),
-                "ks {} konnte in dynakeys_ks nicht gefunden werden\ndynakeys_ks = {}".format(
-                    ks, str(dynakeys_ks)
-                ),
+            msg = (
+                f"Fehler in export_to_dyna.write12 (2): {err}\n"
+                f"ks {ks} konnte in dynakeys_ks nicht gefunden werden\ndynakeys_ks = {dynakeys_ks}"
             )
-            raise err
+            raise QkanAbortError(msg) from err
 
         if flges is None:
             flges_t = "     "

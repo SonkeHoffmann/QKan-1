@@ -13,6 +13,18 @@ LOG_ERROR_DATA = logging.ERROR + 2
 LOG_ERROR_USER = logging.ERROR + 3
 
 
+class QkanError(Exception):
+    """General QKan error type"""
+
+
+class QkanAbortError(QkanError):
+    """Raised when an error in a task occurs"""
+
+
+class QkanDbError(QkanError):
+    """Raised when a database error occurs"""
+
+
 def _translate_level(level: int) -> int:
     """Translate logging level to Qgis logging level."""
     return {
