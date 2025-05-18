@@ -7452,7 +7452,9 @@ class Subkans_funkt:
                 JOIN 
                     haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
                 JOIN 
-                    haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = haltungen_untersucht.haltnam
+                    haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = substanz_haltung_bewertung.untersuchhal
+                JOIN 
+                    haltungen ON substanz_haltung_bewertung.untersuchhal = haltungen.haltnam
                 GROUP BY 
                     substanz_haltung_bewertung.untersuchhal;"""
 
@@ -7463,7 +7465,7 @@ class Subkans_funkt:
         sbk='-'
         abn='-'
 
-        for attr in db1.fetchall():
+        for attr in db.fetchall():
             # abn = bsl/länge*100
             if attr[2] not in ("","not found", None, None) and attr[3] not in ("","not found", None, None):
                 abn=self.round_up_down(float(attr[2])/float(attr[4])*100,2)
