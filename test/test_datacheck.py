@@ -28,13 +28,16 @@ class TestPlausi(QgisTest):
 
     def test_plausi(self) -> None:
         database_qkan = str(BASE_WORK / "juelich.sqlite")
+        QKan.config.project.file = str(BASE_WORK / "plan_3.22_sp.qgs")
+
         db_qkan = DBConnection(database_qkan, qkan_db_update=True)              # inkl. automatischem DB-Update
-        QKan.config.plausi.themen = ["Netzstruktur","HYSTEM-EXTRAN"]
+        QKan.config.plausi.themen = ["HYSTEM-EXTRAN"]
         QKan.config.plausi.keepdata = False
         QKan.config.plausi.limitdata = True
 
         test = Plausi(iface())
-        test._doplausi(db_qkan)
+        test._prepareplausi(db_qkan)
+        test._doplausi(db_qkan, is_test=True)
 
         # self.assertTrue(False, "Fehlernachricht")
 

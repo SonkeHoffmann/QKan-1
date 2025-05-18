@@ -159,6 +159,12 @@ def qgsadapt(
         qgsxml = ET.parse(projecttemplate)
         root = qgsxml.getroot()
 
+        # Projekttitel setzen
+
+        tag_title = root.find("projectMetadata/title")
+        projectname = os.path.splitext(os.path.basename(QKan.config.database.qkan))[0].title()
+        tag_title.text = f'{projectname} ({QKan.qgsVersion})'
+
         # Projektionssystem anpassen --------------------------------------------------------------
 
         for tag_maplayer in root.findall(".//projectlayers/maplayer"):

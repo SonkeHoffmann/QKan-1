@@ -16,7 +16,7 @@ class PlausiTask:
         else:
             limit = 5000
 
-        # update damit die Charakterisirungsfehler funktionieren
+        # update damit die Charakterisierungsfehler funktionieren
         sql = f"""Update Untersuchdat_haltung
                             Set charakt1 = ''
                             where charakt1 = 'not found'

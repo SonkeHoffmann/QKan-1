@@ -12,7 +12,7 @@ from qkan.plugin import QKanPlugin
 from ._plausi import PlausiTask
 from .application_dialog import PlausiDialog
 
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanAbortError
 from qkan import enums
 
 # noinspection PyUnresolvedReferences
@@ -49,55 +49,6 @@ class Plausi(QKanPlugin):
             if not db_qkan.connected:
                 return False
 
-            # Laden der Referenzliste
-            db_qkan.sql("DELETE FROM reflist_zustand", "Plausibilität: Zustandsliste zurücksetzen")
-            db_qkan.commit()
-
-            # Laden der Plausibilitätsprüfungen
-            templateDir = os.path.join(pluginDirectory("qkan"), "templates")
-            filenam = os.path.join(templateDir, 'Plausibilitaetspruefungen.sql')
-            if db_qkan.executefile(filenam):
-                logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
-            else:
-                logger.error_code("Fehler beim Lesen der Plausibilitätsabfragen:"
-                              f"Die Datei {filenam} konnten nicht gelesen werden!")
-            db_qkan.commit()
-            logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
-
-            if not self.plausi_dlg.prepareDialog(db_qkan):
-                return False
-
-            # Laden der Plausibilitätsdaten zu Zustandsklassen
-            reflist_zustandfile = os.path.join(
-                pluginDirectory("qkan"), "templates", "Plausi_Zustandsklassen.csv"
-            )
-
-            with open(reflist_zustandfile, "r") as fin:
-                dr = csv.reader(fin, delimiter=";")
-
-                to_db = []
-
-                for a, b, c, d, e in dr:
-                    c = [c] if c is None else c.split(",")
-                    d = [d] if d is None else d.split(",")
-                    e = [e] if e is None else e.split(",")
-                    for i in c:
-                        for j in d:
-                            for k in e:
-                                to_db.append([a, b, i, j, k])
-
-                # to_db = [(i[0], i[1], i[2], i[3], i[4]) for i in dr]
-
-            db_qkan.cursl.executemany(
-                """
-                INSERT INTO reflist_zustand
-                    (art, hauptcode, charakterisierung1, charakterisierung2, bereich)
-                VALUES (?, ?, ?, ?, ?);
-                """,
-                to_db,
-            )
-            db_qkan.commit()
-
             self.plausi_dlg.show()
 
             if self.plausi_dlg.exec_():
@@ -111,6 +62,62 @@ class Plausi(QKanPlugin):
                 QKan.config.save()
 
                 self._doplausi(db_qkan)
+
+
+    def _prepareplausi(self, db_qkan: DBConnection = None) -> None:
+        """Vorbereiten der Pluaisbilitätskontrollen
+        Diese Funktion muss für die automatischen Tests (z. B. test_datacheck.py) vor
+        _doplausi() aufgerufen werden"""
+
+        # Laden der Referenzliste
+        db_qkan.sql("DELETE FROM reflist_zustand", "Plausibilität: Zustandsliste zurücksetzen")
+        db_qkan.commit()
+
+        # Laden der Plausibilitätsprüfungen
+        templateDir = os.path.join(pluginDirectory("qkan"), "templates")
+        filenam = os.path.join(templateDir, 'Plausibilitaetspruefungen.sql')
+        if db_qkan.executefile(filenam):
+            logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
+        else:
+            logger.error_code("Fehler beim Lesen der Plausibilitätsabfragen:"
+                          f"Die Datei {filenam} konnten nicht gelesen werden!")
+        db_qkan.commit()
+        logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
+
+        if not self.plausi_dlg.prepareDialog(db_qkan):
+            return False
+
+        # Laden der Plausibilitätsdaten zu Zustandsklassen
+        reflist_zustandfile = os.path.join(
+            pluginDirectory("qkan"), "templates", "Plausi_Zustandsklassen.csv"
+        )
+
+        with open(reflist_zustandfile, "r") as fin:
+            dr = csv.reader(fin, delimiter=";")
+
+            to_db = []
+
+            for a, b, c, d, e in dr:
+                c = [c] if c is None else c.split(",")
+                d = [d] if d is None else d.split(",")
+                e = [e] if e is None else e.split(",")
+                for i in c:
+                    for j in d:
+                        for k in e:
+                            to_db.append([a, b, i, j, k])
+
+            # to_db = [(i[0], i[1], i[2], i[3], i[4]) for i in dr]
+
+        db_qkan.cursl.executemany(
+            """
+            INSERT INTO reflist_zustand
+                (art, hauptcode, charakterisierung1, charakterisierung2, bereich)
+            VALUES (?, ?, ?, ?, ?);
+            """,
+            to_db,
+        )
+        db_qkan.commit()
+
 
     def _doplausi(self, db_qkan: DBConnection = None, is_test: bool = False) -> bool:
         """Start der Plausibilitätsabragen

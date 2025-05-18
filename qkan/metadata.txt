@@ -10,8 +10,8 @@
 name=QKan
 qgisMinimumVersion=3.28
 description=Gruppe der QKan-Erweiterung(en)
-version=3.4.5
-author=Jörg Höttges, Leon Ochsenfeld, Yannick Linke, Nora Blase
+version=3.4.6
+author=Nora Blase, Jörg Höttges, Yannick Linke
 email=hoettges@fh-aachen.de
 
 about=Mit diesem Plugin können Kanaldaten (Stammdaten und Inspektionsdaten) verwaltet und dargestellt werden. Es bietet Werkzeuge zur Vorbereitung und Ergebnisdarstellung einer hydraulischen Netzberechnung sowie Schnittstellen zu Berechnungssoftware. Außerdem ist eine Zustands- und Substanzbewertung für Kanalnetze integriert. Nähere Informationen können Sie der README.md entnehmen.
@@ -33,7 +33,9 @@ changelog=
 		- Erweiterung der Plausibilitätsabfragen
 		- Verbesserung der Voronoi-Flächen
 		- Überarbeitung des Plugins zur Nutzung unter macOS
-
+        - Bei neuen Projekten wird der Projekttitel aus dem Datenbanknamen und der Version erzeugt
+        - Plausibilitätstool geändert, dass beim automatischen Test die aktuellen SQLs geladen werden
+        - Voronoi-Tool: Schaltfläche zur Prüfung auf kreuzende Haltungen mit RW-Anschluss ergänzt
 
 # Tags are comma separated with spaces allowed
 tags=flood, hydraulics, spatialite, cadastre, intersection, sewer, STRAKAT, Kanal, Inspektion

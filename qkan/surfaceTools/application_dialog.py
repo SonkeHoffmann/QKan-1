@@ -140,6 +140,8 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
         self.pb_ueberlappende_haltungen.clicked.connect(self.click_pb_ueberlappende_haltungen)
         self.button_box.helpRequested.connect(self.click_help)
 
+        self.lf_anzahl_ueberlappend.setText('')
+
     def click_lw_hal_entw(self) -> None:
         """Reaktion auf Klick in Listbox"""
 
@@ -205,28 +207,52 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
                 )
                 return
 
-            if len(liste_teilgebiete) == 0 or len(liste_hal_entw) == 0:
-                # keine Prüfung
-                return
+            if len(liste_hal_entw) == 0:
+                auswahl = ""
             else:
-                if len(liste_hal_entw) == 0:
-                    auswahl = ""
-                else:
-                    auswahl = " and haltungen.entwart in ('{}')".format(
-                        "', '".join(liste_hal_entw)
+                auswahl = " AND haltungen.entwart in ('{}')".format(
+                    "', '".join(liste_hal_entw)
+                )
+
+            if len(liste_teilgebiete) != 0:
+                auswahl += " AND haltungen.teilgebiet in ('{}')".format(
+                    "', '".join(liste_teilgebiete)
+                )
+
+            sql = f"""
+                WITH haltungen_selected AS (
+                    SELECT ROWID, pk, geom, haltnam, schoben, schunten
+                    FROM haltungen
+                    WHERE rwanschluss = 1 AND (haltungstyp = 'Haltung' OR haltungstyp IS NULL) {auswahl}),
+                    fls AS (SELECT ROWID, pk, geom, haltnam, schoben, schunten,
+                        MakePolygon(AddPoint(AddPoint(AddPoint(
+                                        MakeLine(pointn(geom,1),makepoint(x(centroid(geom))-(y(pointn(geom,-1))-y(pointn(geom,1)))*0.01,y(centroid(geom))+(x(pointn(geom,-1))-x(pointn(geom,1)))*0.01)),
+                                        pointn(geom,-1)),
+                                    makepoint(x(centroid(geom))+(y(pointn(geom,-1))-y(pointn(geom,1)))*0.01,y(centroid(geom))-(x(pointn(geom,-1))-x(pointn(geom,1)))*0.01)),pointn(geom,1))
+                        ) AS geof
+                    FROM
+                        haltungen_selected 
                     )
+                SELECT count(*) AS anzahl
+                FROM fls AS n1 JOIN fls AS n2 ON ST_Intersects(n1.geof, n2.geof) = 1
+                WHERE 
+                    n1.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='haltungen' AND search_frame=n2.geof) 
+                  AND n1.pk <> n2.pk
+                  AND n1.schoben not in (n2.schunten, n2.schoben)
+                  AND n2.schoben not in (n1.schunten, n1.schoben)
+                  AND n1.schunten not in (n2.schunten, n2.schoben)
+                  AND n2.schunten not in (n1.schunten, n1.schoben)"""
+            if not db_qkan.sql(sql, "ueberlappende_haltungen"):
+                logger.error_code(f"{self.__class__.__name__}: {sql=}")
+                return
 
-                if len(liste_teilgebiete) != 0:
-                    auswahl += " and haltungen.teilgebiet in ('{}')".format(
-                        "', '".join(liste_teilgebiete)
-                    )
+            anz_ueberlappend = db_qkan.fetchone()[0]
+            self.lf_anzahl_ueberlappend.setText(str(anz_ueberlappend))
 
-                sql = f"SELECT count(*) AS anzahl FROM haltungen WHERE (rwanschluss = 1) {auswahl}"
-                if not db_qkan.sql(sql, "ueberlappende_haltungen"):
-                    return
-
-        anz_ueberlappend = db_qkan.fetchone()
-        self.lf_anzahl_ueberlappend.setText(str(anz_ueberlappend[0]))
+            if anz_ueberlappend > 0:
+                self.lf_anzahl_ueberlappend.setStyleSheet("color: red; font: bold;")
+            else:
+                self.lf_anzahl_ueberlappend.setStyleSheet("color: black; font: standard;")
 
 
     def count_selection(self) -> None:
