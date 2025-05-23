@@ -1,6 +1,10 @@
 /* SQL-Abfragen für das Plausibilitätsprüfungs-Tool
 
 Diese Datei wird beim Öffnen des Tools als SQL-Datei ausgeführt und fügt noch nicht in der Tabelle 'pruefsql' enthaltene Datensätze hinzu. 
+
+Achtung: Innerhalb des SQL-Statements müssen Anführungsstriche doppelt gesetzt werden (''), weil das SQL-Statement selbst
+schon ein String ist!
+
 Die Attribute der Datensätze haben folgende Bedeutung:
  - gruppe: Bezeichnung erscheint im Formular und dient der Auswahl
  - warnbez: interne Bezeichnung. Muss eindeutig sein.
@@ -382,8 +386,8 @@ SELECT
     'SELECT pk AS objid, ''Fehlende Angabe vom Ende des Streckenschadens'' AS bemerkung
     FROM Untersuchdat_haltung
     GROUP BY untersuchhal
-	HAVING SUM(CASE WHEN streckenschaden = 'A' THEN 1 ELSE 0 END) > 0
-   AND SUM(CASE WHEN streckenschaden = 'B' THEN 1 ELSE 0 END) = 0',
+	HAVING SUM(CASE WHEN streckenschaden = ''A'' THEN 1 ELSE 0 END) > 0
+   AND SUM(CASE WHEN streckenschaden = ''B'' THEN 1 ELSE 0 END) = 0',
  'Untersuchungsdaten Haltung', 'pk'),
 
 ('Zustandsklassen', 'Das vergebene Schadenskürzel prüfen (DWA)', 'Fehler', 9,

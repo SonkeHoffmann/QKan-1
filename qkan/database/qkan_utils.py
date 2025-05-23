@@ -326,7 +326,7 @@ def checknames(
     # ----------------------------------------------------------------------------------------------------------------
     # Prüfung, ob Objektnamen leer oder NULL sind:
 
-    db_qkan.setmodule('database')
+    db_qkan.loadmodule('database')
     if not db_qkan.sqlyml(
         'database_checknames',
         "QKan.qgis_utils.checknames (1)",
@@ -455,7 +455,7 @@ def check_flaechenbilanz(db_qkan: "DBConnection") -> bool:
     :param db_qkan:     Typ der Datenbank (spatialite, postgis)
     """
 
-    db_qkan.setmodule('database')
+    db_qkan.loadmodule('database')
     if not db_qkan.sqlyml(
         'database_checkflaechenbilanz',
         "qkan_utils.check_flaechenbilanz (1)"
@@ -488,7 +488,7 @@ def eval_node_types(db_qkan: "DBConnection") -> None:
     """Schachttypen auswerten. Dies geschieht ausschließlich mit SQL-Abfragen"""
 
     # -- Anfangsschächte: Schächte ohne Haltung oben
-    db_qkan.setmodule('database')
+    db_qkan.loadmodule('database')
     if not db_qkan.sqlyml('database_knotentyp_anf', "importkanaldaten_he (39)"):
         return
 

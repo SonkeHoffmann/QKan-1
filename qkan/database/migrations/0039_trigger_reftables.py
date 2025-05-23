@@ -5,7 +5,7 @@ from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
 from qkan import QKan, enums
 import os
 
-VERSION = "3.4.3"  # must be higher than previous one and correspond with qkan_database.py: __dbVersion__
+VERSION = "3.4.6"  # must be higher than previous one and correspond with qkan_database.py: __dbVersion__
 
 logger = get_logger("QKan.database.migrations")
 
@@ -74,44 +74,63 @@ def run(dbcon: DBConnection) -> bool:
 
     dbcon.commit()
 
-    project = QgsProject.instance()
-    layerbez = enums.LAYERBEZ.HALTUNGEN.value
+    # gpos: Position des Layers innerhalb der Gruppe
+    layerconfs = [
+        {'layerbez': enums.LAYERBEZ.HALTUNGEN.value, 'table': 'haltungen', 'geom_column': 'geom',
+         'qmlfile': 'Haltungen.qml', 'uifile': 'qkan_haltungen.ui', 'group': 'Haltungen', 'gpos': 0, },
+        {'layerbez': enums.LAYERBEZ.ANSCHLUSSLEITUNGEN.value, 'table': 'anschlussleitungen', 'geom_column': 'geom',
+         'qmlfile': 'HA-Leitungen.qml', 'uifile': 'qkan_anschlussleitungen.ui', 'group': 'Haltungen', 'gpos': 1, },
+        {'layerbez': enums.LAYERBEZ.HALTUNGSFLAECHEN.value, 'table': 'tezg', 'geom_column': 'geom',
+         'qmlfile': 'Einzelflächen.qml', 'uifile': 'qkan_flaechen.ui', 'group': 'Flächen', 'gpos': 0, },
+        {'layerbez': enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value , 'table': 'linkfl', 'geom_column': 'glink',
+         'qmlfile': 'Anbindungen Flächen.qml', 'uifile': 'qkan_anbindungflaechen.ui', 'group': 'Flächen', 'gpos': 1, },
+        {'layerbez': enums.LAYERBEZ.EINZELFLAECHEN.value , 'table': 'flaechen', 'geom_column': 'geom',
+         'qmlfile': 'Flächen.qml', 'uifile': 'qkan_flaechen.ui', 'group': 'Flächen', 'gpos': 2, },
+        {'layerbez': enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value, 'table': 'linksw', 'geom_column': 'glink',
+         'qmlfile': 'Anbindungen Direkteinleitungen.qml', 'uifile': 'qkan_anbindungeinleit.ui', 'group': 'Einleitungen', 'gpos': 1, },
+    ]
 
-    uri = QgsDataSourceUri()
-    uri.setDatabase(QKan.config.database.qkan)
-    schema = ''
-    table = 'haltungen'
-    geom_column = 'geom'
-    uri.setDataSource(schema, table, geom_column)
-    layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
-    x = QgsProject.instance()
-    try:
-        x.removeMapLayer(x.mapLayersByName(layerbez)[0].id())
-    except:
-        pass
+    for layerconf in layerconfs:
+        layerbez = layerconf['layerbez']
+        table = layerconf['table']
+        geom_column = layerconf['geom_column']
+        qmlfile = layerconf['qmlfile']
+        uifile = layerconf['uifile']
+        group = layerconf['group']
+        gpos = layerconf['gpos']
 
-    templatepath = os.path.join(pluginDirectory("qkan"), "templates")
-    qmlpath = os.path.join(templatepath, "qml", "Haltungen.qml")
-    formsDir = os.path.join(pluginDirectory("qkan"), "forms")
+        uri = QgsDataSourceUri()
+        uri.setDatabase(QKan.config.database.qkan)
+        schema = ''
+        uri.setDataSource(schema, table, geom_column)
+        layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
+        x = QgsProject.instance()
+        try:
+            x.removeMapLayer(x.mapLayersByName(layerbez)[0].id())
+        except:
+            pass
 
-    try:
-        layer.loadNamedStyle(qmlpath)
-        layer.triggerRepaint()
-    except:
-        logger.error_code('Stildatei "Haltungen.qml" wurde nicht gefunden!\nAbbruch!')
+        templatepath = os.path.join(pluginDirectory("qkan"), "templates")
+        qmlpath = os.path.join(templatepath, "qml", qmlfile)
+        formsDir = os.path.join(pluginDirectory("qkan"), "forms")
 
-    # Adapt path to forms directory
-    editFormConfig = layer.editFormConfig()
-    editFormConfig.setUiForm(os.path.join(formsDir, 'qkan_haltungen.ui'))
-    layer.setEditFormConfig(editFormConfig)
-    QgsProject.instance().addMapLayer(layer, False)
+        try:
+            layer.loadNamedStyle(qmlpath)
+            layer.triggerRepaint()
+        except:
+            logger.error_code(f'Stildatei "{qmlfile}" wurde nicht gefunden!\nAbbruch!')
 
-    group = 'Haltungen'
-    layersRoot = QgsProject.instance().layerTreeRoot()
-    actGroup = layersRoot.findGroup(group)
-    if actGroup is None:
-        actGroup = layersRoot.addGroup(group)
-    actGroup.insertLayer(0, layer)
+        # Adapt path to forms directory
+        editFormConfig = layer.editFormConfig()
+        editFormConfig.setUiForm(os.path.join(formsDir, uifile))
+        layer.setEditFormConfig(editFormConfig)
+        QgsProject.instance().addMapLayer(layer, False)
+
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        actGroup = layersRoot.findGroup(group)
+        if actGroup is None:
+            actGroup = layersRoot.addGroup(group)
+        actGroup.insertLayer(gpos, layer)
 
     # Alias für hinzugefügtes Feld "rwanschluss"
     # project = QgsProject.instance()

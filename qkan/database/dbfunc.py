@@ -24,9 +24,9 @@ __author__ = "Joerg Hoettges"
 __date__ = "November 2024"
 __copyright__ = "(C) 2016-2024, Joerg Hoettges"
 
-from ..utils import get_logger
+from qkan.utils import get_logger, QkanAbortError
 
-logger = get_logger("QKan")
+logger = get_logger("QKan.dbfunc")
 
 
 class DBConnectError(Exception):
@@ -128,7 +128,7 @@ class DBConnection:
         # )
         self._disconnect()
 
-    def setmodule(self, module) -> None:
+    def loadmodule(self, module) -> None:
         """Loads module specific sqls"""
 
         self.module = module
@@ -174,7 +174,7 @@ class DBConnection:
         # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
         # noch nicht gelesen
 
-        self.setmodule('database')
+        self.loadmodule('database')
 
         # Load existing database
         if self.dbtype == enums.QKanDBChoice.SPATIALITE:
@@ -626,7 +626,7 @@ class DBConnection:
                 logger.error_code(
                     f'{self.__class__.__name__}: '
                     f'SQL {sqlnam} nicht gefunden\n'
-                    f'Möglicherweise wurde im Modulcode vergessen db_qkan.setmodule aufzurufen.\n'
+                    f'Möglicherweise wurde im Modulcode vergessen db_qkan.loadmodule aufzurufen.\n'
                     f'geladene SQLs:\n{self.sqls}'
                 )
 
@@ -1211,10 +1211,9 @@ class DBConnection:
             self.cursl.executescript(sqltext)
         except sqlite3.Error as err:
             self._disconnect()
-            logger.error_code(
-                f'{self.__class__.__name__}.dbqkan.DBConnection.sql: SQL-Fehler beim Ausführen der SQL-Datei\n'
-                f"{repr(err)}\n{filenam}")
-        return True
+            msg = f'{self.__class__.__name__}.dbqkan.DBConnection.sql: ' \
+                  f'SQL-Fehler beim Ausführen der SQL-Datei\n{repr(err)}\n{filenam}'
+            raise QkanAbortError(msg) from err
 
     def fetchall(self) -> List[Any]:
         """Gibt alle Daten aus der vorher ausgeführten SQL-Abfrage zurueck"""

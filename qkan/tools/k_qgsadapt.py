@@ -75,7 +75,7 @@ def qgsadapt(
     # Zoom-Bereich für die Projektdatei vorbereiten
     #TODO: AttributeError("'DBConnection' object has no attribute 'sqlyml'")
     try:
-        db_qkan.setmodule('tools')
+        db_qkan.loadmodule('tools')
         db_qkan.sqlyml('qgsadapt_zoom', "k_qgsadapt (1)")
     except BaseException as err:
         fehlermeldung("SQL-Fehler", repr(err))

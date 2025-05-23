@@ -300,11 +300,6 @@ def layersadapt(
                     layer.triggerRepaint()
                     logger.debug("Layerstil geladen (2): {}".format(qlsnam))
 
-                # nachfolgende Zeilen sind nicht notwendig, da in Projektdatei schon enthalten:
-                # elif layer.name() == 'Fehlerliste':
-                #     load_plausiaction(layer)
-                #     logger.debug("Aktion 'Zoom zum Objekt' für Layer 'Fehlerliste' ergänzt")
-
             if anpassen_Datenbankanbindung:
                 if geom != "":
                     # Vektorlayer

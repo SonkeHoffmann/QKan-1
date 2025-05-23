@@ -66,7 +66,6 @@ class QgisPanelLogger(StreamHandler):
 
 
 class QKanLogger(logging.Logger):
-    # todo: remove exceptions, raise explicitly instead
     def notice(self, msg: str, *args: Any, **kwargs: Any):
         self._log(LOG_NOTICE, msg, args, **kwargs)
 

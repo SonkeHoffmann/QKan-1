@@ -79,7 +79,7 @@ class Plausi(QKanPlugin):
         if db_qkan.executefile(filenam):
             logger.debug(f"Plausibilitätsabfragen aus Datei {filenam} eingelesen")
         else:
-            logger.error_code("Fehler beim Lesen der Plausibilitätsabfragen:"
+            logger.error("Fehler beim Lesen der Plausibilitätsabfragen:"
                           f"Die Datei {filenam} konnten nicht gelesen werden!")
         db_qkan.commit()
         logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")

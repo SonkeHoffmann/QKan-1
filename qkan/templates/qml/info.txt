@@ -1,0 +1,5 @@
+Hinweis für QKan-Programmierer:
+
+Für jeden Layer muss eine *.qml-Datei exisitieren, deren Name dem Layernamen entspricht ("/" wird dabei durch "_" ersetzt). 
+
+jh, 19.5.2025

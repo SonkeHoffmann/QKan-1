@@ -46,7 +46,7 @@ class ExportTask:
         # vergeben werden!!! Ein Grund ist, dass (u.a.?) die Tabelle "tabelleninhalte" mit verschiedenen
         # Tabellen verknuepft ist und dieser ID eindeutig sein muss.
 
-        self.db_qkan.setmodule('he8porter')
+        self.db_qkan.loadmodule('he8porter')
         self.db_qkan.sqlyml('he8_get_id', 'id der HE-idbm-Datenbank lesen')
         data = self.db_qkan.fetchone()
         if not data:
@@ -357,7 +357,7 @@ class ExportTask:
                 )
                 raise Exception(f"{self.__class__.__name__}")
 
-            self.db_qkan.setmodule('he8porter')
+            self.db_qkan.loadmodule('he8porter')
             if self.update:
                 # aus Performancegründen wird die Auswahl der zu bearbeitenden Flächen in eine
                 # temporäre Tabelle flupdate geschrieben

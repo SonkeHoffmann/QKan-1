@@ -7,7 +7,7 @@ logger = get_logger("QKan")
 class PlausiTask:
     def __init__(self, db_qkan: DBConnection):
         self.db_qkan = db_qkan
-        self.db_qkan.setmodule('datacheck')
+        self.db_qkan.loadmodule('datacheck')
 
     def run(self) -> bool:
         selected_themes = QKan.config.plausi.themen

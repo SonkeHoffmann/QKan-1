@@ -155,7 +155,7 @@ class He8Porter(QKanPlugin):
             epsg=QKan.config.epsg
         ) as db_qkan:
 
-            db_qkan.setmodule('he8porter')
+            db_qkan.loadmodule('he8porter')
             if not db_qkan.sqlyml(
                 'he8_attach',
                 "He8Porter.run_export_to_he8 Attach HE8",
@@ -288,7 +288,7 @@ class He8Porter(QKanPlugin):
                 )
                 return False
 
-            db_qkan.setmodule('he8porter')
+            db_qkan.loadmodule('he8porter')
             # Attach SQLite-Database with HE8 Data
             sql = f'ATTACH DATABASE "{QKan.config.he8.import_file}" AS he'
             if not db_qkan.sqlyml(

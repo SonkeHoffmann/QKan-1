@@ -18,7 +18,7 @@ class ImportTask:
 
     def run(self) -> bool:
 
-        self.db_qkan.setmodule('he8porter')
+        self.db_qkan.loadmodule('he8porter')
 
         result = all(
             [

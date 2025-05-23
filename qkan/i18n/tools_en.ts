@@ -189,7 +189,7 @@ berücksichtigen:</source>
     <name>ImportFromHEDialogBase</name>
     <message encoding="UTF-8">
         <location filename="../tools/res/application_qgsadapt.ui" line="19"/>
-        <source>QKan-Projektdatei übertragen</source>
+        <source>QKan-Projektdatei laden</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -1,285 +1,192 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" readOnly="0" minScale="0" symbologyReferenceScale="-1" maxScale="0" simplifyDrawingHints="1" simplifyLocal="1" version="3.22.16-Białowieża" simplifyMaxScale="1" simplifyDrawingTol="1" labelsEnabled="0">
+<qgis maxScale="0" simplifyDrawingHints="1" simplifyDrawingTol="1" version="3.28.13-Firenze" labelsEnabled="0" symbologyReferenceScale="-1" minScale="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" simplifyLocal="1" readOnly="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Relations|Temporal|Legend|Notes">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
+  <temporal mode="0" endField="" accumulate="0" startField="" endExpression="" durationField="" limitMode="0" startExpression="" fixedDuration="0" enabled="0" durationUnit="min">
     <fixedRange>
       <start></start>
       <end></end>
     </fixedRange>
   </temporal>
-  <renderer-v2 symbollevels="0" referencescale="-1" forceraster="0" type="singleSymbol" enableorderby="0">
+  <renderer-v2 type="singleSymbol" enableorderby="0" symbollevels="0" forceraster="0" referencescale="-1">
     <symbols>
-      <symbol force_rhr="0" name="0" type="line" alpha="1" clip_to_extent="1">
+      <symbol type="line" force_rhr="0" frame_rate="10" is_animated="0" alpha="1" name="0" clip_to_extent="1">
         <data_defined_properties>
           <Option type="Map">
-            <Option name="name" value="" type="QString"/>
+            <Option type="QString" name="name" value=""/>
             <Option name="properties"/>
-            <Option name="type" value="collection" type="QString"/>
+            <Option type="QString" name="type" value="collection"/>
           </Option>
         </data_defined_properties>
-        <layer enabled="1" pass="0" locked="0" class="SimpleLine">
+        <layer pass="0" locked="0" enabled="1" class="SimpleLine">
           <Option type="Map">
-            <Option name="align_dash_pattern" value="0" type="QString"/>
-            <Option name="capstyle" value="square" type="QString"/>
-            <Option name="customdash" value="5;2" type="QString"/>
-            <Option name="customdash_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="customdash_unit" value="MM" type="QString"/>
-            <Option name="dash_pattern_offset" value="0" type="QString"/>
-            <Option name="dash_pattern_offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="dash_pattern_offset_unit" value="MM" type="QString"/>
-            <Option name="draw_inside_polygon" value="0" type="QString"/>
-            <Option name="joinstyle" value="bevel" type="QString"/>
-            <Option name="line_color" value="0,0,0,255" type="QString"/>
-            <Option name="line_style" value="solid" type="QString"/>
-            <Option name="line_width" value="0.3" type="QString"/>
-            <Option name="line_width_unit" value="MM" type="QString"/>
-            <Option name="offset" value="0" type="QString"/>
-            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
-            <Option name="ring_filter" value="0" type="QString"/>
-            <Option name="trim_distance_end" value="0" type="QString"/>
-            <Option name="trim_distance_end_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="trim_distance_end_unit" value="MM" type="QString"/>
-            <Option name="trim_distance_start" value="0" type="QString"/>
-            <Option name="trim_distance_start_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="trim_distance_start_unit" value="MM" type="QString"/>
-            <Option name="tweak_dash_pattern_on_corners" value="0" type="QString"/>
-            <Option name="use_custom_dash" value="0" type="QString"/>
-            <Option name="width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option type="QString" name="align_dash_pattern" value="0"/>
+            <Option type="QString" name="capstyle" value="square"/>
+            <Option type="QString" name="customdash" value="5;2"/>
+            <Option type="QString" name="customdash_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="customdash_unit" value="MM"/>
+            <Option type="QString" name="dash_pattern_offset" value="0"/>
+            <Option type="QString" name="dash_pattern_offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="dash_pattern_offset_unit" value="MM"/>
+            <Option type="QString" name="draw_inside_polygon" value="0"/>
+            <Option type="QString" name="joinstyle" value="bevel"/>
+            <Option type="QString" name="line_color" value="0,0,0,255"/>
+            <Option type="QString" name="line_style" value="solid"/>
+            <Option type="QString" name="line_width" value="0.3"/>
+            <Option type="QString" name="line_width_unit" value="MM"/>
+            <Option type="QString" name="offset" value="0"/>
+            <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="offset_unit" value="MM"/>
+            <Option type="QString" name="ring_filter" value="0"/>
+            <Option type="QString" name="trim_distance_end" value="0"/>
+            <Option type="QString" name="trim_distance_end_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="trim_distance_end_unit" value="MM"/>
+            <Option type="QString" name="trim_distance_start" value="0"/>
+            <Option type="QString" name="trim_distance_start_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="trim_distance_start_unit" value="MM"/>
+            <Option type="QString" name="tweak_dash_pattern_on_corners" value="0"/>
+            <Option type="QString" name="use_custom_dash" value="0"/>
+            <Option type="QString" name="width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
           </Option>
-          <prop k="align_dash_pattern" v="0"/>
-          <prop k="capstyle" v="square"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="dash_pattern_offset" v="0"/>
-          <prop k="dash_pattern_offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="dash_pattern_offset_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="0,0,0,255"/>
-          <prop k="line_style" v="solid"/>
-          <prop k="line_width" v="0.3"/>
-          <prop k="line_width_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="ring_filter" v="0"/>
-          <prop k="trim_distance_end" v="0"/>
-          <prop k="trim_distance_end_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="trim_distance_end_unit" v="MM"/>
-          <prop k="trim_distance_start" v="0"/>
-          <prop k="trim_distance_start_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="trim_distance_start_unit" v="MM"/>
-          <prop k="tweak_dash_pattern_on_corners" v="0"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
-        <layer enabled="1" pass="0" locked="0" class="MarkerLine">
+        <layer pass="0" locked="0" enabled="1" class="MarkerLine">
           <Option type="Map">
-            <Option name="average_angle_length" value="4" type="QString"/>
-            <Option name="average_angle_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="average_angle_unit" value="MM" type="QString"/>
-            <Option name="interval" value="3" type="QString"/>
-            <Option name="interval_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="interval_unit" value="MM" type="QString"/>
-            <Option name="offset" value="0" type="QString"/>
-            <Option name="offset_along_line" value="0" type="QString"/>
-            <Option name="offset_along_line_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_along_line_unit" value="MM" type="QString"/>
-            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
-            <Option name="placement" value="centralpoint" type="QString"/>
-            <Option name="ring_filter" value="0" type="QString"/>
-            <Option name="rotate" value="1" type="QString"/>
+            <Option type="QString" name="average_angle_length" value="4"/>
+            <Option type="QString" name="average_angle_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="average_angle_unit" value="MM"/>
+            <Option type="QString" name="interval" value="3"/>
+            <Option type="QString" name="interval_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="interval_unit" value="MM"/>
+            <Option type="QString" name="offset" value="0"/>
+            <Option type="QString" name="offset_along_line" value="0"/>
+            <Option type="QString" name="offset_along_line_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="offset_along_line_unit" value="MM"/>
+            <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="offset_unit" value="MM"/>
+            <Option type="bool" name="place_on_every_part" value="true"/>
+            <Option type="QString" name="placements" value="CentralPoint"/>
+            <Option type="QString" name="ring_filter" value="0"/>
+            <Option type="QString" name="rotate" value="1"/>
           </Option>
-          <prop k="average_angle_length" v="4"/>
-          <prop k="average_angle_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="average_angle_unit" v="MM"/>
-          <prop k="interval" v="3"/>
-          <prop k="interval_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="interval_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_along_line" v="0"/>
-          <prop k="offset_along_line_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_along_line_unit" v="MM"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="placement" v="centralpoint"/>
-          <prop k="ring_filter" v="0"/>
-          <prop k="rotate" v="1"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
-          <symbol force_rhr="0" name="@0@1" type="marker" alpha="1" clip_to_extent="1">
+          <symbol type="marker" force_rhr="0" frame_rate="10" is_animated="0" alpha="1" name="@0@1" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
-                <Option name="name" value="" type="QString"/>
+                <Option type="QString" name="name" value=""/>
                 <Option name="properties"/>
-                <Option name="type" value="collection" type="QString"/>
+                <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer enabled="1" pass="0" locked="0" class="SimpleMarker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <Option type="Map">
-                <Option name="angle" value="0" type="QString"/>
-                <Option name="cap_style" value="square" type="QString"/>
-                <Option name="color" value="196,241,122,255" type="QString"/>
-                <Option name="horizontal_anchor_point" value="1" type="QString"/>
-                <Option name="joinstyle" value="bevel" type="QString"/>
-                <Option name="name" value="filled_arrowhead" type="QString"/>
-                <Option name="offset" value="0,0" type="QString"/>
-                <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="offset_unit" value="MM" type="QString"/>
-                <Option name="outline_color" value="0,0,0,255" type="QString"/>
-                <Option name="outline_style" value="solid" type="QString"/>
-                <Option name="outline_width" value="0" type="QString"/>
-                <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="outline_width_unit" value="MM" type="QString"/>
-                <Option name="scale_method" value="diameter" type="QString"/>
-                <Option name="size" value="2.5" type="QString"/>
-                <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="size_unit" value="MM" type="QString"/>
-                <Option name="vertical_anchor_point" value="1" type="QString"/>
+                <Option type="QString" name="angle" value="0"/>
+                <Option type="QString" name="cap_style" value="square"/>
+                <Option type="QString" name="color" value="196,241,122,255"/>
+                <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="name" value="filled_arrowhead"/>
+                <Option type="QString" name="offset" value="0,0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="outline_color" value="0,0,0,255"/>
+                <Option type="QString" name="outline_style" value="solid"/>
+                <Option type="QString" name="outline_width" value="0"/>
+                <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="outline_width_unit" value="MM"/>
+                <Option type="QString" name="scale_method" value="diameter"/>
+                <Option type="QString" name="size" value="2.5"/>
+                <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="size_unit" value="MM"/>
+                <Option type="QString" name="vertical_anchor_point" value="1"/>
               </Option>
-              <prop k="angle" v="0"/>
-              <prop k="cap_style" v="square"/>
-              <prop k="color" v="196,241,122,255"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="name" v="filled_arrowhead"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_color" v="0,0,0,255"/>
-              <prop k="outline_style" v="solid"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="scale_method" v="diameter"/>
-              <prop k="size" v="2.5"/>
-              <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option type="QString" name="name" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
         </layer>
-        <layer enabled="1" pass="0" locked="0" class="MarkerLine">
+        <layer pass="0" locked="0" enabled="1" class="MarkerLine">
           <Option type="Map">
-            <Option name="average_angle_length" value="4" type="QString"/>
-            <Option name="average_angle_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="average_angle_unit" value="MM" type="QString"/>
-            <Option name="interval" value="3" type="QString"/>
-            <Option name="interval_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="interval_unit" value="MM" type="QString"/>
-            <Option name="offset" value="0" type="QString"/>
-            <Option name="offset_along_line" value="0" type="QString"/>
-            <Option name="offset_along_line_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_along_line_unit" value="MM" type="QString"/>
-            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
-            <Option name="placement" value="firstvertex" type="QString"/>
-            <Option name="ring_filter" value="0" type="QString"/>
-            <Option name="rotate" value="1" type="QString"/>
+            <Option type="QString" name="average_angle_length" value="4"/>
+            <Option type="QString" name="average_angle_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="average_angle_unit" value="MM"/>
+            <Option type="QString" name="interval" value="3"/>
+            <Option type="QString" name="interval_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="interval_unit" value="MM"/>
+            <Option type="QString" name="offset" value="0"/>
+            <Option type="QString" name="offset_along_line" value="0"/>
+            <Option type="QString" name="offset_along_line_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="offset_along_line_unit" value="MM"/>
+            <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="offset_unit" value="MM"/>
+            <Option type="bool" name="place_on_every_part" value="true"/>
+            <Option type="QString" name="placements" value="FirstVertex"/>
+            <Option type="QString" name="ring_filter" value="0"/>
+            <Option type="QString" name="rotate" value="1"/>
           </Option>
-          <prop k="average_angle_length" v="4"/>
-          <prop k="average_angle_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="average_angle_unit" v="MM"/>
-          <prop k="interval" v="3"/>
-          <prop k="interval_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="interval_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_along_line" v="0"/>
-          <prop k="offset_along_line_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_along_line_unit" v="MM"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="placement" v="firstvertex"/>
-          <prop k="ring_filter" v="0"/>
-          <prop k="rotate" v="1"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
-          <symbol force_rhr="0" name="@0@2" type="marker" alpha="1" clip_to_extent="1">
+          <symbol type="marker" force_rhr="0" frame_rate="10" is_animated="0" alpha="1" name="@0@2" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
-                <Option name="name" value="" type="QString"/>
+                <Option type="QString" name="name" value=""/>
                 <Option name="properties"/>
-                <Option name="type" value="collection" type="QString"/>
+                <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer enabled="1" pass="0" locked="0" class="SimpleMarker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <Option type="Map">
-                <Option name="angle" value="0" type="QString"/>
-                <Option name="cap_style" value="square" type="QString"/>
-                <Option name="color" value="196,241,122,255" type="QString"/>
-                <Option name="horizontal_anchor_point" value="1" type="QString"/>
-                <Option name="joinstyle" value="bevel" type="QString"/>
-                <Option name="name" value="circle" type="QString"/>
-                <Option name="offset" value="0,0" type="QString"/>
-                <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="offset_unit" value="MM" type="QString"/>
-                <Option name="outline_color" value="0,0,0,255" type="QString"/>
-                <Option name="outline_style" value="solid" type="QString"/>
-                <Option name="outline_width" value="0" type="QString"/>
-                <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="outline_width_unit" value="MM" type="QString"/>
-                <Option name="scale_method" value="area" type="QString"/>
-                <Option name="size" value="2" type="QString"/>
-                <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="size_unit" value="MM" type="QString"/>
-                <Option name="vertical_anchor_point" value="1" type="QString"/>
+                <Option type="QString" name="angle" value="0"/>
+                <Option type="QString" name="cap_style" value="square"/>
+                <Option type="QString" name="color" value="196,241,122,255"/>
+                <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="name" value="circle"/>
+                <Option type="QString" name="offset" value="0,0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="outline_color" value="0,0,0,255"/>
+                <Option type="QString" name="outline_style" value="solid"/>
+                <Option type="QString" name="outline_width" value="0"/>
+                <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="outline_width_unit" value="MM"/>
+                <Option type="QString" name="scale_method" value="area"/>
+                <Option type="QString" name="size" value="2"/>
+                <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="size_unit" value="MM"/>
+                <Option type="QString" name="vertical_anchor_point" value="1"/>
               </Option>
-              <prop k="angle" v="0"/>
-              <prop k="cap_style" v="square"/>
-              <prop k="color" v="196,241,122,255"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="name" v="circle"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_color" v="0,0,0,255"/>
-              <prop k="outline_style" v="solid"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="scale_method" v="area"/>
-              <prop k="size" v="2"/>
-              <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option type="QString" name="name" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
@@ -292,281 +199,305 @@
   </renderer-v2>
   <customproperties>
     <Option type="Map">
-      <Option name="embeddedWidgets/count" value="0" type="int"/>
-      <Option name="variableNames" type="invalid"/>
-      <Option name="variableValues" type="invalid"/>
+      <Option type="QString" name="QFieldSync/action" value="copy"/>
+      <Option type="QString" name="QFieldSync/attachment_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/cloud_action" value="offline"/>
+      <Option type="QString" name="QFieldSync/geometry_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/photo_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/relationship_maximum_visible" value="{}"/>
+      <Option type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30"/>
+      <Option type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1"/>
+      <Option type="int" name="QFieldSync/tracking_measurement_type" value="0"/>
+      <Option type="int" name="QFieldSync/tracking_time_requirement_interval_seconds" value="30"/>
+      <Option type="int" name="QFieldSync/value_map_button_interface_threshold" value="0"/>
+      <Option type="int" name="embeddedWidgets/count" value="0"/>
+      <Option name="variableNames"/>
+      <Option name="variableValues"/>
     </Option>
   </customproperties>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <layerOpacity>1</layerOpacity>
+  <legend type="default-vector" showLabelLegend="0"/>
+  <referencedLayers/>
   <fieldConfiguration>
-    <field name="pk" configurationFlags="None">
+    <field configurationFlags="None" name="pk">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="0" type="QString"/>
-            <Option name="UseHtml" value="0" type="QString"/>
+            <Option type="QString" name="IsMultiline" value="0"/>
+            <Option type="QString" name="UseHtml" value="0"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="flnam" configurationFlags="None">
+    <field configurationFlags="None" name="flnam">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="true" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="flnam" type="QString"/>
-            <Option name="Layer" value="Flächen_2449ac97_6c2e_49df_96bc_5b9cc1d96e2c" type="QString"/>
-            <Option name="LayerName" value="Einzelflächen" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;flaechen&quot; (geom)" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="true" type="bool"/>
-            <Option name="Value" value="flnam" type="QString"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="QString" name="Description" value=""/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="flnam"/>
+            <Option type="QString" name="Layer" value="Einzelfl_chen_7dbcb03c_6415_49c1_b295_0152f545904c"/>
+            <Option type="QString" name="LayerName" value="Einzelflächen"/>
+            <Option type="QString" name="LayerProviderName" value="spatialite"/>
+            <Option type="QString" name="LayerSource" value="dbname='C:/Users/hoettges/Documents/juelich' host=qkan-public.gbd-websuite.de port=5432 user='isce' key='pk' srid=25832 type=MultiPolygon checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;flaechen&quot; (geom)"/>
+            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="true"/>
+            <Option type="QString" name="Value" value="flnam"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="haltnam" configurationFlags="None">
+    <field configurationFlags="None" name="haltnam">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="true" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="haltnam" type="QString"/>
-            <Option name="Layer" value="haltungen20161016203756230" type="QString"/>
-            <Option name="LayerName" value="Haltungen nach Typ" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;haltungen&quot; (geom) sql=haltungstyp IS NULL or haltungstyp = 'Haltung'" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="true" type="bool"/>
-            <Option name="Value" value="haltnam" type="QString"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="QString" name="Description" value=""/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="haltnam"/>
+            <Option type="QString" name="Layer" value="haltungen20161016203756230"/>
+            <Option type="QString" name="LayerName" value="Haltungen"/>
+            <Option type="QString" name="LayerProviderName" value="spatialite"/>
+            <Option type="QString" name="LayerSource" value="dbname='C:/Users/hoettges/Documents/juelich' host=qkan-public.gbd-websuite.de port=5432 user='isce' key='pk' srid=25832 type=LineString checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;haltungen&quot; (geom) sql=haltungstyp IS NULL or haltungstyp = 'Haltung'"/>
+            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="true"/>
+            <Option type="QString" name="Value" value="haltnam"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="schnam" configurationFlags="None">
-      <editWidget type="TextEdit">
-        <config>
-          <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
-          </Option>
-        </config>
-      </editWidget>
-    </field>
-    <field name="tezgnam" configurationFlags="None">
+    <field configurationFlags="None" name="schnam">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="true" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="flnam" type="QString"/>
-            <Option name="Layer" value="Haltungsflächen_38cc9a58_a57d_487e_bbac_6000457b0748" type="QString"/>
-            <Option name="LayerName" value="Haltungsflächen" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;tezg&quot; (geom)" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="true" type="bool"/>
-            <Option name="Value" value="flnam" type="QString"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="QString" name="Description" value=""/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="schnam"/>
+            <Option type="QString" name="Layer" value="Geometrien_53c691ed_4408_4aea_a1e3_95482f944a0b"/>
+            <Option type="QString" name="LayerName" value="Geometrien"/>
+            <Option type="QString" name="LayerProviderName" value="spatialite"/>
+            <Option type="QString" name="LayerSource" value="dbname='C:/Users/hoettges/Documents/juelich' host=qkan-public.gbd-websuite.de port=5432 user='isce' key='pk' srid=25832 type=MultiPolygon checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;schaechte&quot; (geom)"/>
+            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="true"/>
+            <Option type="QString" name="Value" value="schnam"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="teilgebiet" configurationFlags="None">
+    <field configurationFlags="None" name="tezgnam">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="true" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="tgnam" type="QString"/>
-            <Option name="Layer" value="Teilgebiete_786fa926_704f_4cb1_bc67_eb8571f2f6c0" type="QString"/>
-            <Option name="LayerName" value="Teilgebiete" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;teilgebiete&quot; (geom)" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="true" type="bool"/>
-            <Option name="Value" value="tgnam" type="QString"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="QString" name="Description" value=""/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="flnam"/>
+            <Option type="QString" name="Layer" value="Haltungsflächen_38cc9a58_a57d_487e_bbac_6000457b0748"/>
+            <Option type="QString" name="LayerName" value="Haltungsflächen"/>
+            <Option type="QString" name="LayerProviderName" value="spatialite"/>
+            <Option type="QString" name="LayerSource" value="dbname='juelich' host=qkan-public.gbd-websuite.de port=5432 authcfg=qkan002 key='pk' srid=25832 type=MultiPolygon checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;tezg&quot; (geom)"/>
+            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="true"/>
+            <Option type="QString" name="Value" value="flnam"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="abflusstyp" configurationFlags="None">
+    <field configurationFlags="None" name="teilgebiet">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="true" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="abflusstyp" type="QString"/>
-            <Option name="Layer" value="abflusstypen_b1368d23_11b7_4b53_86a9_44feb5d66c5f" type="QString"/>
-            <Option name="LayerName" value="Abflusstypen" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;abflusstypen&quot;" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="true" type="bool"/>
-            <Option name="Value" value="abflusstyp" type="QString"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="QString" name="Description" value=""/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="tgnam"/>
+            <Option type="QString" name="Layer" value="Teilgebiete_786fa926_704f_4cb1_bc67_eb8571f2f6c0"/>
+            <Option type="QString" name="LayerName" value="Teilgebiete"/>
+            <Option type="QString" name="LayerProviderName" value="spatialite"/>
+            <Option type="QString" name="LayerSource" value="dbname='juelich' host=qkan-public.gbd-websuite.de port=5432 authcfg=qkan002 key='pk' srid=25832 type=MultiPolygon checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;teilgebiete&quot; (geom)"/>
+            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="true"/>
+            <Option type="QString" name="Value" value="tgnam"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="speicherzahl" configurationFlags="None">
-      <editWidget type="TextEdit">
+    <field configurationFlags="None" name="abflusstyp">
+      <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option type="bool" name="AllowMulti" value="false"/>
+            <Option type="bool" name="AllowNull" value="true"/>
+            <Option type="QString" name="Description" value=""/>
+            <Option type="QString" name="FilterExpression" value=""/>
+            <Option type="QString" name="Key" value="abflusstyp"/>
+            <Option type="QString" name="Layer" value="abflusstypen_b1368d23_11b7_4b53_86a9_44feb5d66c5f"/>
+            <Option type="QString" name="LayerName" value="Abflusstypen"/>
+            <Option type="QString" name="LayerProviderName" value="spatialite"/>
+            <Option type="QString" name="LayerSource" value="dbname='juelich' host=qkan-public.gbd-websuite.de port=5432 authcfg=qkan002 key='pk' srid=25832 type=LineString checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;abflusstypen&quot;"/>
+            <Option type="int" name="NofColumns" value="1"/>
+            <Option type="bool" name="OrderByValue" value="false"/>
+            <Option type="bool" name="UseCompleter" value="true"/>
+            <Option type="QString" name="Value" value="abflusstyp"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="speicherkonst" configurationFlags="None">
+    <field configurationFlags="None" name="speicherzahl">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="fliesszeitkanal" configurationFlags="None">
+    <field configurationFlags="None" name="speicherkonst">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="fliesszeitflaeche" configurationFlags="None">
+    <field configurationFlags="None" name="fliesszeitkanal">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="geom" configurationFlags="None">
+    <field configurationFlags="None" name="fliesszeitflaeche">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="gbuf" configurationFlags="None">
+    <field configurationFlags="None" name="geom">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
+          </Option>
+        </config>
+      </editWidget>
+    </field>
+    <field configurationFlags="None" name="gbuf">
+      <editWidget type="TextEdit">
+        <config>
+          <Option type="Map">
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias name="" index="0" field="pk"/>
-    <alias name="Name" index="1" field="flnam"/>
-    <alias name="Haltung" index="2" field="haltnam"/>
-    <alias name="Schacht" index="3" field="schnam"/>
-    <alias name="Haltungsfläche" index="4" field="tezgnam"/>
-    <alias name="Teilgebiet" index="5" field="teilgebiet"/>
-    <alias name="Abflusstyp" index="6" field="abflusstyp"/>
-    <alias name="Speicherzahl" index="7" field="speicherzahl"/>
-    <alias name="Speicherkonstante" index="8" field="speicherkonst"/>
-    <alias name="Fließzeit Kanal" index="9" field="fliesszeitkanal"/>
-    <alias name="Fließzeit Fläche" index="10" field="fliesszeitflaeche"/>
-    <alias name="" index="11" field="geom"/>
-    <alias name="" index="12" field="gbuf"/>
+    <alias field="pk" name="" index="0"/>
+    <alias field="flnam" name="Name" index="1"/>
+    <alias field="haltnam" name="Haltung" index="2"/>
+    <alias field="schnam" name="Schacht" index="3"/>
+    <alias field="tezgnam" name="Haltungsfläche" index="4"/>
+    <alias field="teilgebiet" name="Teilgebiet" index="5"/>
+    <alias field="abflusstyp" name="Abflusstyp" index="6"/>
+    <alias field="speicherzahl" name="Speicherzahl" index="7"/>
+    <alias field="speicherkonst" name="Speicherkonstante" index="8"/>
+    <alias field="fliesszeitkanal" name="Fließzeit Kanal" index="9"/>
+    <alias field="fliesszeitflaeche" name="Fließzeit Fläche" index="10"/>
+    <alias field="geom" name="" index="11"/>
+    <alias field="gbuf" name="" index="12"/>
   </aliases>
   <defaults>
-    <default applyOnUpdate="0" expression="" field="pk"/>
-    <default applyOnUpdate="0" expression="" field="flnam"/>
-    <default applyOnUpdate="0" expression="" field="haltnam"/>
-    <default applyOnUpdate="0" expression="" field="schnam"/>
-    <default applyOnUpdate="0" expression="" field="tezgnam"/>
-    <default applyOnUpdate="0" expression="" field="teilgebiet"/>
-    <default applyOnUpdate="0" expression="" field="abflusstyp"/>
-    <default applyOnUpdate="0" expression="" field="speicherzahl"/>
-    <default applyOnUpdate="0" expression="" field="speicherkonst"/>
-    <default applyOnUpdate="0" expression="" field="fliesszeitkanal"/>
-    <default applyOnUpdate="0" expression="" field="fliesszeitflaeche"/>
-    <default applyOnUpdate="0" expression="" field="geom"/>
-    <default applyOnUpdate="0" expression="" field="gbuf"/>
+    <default field="pk" applyOnUpdate="0" expression=""/>
+    <default field="flnam" applyOnUpdate="0" expression=""/>
+    <default field="haltnam" applyOnUpdate="0" expression=""/>
+    <default field="schnam" applyOnUpdate="0" expression=""/>
+    <default field="tezgnam" applyOnUpdate="0" expression=""/>
+    <default field="teilgebiet" applyOnUpdate="0" expression=""/>
+    <default field="abflusstyp" applyOnUpdate="0" expression=""/>
+    <default field="speicherzahl" applyOnUpdate="0" expression=""/>
+    <default field="speicherkonst" applyOnUpdate="0" expression=""/>
+    <default field="fliesszeitkanal" applyOnUpdate="0" expression=""/>
+    <default field="fliesszeitflaeche" applyOnUpdate="0" expression=""/>
+    <default field="geom" applyOnUpdate="0" expression=""/>
+    <default field="gbuf" applyOnUpdate="0" expression=""/>
   </defaults>
   <constraints>
-    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="flnam"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="haltnam"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="schnam"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="tezgnam"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="teilgebiet"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="abflusstyp"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="speicherzahl"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="speicherkonst"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="fliesszeitkanal"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="fliesszeitflaeche"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="geom"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="gbuf"/>
+    <constraint constraints="3" field="pk" unique_strength="2" notnull_strength="2" exp_strength="0"/>
+    <constraint constraints="0" field="flnam" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="haltnam" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="schnam" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="tezgnam" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="teilgebiet" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="abflusstyp" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="speicherzahl" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="speicherkonst" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="fliesszeitkanal" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="fliesszeitflaeche" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="geom" unique_strength="0" notnull_strength="0" exp_strength="0"/>
+    <constraint constraints="0" field="gbuf" unique_strength="0" notnull_strength="0" exp_strength="0"/>
   </constraints>
   <constraintExpressions>
-    <constraint exp="" desc="" field="pk"/>
-    <constraint exp="" desc="" field="flnam"/>
-    <constraint exp="" desc="" field="haltnam"/>
-    <constraint exp="" desc="" field="schnam"/>
-    <constraint exp="" desc="" field="tezgnam"/>
-    <constraint exp="" desc="" field="teilgebiet"/>
-    <constraint exp="" desc="" field="abflusstyp"/>
-    <constraint exp="" desc="" field="speicherzahl"/>
-    <constraint exp="" desc="" field="speicherkonst"/>
-    <constraint exp="" desc="" field="fliesszeitkanal"/>
-    <constraint exp="" desc="" field="fliesszeitflaeche"/>
-    <constraint exp="" desc="" field="geom"/>
-    <constraint exp="" desc="" field="gbuf"/>
+    <constraint desc="" field="pk" exp=""/>
+    <constraint desc="" field="flnam" exp=""/>
+    <constraint desc="" field="haltnam" exp=""/>
+    <constraint desc="" field="schnam" exp=""/>
+    <constraint desc="" field="tezgnam" exp=""/>
+    <constraint desc="" field="teilgebiet" exp=""/>
+    <constraint desc="" field="abflusstyp" exp=""/>
+    <constraint desc="" field="speicherzahl" exp=""/>
+    <constraint desc="" field="speicherkonst" exp=""/>
+    <constraint desc="" field="fliesszeitkanal" exp=""/>
+    <constraint desc="" field="fliesszeitflaeche" exp=""/>
+    <constraint desc="" field="geom" exp=""/>
+    <constraint desc="" field="gbuf" exp=""/>
   </constraintExpressions>
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
+  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
     <columns>
-      <column name="pk" hidden="0" width="-1" type="field"/>
-      <column name="flnam" hidden="0" width="-1" type="field"/>
-      <column name="haltnam" hidden="0" width="-1" type="field"/>
-      <column name="tezgnam" hidden="0" width="-1" type="field"/>
-      <column name="teilgebiet" hidden="0" width="-1" type="field"/>
-      <column name="abflusstyp" hidden="0" width="-1" type="field"/>
-      <column name="speicherzahl" hidden="0" width="-1" type="field"/>
-      <column name="speicherkonst" hidden="0" width="-1" type="field"/>
-      <column name="fliesszeitkanal" hidden="0" width="-1" type="field"/>
-      <column name="fliesszeitflaeche" hidden="0" width="-1" type="field"/>
-      <column name="geom" hidden="0" width="-1" type="field"/>
-      <column name="gbuf" hidden="0" width="-1" type="field"/>
-      <column name="schnam" hidden="0" width="-1" type="field"/>
-      <column hidden="1" width="-1" type="actions"/>
+      <column type="field" width="-1" name="pk" hidden="0"/>
+      <column type="field" width="-1" name="flnam" hidden="0"/>
+      <column type="field" width="-1" name="haltnam" hidden="0"/>
+      <column type="field" width="-1" name="tezgnam" hidden="0"/>
+      <column type="field" width="-1" name="teilgebiet" hidden="0"/>
+      <column type="field" width="-1" name="abflusstyp" hidden="0"/>
+      <column type="field" width="-1" name="speicherzahl" hidden="0"/>
+      <column type="field" width="-1" name="speicherkonst" hidden="0"/>
+      <column type="field" width="-1" name="fliesszeitkanal" hidden="0"/>
+      <column type="field" width="-1" name="fliesszeitflaeche" hidden="0"/>
+      <column type="field" width="-1" name="geom" hidden="0"/>
+      <column type="field" width="-1" name="gbuf" hidden="0"/>
+      <column type="field" width="-1" name="schnam" hidden="0"/>
+      <column type="actions" width="-1" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -574,6 +505,7 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\qkan_anbindungflaechen.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -597,49 +529,49 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field name="abflusstyp" editable="1"/>
-    <field name="fliesszeitflaeche" editable="1"/>
-    <field name="fliesszeitkanal" editable="1"/>
-    <field name="flnam" editable="1"/>
-    <field name="gbuf" editable="1"/>
-    <field name="geom" editable="1"/>
-    <field name="haltnam" editable="1"/>
-    <field name="pk" editable="1"/>
-    <field name="schnam" editable="1"/>
-    <field name="speicherkonst" editable="1"/>
-    <field name="speicherzahl" editable="1"/>
-    <field name="teilgebiet" editable="1"/>
-    <field name="tezgnam" editable="1"/>
+    <field editable="1" name="abflusstyp"/>
+    <field editable="1" name="fliesszeitflaeche"/>
+    <field editable="1" name="fliesszeitkanal"/>
+    <field editable="1" name="flnam"/>
+    <field editable="1" name="gbuf"/>
+    <field editable="1" name="geom"/>
+    <field editable="1" name="haltnam"/>
+    <field editable="1" name="pk"/>
+    <field editable="1" name="schnam"/>
+    <field editable="1" name="speicherkonst"/>
+    <field editable="1" name="speicherzahl"/>
+    <field editable="1" name="teilgebiet"/>
+    <field editable="1" name="tezgnam"/>
   </editable>
   <labelOnTop>
-    <field name="abflusstyp" labelOnTop="0"/>
-    <field name="fliesszeitflaeche" labelOnTop="0"/>
-    <field name="fliesszeitkanal" labelOnTop="0"/>
-    <field name="flnam" labelOnTop="0"/>
-    <field name="gbuf" labelOnTop="0"/>
-    <field name="geom" labelOnTop="0"/>
-    <field name="haltnam" labelOnTop="0"/>
-    <field name="pk" labelOnTop="0"/>
-    <field name="schnam" labelOnTop="0"/>
-    <field name="speicherkonst" labelOnTop="0"/>
-    <field name="speicherzahl" labelOnTop="0"/>
-    <field name="teilgebiet" labelOnTop="0"/>
-    <field name="tezgnam" labelOnTop="0"/>
+    <field labelOnTop="0" name="abflusstyp"/>
+    <field labelOnTop="0" name="fliesszeitflaeche"/>
+    <field labelOnTop="0" name="fliesszeitkanal"/>
+    <field labelOnTop="0" name="flnam"/>
+    <field labelOnTop="0" name="gbuf"/>
+    <field labelOnTop="0" name="geom"/>
+    <field labelOnTop="0" name="haltnam"/>
+    <field labelOnTop="0" name="pk"/>
+    <field labelOnTop="0" name="schnam"/>
+    <field labelOnTop="0" name="speicherkonst"/>
+    <field labelOnTop="0" name="speicherzahl"/>
+    <field labelOnTop="0" name="teilgebiet"/>
+    <field labelOnTop="0" name="tezgnam"/>
   </labelOnTop>
   <reuseLastValue>
-    <field name="abflusstyp" reuseLastValue="0"/>
-    <field name="fliesszeitflaeche" reuseLastValue="0"/>
-    <field name="fliesszeitkanal" reuseLastValue="0"/>
-    <field name="flnam" reuseLastValue="0"/>
-    <field name="gbuf" reuseLastValue="0"/>
-    <field name="geom" reuseLastValue="0"/>
-    <field name="haltnam" reuseLastValue="0"/>
-    <field name="pk" reuseLastValue="0"/>
-    <field name="schnam" reuseLastValue="0"/>
-    <field name="speicherkonst" reuseLastValue="0"/>
-    <field name="speicherzahl" reuseLastValue="0"/>
-    <field name="teilgebiet" reuseLastValue="0"/>
-    <field name="tezgnam" reuseLastValue="0"/>
+    <field reuseLastValue="0" name="abflusstyp"/>
+    <field reuseLastValue="0" name="fliesszeitflaeche"/>
+    <field reuseLastValue="0" name="fliesszeitkanal"/>
+    <field reuseLastValue="0" name="flnam"/>
+    <field reuseLastValue="0" name="gbuf"/>
+    <field reuseLastValue="0" name="geom"/>
+    <field reuseLastValue="0" name="haltnam"/>
+    <field reuseLastValue="0" name="pk"/>
+    <field reuseLastValue="1" name="schnam"/>
+    <field reuseLastValue="0" name="speicherkonst"/>
+    <field reuseLastValue="0" name="speicherzahl"/>
+    <field reuseLastValue="0" name="teilgebiet"/>
+    <field reuseLastValue="0" name="tezgnam"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

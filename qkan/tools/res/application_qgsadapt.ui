@@ -22,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>QKan-Projektdatei übertragen</string>
+   <string>QKan-Projektdatei laden</string>
   </property>
   <property name="windowIcon">
    <iconset>
