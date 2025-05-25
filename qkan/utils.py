@@ -119,16 +119,16 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
     log_path = Path(tempfile.gettempdir()) / "QKan_{}.log".format(
         datetime.datetime.today().strftime("%Y-%m-%d")
     )
+
     file_handler = logging.FileHandler(log_path)
     file_handler.setFormatter(formatter)
     file_handler.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
 
     # todo: dynamically decide where to log to, configurable in settings
     qgis_handler = QgisPanelLogger(iface)
     qgis_handler.setFormatter(logging.Formatter(fmt="%(name)s - %(message)s"))
     qgis_handler.setLevel(logging.INFO)
-
-    logger.addHandler(file_handler)
     logger.addHandler(qgis_handler)
 
     if log_to_console:

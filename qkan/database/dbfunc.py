@@ -1183,7 +1183,7 @@ class DBConnection:
 
         return result
 
-    def executefile(self, filenam, replacefun: callable = None):
+    def executefile(self, filenam, replacefun: callable = None) -> bool:
         """Liest eine Datei aus dem template-Verzeichnis und führt sie als SQL-Befehle aus.
         Dabei wird optional die Funktion replacefun zum Ersetzen von Variablen ausgeführt
 
@@ -1193,12 +1193,12 @@ class DBConnection:
         :replacefun:            function which replaces variables in sql script
         :type replacefun:       function
 
-        :returns: void"""
+        :returns: bool"""
         try:
             with open(filenam) as fr:
                 sql_txt = fr.read()
 
-            if replacefun:
+            if replacefun is not None:
                 sqltext = replacefun(sql_txt)
                 if '{' in sqltext:
                     logger.error_code(
@@ -1209,11 +1209,12 @@ class DBConnection:
                 sqltext = sql_txt
 
             self.cursl.executescript(sqltext)
+            return True
         except sqlite3.Error as err:
-            self._disconnect()
             msg = f'{self.__class__.__name__}.dbqkan.DBConnection.sql: ' \
                   f'SQL-Fehler beim Ausführen der SQL-Datei\n{repr(err)}\n{filenam}'
-            raise QkanAbortError(msg) from err
+            logger.error(msg)
+            return False
 
     def fetchall(self) -> List[Any]:
         """Gibt alle Daten aus der vorher ausgeführten SQL-Abfrage zurueck"""

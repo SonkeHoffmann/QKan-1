@@ -18,7 +18,7 @@ from .utils import setup_logging
 from qkan import enums
 
 # Toggle in DEV to log to console
-LOG_TO_CONSOLE = False
+LOG_TO_CONSOLE = True
 
 # list of all available plugins
 PLUGIN_LIST = [

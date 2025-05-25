@@ -19,7 +19,7 @@ Die Attribute der Datensätze haben folgende Bedeutung:
  Hinweis zur Fehlersuche: Diese Datei kann im SQL-Fenster des DB-Browser (bei geöffneter QKan-Datenbank) ausgeführt werden. 
  */
 
--- Löschen aller QKan-Standardabfragen, erkennbar am Schluss des Feldes warntext:
+/* Löschen aller QKan-Standardabfragen, erkennbar am Schluss des Feldes warntext: */
 DELETE FROM pruefsql WHERE gruppe IN ('Netzstruktur', 'Geoobjekte', 'HYSTEM-EXTRAN', 'Zustandsklassen', 'Kreuzende Haltungen (3D, braucht sehr lang!)', 'Kreuzende Haltungen (im Plan)');
 
 INSERT INTO pruefsql (gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)

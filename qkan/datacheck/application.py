@@ -49,6 +49,8 @@ class Plausi(QKanPlugin):
             if not db_qkan.connected:
                 return False
 
+            self._prepareplausi(db_qkan)            # Aktualisierung der Plausibilitätskontrollen
+
             self.plausi_dlg.show()
 
             if self.plausi_dlg.exec_():
