@@ -80,7 +80,7 @@ class Untersuchdat_schacht(ClassObject):
     vertikale_lage: float = 0.0
     inspektionslaenge: float = 0.0
     foto_dateiname: str = ""
-    ordner: str = ""
+    ordner_bild: str = ""
     film_dateiname: str = ""
     ordner_video: str = ""
     ZD: int = 63
@@ -869,7 +869,7 @@ class ImportTask:
         def _iter() -> Iterator[Untersuchdat_schacht]:
             blocks = self.xml.findall("d:BW/d:IN/d:FS/..", self.NS)
 
-            ordner = self.ordner_bild
+            ordner_bild = self.ordner_bild
             ordner_video = self.ordner_video
 
             logger.debug(f"Anzahl Untersuchungsdaten Schacht: {len(blocks)}")
@@ -945,7 +945,7 @@ class ImportTask:
                     inspektionslaenge = inspektionslaenge,
                     bereich = bereich,
                     foto_dateiname = foto_dateiname,
-                    ordner = ordner,
+                    ordner_bild = ordner_bild,
                     film_datainame=film_datainame,
                     ordner_video = ordner_video,
                     ZD=ZD,
@@ -964,7 +964,7 @@ class ImportTask:
                       'streckenschaden_lfdnr': untersuchdat_schacht.streckenschaden_lfdnr, 'pos_von': untersuchdat_schacht.pos_von,
                       'pos_bis': untersuchdat_schacht.pos_bis, 'vertikale_lage': untersuchdat_schacht.vertikale_lage,
                       'inspektionslage': untersuchdat_schacht.inspektionslaenge, 'bereich': untersuchdat_schacht.bereich,
-                      'foto_dateiname': untersuchdat_schacht.foto_dateiname, 'ordner': untersuchdat_schacht.ordner,
+                      'foto_dateiname': untersuchdat_schacht.foto_dateiname, 'ordner_bild': untersuchdat_schacht.ordner_bild,
                       'film_dateiname': untersuchdat_schacht.film_dateiname, 'ordner_video': untersuchdat_schacht.ordner_video,
                       'ZD': untersuchdat_schacht.ZD, 'ZB': untersuchdat_schacht.ZB, 'ZS': untersuchdat_schacht.ZS, 'epsg': QKan.config.epsg}
 

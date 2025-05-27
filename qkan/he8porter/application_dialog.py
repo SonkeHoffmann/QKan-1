@@ -179,6 +179,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         """
         logger.debug('Event: SelectionChanged')
         with DBConnection() as db_qkan:
+            db_qkan.loadmodule('he8porter')
+
             dbname = db_qkan.dbname
 
             # Datenbankpfad in Dialog übernehmen
@@ -189,8 +191,29 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
             # Checkbox hat den Status nach dem Klick
             selected = self.cb_selectedObjects.isChecked()
             # Ausgewählte Objekte in temporäre Tabellen übernehmen
-            n_haltungen, n_schaechte, n_flaechen = db_qkan.getSelection(selected)
-            logger.debug(f'Selection 2: {n_haltungen}, {n_schaechte}, {n_flaechen}')
+            if selected:
+                n_haltungen, n_schaechte, n_flaechen = db_qkan.getSelection(selected)
+                logger.debug(f'Selection 2: {n_haltungen}, {n_schaechte}, {n_flaechen}')
+                if not db_qkan.sqlyml('he8_count_sel_haltungen', 'count selected haltungen'):
+                    raise Exception(f"{self.__class__.__name__}: errno. 105")
+                n_haltungen = db_qkan.fetchone()[0]
+                if not db_qkan.sqlyml('he8_count_sel_schaechte', 'count selected schaechte'):
+                    raise Exception(f"{self.__class__.__name__}: errno. 106")
+                n_schaechte = db_qkan.fetchone()[0]
+                if not db_qkan.sqlyml('he8_count_sel_flaechen', 'count selected flaechen'):
+                    raise Exception(f"{self.__class__.__name__}: errno. 107")
+                n_flaechen = db_qkan.fetchone()[0]
+
+            else:
+                if not db_qkan.sqlyml('he8_count_haltungen_all', 'count selected haltungen'):
+                    raise Exception(f"{self.__class__.__name__}: errno. 105")
+                n_haltungen = db_qkan.fetchone()[0]
+                if not db_qkan.sqlyml('he8_count_schaechte_all', 'count selected schaechte'):
+                    raise Exception(f"{self.__class__.__name__}: errno. 106")
+                n_schaechte = db_qkan.fetchone()[0]
+                if not db_qkan.sqlyml('he8_count_flaechen_all', 'count selected flaechen'):
+                    raise Exception(f"{self.__class__.__name__}: errno. 107")
+                n_flaechen = db_qkan.fetchone()[0]
 
             self.lf_anzahl_haltungen.setText(f'{n_haltungen}')
             self.lf_anzahl_schaechte.setText(f'{n_schaechte}')

@@ -98,3 +98,6 @@ class LAYERBEZ(enum.Enum):
     ZK_ZUSTAND_HALTUNGEN_GESAMT = "Ergebnis_ZK_Haltungen"
     SK_EINZELSCHAEDEN_HALTUNGEN = "Bewertung_Substanz_Einzelschäden_Haltungen"
     SK_ZUSTAND_HALTUNGEN_GESAMT = "Bewertung_Substanz_Haltungen"
+
+    # Anwendungsbezogene Layer
+    STRAKAT_SYMBOLE = "STRAKAT-Symbole"

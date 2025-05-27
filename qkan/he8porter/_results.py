@@ -140,6 +140,7 @@ class ResultsTask:
                 if actGroup is None:
                     actGroup = layersRoot.addGroup(group)
                 actGroup.addLayer(vlayer)
+                vlayer.triggerRepaint()
 
                 # Stilvorlage nach Benutzerwahl laden
                 templatepath = os.path.join(pluginDirectory("qkan"), "templates")

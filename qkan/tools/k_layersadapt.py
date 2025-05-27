@@ -30,7 +30,6 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
     QgsAction,
-    QgsSettings,
 )
 from qgis.utils import pluginDirectory
 

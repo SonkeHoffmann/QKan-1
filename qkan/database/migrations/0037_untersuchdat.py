@@ -128,6 +128,15 @@ def run(dbcon: DBConnection) -> bool:
             "zu Tabelle 'schaechte_untersucht' fehlgeschlagen"
         )
 
+    # Entfernen der Index-Einträge zur bisherigen Geo-Spalte "geom(Point)", damit diese bei alter_table gelöscht
+    # werden kann
+    if not dbcon.sql("SELECT DiscardGeometryColumn('untersuchdat_schacht', 'geom')"):
+        logger.error(
+            f"Fehler bei Migration zu Version {VERSION}: "
+            "Entfernen der Geometrie-Trigger zu Attribut geom "
+            "zu Tabelle 'untersuchdat_schacht' fehlgeschlagen"
+        )
+
     if not dbcon.alter_table(
         "untersuchdat_schacht",
         [
@@ -162,7 +171,8 @@ def run(dbcon: DBConnection) -> bool:
             "ZS INTEGER",
             "kommentar TEXT",
             "createdat TEXT DEFAULT CURRENT_TIMESTAMP",
-        ]
+        ],
+        ['geom']                                    # setzt voraus, dass vorher die Geo-Eigenschaften gelöscht wurden.
     ):
         logger.error(
             f"Fehler bei Migration zu Version {VERSION}: "
@@ -173,7 +183,6 @@ def run(dbcon: DBConnection) -> bool:
     sqls = [
         """SELECT AddGeometryColumn('untersuchdat_schacht','geom',{},'LINESTRING',2);""".format(QKan.config.epsg),
         """SELECT CreateSpatialIndex('untersuchdat_schacht','geom')""",
-        """UPDATE untersuchdat_schacht SET geom = geop"""
     ]
     for sql in sqls:
         if not dbcon.sql(sql, f"migration 0037, Version {VERSION}: "

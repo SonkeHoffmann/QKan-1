@@ -701,6 +701,56 @@ ON eg_he.Name = eg_qk.flnam
 WHERE (IsTwEinzugsflaeche and :choice_tf)
     AND eg_qk.pk IS NULL"
 
+he8_count_sel_haltungen: "
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+                                    ON ha.profilnam = pf.profilnam
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+                                    ON ha.entwart = ea.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL"
+
+he8_count_haltungen_all: "
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+                                    ON ha.profilnam = pf.profilnam
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+                                    ON ha.entwart = ea.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL"
+
+he8_count_sel_schaechte: "
+SELECT count() AS anz
+FROM schaechte
+JOIN sel_schaechte AS sel           ON sel.pk = schaechte.pk
+JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
+WHERE schaechte.schachttyp = 'Schacht'
+  AND st.he_nr IS NOT NULL"
+
+he8_count_schaechte_all: "
+SELECT count() AS anz
+FROM schaechte
+JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
+WHERE schaechte.schachttyp = 'Schacht'
+  AND st.he_nr IS NOT NULL"
+
+he8_count_sel_flaechen: "
+SELECT count() AS anz
+FROM flaechen
+JOIN sel_flaechen AS sel            ON sel.pk = flaechen.pk"
+
+he8_count_flaechen_all: "
+SELECT count() AS anz"
+
 he8_get_id: "
 SELECT NextId, Version FROM he.Itwh$ProgInfo"
 
@@ -739,13 +789,14 @@ FROM (
         schaechte.durchm*1000. AS durchmesser,
         SetSRID(schaechte.geop, -1) AS geometry
     FROM schaechte
-    LEFT JOIN simulationsstatus AS st
+    JOIN simulationsstatus AS st
     ON schaechte.simstatus = st.bezeichnung
     WHERE schaechte.schachttyp = 'Schacht'
+      AND st.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Schacht.Name = qk.schnam"
 
-he8_update_schaechte_sel: "
+he8_update_sel_schaechte: "
 UPDATE he.Schacht SET (
     Deckelhoehe, 
     Sohlhoehe,
@@ -776,9 +827,10 @@ FROM (
         schaechte.durchm*1000. AS durchmesser,
         SetSRID(schaechte.geop, -1) AS geometry
     FROM schaechte
-    JOIN schaechte_sel AS sel           ON sel.pk = schaechte.pk
-    LEFT JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
+    JOIN sel_schaechte AS sel           ON sel.pk = schaechte.pk
+    JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
     WHERE schaechte.schachttyp = 'Schacht'
+      AND st.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Schacht.Name = qk.schnam"
 
@@ -800,11 +852,12 @@ SELECT
     coalesce(schaechte.durchm, 0.0)*1000. AS durchmesser,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
-LEFT JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
 LEFT JOIN he.Schacht AS sh          ON sh.Name = schaechte.schnam
-WHERE sh.Name IS NULL"
+WHERE sh.Name IS NULL
+  AND st.he_nr IS NOT NULL"
 
-he8_append_schaechte_sel: "
+he8_append_sel_schaechte: "
 INSERT INTO he.Schacht (
     Id,
     Name, Deckelhoehe, Sohlhoehe, 
@@ -822,10 +875,11 @@ SELECT
     coalesce(schaechte.durchm, 0.0)*1000. AS durchmesser,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
-JOIN schaechte_sel AS sel ON sel.pk = schaechte.pk
-LEFT JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
+JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
+JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
 LEFT JOIN he.Schacht AS sh ON sh.Name = schaechte.schnam
-WHERE sh.Name IS NULL"
+WHERE sh.Name IS NULL
+  AND st.he_nr IS NOT NULL"
 
 he8_update_speicher_all: "
 UPDATE he.Speicherschacht
@@ -855,9 +909,10 @@ FROM (
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS geometry
     FROM schaechte
-    LEFT JOIN simulationsstatus AS st
+    JOIN simulationsstatus AS st
     ON schaechte.simstatus = st.bezeichnung
     WHERE schaechte.schachttyp = 'Speicher'
+      AND st.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Speicherschacht.Name = qk.schnam"
 
@@ -889,9 +944,10 @@ FROM (
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS geometry
     FROM schaechte
-    JOIN schaechte_sel AS sel           ON sel.pk = schaechte.pk
-    LEFT JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
+    JOIN sel_schaechte AS sel           ON sel.pk = schaechte.pk
+    JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
     WHERE schaechte.schachttyp = 'Speicher'
+      AND st.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Speicherschacht.Name = qk.schnam"
 
@@ -917,10 +973,11 @@ SELECT
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
-JOIN schaechte_sel AS sel ON sel.pk = schaechte.pk
-LEFT JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
+JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
+JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
 WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Speicherschacht) and 
-      schaechte.schachttyp = 'Speicher'"
+      schaechte.schachttyp = 'Speicher'
+  AND st.he_nr IS NOT NULL"
 
 he8_append_speicher_all: "
 INSERT INTO he.Speicherschacht (
@@ -944,10 +1001,11 @@ SELECT
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
-LEFT JOIN simulationsstatus AS st
+JOIN simulationsstatus AS st
 ON schaechte.simstatus = st.bezeichnung
 WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Speicherschacht) and 
-      schaechte.schachttyp = 'Speicher'"
+      schaechte.schachttyp = 'Speicher'
+  AND st.he_nr IS NOT NULL"
 
 he8_update_auslaesse_all: "
 UPDATE he.Auslass
@@ -974,8 +1032,9 @@ FROM (
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS Geometry
     FROM schaechte
-    LEFT JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
     WHERE schaechte.schachttyp = 'Auslass'
+      AND st.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Auslass.Name = qk.schnam"
 
@@ -1004,9 +1063,10 @@ FROM (
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS Geometry
     FROM schaechte
-    JOIN schaechte_sel AS sel           ON sel.pk = schaechte.pk
-    LEFT JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
+    JOIN sel_schaechte AS sel           ON sel.pk = schaechte.pk
+    JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
     WHERE schaechte.schachttyp = 'Auslass'
+      AND st.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Auslass.Name = qk.schnam"
 
@@ -1031,10 +1091,11 @@ SELECT
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS Geometry
 FROM schaechte
-LEFT JOIN simulationsstatus AS st
+JOIN simulationsstatus AS st
 ON schaechte.simstatus = st.bezeichnung
 WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Auslass) and 
-      schaechte.schachttyp = 'Auslass'"
+      schaechte.schachttyp = 'Auslass'
+  AND st.he_nr IS NOT NULL"
 
 he8_append_auslaesse_sel: "
 INSERT INTO he.Auslass (
@@ -1057,10 +1118,11 @@ SELECT
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS Geometry
 FROM schaechte
-JOIN schaechte_sel AS sel ON sel.pk = schaechte.pk
-LEFT JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
+JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
+JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
 WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Auslass) and 
-      schaechte.schachttyp = 'Auslass'"
+      schaechte.schachttyp = 'Auslass'
+  AND st.he_nr IS NOT NULL"
 
 he8_update_haltungen_all: "
 UPDATE he.Rohr
@@ -1127,16 +1189,19 @@ FROM (
     FROM haltungen AS ha
     JOIN schaechte AS sob ON ha.schoben = sob.schnam
     JOIN schaechte AS sun ON ha.schunten = sun.schnam
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
     ON ha.profilnam = pf.profilnam
-    LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
     ON ha.entwart = ea.bezeichnung
-    LEFT JOIN simulationsstatus AS st ON ha.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
+      AND st.he_nr IS NOT NULL
+      AND pf.he_nr IS NOT NULL
+      AND ea.he_nr IS NOT NULL
 ) as qk
 WHERE he.Rohr.Name = qk.haltnam"
 
-he8_update_haltungen_sel: "
+he8_update_sel_haltungen: "
 UPDATE he.Rohr
 SET (
     SchachtOben, SchachtUnten,
@@ -1199,15 +1264,18 @@ FROM (
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
                                         ON ha.profilnam = pf.profilnam
-    LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                         ON ha.entwart = ea.bezeichnung
-    LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
+      AND st.he_nr IS NOT NULL
+      AND pf.he_nr IS NOT NULL
+      AND ea.he_nr IS NOT NULL
 ) as qk
 WHERE he.Rohr.Name = qk.haltnam"
 
@@ -1259,15 +1327,18 @@ SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
-LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr) 
-  AND (ha.haltungstyp IS NULL OR ha.haltungstyp = 'Haltung');"
+  AND (ha.haltungstyp IS NULL OR ha.haltungstyp = 'Haltung')
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL;"
 
-he8_append_haltungen_sel: "
+he8_append_sel_haltungen: "
 INSERT INTO he.Rohr (
     Id, 
     Name, SchachtOben, SchachtUnten, 
@@ -1313,16 +1384,19 @@ SELECT
     0 AS UnbefestigteFlaeche,
 SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
-LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr) 
-  AND (ha.haltungstyp IS NULL OR ha.haltungstyp = 'Haltung');"
+  AND (ha.haltungstyp IS NULL OR ha.haltungstyp = 'Haltung')
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL;"
 
 he8_createtable_flupdate: "
 CREATE TEMP TABLE IF NOT EXISTS flupdate (flnam TEXT)"
@@ -1346,7 +1420,7 @@ INSERT INTO flupdate (flnam)
 SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam 
 FROM linkfl AS lf
 INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
-INNER JOIN flaechen_sel AS selfl    ON selfl.pk = fl.pk
+INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
 INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
 LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
 LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
@@ -1368,7 +1442,7 @@ INSERT INTO flupdate (flnam)
 SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam 
 FROM linkfl AS lf
 INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
-INNER JOIN flaechen_sel AS selfl    ON selfl.pk = fl.pk
+INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
 INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
 LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
 LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
@@ -1463,7 +1537,7 @@ WITH flintersect AS (
         END AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
-    INNER JOIN flaechen_sel AS selfl    ON selfl.pk = fl.pk
+    INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
     INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
     LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
@@ -1593,7 +1667,7 @@ WITH flintersect AS (
         fl.geom AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
-    INNER JOIN flaechen_sel AS selfl    ON selfl.pk = fl.pk
+    INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
     INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
     LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
@@ -1724,9 +1798,9 @@ WITH flintersect AS (
         END AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
-    INNER JOIN flaechen_sel AS selfl    ON selfl.pk = fl.pk
+    INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
     INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
-    INNER JOIN haltungen_sel AS selha   ON selha.pk = haltungen.pk
+    INNER JOIN sel_haltungen AS selha   ON selha.pk = haltungen.pk
     LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung
@@ -1831,9 +1905,9 @@ WITH flintersect AS (
         fl.geom AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
-    INNER JOIN flaechen_sel AS selfl    ON selfl.pk = fl.pk
+    INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
     INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
-    INNER JOIN haltungen_sel AS selha   ON selha.pk = haltungen.pk
+    INNER JOIN sel_haltungen AS selha   ON selha.pk = haltungen.pk
     LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung)
@@ -1960,7 +2034,7 @@ SELECT
     SetSrid(tg.geom, -1)                                            AS Geometry
 FROM tezg AS tg
 JOIN haltungen      AS hal ON hal.haltnam = tg.haltnam
-JOIN haltungen_sel  AS sel ON sel.pk = hal.pk
+JOIN sel_haltungen  AS sel ON sel.pk = hal.pk
 LEFT JOIN he.Flaeche AS fh
 ON fh.Name = tg.flnam
   , (SELECT he_nr FROM flaechentypen WHERE bezeichnung = 'Gebäude') AS ft
@@ -2012,7 +2086,7 @@ SELECT
     SetSrid(CastToMultiPolygon(tg.geom), -1) AS Geometry
 FROM tezg AS tg
 JOIN haltungen      AS hal ON hal.haltnam = tg.haltnam
-JOIN haltungen_sel  AS sel ON sel.pk = hal.pk"
+JOIN sel_haltungen  AS sel ON sel.pk = hal.pk"
 
 he8_append_pumpen_all: "
 INSERT INTO he.Pumpe (
@@ -2033,9 +2107,10 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Pumpe'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Pumpe)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Pumpe)
+  AND si.he_nr IS NOT NULL"
 
 he8_append_pumpen_sel: "
 INSERT INTO he.Pumpe (
@@ -2056,10 +2131,11 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Pumpe'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Pumpe)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Pumpe)
+  AND si.he_nr IS NOT NULL"
 
 he8_update_pumpen_all: "
 UPDATE he.Pumpe
@@ -2085,8 +2161,9 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    LEFT JOIN simulationsstatus AS si ON ha.simstatus = si.bezeichnung
+    JOIN simulationsstatus AS si ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Pumpe'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Pumpe.Name = qk.haltnam"
 
@@ -2114,9 +2191,10 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Pumpe'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Pumpe.Name = qk.haltnam"
 
@@ -2141,9 +2219,10 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Wehr'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Wehr);"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Wehr)
+  AND si.he_nr IS NOT NULL;"
 
 he8_append_wehre_sel: "
 INSERT INTO he.Wehr (
@@ -2166,10 +2245,11 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Wehr'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Wehr);"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Wehr)
+  AND si.he_nr IS NOT NULL;"
 
 he8_update_wehre_all: "
 UPDATE he.Wehr
@@ -2197,8 +2277,9 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    LEFT JOIN simulationsstatus AS si ON ha.simstatus = si.bezeichnung
+    JOIN simulationsstatus AS si ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Wehr'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Wehr.Name = qk.haltnam"
 
@@ -2228,9 +2309,10 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Wehr'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Wehr.Name = qk.haltnam"
 
@@ -2253,9 +2335,10 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Drossel'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Drossel)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Drossel)
+  AND si.he_nr IS NOT NULL"
 
 he8_append_drosseln_sel: "
 INSERT INTO he.Drossel (
@@ -2276,10 +2359,11 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Drossel'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Drossel)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Drossel)
+  AND si.he_nr IS NOT NULL"
 
 he8_update_drosseln_all: "
 UPDATE he.Drossel
@@ -2304,8 +2388,9 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    LEFT JOIN simulationsstatus AS si ON ha.simstatus = si.bezeichnung
+    JOIN simulationsstatus AS si ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Drossel'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Drossel.Name = qk.haltnam"
 
@@ -2332,9 +2417,10 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Drossel'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Drossel.Name = qk.haltnam"
 
@@ -2367,11 +2453,12 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
 WHERE ha.haltungstyp = 'Schieber'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Schieber)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Schieber)
+  AND si.he_nr IS NOT NULL"
 
 he8_append_schieber_sel: "
 INSERT INTO he.Schieber (
@@ -2402,12 +2489,13 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
 WHERE ha.haltungstyp = 'Schieber'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.Schieber)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.Schieber)
+  AND si.he_nr IS NOT NULL"
 
 he8_update_schieber_all: "
 UPDATE he.Schieber
@@ -2447,10 +2535,11 @@ FROM
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
     WHERE ha.haltungstyp = 'Schieber'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Schieber.Name = qk.haltnam"
 
@@ -2492,11 +2581,12 @@ FROM
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
     WHERE ha.haltungstyp = 'Schieber'
+      AND si.he_nr IS NOT NULL
 ) AS qk
 WHERE he.Schieber.Name = qk.haltnam"
 
@@ -2527,11 +2617,12 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
 WHERE ha.haltungstyp = 'GrundSeitenauslass'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.GrundSeitenauslass)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.GrundSeitenauslass)
+  AND si.he_nr IS NOT NULL"
 
 
 he8_append_grundseitenauslaesse_sel: "
@@ -2561,12 +2652,13 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
 WHERE ha.haltungstyp = 'GrundSeitenauslass'
-  AND ha.haltnam NOT IN (SELECT Name FROM he.GrundSeitenauslass)"
+  AND ha.haltnam NOT IN (SELECT Name FROM he.GrundSeitenauslass)
+  AND si.he_nr IS NOT NULL"
 
 he8_update_grundseitenauslaesse_all: "
 UPDATE he.GrundSeitenauslass
@@ -2603,10 +2695,11 @@ FROM
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
     WHERE ha.haltungstyp = 'GrundSeitenauslass'
+      AND si.he_nr IS NOT NULL
 ) as qk
 WHERE he.GrundSeitenauslass.Name = qk.haltnam"
 
@@ -2645,11 +2738,12 @@ FROM
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
-    LEFT JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
     WHERE ha.haltungstyp = 'GrundSeitenauslass'
+      AND si.he_nr IS NOT NULL
 ) as qk
 WHERE he.GrundSeitenauslass.Name = qk.haltnam"
 
@@ -2695,13 +2789,16 @@ SELECT
 FROM haltungen AS ha
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
-LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler) 
-  AND ha.haltungstyp = 'Q-Regler'"
+  AND ha.haltungstyp = 'Q-Regler'
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL"
 
 he8_append_qregler_sel: "
 INSERT INTO he.QRegler (
@@ -2743,16 +2840,19 @@ SELECT
     0 AS UnbefestigteFlaeche,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
-LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler) 
-  AND ha.haltungstyp = 'Q-Regler'"
+  AND ha.haltungstyp = 'Q-Regler'
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL"
 
 he8_update_qregler_all: "
 UPDATE he.QRegler
@@ -2811,12 +2911,15 @@ FROM
     FROM haltungen AS ha
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                         ON ha.entwart = ea.bezeichnung
-    LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'Q-Regler'
+      AND st.he_nr IS NOT NULL
+      AND pf.he_nr IS NOT NULL
+      AND ea.he_nr IS NOT NULL
 ) AS qk
 WHERE he.QRegler.Name = qk.haltnam"
 
@@ -2875,15 +2978,18 @@ FROM
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                         ON ha.entwart = ea.bezeichnung
-    LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'Q-Regler'
+      AND st.he_nr IS NOT NULL
+      AND pf.he_nr IS NOT NULL
+      AND ea.he_nr IS NOT NULL
 ) AS qk
 WHERE he.QRegler.Name = qk.haltnam"
 
@@ -2928,13 +3034,16 @@ SELECT
 FROM haltungen AS ha
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
-LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler) 
-  AND ha.haltungstyp = 'H-Regler'"
+  AND ha.haltungstyp = 'H-Regler'
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL"
 
 he8_append_hregler_sel: "
 INSERT INTO he.HRegler (
@@ -2975,16 +3084,19 @@ SELECT
     0 AS UnbefestigteFlaeche,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
-LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler) 
-  AND ha.haltungstyp = 'H-Regler'"
+  AND ha.haltungstyp = 'H-Regler'
+  AND st.he_nr IS NOT NULL
+  AND pf.he_nr IS NOT NULL
+  AND ea.he_nr IS NOT NULL"
 
 he8_update_hregler_all: "
 UPDATE he.HRegler
@@ -3043,12 +3155,15 @@ FROM
     FROM haltungen AS ha
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                         ON ha.entwart = ea.bezeichnung
-    LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'H-Regler'
+      AND st.he_nr IS NOT NULL
+      AND pf.he_nr IS NOT NULL
+      AND ea.he_nr IS NOT NULL
 ) AS qk
 WHERE he.HRegler.Name = qk.haltnam"
 
@@ -3107,15 +3222,18 @@ FROM
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN haltungen_sel AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-    LEFT JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    LEFT JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                         ON ha.entwart = ea.bezeichnung
-    LEFT JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
+    JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'H-Regler'
+      AND st.he_nr IS NOT NULL
+      AND pf.he_nr IS NOT NULL
+      AND ea.he_nr IS NOT NULL
 ) AS qk
 WHERE he.HRegler.Name = qk.haltnam"
 

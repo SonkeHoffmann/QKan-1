@@ -207,6 +207,7 @@ class CheckImport(ClassObject):
     schachtschaeden: bool = True
     haltungsschaeden: bool = True
     hausanschlussschaeden: bool = True
+    symbole: bool = True                            # nur STRAKAT-Schächte, die Symbole darstellen
     testmodus: bool = False
 
     # Haltungsflächen aus GIPS, drei Typen in einer Tabelle
@@ -723,8 +724,10 @@ class ToolsConfig(ClassObject):
                 'vertikale_lage': ['vert*lag*', 'lag*vert*'],
                 'inspektionslaenge': ['inspekt*l*', 'l*inspek*'],
                 'bereich': ['berei*'],
-                'foto_dateiname': ['*datei*'],
-                'ordner': ['ordner', 'pfad', 'dir'],
+                'foto_dateiname': ['*datei*foto', '*datei*bild'],
+                'ordner_bild': ['ordner_bild', 'ordner_foto', 'pfad_bild', 'pfad_foto', 'dir_foto', 'dir_bild'],
+                'video_dateiname': ['*datei*video'],
+                'ordner_video': ['ordner_video', 'pfad_video', 'dir_video'],
                 'ZD': ['zd', 'zkd'],
                 'ZB': ['zb', 'zkb'],
                 'ZS': ['zs', 'zks'],

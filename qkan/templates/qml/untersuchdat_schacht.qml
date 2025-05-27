@@ -272,7 +272,7 @@
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="ordner">
+    <field configurationFlags="None" name="ordner_bild">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
@@ -338,7 +338,7 @@
     <alias index="17" field="inspektionslaenge" name="Inspektionslänge"/>
     <alias index="18" field="bereich" name="Bereich"/>
     <alias index="19" field="foto_dateiname" name="Dateiname Foto"/>
-    <alias index="20" field="ordner" name="Ordner"/>
+    <alias index="20" field="ordner_bild" name="Ordner"/>
     <alias index="21" field="ZD" name=""/>
     <alias index="22" field="ZB" name=""/>
     <alias index="23" field="ZS" name=""/>
@@ -365,7 +365,7 @@
     <default field="inspektionslaenge" expression="" applyOnUpdate="0"/>
     <default field="bereich" expression="" applyOnUpdate="0"/>
     <default field="foto_dateiname" expression="" applyOnUpdate="0"/>
-    <default field="ordner" expression="" applyOnUpdate="0"/>
+    <default field="ordner_bild" expression="" applyOnUpdate="0"/>
     <default field="ZD" expression="" applyOnUpdate="0"/>
     <default field="ZB" expression="" applyOnUpdate="0"/>
     <default field="ZS" expression="" applyOnUpdate="0"/>
@@ -392,7 +392,7 @@
     <constraint exp_strength="0" field="inspektionslaenge" unique_strength="0" constraints="0" notnull_strength="0"/>
     <constraint exp_strength="0" field="bereich" unique_strength="0" constraints="0" notnull_strength="0"/>
     <constraint exp_strength="0" field="foto_dateiname" unique_strength="0" constraints="0" notnull_strength="0"/>
-    <constraint exp_strength="0" field="ordner" unique_strength="0" constraints="0" notnull_strength="0"/>
+    <constraint exp_strength="0" field="ordner_bild" unique_strength="0" constraints="0" notnull_strength="0"/>
     <constraint exp_strength="0" field="ZD" unique_strength="0" constraints="0" notnull_strength="0"/>
     <constraint exp_strength="0" field="ZB" unique_strength="0" constraints="0" notnull_strength="0"/>
     <constraint exp_strength="0" field="ZS" unique_strength="0" constraints="0" notnull_strength="0"/>
@@ -419,7 +419,7 @@
     <constraint field="inspektionslaenge" exp="" desc=""/>
     <constraint field="bereich" exp="" desc=""/>
     <constraint field="foto_dateiname" exp="" desc=""/>
-    <constraint field="ordner" exp="" desc=""/>
+    <constraint field="ordner_bild" exp="" desc=""/>
     <constraint field="ZD" exp="" desc=""/>
     <constraint field="ZB" exp="" desc=""/>
     <constraint field="ZS" exp="" desc=""/>
@@ -428,7 +428,7 @@
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
-    <actionsetting type="5" capture="0" icon="" id="{6a7ccf62-fbb3-48e1-bd21-b1c5c799f460}" name="Bild öffnen" shortTitle="Bild öffnen" notificationMessage="" isEnabledOnlyWhenEditable="0" action="[%ordner%]/Band[%substr(foto_dateiname,0,5)%]/[%foto_dateiname%]">
+    <actionsetting type="5" capture="0" icon="" id="{6a7ccf62-fbb3-48e1-bd21-b1c5c799f460}" name="Bild öffnen" shortTitle="Bild öffnen" notificationMessage="" isEnabledOnlyWhenEditable="0" action="[%ordner_bild%]/Band[%substr(foto_dateiname,0,5)%]/[%foto_dateiname%]">
       <actionScope id="Feature"/>
       <actionScope id="Canvas"/>
     </actionsetting>
@@ -451,7 +451,7 @@
       <column type="field" name="pos_bis" hidden="0" width="-1"/>
       <column type="field" name="bereich" hidden="0" width="-1"/>
       <column type="field" name="foto_dateiname" hidden="0" width="100"/>
-      <column type="field" name="ordner" hidden="0" width="501"/>
+      <column type="field" name="ordner_bild" hidden="0" width="501"/>
       <column type="actions" hidden="1" width="-1"/>
       <column type="field" name="streckenschaden_lfdnr" hidden="0" width="-1"/>
       <column type="field" name="vertikale_lage" hidden="0" width="-1"/>
@@ -503,7 +503,7 @@ def my_form_open(dialog, layer, feature):
     <field name="id" editable="1"/>
     <field name="inspektionslaenge" editable="1"/>
     <field name="kuerzel" editable="1"/>
-    <field name="ordner" editable="1"/>
+    <field name="ordner_bild" editable="1"/>
     <field name="pk" editable="1"/>
     <field name="pos_bis" editable="1"/>
     <field name="pos_von" editable="1"/>
@@ -530,7 +530,7 @@ def my_form_open(dialog, layer, feature):
     <field name="id" labelOnTop="0"/>
     <field name="inspektionslaenge" labelOnTop="0"/>
     <field name="kuerzel" labelOnTop="0"/>
-    <field name="ordner" labelOnTop="0"/>
+    <field name="ordner_bild" labelOnTop="0"/>
     <field name="pk" labelOnTop="0"/>
     <field name="pos_bis" labelOnTop="0"/>
     <field name="pos_von" labelOnTop="0"/>
@@ -557,7 +557,7 @@ def my_form_open(dialog, layer, feature):
     <field name="id" reuseLastValue="0"/>
     <field name="inspektionslaenge" reuseLastValue="0"/>
     <field name="kuerzel" reuseLastValue="0"/>
-    <field name="ordner" reuseLastValue="0"/>
+    <field name="ordner_bild" reuseLastValue="0"/>
     <field name="pk" reuseLastValue="0"/>
     <field name="pos_bis" reuseLastValue="0"/>
     <field name="pos_von" reuseLastValue="0"/>

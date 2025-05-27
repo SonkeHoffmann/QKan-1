@@ -1615,7 +1615,7 @@ class SanierungsbedarfszahlFunkt:
                     Untersuchdat_schacht_bewertung.pos_bis,
                     Untersuchdat_schacht_bewertung.bereich,
                     Untersuchdat_schacht_bewertung.foto_dateiname,
-                    Untersuchdat_schacht_bewertung.ordner,
+                    Untersuchdat_schacht_bewertung.ordner_bild,
                     Untersuchdat_schacht_bewertung.bw_bs,
                     Untersuchdat_schacht_bewertung.createdat,
                     Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_D,

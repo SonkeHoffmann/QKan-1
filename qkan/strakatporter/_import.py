@@ -5,7 +5,7 @@ from typing import Iterator
 
 from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.core import Qgis, QgsGeometry, QgsPoint
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
@@ -159,6 +159,7 @@ class ImportTask(Schadenstexte):
                 self._reftables(), self.progress_bar.setValue(15),                      logger.debug("_reftables"),
                 self._schaechte(), self.progress_bar.setValue(20),                      logger.debug("_schaechte"),
                 self._haltungen(), self.progress_bar.setValue(25),                      logger.debug("_haltungen"),
+                self._symbole(),  self.progress_bar.setValue(29),                       logger.debug("_symbole"),
                 self._adapt_refvals(),                                                  logger.debug("_adapt_refvals"),
                 self._strakat_hausanschl(), self.progress_bar.setValue(30),             logger.debug("_strakat_hausanschl"),
                 self._anschlussleitungen(), self.progress_bar.setValue(35),             logger.debug("_anschlussleitungen"),
@@ -634,7 +635,7 @@ class ImportTask(Schadenstexte):
             """ WITH ka AS (
                     SELECT n1 AS id, n4, kurz, text
                     FROM t_reflists
-                    WHERE tabtyp = 'schachtart' 
+                    WHERE n5 = 0 AND tabtyp = 'schachtart' 
                 ),
                 sx AS (
                     SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
@@ -1033,10 +1034,17 @@ class ImportTask(Schadenstexte):
     def _anschlussschaechte(self) -> bool:
         """Erzeugen der zusätzlichen Schächte aus Anschlussleitungen"""
         sql = """"""
+        return True
 
     def _strakat_berichte(self) -> bool:
         """Import der Schadensdaten aus der STRAKAT-Datei 'ENBericht.rwtopen', entspricht ACCESS-Tabelle 'SCHADENSTABELLE'
         """
+        if not (QKan.config.check_import.haltungsschaeden or
+            QKan.config.check_import.schachtschaeden or
+            QKan.config.check_import.hausanschlussschaeden
+        ):
+            return True
+
         # Erstellung Tabelle t_strakatberichte
         sql = "PRAGMA table_list('t_strakatberichte')"
         if not self.db_qkan.sql(sql, "Prüfen, ob temporäre Tabelle 't_strakatberichte', vorhanden ist"):
@@ -1608,7 +1616,7 @@ class ImportTask(Schadenstexte):
             knotenart AS (
                 SELECT n1 AS id, n4, kurz, text
                 FROM t_reflists
-                WHERE tabtyp = 'schachtart' 
+                WHERE n5 = 64 AND tabtyp = 'schachtart' 
             ),
             gebiet AS (
                 SELECT n1 AS id, text, kurz
@@ -1637,10 +1645,7 @@ class ImportTask(Schadenstexte):
                     ELSE stk.deckel_oben_v
                     END
                 )                                           AS deckelhoehe,
-                CASE WHEN INSTR(strassen.name,' ') > 0
-                    THEN substr(strassen.name, INSTR(strassen.name,' ')+1)
-                    ELSE strassen.name
-                END                                         AS strasse,
+                strassen.name                               AS strasse,
                 schachtmaterial.text                        AS material,
                 1.0                                         AS durchm,
                 k2e.text                                    AS entwart,
@@ -1655,22 +1660,14 @@ class ImportTask(Schadenstexte):
                 Makepoint(stk.rw_gerinne_o, stk.hw_gerinne_o, :epsg)  AS geop,
                 CastToMultiPolygon(MakePolygon(MakeCircle(
                     stk.rw_gerinne_o, stk.hw_gerinne_o, 1.0, :epsg))) AS geom
-            FROM
-                t_strakatkanal AS stk
-                LEFT JOIN strassen                              
-                ON stk.strassennummer = strassen.id
-                LEFT JOIN schachtmaterial                       
-                ON stk.schachtmaterial = schachtmaterial.id
-                JOIN entwart AS k2e           
-                ON stk.kanalart = k2e.id
-                JOIN knotenart AS k2t
-                ON stk.schachtart = k2t.id
-                JOIN gebiet AS k2g
-                ON stk.e_gebiet = k2g.id
-                LEFT JOIN schaechte AS sd
-                ON sd.schnam = stk.schacht_oben
-                LEFT JOIN eigentum AS eg
-                ON eg.id = stk.eigentum 
+            FROM t_strakatkanal AS stk
+            LEFT JOIN strassen          ON stk.strassennummer = strassen.id
+            LEFT JOIN schachtmaterial   ON stk.schachtmaterial = schachtmaterial.id
+            JOIN entwart AS k2e         ON stk.kanalart = k2e.id
+            JOIN knotenart AS k2t       ON stk.schachtart = k2t.id
+            JOIN gebiet AS k2g          ON stk.e_gebiet = k2g.id
+            LEFT JOIN schaechte AS sd   ON sd.schnam = stk.schacht_oben
+            LEFT JOIN eigentum AS eg    ON eg.id = stk.eigentum 
             WHERE
                     stk.schachtnummer <> 0
                 AND stk.schachtart <> 0                 -- keine Knickpunkte
@@ -1686,6 +1683,47 @@ class ImportTask(Schadenstexte):
 
         if not self.db_qkan.sql(sql, "strakat_import Schächte", params):
             raise Exception(f"{self.__class__.__name__}: Fehler in strakat_import Schächte")
+
+        self.db_qkan.commit()
+
+        return True
+
+    def _symbole(self) -> bool:
+        """Import aller STRAKAT-Schächte, die in Wirklichkeit Symbole sind"""
+
+        if not QKan.config.check_import.symbole:
+            return True
+
+        sql = """WITH
+            knotenart AS (
+                SELECT n1 AS id, n4, kurz, text
+                FROM t_reflists
+                WHERE n5 <> 0 AND n5 <> 64 AND tabtyp = 'schachtart' 
+            )
+            INSERT INTO symbole (bezeichnung, art, gruppe, kommentar, geom)
+            SELECT
+                stk.schacht_oben                            AS bezeichnung,
+                k2t.text                                    AS art,
+                'strakat'                                   AS gruppe,
+                'STRAKAT-Import'                            AS kommentar,
+                Makepoint(stk.rw_gerinne_o, stk.hw_gerinne_o, :epsg)  AS geom
+            FROM t_strakatkanal AS stk
+            JOIN knotenart AS k2t       ON stk.schachtart = k2t.id
+        """
+        params = {"epsg": self.epsg}
+        if not self.db_qkan.sql(sql, "strakat_import Symbole", params):
+            raise Exception(f"{self.__class__.__name__}: Fehler in strakat_import Symbole")
+
+        sql = """INSERT INTO symbolkatalog (bezeichnung, gruppe, kommentar)
+            SELECT
+                text                AS bezeichnung,
+                'strakat'           AS gruppe,
+                'STRAKAT-Import'    AS kommentar
+            FROM t_reflists
+            WHERE n5 <> 0 AND n5 <> 64 AND tabtyp = 'schachtart' 
+        """
+        if not self.db_qkan.sql(sql, "strakat_import Symbolkatalog", params):
+            raise Exception(f"{self.__class__.__name__}: Fehler in strakat_import Symbolkatalog")
 
         self.db_qkan.commit()
 
@@ -1722,7 +1760,7 @@ class ImportTask(Schadenstexte):
             knotenart AS (
                 SELECT n1 AS id, n4, kurz, text
                 FROM t_reflists
-                WHERE tabtyp = 'schachtart' 
+                WHERE n5 = 64 AND tabtyp = 'schachtart' 
             ),
             gebiet AS (
                 SELECT n1 AS id, text, kurz
@@ -1758,10 +1796,7 @@ class ImportTask(Schadenstexte):
                 CASE WHEN instr(lower(k2e.text),'druck') > 0
                     THEN 1 ELSE 0 END                                       AS druckdicht,
                 rohrmaterialien.text                                        AS material,
-                CASE WHEN INSTR(strassen.name,' ') > 0
-                    THEN substr(strassen.name, INSTR(strassen.name,' ')+1)
-                    ELSE strassen.name
-                END                                                         AS strasse,
+                strassen.name                                               AS strasse,
                 eg.text                                                     AS eigentum,
                 k2g.text                                                    AS teilgebiet,
                 'Haltung'                                                   AS haltungstyp,
@@ -1808,7 +1843,7 @@ class ImportTask(Schadenstexte):
                     knotenart AS (
                         SELECT n1 AS id, n4, kurz, text
                         FROM t_reflists
-                        WHERE tabtyp = 'schachtart' 
+                        WHERE n5 = 0 AND tabtyp = 'schachtart' 
                     ),
                     kanal AS (
                         SELECT

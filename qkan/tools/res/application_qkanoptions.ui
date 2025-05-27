@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>481</width>
-    <height>757</height>
+    <height>752</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,8 +31,8 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>690</y>
+     <x>20</x>
+     <y>700</y>
      <width>441</width>
      <height>31</height>
     </rect>
@@ -333,7 +333,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>350</y>
+     <y>330</y>
      <width>441</width>
      <height>61</height>
     </rect>
@@ -436,7 +436,7 @@ Haltungen pro Strang:</string>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>410</y>
+     <y>400</y>
      <width>441</width>
      <height>71</height>
     </rect>
@@ -569,7 +569,7 @@ Haltungen pro Strang:</string>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>550</y>
+     <y>560</y>
      <width>441</width>
      <height>121</height>
     </rect>

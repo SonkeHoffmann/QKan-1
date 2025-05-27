@@ -5,17 +5,19 @@ from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 
-from qkan import QKan, get_default_dir
+from qkan import QKan, enums, get_default_dir
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import eval_node_types, fehlermeldung
+from qkan.database.qkan_utils import eval_node_types, loadlayer, fehlermeldung
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
+from qkan.utils import get_logger
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 from ._import import ImportTask
 from .application_dialog import ImportDialog
 
+logger = get_logger("QKan.strakat.import")
 
 class StrakatPorter(QKanPlugin):
     def __init__(self, iface: QgisInterface):
@@ -106,9 +108,9 @@ class StrakatPorter(QKanPlugin):
         self.log.info("Opening QKan DB")
         with DBConnection(dbname=QKan.config.database.qkan, epsg=QKan.config.epsg) as db_qkan:
             if not db_qkan.connected:
-                fehlermeldung(
-                    "Fehler im STRAKAT-Import",
-                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                logger.error(
+                    "Fehler im STRAKAT-Import"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!"
                 )
                 self.iface.messageBar().pushMessage(
                     "Fehler im STRAKAT-Import",
@@ -151,6 +153,19 @@ class StrakatPorter(QKanPlugin):
                 project.reloadAllLayers()
 
         self.log.debug("Closed DB")
+
+        if not loadlayer(
+                enums.LAYERBEZ.STRAKAT_SYMBOLE.value,
+                'symbole',
+                'geom',
+                'STRAKAT-Symbole.qml',
+                'qkan_symbole.ui',
+                'Symbole',
+                2,):
+            logger.error(
+                f"Fehler beim Einfügen des Layers STRAKAT-Symbole"
+            )
+            return False
 
         return True
 

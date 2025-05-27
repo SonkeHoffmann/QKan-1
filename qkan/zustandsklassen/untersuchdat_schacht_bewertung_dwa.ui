@@ -653,7 +653,7 @@
      <string>Bereich</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="ordner">
+   <widget class="QLineEdit" name="ordner_bild">
     <property name="geometry">
      <rect>
       <x>390</x>

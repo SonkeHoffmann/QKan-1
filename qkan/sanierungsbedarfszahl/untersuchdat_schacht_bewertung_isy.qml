@@ -165,7 +165,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="ordner" configurationFlags="None">
+    <field name="ordner_bild" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -262,7 +262,7 @@
     <alias index="15" name="" field="inspektionslaenge"/>
     <alias index="16" name="" field="bereich"/>
     <alias index="17" name="" field="foto_dateiname"/>
-    <alias index="18" name="" field="ordner"/>
+    <alias index="18" name="" field="ordner_bild"/>
     <alias index="19" name="" field="createdat"/>
     <alias index="20" name="" field="Beschreibung"/>
     <alias index="21" name="" field="bw_bs"/>
@@ -293,7 +293,7 @@
     <default expression="" field="inspektionslaenge" applyOnUpdate="0"/>
     <default expression="" field="bereich" applyOnUpdate="0"/>
     <default expression="" field="foto_dateiname" applyOnUpdate="0"/>
-    <default expression="" field="ordner" applyOnUpdate="0"/>
+    <default expression="" field="ordner_bild" applyOnUpdate="0"/>
     <default expression="" field="createdat" applyOnUpdate="0"/>
     <default expression="" field="Beschreibung" applyOnUpdate="0"/>
     <default expression="" field="bw_bs" applyOnUpdate="0"/>
@@ -324,7 +324,7 @@
     <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="inspektionslaenge" constraints="0"/>
     <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="bereich" constraints="0"/>
     <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="foto_dateiname" constraints="0"/>
-    <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="ordner" constraints="0"/>
+    <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="ordner_bild" constraints="0"/>
     <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="createdat" constraints="0"/>
     <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="Beschreibung" constraints="0"/>
     <constraint exp_strength="0" unique_strength="0" notnull_strength="0" field="bw_bs" constraints="0"/>
@@ -355,7 +355,7 @@
     <constraint exp="" desc="" field="inspektionslaenge"/>
     <constraint exp="" desc="" field="bereich"/>
     <constraint exp="" desc="" field="foto_dateiname"/>
-    <constraint exp="" desc="" field="ordner"/>
+    <constraint exp="" desc="" field="ordner_bild"/>
     <constraint exp="" desc="" field="createdat"/>
     <constraint exp="" desc="" field="Beschreibung"/>
     <constraint exp="" desc="" field="bw_bs"/>
@@ -388,7 +388,7 @@
       <column type="field" width="-1" hidden="0" name="pos_bis"/>
       <column type="field" width="-1" hidden="0" name="bereich"/>
       <column type="field" width="-1" hidden="0" name="foto_dateiname"/>
-      <column type="field" width="-1" hidden="0" name="ordner"/>
+      <column type="field" width="-1" hidden="0" name="ordner_bild"/>
       <column type="field" width="-1" hidden="0" name="createdat"/>
       <column type="field" width="-1" hidden="0" name="Beschreibung"/>
       <column type="field" width="-1" hidden="0" name="bw_bs"/>
@@ -448,7 +448,7 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="id"/>
     <field editable="1" name="inspektionslaenge"/>
     <field editable="1" name="kuerzel"/>
-    <field editable="1" name="ordner"/>
+    <field editable="1" name="ordner_bild"/>
     <field editable="1" name="pk"/>
     <field editable="1" name="pos_bis"/>
     <field editable="1" name="pos_von"/>
@@ -479,7 +479,7 @@ def my_form_open(dialog, layer, feature):
     <field labelOnTop="0" name="id"/>
     <field labelOnTop="0" name="inspektionslaenge"/>
     <field labelOnTop="0" name="kuerzel"/>
-    <field labelOnTop="0" name="ordner"/>
+    <field labelOnTop="0" name="ordner_bild"/>
     <field labelOnTop="0" name="pk"/>
     <field labelOnTop="0" name="pos_bis"/>
     <field labelOnTop="0" name="pos_von"/>

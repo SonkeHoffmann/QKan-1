@@ -158,7 +158,7 @@
         </config>
       </editWidget>
     </field>
-    <field name="ordner" configurationFlags="None">
+    <field name="ordner_bild" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -253,7 +253,7 @@
     <alias name="" index="14" field="vertikale_lage"/>
     <alias name="" index="15" field="bereich"/>
     <alias name="" index="16" field="foto_dateiname"/>
-    <alias name="" index="17" field="ordner"/>
+    <alias name="" index="17" field="ordner_bild"/>
     <alias name="" index="18" field="createdat"/>
     <alias name="" index="19" field="Beschreibung"/>
     <alias name="" index="20" field="bw_bs"/>
@@ -282,7 +282,7 @@
     <default applyOnUpdate="0" expression="" field="vertikale_lage"/>
     <default applyOnUpdate="0" expression="" field="bereich"/>
     <default applyOnUpdate="0" expression="" field="foto_dateiname"/>
-    <default applyOnUpdate="0" expression="" field="ordner"/>
+    <default applyOnUpdate="0" expression="" field="ordner_bild"/>
     <default applyOnUpdate="0" expression="" field="createdat"/>
     <default applyOnUpdate="0" expression="" field="Beschreibung"/>
     <default applyOnUpdate="0" expression="" field="bw_bs"/>
@@ -311,7 +311,7 @@
     <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="vertikale_lage"/>
     <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="bereich"/>
     <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="foto_dateiname"/>
-    <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="ordner"/>
+    <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="ordner_bild"/>
     <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="createdat"/>
     <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="Beschreibung"/>
     <constraint exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0" field="bw_bs"/>
@@ -340,7 +340,7 @@
     <constraint desc="" field="vertikale_lage" exp=""/>
     <constraint desc="" field="bereich" exp=""/>
     <constraint desc="" field="foto_dateiname" exp=""/>
-    <constraint desc="" field="ordner" exp=""/>
+    <constraint desc="" field="ordner_bild" exp=""/>
     <constraint desc="" field="createdat" exp=""/>
     <constraint desc="" field="Beschreibung" exp=""/>
     <constraint desc="" field="bw_bs" exp=""/>
@@ -372,7 +372,7 @@
       <column name="pos_bis" width="-1" type="field" hidden="0"/>
       <column name="bereich" width="-1" type="field" hidden="0"/>
       <column name="foto_dateiname" width="-1" type="field" hidden="0"/>
-      <column name="ordner" width="-1" type="field" hidden="0"/>
+      <column name="ordner_bild" width="-1" type="field" hidden="0"/>
       <column name="createdat" width="-1" type="field" hidden="0"/>
       <column name="Beschreibung" width="-1" type="field" hidden="0"/>
       <column name="bw_bs" width="-1" type="field" hidden="0"/>
@@ -428,7 +428,7 @@ def my_form_open(dialog, layer, feature):
     <field name="foto_dateiname" editable="1"/>
     <field name="id" editable="1"/>
     <field name="kuerzel" editable="1"/>
-    <field name="ordner" editable="1"/>
+    <field name="ordner_bild" editable="1"/>
     <field name="pk" editable="1"/>
     <field name="pos_bis" editable="1"/>
     <field name="pos_von" editable="1"/>
@@ -457,7 +457,7 @@ def my_form_open(dialog, layer, feature):
     <field name="foto_dateiname" labelOnTop="0"/>
     <field name="id" labelOnTop="0"/>
     <field name="kuerzel" labelOnTop="0"/>
-    <field name="ordner" labelOnTop="0"/>
+    <field name="ordner_bild" labelOnTop="0"/>
     <field name="pk" labelOnTop="0"/>
     <field name="pos_bis" labelOnTop="0"/>
     <field name="pos_von" labelOnTop="0"/>

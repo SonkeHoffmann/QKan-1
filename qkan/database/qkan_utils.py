@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
 from xml.etree.ElementTree import ElementTree
 
 from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry, QgsDataSourceUri
-from qgis.utils import iface
+from qgis.utils import iface, pluginDirectory
+from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
 
 from qkan import QKan, enums
 from ..utils import get_logger
@@ -632,3 +633,65 @@ def read_qml(qmlfiles: dict[str, str]):
                     l = layer.layer()
                     l.loadNamedStyle(style_file)
                     l.triggerRepaint()
+
+def loadlayer(layerbez, table, geom_column, qmlfile, uifile, group, gpos) -> bool:
+    """Lädt einen Layer aus einer qml-Datei in eine bestimmte Gruppe an eine bestimmte Position
+    :layerbez:              Bezeichnung des Layers
+    :type layerbez:         String
+
+    :table:                 Name der Tabelle in der QKan-Datenbank
+    :type table:            String
+
+    :geom_column:           Attributname des Geo-Objekts
+    :type geom_column:      String
+
+    :qmlfile:               Name der Stildatei
+    :type qmlfile:          String
+
+    :uifile:                Name der Formulardatei
+    :type uifile:           String
+
+    :group:                 Bezeichnung der Gruppe, in der der Layer eingefügt werden soll
+    :type group:            String
+
+    :gpos:                  Index der Position innerhalb der Gruppe
+    :type gpos:             int
+
+    :returns:               bool
+    """
+
+    uri = QgsDataSourceUri()
+    uri.setDatabase(QKan.config.database.qkan)
+    schema = ''
+    uri.setDataSource(schema, table, geom_column)
+    layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
+    x = QgsProject.instance()
+    try:
+        x.removeMapLayer(x.mapLayersByName(layerbez)[0].id())
+    except:
+        pass
+
+    templatepath = os.path.join(pluginDirectory("qkan"), "templates")
+    qmlpath = os.path.join(templatepath, "qml", qmlfile)
+    formsDir = os.path.join(pluginDirectory("qkan"), "forms")
+
+    try:
+        layer.loadNamedStyle(qmlpath)
+        layer.triggerRepaint()
+    except:
+        logger.error_code(f'Stildatei "{qmlfile}" wurde nicht gefunden!\nAbbruch!')
+        return False
+
+    # Adapt path to forms directory
+    editFormConfig = layer.editFormConfig()
+    editFormConfig.setUiForm(os.path.join(formsDir, uifile))
+    layer.setEditFormConfig(editFormConfig)
+    QgsProject.instance().addMapLayer(layer, False)
+
+    layersRoot = QgsProject.instance().layerTreeRoot()
+    actGroup = layersRoot.findGroup(group)
+    if actGroup is None:
+        actGroup = layersRoot.addGroup(group)
+    actGroup.insertLayer(gpos, layer)
+
+    return True

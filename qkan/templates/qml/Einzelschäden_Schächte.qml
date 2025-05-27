@@ -958,7 +958,7 @@
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="ordner">
+    <field configurationFlags="NoFlag" name="ordner_bild">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
@@ -1067,7 +1067,7 @@
     <alias field="inspektionslaenge" index="18" name="Inspektionslänge"/>
     <alias field="bereich" index="19" name="Bereich"/>
     <alias field="foto_dateiname" index="20" name="Dateiname Foto"/>
-    <alias field="ordner" index="21" name="Ordner"/>
+    <alias field="ordner_bild" index="21" name="Ordner"/>
     <alias field="film_dateiname" index="22" name=""/>
     <alias field="ordner_video" index="23" name=""/>
     <alias field="filmtyp" index="24" name=""/>
@@ -1101,7 +1101,7 @@
     <policy field="inspektionslaenge" policy="Duplicate"/>
     <policy field="bereich" policy="Duplicate"/>
     <policy field="foto_dateiname" policy="Duplicate"/>
-    <policy field="ordner" policy="Duplicate"/>
+    <policy field="ordner_bild" policy="Duplicate"/>
     <policy field="film_dateiname" policy="Duplicate"/>
     <policy field="ordner_video" policy="Duplicate"/>
     <policy field="filmtyp" policy="Duplicate"/>
@@ -1135,7 +1135,7 @@
     <default expression="" field="inspektionslaenge" applyOnUpdate="0"/>
     <default expression="" field="bereich" applyOnUpdate="0"/>
     <default expression="" field="foto_dateiname" applyOnUpdate="0"/>
-    <default expression="" field="ordner" applyOnUpdate="0"/>
+    <default expression="" field="ordner_bild" applyOnUpdate="0"/>
     <default expression="" field="film_dateiname" applyOnUpdate="0"/>
     <default expression="" field="ordner_video" applyOnUpdate="0"/>
     <default expression="" field="filmtyp" applyOnUpdate="0"/>
@@ -1169,7 +1169,7 @@
     <constraint unique_strength="0" exp_strength="0" field="inspektionslaenge" constraints="0" notnull_strength="0"/>
     <constraint unique_strength="0" exp_strength="0" field="bereich" constraints="0" notnull_strength="0"/>
     <constraint unique_strength="0" exp_strength="0" field="foto_dateiname" constraints="0" notnull_strength="0"/>
-    <constraint unique_strength="0" exp_strength="0" field="ordner" constraints="0" notnull_strength="0"/>
+    <constraint unique_strength="0" exp_strength="0" field="ordner_bild" constraints="0" notnull_strength="0"/>
     <constraint unique_strength="0" exp_strength="0" field="film_dateiname" constraints="0" notnull_strength="0"/>
     <constraint unique_strength="0" exp_strength="0" field="ordner_video" constraints="0" notnull_strength="0"/>
     <constraint unique_strength="0" exp_strength="0" field="filmtyp" constraints="0" notnull_strength="0"/>
@@ -1203,7 +1203,7 @@
     <constraint field="inspektionslaenge" desc="" exp=""/>
     <constraint field="bereich" desc="" exp=""/>
     <constraint field="foto_dateiname" desc="" exp=""/>
-    <constraint field="ordner" desc="" exp=""/>
+    <constraint field="ordner_bild" desc="" exp=""/>
     <constraint field="film_dateiname" desc="" exp=""/>
     <constraint field="ordner_video" desc="" exp=""/>
     <constraint field="filmtyp" desc="" exp=""/>
@@ -1258,7 +1258,7 @@
       <column type="field" hidden="0" width="-1" name="inspektionslaenge"/>
       <column type="field" hidden="0" width="-1" name="bereich"/>
       <column type="field" hidden="0" width="-1" name="foto_dateiname"/>
-      <column type="field" hidden="0" width="-1" name="ordner"/>
+      <column type="field" hidden="0" width="-1" name="ordner_bild"/>
       <column type="field" hidden="0" width="-1" name="film_dateiname"/>
       <column type="field" hidden="0" width="-1" name="ordner_video"/>
       <column type="field" hidden="0" width="-1" name="filmtyp"/>
@@ -1317,7 +1317,7 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="kommentar"/>
     <field editable="1" name="kuerzel"/>
     <field editable="1" name="langtext"/>
-    <field editable="1" name="ordner"/>
+    <field editable="1" name="ordner_bild"/>
     <field editable="1" name="ordner_video"/>
     <field editable="1" name="pk"/>
     <field editable="1" name="pos_bis"/>
@@ -1351,7 +1351,7 @@ def my_form_open(dialog, layer, feature):
     <field labelOnTop="0" name="kommentar"/>
     <field labelOnTop="0" name="kuerzel"/>
     <field labelOnTop="0" name="langtext"/>
-    <field labelOnTop="0" name="ordner"/>
+    <field labelOnTop="0" name="ordner_bild"/>
     <field labelOnTop="0" name="ordner_video"/>
     <field labelOnTop="0" name="pk"/>
     <field labelOnTop="0" name="pos_bis"/>
@@ -1385,7 +1385,7 @@ def my_form_open(dialog, layer, feature):
     <field reuseLastValue="0" name="kommentar"/>
     <field reuseLastValue="0" name="kuerzel"/>
     <field reuseLastValue="0" name="langtext"/>
-    <field reuseLastValue="0" name="ordner"/>
+    <field reuseLastValue="0" name="ordner_bild"/>
     <field reuseLastValue="0" name="ordner_video"/>
     <field reuseLastValue="0" name="pk"/>
     <field reuseLastValue="0" name="pos_bis"/>

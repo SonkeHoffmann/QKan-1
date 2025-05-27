@@ -426,7 +426,7 @@ CREATE TABLE untersuchdat_schacht (
     inspektionslaenge INTEGER,
     bereich TEXT,
     foto_dateiname TEXT,
-    ordner TEXT,
+    ordner_bild TEXT,
     film_dateiname TEXT,
     ordner_video TEXT,
     filmtyp INTEGER,
@@ -1395,7 +1395,7 @@ INSERT INTO untersuchdat_schacht
     charakt1, charakt2, quantnr1, quantnr2, 
     streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, 
     vertikale_lage, inspektionslaenge, bereich, 
-    foto_dateiname, ordner, film_dateiname, ordner_video,
+    foto_dateiname, ordner_bild, film_dateiname, ordner_video,
     ZD, ZB, ZS, 
     createdat)
 SELECT 
@@ -1403,7 +1403,7 @@ SELECT
     :charakt1, :charakt2, :quantnr1, :quantnr2, 
     :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
     :vertikale_lage, :inspektionslaenge, :bereich, 
-    :foto_dateiname, :ordner, :film_dateiname, :ordner_video,
+    :foto_dateiname, :ordner_bild, :film_dateiname, :ordner_video,
     coalesce(:ZD, 63), coalesce(:ZB, 63), coalesce(:ZS, 63), 
     coalesce(:createdat, CURRENT_TIMESTAMP)
 FROM
@@ -1511,32 +1511,41 @@ SELECT bezeichnung FROM {tabnam}"
 database_set_bezeichnung: "
 UPDATE {tabnam} SET bezeichnung = :qkan_bez WHERE bezeichnung = :bezeichnung"
 
-database_create_haltungen_sel: "
-CREATE TABLE IF NOT EXISTS haltungen_sel (pk INTEGER PRIMARY KEY)"
+database_create_sel_haltungen: "
+CREATE TABLE IF NOT EXISTS sel_haltungen (pk INTEGER PRIMARY KEY)"
 
-database_create_schaechte_sel: "
-CREATE TABLE IF NOT EXISTS schaechte_sel (pk INTEGER PRIMARY KEY)"
+database_create_sel_schaechte: "
+CREATE TABLE IF NOT EXISTS sel_schaechte (pk INTEGER PRIMARY KEY)"
 
-database_create_flaechen_sel: "
-CREATE TABLE IF NOT EXISTS flaechen_sel (pk INTEGER PRIMARY KEY)"
+database_create_sel_flaechen: "
+CREATE TABLE IF NOT EXISTS sel_flaechen (pk INTEGER PRIMARY KEY)"
 
-database_insert_haltungen_sel: "
-INSERT INTO haltungen_sel (pk) VALUES (:pk)"
+database_insert_sel_haltungen: "
+INSERT INTO sel_haltungen (pk) VALUES (:pk)"
 
-database_insert_schaechte_sel: "
-INSERT INTO schaechte_sel (pk) VALUES (:pk)"
+database_insert_sel_schaechte: "
+INSERT INTO sel_schaechte (pk) VALUES (:pk)"
 
-database_insert_flaechen_sel: "
-INSERT INTO flaechen_sel (pk) VALUES (:pk)"
+database_insert_sel_flaechen: "
+INSERT INTO sel_flaechen (pk) VALUES (:pk)"
 
-database_count_haltungen_sel: "
-SELECT count() FROM haltungen_sel"
+database_clear_sel_haltungen: "
+DELETE FROM sel_haltungen"
 
-database_count_schaechte_sel: "
-SELECT count() FROM schaechte_sel"
+database_clear_sel_schaechte: "
+DELETE FROM sel_schaechte"
 
-database_count_flaechen_sel: "
-SELECT count() FROM flaechen_sel"
+database_clear_sel_flaechen: "
+DELETE FROM sel_flaechen"
+
+database_count_sel_haltungen: "
+SELECT count() FROM sel_haltungen"
+
+database_count_sel_schaechte: "
+SELECT count() FROM sel_schaechte"
+
+database_count_sel_flaechen: "
+SELECT count() FROM sel_flaechen"
 
 database_count_haltungen_all: "
 SELECT count() FROM haltungen"

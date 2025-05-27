@@ -308,7 +308,6 @@ class QKanTools(QKanPlugin):
         self.dlgop.tf_logeditor.setEnabled(status_logeditor)
 
 
-
         # show the dialog
         self.dlgop.show()
         # Run the dialog event loop
@@ -329,6 +328,7 @@ class QKanTools(QKanPlugin):
             mindestflaeche: float = float(self.dlgop.tf_mindestflaeche.text())
             max_loops: int = int(self.dlgop.tf_max_loops.text())
             logeditor: str = self.dlgop.tf_logeditor.text().strip()
+
             if self.dlgop.rb_spatialite.isChecked():
                 datenbanktyp = enums.QKanDBChoice.SPATIALITE
             # elif self.dlgop.rb_postgis.isChecked():
@@ -877,7 +877,10 @@ class QKanTools(QKanPlugin):
             ausw_haltung = self.dlgfp.checkBox.isChecked()
             ausw_schacht = self.dlgfp.checkBox_2.isChecked()
 
-            #QKan.config.save()
+            QKan.config.xml.ordner_bild = videopath
+            QKan.config.xml.ordner_video = fotopath
+
+            QKan.config.save()
 
             setfilepath(
                 self.database_name,

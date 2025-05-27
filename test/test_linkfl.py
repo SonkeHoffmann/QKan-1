@@ -31,7 +31,7 @@ class TestLinkfl(QgisTest):
         database_qkan = str(BASE_WORK / "nette.sqlite")
 
         # Anbindung an die Datenbank, weil Module mit QKan-Objekt aufgerufen werden.
-        db = DBConnection(dbname=database_qkan, qkan_db_update=True)
+        db = DBConnection(dbname=database_qkan, qkan_db_update=True, writeDbBackup=False, writeQgsBackup=False)
         if not db.connected:
             raise Exception("Datenbank nicht gefunden oder nicht aktuell.")
 

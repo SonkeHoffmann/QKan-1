@@ -770,7 +770,7 @@
      <string>Foto Dateiname</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="ordner">
+   <widget class="QLineEdit" name="ordner_bild">
     <property name="geometry">
      <rect>
       <x>480</x>

@@ -1,7 +1,7 @@
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
+from qkan.database.qkan_utils import loadlayer
 from qgis.utils import pluginDirectory
-from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
 from qkan import QKan, enums
 import os
 
@@ -72,6 +72,98 @@ def run(dbcon: DBConnection) -> bool:
 
     logger.info('Attribut "rwanschluss" in Tabelle "haltungen" ergänzt')
 
+    if not dbcon.alter_table(
+        "untersuchdat_schacht",
+        [
+            "untersuchsch TEXT",
+            "id INTEGER                                      /* absolute Nummer der Inspektion */",
+            "untersuchtag TEXT",
+            "bandnr INTEGER",
+            "videozaehler TEXT",
+            "timecode TEXT",
+            "langtext TEXT",
+            "kuerzel TEXT",
+            "charakt1 TEXT",
+            "charakt2 TEXT",
+            "quantnr1 REAL",
+            "quantnr2 REAL",
+            "streckenschaden TEXT",
+            "streckenschaden_lfdnr INTEGER",
+            "pos_von INTEGER",
+            "pos_bis INTEGER",
+            "vertikale_lage INTEGER",
+            "inspektionslaenge INTEGER",
+            "bereich TEXT",
+            "foto_dateiname TEXT",
+            "film_dateiname TEXT",
+            "ordner_bild TEXT",
+            "ordner_video TEXT",
+            "filmtyp INTEGER",
+            "video_start INTEGER",
+            "video_ende INTEGER",
+            "ZD INTEGER",
+            "ZB INTEGER",
+            "ZS INTEGER",
+            "kommentar TEXT",
+            "createdat TEXT DEFAULT CURRENT_TIMESTAMP",
+            "ordner TEXT",
+        ]
+    ):
+        logger.error(
+            f"Fehler bei Migration zu Version {VERSION}: "
+            "Hinzufügen von Attribut ordner_bild in Tabelle haltungen fehlgeschlagen"
+        )
+
+    if not dbcon.sql("UPDATE untersuchdat_schacht SET ordner_bild = ordner"):
+        logger.error(
+            f"Fehler bei Migration zu Version {VERSION}: "
+            "Übertragen von ordner zu ordner_bild in Tabelle untersuchdate_schacht fehlgeschlagen"
+        )
+
+    dbcon.commit()
+
+    if not dbcon.alter_table(
+        "untersuchdat_schacht",
+        [
+            "untersuchsch TEXT",
+            "id INTEGER                                      /* absolute Nummer der Inspektion */",
+            "untersuchtag TEXT",
+            "bandnr INTEGER",
+            "videozaehler TEXT",
+            "timecode TEXT",
+            "langtext TEXT",
+            "kuerzel TEXT",
+            "charakt1 TEXT",
+            "charakt2 TEXT",
+            "quantnr1 REAL",
+            "quantnr2 REAL",
+            "streckenschaden TEXT",
+            "streckenschaden_lfdnr INTEGER",
+            "pos_von INTEGER",
+            "pos_bis INTEGER",
+            "vertikale_lage INTEGER",
+            "inspektionslaenge INTEGER",
+            "bereich TEXT",
+            "foto_dateiname TEXT",
+            "film_dateiname TEXT",
+            "ordner_bild TEXT",
+            "ordner_video TEXT",
+            "filmtyp INTEGER",
+            "video_start INTEGER",
+            "video_ende INTEGER",
+            "ZD INTEGER",
+            "ZB INTEGER",
+            "ZS INTEGER",
+            "kommentar TEXT",
+            "createdat TEXT DEFAULT CURRENT_TIMESTAMP",
+        ],                                         # nichts hinzufügen...
+        ["ordner"]                                 # 'ordner' entfernen
+    ):
+        logger.error(
+            f"Fehler bei Migration zu Version {VERSION}: "
+            "Entfernen von Attribut ordner in Tabelle haltungen fehlgeschlagen"
+        )
+
     dbcon.commit()
 
     # gpos: Position des Layers innerhalb der Gruppe
@@ -91,64 +183,18 @@ def run(dbcon: DBConnection) -> bool:
     ]
 
     for layerconf in layerconfs:
-        layerbez = layerconf['layerbez']
-        table = layerconf['table']
-        geom_column = layerconf['geom_column']
-        qmlfile = layerconf['qmlfile']
-        uifile = layerconf['uifile']
-        group = layerconf['group']
-        gpos = layerconf['gpos']
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(QKan.config.database.qkan)
-        schema = ''
-        uri.setDataSource(schema, table, geom_column)
-        layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(layerbez)[0].id())
-        except:
-            pass
-
-        templatepath = os.path.join(pluginDirectory("qkan"), "templates")
-        qmlpath = os.path.join(templatepath, "qml", qmlfile)
-        formsDir = os.path.join(pluginDirectory("qkan"), "forms")
-
-        try:
-            layer.loadNamedStyle(qmlpath)
-            layer.triggerRepaint()
-        except:
-            logger.error_code(f'Stildatei "{qmlfile}" wurde nicht gefunden!\nAbbruch!')
-
-        # Adapt path to forms directory
-        editFormConfig = layer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(formsDir, uifile))
-        layer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(layer, False)
-
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        actGroup = layersRoot.findGroup(group)
-        if actGroup is None:
-            actGroup = layersRoot.addGroup(group)
-        actGroup.insertLayer(gpos, layer)
-
-    # Alias für hinzugefügtes Feld "rwanschluss"
-    # project = QgsProject.instance()
-    # layers = project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)
-    # for layer in layers:
-    #     index = layer.fields().indexFromName('rwanschluss')
-    #     layer.setFieldAlias(index, 'RW-Anschlüsse')
-    #
-    #     tableconfig = layer.attributeTableConfig()
-    #     columns = tableconfig.columns()
-    #     names = [col.name for col in columns]
-    #     # rwanschluss zu Pos. 15 verschieben
-    #     index = names.index('rwanschluss')
-    #     columns.insert(15, columns.pop(index))
-    #     # transport ans Ende verschieben
-    #     index = names.index('transport')
-    #     columns.append(columns.pop(index))
-    #     tableconfig.setColumns(columns)
-    #     layer.setAttributeTabelConfig(tableconfig)
+        if not loadlayer(
+                layerconf['layerbez'],
+                layerconf['table'],
+                layerconf['geom_column'],
+                layerconf['qmlfile'],
+                layerconf['uifile'],
+                layerconf['group'],
+                layerconf['gpos'],):
+            logger.error(
+                f"Fehler bei Migration zu Version {VERSION}: "
+                "Einfügen der atkualisierten Layer fehlgeschlagen"
+            )
+            return False
 
     return True

@@ -838,7 +838,7 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="kommentar"/>
     <field editable="1" name="kuerzel"/>
     <field editable="1" name="langtext"/>
-    <field editable="1" name="ordner"/>
+    <field editable="1" name="ordner_bild"/>
     <field editable="1" name="ordner_video"/>
     <field editable="1" name="pk"/>
     <field editable="1" name="pos_bis"/>
@@ -872,7 +872,7 @@ def my_form_open(dialog, layer, feature):
     <field labelOnTop="0" name="kommentar"/>
     <field labelOnTop="0" name="kuerzel"/>
     <field labelOnTop="0" name="langtext"/>
-    <field labelOnTop="0" name="ordner"/>
+    <field labelOnTop="0" name="ordner_bild"/>
     <field labelOnTop="0" name="ordner_video"/>
     <field labelOnTop="0" name="pk"/>
     <field labelOnTop="0" name="pos_bis"/>
@@ -906,7 +906,7 @@ def my_form_open(dialog, layer, feature):
     <field reuseLastValue="0" name="kommentar"/>
     <field reuseLastValue="0" name="kuerzel"/>
     <field reuseLastValue="0" name="langtext"/>
-    <field reuseLastValue="0" name="ordner"/>
+    <field reuseLastValue="0" name="ordner_bild"/>
     <field reuseLastValue="0" name="ordner_video"/>
     <field reuseLastValue="0" name="pk"/>
     <field reuseLastValue="0" name="pos_bis"/>

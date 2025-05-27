@@ -16,7 +16,6 @@ logger = get_logger("QKan.he8.export")
 class ExportTask:
     def __init__(self, db_qkan: DBConnection):
 
-        self.liste_teilgebiete = QKan.config.selections.teilgebiete
         self.db_qkan = db_qkan
 
         self.append = QKan.config.check_export.append
@@ -102,7 +101,7 @@ class ExportTask:
 
             if self.update:
                 if QKan.config.selections.selectedObjects:
-                    sqlnam = 'he8_update_schaechte_sel'
+                    sqlnam = 'he8_update_sel_schaechte'
                 else:
                     sqlnam = 'he8_update_schaechte_all'
 
@@ -126,7 +125,7 @@ class ExportTask:
                 nr0 = self.nextid
 
                 if QKan.config.selections.selectedObjects:
-                    sqlnam = 'he8_append_schaechte_sel'
+                    sqlnam = 'he8_append_sel_schaechte'
                 else:
                     sqlnam = 'he8_append_schaechte_all'
 
@@ -284,7 +283,7 @@ class ExportTask:
         if QKan.config.check_export.haltungen:
             if self.update:
                 if QKan.config.selections.selectedObjects:
-                    sqlnam = 'he8_update_haltungen_sel'
+                    sqlnam = 'he8_update_sel_haltungen'
                 else:
                     sqlnam = 'he8_update_haltungen_all'
 
@@ -306,7 +305,7 @@ class ExportTask:
                 nr0 = self.nextid
 
                 if QKan.config.selections.selectedObjects:
-                    sqlnam = 'he8_append_haltungen_sel'
+                    sqlnam = 'he8_append_sel_haltungen'
                 else:
                     sqlnam = 'he8_append_haltungen_all'
 
@@ -357,7 +356,7 @@ class ExportTask:
                 )
                 raise Exception(f"{self.__class__.__name__}")
 
-            self.db_qkan.loadmodule('he8porter')
+            self.db_qkan.loadmodule('he8porter')              # zusätzlich in application_dialog.py
             if self.update:
                 # aus Performancegründen wird die Auswahl der zu bearbeitenden Flächen in eine
                 # temporäre Tabelle flupdate geschrieben

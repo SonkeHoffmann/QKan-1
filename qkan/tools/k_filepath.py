@@ -108,7 +108,7 @@ def setfilepath(
         bild = ''
 
         #ordner und dateiname aus datenbank abfragen
-        sql = """select pk, foto_dateiname, ordner 
+        sql = """select pk, foto_dateiname, ordner_bild 
                     from untersuchdat_schacht"""
         try:
             #curs.sql(sql)

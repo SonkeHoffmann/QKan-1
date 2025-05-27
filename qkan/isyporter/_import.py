@@ -80,7 +80,7 @@ class Untersuchdat_schacht(ClassObject):
     vertikale_lage: float = 0.0
     inspektionslaenge: float = 0.0
     foto_dateiname: str = ""
-    ordner: str = ""
+    ordner_bild: str = ""
     film_dateiname: str = ""
     ordner_video: str = ""
     ZD: int = None
@@ -1016,7 +1016,7 @@ class ImportTask(Schadenstexte):
                 self.NS,
             )
 
-            ordner = self.ordner_bild
+            ordner_bild = self.ordner_bild
 
             logger.debug(f"Anzahl Untersuchungsdaten Schacht: {len(x_anlagen)}")
 
@@ -1093,7 +1093,7 @@ class ImportTask(Schadenstexte):
                     inspektionslaenge = inspektionslaenge,
                     bereich = bereich,
                     foto_dateiname = foto_dateiname,
-                    ordner = ordner,
+                    ordner_bild = ordner_bild,
                         ZD=ZD,
                         ZS=ZS,
                         ZB=ZB,
@@ -1139,7 +1139,7 @@ class ImportTask(Schadenstexte):
                       'pos_bis': untersuchdat_schacht.pos_bis, 'vertikale_lage': untersuchdat_schacht.vertikale_lage,
                       'inspektionslage': untersuchdat_schacht.inspektionslaenge,
                       'bereich': untersuchdat_schacht.bereich,
-                      'foto_dateiname': untersuchdat_schacht.foto_dateiname, 'ordner': untersuchdat_schacht.ordner,
+                      'foto_dateiname': untersuchdat_schacht.foto_dateiname, 'ordner_bild': untersuchdat_schacht.ordner_bild,
                       'ZD': untersuchdat_schacht.ZD, 'ZB': untersuchdat_schacht.ZB, 'ZS': untersuchdat_schacht.ZS, 'epsg': QKan.config.epsg}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: untersuchdat_schacht\n'

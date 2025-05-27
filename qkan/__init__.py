@@ -18,7 +18,7 @@ from .utils import setup_logging
 from qkan import enums
 
 # Toggle in DEV to log to console
-LOG_TO_CONSOLE = True
+LOG_TO_CONSOLE = False
 
 # list of all available plugins
 PLUGIN_LIST = [
@@ -150,6 +150,9 @@ class QKan:
 
         self.toolbar = self.iface.addToolBar("QKan")
         self.toolbar.setObjectName("QKan")
+
+        # Activate Macros
+        QgsSettings().setValue('qgis/enableMacros', 'Always')
 
         # Add QKan SVG path
         qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")

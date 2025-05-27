@@ -1092,8 +1092,8 @@ class DBConnection:
                 "inspektionslaenge",
                 "bereich",
                 "foto_dateiname",
-                "ordner",
                 "film_dateiname",
+                "ordner_bild",
                 "ordner_video",
                 "ZD",
                 "ZB",
@@ -1326,10 +1326,10 @@ class DBConnection:
         alter_table('flaechen',
             [   'flnam TEXT',
                 'haltnam TEXT',
-                'neu1 REAL                              -- Kommentar Schreibweise 1 ',
-                'neu2 TEXT                              /* Kommentar Schreibweise 2 */',
-                "simstatus TEXT DEFAULT 'vorhanden'     -- Kommentar Schreibweise 1 ",
-                'teilgebiet TEXT                        /* Kommentar Schreibweise 2 */',
+                'neu1 REAL',
+                'neu2 TEXT                              /* Kommentar */',
+                "simstatus TEXT DEFAULT 'vorhanden'",
+                'teilgebiet TEXT                        /* Kommentar */',
                 "createdat TEXT DEFAULT CURRENT_TIMESTAMP"]
             ['entfernen1', 'entfernen2'])
         """
@@ -1699,6 +1699,12 @@ class DBConnection:
         for row in self.fetchall():
             target[row[0]] = row[1]
 
+    def consume_mapper_yml(self, sqlnam: str, subject: str, target: Dict[str, str]) -> None:
+        if not self.sqlyml(sqlnam, subject):
+            raise Exception(f"Failed to init {subject} mapper (yml)")
+        for row in self.fetchall():
+            target[row[0]] = row[1]
+
     def _adapt_reftable(self, tabnam: str):
         """Ersetzt die importierten Bezeichnungen der Referenztabelle durch die QKan-Standards.
            Die entsprechenden Attribute in den Detailtabellen werden automatisch durch die definierten
@@ -1752,10 +1758,14 @@ class DBConnection:
         n_haltungen, n_schaechte, n_flaechen = 0, 0, 0
 
         if selected:
+            # Tabellen neu anlegen und, falls schon vorhanden, zurücksetzen
             sqllis = [
-                'database_create_haltungen_sel',
-                'database_create_schaechte_sel',
-                'database_create_flaechen_sel']
+                'database_create_sel_haltungen',
+                'database_create_sel_schaechte',
+                'database_create_sel_flaechen',
+                'database_clear_sel_haltungen',
+                'database_clear_sel_schaechte',
+                'database_clear_sel_flaechen',]
             for sqlnam in sqllis:
                 if not self.sqlyml(
                     sqlnam=sqlnam,
@@ -1767,7 +1777,7 @@ class DBConnection:
             for layer in project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value):
                 for feat in layer.selectedFeatures():
                     params = {'pk': feat[0]}
-                    if not self.sqlyml('database_insert_haltungen_sel', 'insert selected haltungen', parameters=params):
+                    if not self.sqlyml('database_insert_sel_haltungen', 'insert selected haltungen', parameters=params):
                         raise Exception(f"{self.__class__.__name__}: errno. 102")
                     logger.debug(f'sel: Haltung hinzugefügt: {params}')
                     n_haltungen += 1
@@ -1775,7 +1785,7 @@ class DBConnection:
             for layer in project.mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value):
                 for feat in layer.selectedFeatures():
                     params = {'pk': feat[0]}
-                    if not self.sqlyml('database_insert_schaechte_sel', 'insert selected schaechte', parameters=params):
+                    if not self.sqlyml('database_insert_sel_schaechte', 'insert selected schaechte', parameters=params):
                         raise Exception(f"{self.__class__.__name__}: errno. 103")
                     logger.debug(f'sel: Schacht hinzugefügt: {params}')
                     n_schaechte += 1
@@ -1783,20 +1793,10 @@ class DBConnection:
             for layer in project.mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value):
                 for feat in layer.selectedFeatures():
                     params = {'pk': feat[0]}
-                    if not self.sqlyml('database_insert_flaechen_sel', 'insert selected flaechen', parameters=params):
+                    if not self.sqlyml('database_insert_sel_flaechen', 'insert selected flaechen', parameters=params):
                         raise Exception(f"{self.__class__.__name__}: errno. 104")
                     logger.debug(f'sel: Fläche hinzugefügt: {params}')
                     n_flaechen += 1
                 break               # nur 1. gefundener Layer ;)
-        else:
-            if not self.sqlyml('database_count_haltungen_all', 'count selected haltungen'):
-                raise Exception(f"{self.__class__.__name__}: errno. 105")
-            n_haltungen = self.fetchone()[0]
-            if not self.sqlyml('database_count_schaechte_all', 'count selected schaechte'):
-                raise Exception(f"{self.__class__.__name__}: errno. 106")
-            n_schaechte = self.fetchone()[0]
-            if not self.sqlyml('database_count_flaechen_all', 'count selected flaechen'):
-                raise Exception(f"{self.__class__.__name__}: errno. 107")
-            n_flaechen = self.fetchone()[0]
 
         return n_haltungen, n_schaechte, n_flaechen
