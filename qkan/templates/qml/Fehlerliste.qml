@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" readOnly="0" minScale="1e+08" maxScale="0" version="3.22.16-Białowieża">
+<qgis maxScale="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Relations|Temporal|Legend|Notes" hasScaleBasedVisibilityFlag="0" minScale="1e+08" version="3.28.15-Firenze" readOnly="0">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
+  <temporal endField="" accumulate="0" startField="" endExpression="" fixedDuration="0" mode="0" limitMode="0" durationField="" enabled="0" durationUnit="min" startExpression="">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,76 +14,78 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option name="QFieldSync/action" value="copy" type="QString"/>
-      <Option name="QFieldSync/attachment_naming" value="{}" type="QString"/>
-      <Option name="QFieldSync/cloud_action" value="offline" type="QString"/>
-      <Option name="QFieldSync/geometry_locked_expression" value="" type="QString"/>
-      <Option name="QFieldSync/photo_naming" value="{}" type="QString"/>
-      <Option name="QFieldSync/relationship_maximum_visible" value="{}" type="QString"/>
-      <Option name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30" type="int"/>
-      <Option name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1" type="int"/>
-      <Option name="QFieldSync/tracking_measurement_type" value="0" type="int"/>
-      <Option name="QFieldSync/tracking_time_requirement_interval_seconds" value="30" type="int"/>
-      <Option name="QFieldSync/value_map_button_interface_threshold" value="0" type="int"/>
-      <Option name="dualview/previewExpressions" type="List">
+      <Option value="copy" type="QString" name="QFieldSync/action"/>
+      <Option value="{}" type="QString" name="QFieldSync/attachment_naming"/>
+      <Option value="offline" type="QString" name="QFieldSync/cloud_action"/>
+      <Option value="" type="QString" name="QFieldSync/geometry_locked_expression"/>
+      <Option value="{}" type="QString" name="QFieldSync/photo_naming"/>
+      <Option value="{}" type="QString" name="QFieldSync/relationship_maximum_visible"/>
+      <Option value="30" type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters"/>
+      <Option value="1" type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters"/>
+      <Option value="0" type="int" name="QFieldSync/tracking_measurement_type"/>
+      <Option value="30" type="int" name="QFieldSync/tracking_time_requirement_interval_seconds"/>
+      <Option value="0" type="int" name="QFieldSync/value_map_button_interface_threshold"/>
+      <Option type="List" name="dualview/previewExpressions">
         <Option value="&quot;name&quot;" type="QString"/>
       </Option>
-      <Option name="embeddedWidgets/count" value="0" type="int"/>
+      <Option value="0" type="int" name="embeddedWidgets/count"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
+  <legend type="default-vector" showLabelLegend="0"/>
+  <referencedLayers/>
   <fieldConfiguration>
-    <field name="pk" configurationFlags="None">
+    <field configurationFlags="None" name="pk">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="warntext" configurationFlags="None">
+    <field configurationFlags="None" name="warntext">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="warntyp" configurationFlags="None">
+    <field configurationFlags="None" name="warntyp">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="warnlevel" configurationFlags="None">
+    <field configurationFlags="None" name="warnlevel">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="layername" configurationFlags="None">
+    <field configurationFlags="None" name="layername">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="attrname" configurationFlags="None">
+    <field configurationFlags="None" name="attrname">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="objname" configurationFlags="None">
+    <field configurationFlags="None" name="objname">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="createdat" configurationFlags="None">
+    <field configurationFlags="None" name="createdat">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -92,34 +94,34 @@
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias name="" index="0" field="pk"/>
-    <alias name="Warntext" index="1" field="warntext"/>
-    <alias name="Warntyp" index="2" field="warntyp"/>
-    <alias name="Warnlevel" index="3" field="warnlevel"/>
-    <alias name="Layername" index="4" field="layername"/>
-    <alias name="Attributname" index="5" field="attrname"/>
-    <alias name="Objektname" index="6" field="objname"/>
-    <alias name="bearbeitet" index="7" field="createdat"/>
+    <alias field="pk" index="0" name=""/>
+    <alias field="warntext" index="1" name="Warntext"/>
+    <alias field="warntyp" index="2" name="Warntyp"/>
+    <alias field="warnlevel" index="3" name="Warnlevel"/>
+    <alias field="layername" index="4" name="Layername"/>
+    <alias field="attrname" index="5" name="Attributname"/>
+    <alias field="objname" index="6" name="Objektname"/>
+    <alias field="createdat" index="7" name="bearbeitet"/>
   </aliases>
   <defaults>
-    <default applyOnUpdate="0" expression="" field="pk"/>
-    <default applyOnUpdate="0" expression="" field="warntext"/>
-    <default applyOnUpdate="0" expression="" field="warntyp"/>
-    <default applyOnUpdate="0" expression="" field="warnlevel"/>
-    <default applyOnUpdate="0" expression="" field="layername"/>
-    <default applyOnUpdate="0" expression="" field="attrname"/>
-    <default applyOnUpdate="0" expression="" field="objname"/>
-    <default applyOnUpdate="0" expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat"/>
+    <default expression="" applyOnUpdate="0" field="pk"/>
+    <default expression="" applyOnUpdate="0" field="warntext"/>
+    <default expression="" applyOnUpdate="0" field="warntyp"/>
+    <default expression="" applyOnUpdate="0" field="warnlevel"/>
+    <default expression="" applyOnUpdate="0" field="layername"/>
+    <default expression="" applyOnUpdate="0" field="attrname"/>
+    <default expression="" applyOnUpdate="0" field="objname"/>
+    <default expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" applyOnUpdate="0" field="createdat"/>
   </defaults>
   <constraints>
-    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="warntext"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="warntyp"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="warnlevel"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="layername"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="attrname"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="objname"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="createdat"/>
+    <constraint notnull_strength="2" exp_strength="0" field="pk" constraints="3" unique_strength="2"/>
+    <constraint notnull_strength="0" exp_strength="0" field="warntext" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="warntyp" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="warnlevel" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="layername" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="attrname" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="objname" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="createdat" constraints="0" unique_strength="0"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="pk"/>
@@ -134,21 +136,21 @@
   <expressionfields/>
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
-    <actionsetting name="Zoom/Pan zum Objekt" capture="1" isEnabledOnlyWhenEditable="0" shortTitle="Zoom/Pan zum Objekt" action="from qgis.PyQt import QtWidgets&#xa;from qgis.core import Qgis&#xa;&#xa;obj = '[%objname%]'&#xa;attr = '[%attrname%]'&#xa;&#xa;activeproject = QgsProject().instance()&#xa;layername = '[%layername%]'&#xa;clayers = activeproject.mapLayersByName(layername)&#xa;if not clayers:&#xa;    QtWidgets.QMessageBox.information(None, &quot;Fehler im Programmcode der Aktion&quot;, f'Layer &quot;{layername}&quot;nicht definiert')&#xa;else:&#xa;    clayer = clayers[0]&#xa;    clayer.selectByExpression(f&quot;{attr} = '{obj}'&quot;)&#xa;    qgis.utils.iface.setActiveLayer(clayer)&#xa;    qgis.utils.iface.actionZoomToSelected().trigger()&#xa;" id="{ce7efdcf-811f-4b6b-859e-b64a436a7a74}" icon="C:/FHAC/hoettges/Kanalprogramme/QKan/qkan/datacheck/jump.png" type="1" notificationMessage="">
+    <actionsetting id="{ce7efdcf-811f-4b6b-859e-b64a436a7a74}" isEnabledOnlyWhenEditable="0" type="1" icon="C:/FHAC/hoettges/Kanalprogramme/QKan/qkan/datacheck/jump.png" capture="1" notificationMessage="" shortTitle="Zoom/Pan zum Objekt" action="from qgis.PyQt import QtWidgets&#xa;from qgis.core import Qgis&#xa;&#xa;obj = '[%objname%]'&#xa;attr = '[%attrname%]'&#xa;&#xa;activeproject = QgsProject().instance()&#xa;layername = '[%layername%]'&#xa;clayers = activeproject.mapLayersByName(layername)&#xa;if not clayers:&#xa;    QtWidgets.QMessageBox.information(None, &quot;Fehler im Programmcode der Aktion&quot;, f'Layer &quot;{layername}&quot;nicht definiert')&#xa;else:&#xa;    clayer = clayers[0]&#xa;    clayer.selectByExpression(f&quot;{attr} = '{obj}'&quot;)&#xa;    qgis.utils.iface.setActiveLayer(clayer)&#xa;    qgis.utils.iface.actionZoomToSelected().trigger()&#xa;" name="Zoom/Pan zum Objekt">
       <actionScope id="Feature"/>
     </actionsetting>
   </attributeactions>
-  <attributetableconfig sortOrder="0" actionWidgetStyle="buttonList" sortExpression="">
+  <attributetableconfig actionWidgetStyle="buttonList" sortOrder="0" sortExpression="">
     <columns>
-      <column hidden="0" width="57" type="actions"/>
-      <column name="pk" hidden="1" width="38" type="field"/>
-      <column name="warnlevel" hidden="0" width="82" type="field"/>
-      <column name="warntext" hidden="0" width="93" type="field"/>
-      <column name="layername" hidden="0" width="165" type="field"/>
-      <column name="objname" hidden="0" width="99" type="field"/>
-      <column name="warntyp" hidden="0" width="168" type="field"/>
-      <column name="attrname" hidden="0" width="-1" type="field"/>
-      <column name="createdat" hidden="0" width="159" type="field"/>
+      <column hidden="0" type="actions" width="57"/>
+      <column hidden="1" type="field" width="38" name="pk"/>
+      <column hidden="0" type="field" width="82" name="warnlevel"/>
+      <column hidden="0" type="field" width="93" name="warntext"/>
+      <column hidden="0" type="field" width="165" name="layername"/>
+      <column hidden="0" type="field" width="99" name="objname"/>
+      <column hidden="0" type="field" width="168" name="warntyp"/>
+      <column hidden="0" type="field" width="-1" name="attrname"/>
+      <column hidden="0" type="field" width="159" name="createdat"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -179,18 +181,18 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field name="attrname" editable="1"/>
-    <field name="beschreibung" editable="1"/>
-    <field name="createdat" editable="1"/>
-    <field name="gruppe" editable="1"/>
-    <field name="idname" editable="1"/>
-    <field name="layername" editable="1"/>
-    <field name="name" editable="1"/>
-    <field name="objname" editable="1"/>
-    <field name="pk" editable="1"/>
-    <field name="warnlevel" editable="1"/>
-    <field name="warntext" editable="1"/>
-    <field name="warntyp" editable="1"/>
+    <field editable="1" name="attrname"/>
+    <field editable="1" name="beschreibung"/>
+    <field editable="1" name="createdat"/>
+    <field editable="1" name="gruppe"/>
+    <field editable="1" name="idname"/>
+    <field editable="1" name="layername"/>
+    <field editable="1" name="name"/>
+    <field editable="1" name="objname"/>
+    <field editable="1" name="pk"/>
+    <field editable="1" name="warnlevel"/>
+    <field editable="1" name="warntext"/>
+    <field editable="1" name="warntyp"/>
   </editable>
   <labelOnTop>
     <field name="attrname" labelOnTop="0"/>
@@ -207,14 +209,14 @@ def my_form_open(dialog, layer, feature):
     <field name="warntyp" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
-    <field name="attrname" reuseLastValue="0"/>
-    <field name="createdat" reuseLastValue="0"/>
-    <field name="layername" reuseLastValue="0"/>
-    <field name="objname" reuseLastValue="0"/>
-    <field name="pk" reuseLastValue="0"/>
-    <field name="warnlevel" reuseLastValue="0"/>
-    <field name="warntext" reuseLastValue="0"/>
-    <field name="warntyp" reuseLastValue="0"/>
+    <field reuseLastValue="0" name="attrname"/>
+    <field reuseLastValue="0" name="createdat"/>
+    <field reuseLastValue="0" name="layername"/>
+    <field reuseLastValue="0" name="objname"/>
+    <field reuseLastValue="0" name="pk"/>
+    <field reuseLastValue="0" name="warnlevel"/>
+    <field reuseLastValue="0" name="warntext"/>
+    <field reuseLastValue="0" name="warntyp"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

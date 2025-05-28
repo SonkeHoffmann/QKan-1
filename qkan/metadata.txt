@@ -27,6 +27,8 @@ repository=https://github.com/hoettges/QKan
 changelog= 
 	Aktuelle Version abwärtskompatibel bis QGIS Version 3.28
 	3.4.6:	
+        - Pfad zu Videos und Fotos kann jetzt aus einem allgemeinen und dem individuellen Verzeichnis zusammengesetzt sein
+        - STRAKAT-Symbole werden getrennt von Schächten in neue Tabelle "Symbole" eingelesen
 		- Änderung einiger Layerbezeichnungen und Tabellen
 		- Modul zur Ermittlung der  Substanzbewertung
 		- Erweiterung der Darstellung um ABK Symbole

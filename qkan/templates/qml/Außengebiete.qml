@@ -1,57 +1,46 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Temporal|Notes" hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" readOnly="0" minScale="0" symbologyReferenceScale="-1" maxScale="0" simplifyDrawingHints="1" simplifyLocal="1" version="3.22.16-Białowieża" simplifyMaxScale="1" simplifyDrawingTol="1" labelsEnabled="0">
+<qgis maxScale="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Relations|Temporal|Legend|Notes" simplifyAlgorithm="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyDrawingHints="1" symbologyReferenceScale="-1" simplifyDrawingTol="1" minScale="0" simplifyLocal="1" labelsEnabled="0" version="3.28.15-Firenze" readOnly="0">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal limitMode="0" enabled="0" fixedDuration="0" startExpression="" endExpression="" mode="0" durationField="" startField="" accumulate="0" endField="" durationUnit="min">
+  <temporal endField="" accumulate="0" startField="" endExpression="" fixedDuration="0" mode="0" limitMode="0" durationField="" enabled="0" durationUnit="min" startExpression="">
     <fixedRange>
       <start></start>
       <end></end>
     </fixedRange>
   </temporal>
-  <renderer-v2 symbollevels="0" referencescale="-1" forceraster="0" type="singleSymbol" enableorderby="0">
+  <renderer-v2 symbollevels="0" referencescale="-1" forceraster="0" enableorderby="0" type="singleSymbol">
     <symbols>
-      <symbol force_rhr="0" name="0" type="fill" alpha="1" clip_to_extent="1">
+      <symbol clip_to_extent="1" force_rhr="0" is_animated="0" type="fill" frame_rate="10" alpha="1" name="0">
         <data_defined_properties>
           <Option type="Map">
-            <Option name="name" value="" type="QString"/>
+            <Option value="" type="QString" name="name"/>
             <Option name="properties"/>
-            <Option name="type" value="collection" type="QString"/>
+            <Option value="collection" type="QString" name="type"/>
           </Option>
         </data_defined_properties>
-        <layer enabled="1" pass="0" locked="0" class="SimpleFill">
+        <layer pass="0" locked="0" class="SimpleFill" enabled="1">
           <Option type="Map">
-            <Option name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="color" value="225,89,137,255" type="QString"/>
-            <Option name="joinstyle" value="bevel" type="QString"/>
-            <Option name="offset" value="0,0" type="QString"/>
-            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
-            <Option name="outline_color" value="35,35,35,255" type="QString"/>
-            <Option name="outline_style" value="solid" type="QString"/>
-            <Option name="outline_width" value="0.26" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
-            <Option name="style" value="solid" type="QString"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="border_width_map_unit_scale"/>
+            <Option value="225,89,137,255" type="QString" name="color"/>
+            <Option value="bevel" type="QString" name="joinstyle"/>
+            <Option value="0,0" type="QString" name="offset"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="offset_map_unit_scale"/>
+            <Option value="MM" type="QString" name="offset_unit"/>
+            <Option value="35,35,35,255" type="QString" name="outline_color"/>
+            <Option value="solid" type="QString" name="outline_style"/>
+            <Option value="0.26" type="QString" name="outline_width"/>
+            <Option value="MM" type="QString" name="outline_width_unit"/>
+            <Option value="solid" type="QString" name="style"/>
           </Option>
-          <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="color" v="225,89,137,255"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="35,35,35,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="0.26"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="style" v="solid"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option value="" type="QString" name="name"/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option value="collection" type="QString" name="type"/>
             </Option>
           </data_defined_properties>
         </layer>
@@ -62,193 +51,206 @@
   </renderer-v2>
   <customproperties>
     <Option type="Map">
-      <Option name="embeddedWidgets/count" value="0" type="int"/>
-      <Option name="variableNames" type="invalid"/>
-      <Option name="variableValues" type="invalid"/>
+      <Option value="copy" type="QString" name="QFieldSync/action"/>
+      <Option value="{}" type="QString" name="QFieldSync/attachment_naming"/>
+      <Option value="offline" type="QString" name="QFieldSync/cloud_action"/>
+      <Option value="" type="QString" name="QFieldSync/geometry_locked_expression"/>
+      <Option value="{}" type="QString" name="QFieldSync/photo_naming"/>
+      <Option value="{}" type="QString" name="QFieldSync/relationship_maximum_visible"/>
+      <Option value="30" type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters"/>
+      <Option value="1" type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters"/>
+      <Option value="0" type="int" name="QFieldSync/tracking_measurement_type"/>
+      <Option value="30" type="int" name="QFieldSync/tracking_time_requirement_interval_seconds"/>
+      <Option value="0" type="int" name="QFieldSync/value_map_button_interface_threshold"/>
+      <Option value="0" type="int" name="embeddedWidgets/count"/>
+      <Option name="variableNames"/>
+      <Option name="variableValues"/>
     </Option>
   </customproperties>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <layerOpacity>1</layerOpacity>
+  <legend type="default-vector" showLabelLegend="0"/>
+  <referencedLayers/>
   <fieldConfiguration>
-    <field name="pk" configurationFlags="None">
+    <field configurationFlags="None" name="pk">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="gebnam" configurationFlags="None">
+    <field configurationFlags="None" name="gebnam">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="schnam" configurationFlags="None">
+    <field configurationFlags="None" name="schnam">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="false" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="schnam" type="QString"/>
-            <Option name="Layer" value="schaechte20161220162259105" type="QString"/>
-            <Option name="LayerName" value="Schächte" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;schaechte&quot; (geop) sql=schachttyp = 'Schacht'" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="false" type="bool"/>
-            <Option name="Value" value="schnam" type="QString"/>
+            <Option value="false" type="bool" name="AllowMulti"/>
+            <Option value="false" type="bool" name="AllowNull"/>
+            <Option value="" type="QString" name="Description"/>
+            <Option value="" type="QString" name="FilterExpression"/>
+            <Option value="schnam" type="QString" name="Key"/>
+            <Option value="schaechte20161220162259105" type="QString" name="Layer"/>
+            <Option value="Schächte" type="QString" name="LayerName"/>
+            <Option value="spatialite" type="QString" name="LayerProviderName"/>
+            <Option value="dbname='juelich' host=qkan-public.gbd-websuite.de port=5432 authcfg=qkan002 key='pk' srid=25832 type=Point checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;schaechte&quot; (geop) sql=schachttyp = 'Schacht'" type="QString" name="LayerSource"/>
+            <Option value="1" type="int" name="NofColumns"/>
+            <Option value="false" type="bool" name="OrderByValue"/>
+            <Option value="false" type="bool" name="UseCompleter"/>
+            <Option value="schnam" type="QString" name="Value"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="hoeheob" configurationFlags="None">
+    <field configurationFlags="None" name="hoeheob">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="hoeheun" configurationFlags="None">
+    <field configurationFlags="None" name="hoeheun">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="fliessweg" configurationFlags="None">
+    <field configurationFlags="None" name="fliessweg">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="basisabfluss" configurationFlags="None">
+    <field configurationFlags="None" name="basisabfluss">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="cn" configurationFlags="None">
+    <field configurationFlags="None" name="cn">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="regenschreiber" configurationFlags="None">
+    <field configurationFlags="None" name="regenschreiber">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="teilgebiet" configurationFlags="None">
+    <field configurationFlags="None" name="teilgebiet">
       <editWidget type="ValueRelation">
         <config>
           <Option type="Map">
-            <Option name="AllowMulti" value="false" type="bool"/>
-            <Option name="AllowNull" value="false" type="bool"/>
-            <Option name="Description" value="" type="QString"/>
-            <Option name="FilterExpression" value="" type="QString"/>
-            <Option name="Key" value="tgnam" type="QString"/>
-            <Option name="Layer" value="Teilgebiete_786fa926_704f_4cb1_bc67_eb8571f2f6c0" type="QString"/>
-            <Option name="LayerName" value="Teilgebiete" type="QString"/>
-            <Option name="LayerProviderName" value="spatialite" type="QString"/>
-            <Option name="LayerSource" value="dbname='itwh.sqlite' table=&quot;teilgebiete&quot; (geom)" type="QString"/>
-            <Option name="NofColumns" value="1" type="int"/>
-            <Option name="OrderByValue" value="false" type="bool"/>
-            <Option name="UseCompleter" value="false" type="bool"/>
-            <Option name="Value" value="tgnam" type="QString"/>
+            <Option value="false" type="bool" name="AllowMulti"/>
+            <Option value="false" type="bool" name="AllowNull"/>
+            <Option value="" type="QString" name="Description"/>
+            <Option value="" type="QString" name="FilterExpression"/>
+            <Option value="tgnam" type="QString" name="Key"/>
+            <Option value="Teilgebiete_786fa926_704f_4cb1_bc67_eb8571f2f6c0" type="QString" name="Layer"/>
+            <Option value="Teilgebiete" type="QString" name="LayerName"/>
+            <Option value="spatialite" type="QString" name="LayerProviderName"/>
+            <Option value="dbname='juelich' host=qkan-public.gbd-websuite.de port=5432 authcfg=qkan002 key='pk' srid=25832 type=MultiPolygon checkPrimaryKeyUnicity='0' table=&quot;qkan&quot;.&quot;teilgebiete&quot; (geom)" type="QString" name="LayerSource"/>
+            <Option value="1" type="int" name="NofColumns"/>
+            <Option value="false" type="bool" name="OrderByValue"/>
+            <Option value="false" type="bool" name="UseCompleter"/>
+            <Option value="tgnam" type="QString" name="Value"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="kommentar" configurationFlags="None">
+    <field configurationFlags="None" name="kommentar">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field name="createdat" configurationFlags="None">
+    <field configurationFlags="None" name="createdat">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option name="IsMultiline" value="false" type="bool"/>
-            <Option name="UseHtml" value="false" type="bool"/>
+            <Option value="false" type="bool" name="IsMultiline"/>
+            <Option value="false" type="bool" name="UseHtml"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias name="" index="0" field="pk"/>
-    <alias name="Name" index="1" field="gebnam"/>
-    <alias name="Schacht" index="2" field="schnam"/>
-    <alias name="" index="3" field="hoeheob"/>
-    <alias name="" index="4" field="hoeheun"/>
-    <alias name="Fließweg" index="5" field="fliessweg"/>
-    <alias name="Basisabfluss" index="6" field="basisabfluss"/>
-    <alias name="CN" index="7" field="cn"/>
-    <alias name="Regenschreiber" index="8" field="regenschreiber"/>
-    <alias name="Teilgebiet" index="9" field="teilgebiet"/>
-    <alias name="Kommentar" index="10" field="kommentar"/>
-    <alias name="bearbeitet" index="11" field="createdat"/>
+    <alias field="pk" index="0" name=""/>
+    <alias field="gebnam" index="1" name="Name"/>
+    <alias field="schnam" index="2" name="Schacht"/>
+    <alias field="hoeheob" index="3" name=""/>
+    <alias field="hoeheun" index="4" name=""/>
+    <alias field="fliessweg" index="5" name="Fließweg"/>
+    <alias field="basisabfluss" index="6" name="Basisabfluss"/>
+    <alias field="cn" index="7" name="CN"/>
+    <alias field="regenschreiber" index="8" name="Regenschreiber"/>
+    <alias field="teilgebiet" index="9" name="Teilgebiet"/>
+    <alias field="kommentar" index="10" name="Kommentar"/>
+    <alias field="createdat" index="11" name="bearbeitet"/>
   </aliases>
   <defaults>
-    <default applyOnUpdate="0" expression="" field="pk"/>
-    <default applyOnUpdate="0" expression="" field="gebnam"/>
-    <default applyOnUpdate="0" expression="" field="schnam"/>
-    <default applyOnUpdate="0" expression="" field="hoeheob"/>
-    <default applyOnUpdate="0" expression="" field="hoeheun"/>
-    <default applyOnUpdate="0" expression="" field="fliessweg"/>
-    <default applyOnUpdate="0" expression="" field="basisabfluss"/>
-    <default applyOnUpdate="0" expression="" field="cn"/>
-    <default applyOnUpdate="0" expression="" field="regenschreiber"/>
-    <default applyOnUpdate="0" expression="" field="teilgebiet"/>
-    <default applyOnUpdate="0" expression="" field="kommentar"/>
-    <default applyOnUpdate="0" expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" field="createdat"/>
+    <default expression="" applyOnUpdate="0" field="pk"/>
+    <default expression="" applyOnUpdate="0" field="gebnam"/>
+    <default expression="" applyOnUpdate="0" field="schnam"/>
+    <default expression="" applyOnUpdate="0" field="hoeheob"/>
+    <default expression="" applyOnUpdate="0" field="hoeheun"/>
+    <default expression="" applyOnUpdate="0" field="fliessweg"/>
+    <default expression="" applyOnUpdate="0" field="basisabfluss"/>
+    <default expression="" applyOnUpdate="0" field="cn"/>
+    <default expression="" applyOnUpdate="0" field="regenschreiber"/>
+    <default expression="" applyOnUpdate="0" field="teilgebiet"/>
+    <default expression="" applyOnUpdate="0" field="kommentar"/>
+    <default expression=" format_date( now(), 'yyyy-MM-dd HH:mm:ss')" applyOnUpdate="0" field="createdat"/>
   </defaults>
   <constraints>
-    <constraint unique_strength="2" notnull_strength="2" exp_strength="0" constraints="3" field="pk"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="gebnam"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="schnam"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="hoeheob"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="hoeheun"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="fliessweg"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="basisabfluss"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="cn"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="regenschreiber"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="teilgebiet"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="kommentar"/>
-    <constraint unique_strength="0" notnull_strength="0" exp_strength="0" constraints="0" field="createdat"/>
+    <constraint notnull_strength="2" exp_strength="0" field="pk" constraints="3" unique_strength="2"/>
+    <constraint notnull_strength="0" exp_strength="0" field="gebnam" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="schnam" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="hoeheob" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="hoeheun" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="fliessweg" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="basisabfluss" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="cn" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="regenschreiber" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="teilgebiet" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="kommentar" constraints="0" unique_strength="0"/>
+    <constraint notnull_strength="0" exp_strength="0" field="createdat" constraints="0" unique_strength="0"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="pk"/>
@@ -268,21 +270,21 @@
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
+  <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
     <columns>
-      <column name="pk" hidden="0" width="-1" type="field"/>
-      <column name="gebnam" hidden="0" width="-1" type="field"/>
-      <column name="schnam" hidden="0" width="-1" type="field"/>
-      <column name="hoeheob" hidden="0" width="-1" type="field"/>
-      <column name="hoeheun" hidden="0" width="-1" type="field"/>
-      <column name="fliessweg" hidden="0" width="-1" type="field"/>
-      <column name="basisabfluss" hidden="0" width="-1" type="field"/>
-      <column name="cn" hidden="0" width="-1" type="field"/>
-      <column name="regenschreiber" hidden="0" width="-1" type="field"/>
-      <column name="teilgebiet" hidden="0" width="-1" type="field"/>
-      <column name="kommentar" hidden="0" width="-1" type="field"/>
-      <column name="createdat" hidden="0" width="-1" type="field"/>
-      <column hidden="1" width="-1" type="actions"/>
+      <column hidden="0" type="field" width="-1" name="pk"/>
+      <column hidden="0" type="field" width="-1" name="gebnam"/>
+      <column hidden="0" type="field" width="-1" name="schnam"/>
+      <column hidden="0" type="field" width="-1" name="hoeheob"/>
+      <column hidden="0" type="field" width="-1" name="hoeheun"/>
+      <column hidden="0" type="field" width="-1" name="fliessweg"/>
+      <column hidden="0" type="field" width="-1" name="basisabfluss"/>
+      <column hidden="0" type="field" width="-1" name="cn"/>
+      <column hidden="0" type="field" width="-1" name="regenschreiber"/>
+      <column hidden="0" type="field" width="-1" name="teilgebiet"/>
+      <column hidden="0" type="field" width="-1" name="kommentar"/>
+      <column hidden="0" type="field" width="-1" name="createdat"/>
+      <column hidden="1" type="actions" width="-1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -313,18 +315,18 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field name="basisabfluss" editable="1"/>
-    <field name="cn" editable="1"/>
-    <field name="createdat" editable="1"/>
-    <field name="fliessweg" editable="1"/>
-    <field name="gebnam" editable="1"/>
-    <field name="hoeheob" editable="1"/>
-    <field name="hoeheun" editable="1"/>
-    <field name="kommentar" editable="1"/>
-    <field name="pk" editable="1"/>
-    <field name="regenschreiber" editable="1"/>
-    <field name="schnam" editable="1"/>
-    <field name="teilgebiet" editable="1"/>
+    <field editable="1" name="basisabfluss"/>
+    <field editable="1" name="cn"/>
+    <field editable="1" name="createdat"/>
+    <field editable="1" name="fliessweg"/>
+    <field editable="1" name="gebnam"/>
+    <field editable="1" name="hoeheob"/>
+    <field editable="1" name="hoeheun"/>
+    <field editable="1" name="kommentar"/>
+    <field editable="1" name="pk"/>
+    <field editable="1" name="regenschreiber"/>
+    <field editable="1" name="schnam"/>
+    <field editable="1" name="teilgebiet"/>
   </editable>
   <labelOnTop>
     <field name="basisabfluss" labelOnTop="0"/>
@@ -341,18 +343,18 @@ def my_form_open(dialog, layer, feature):
     <field name="teilgebiet" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
-    <field name="basisabfluss" reuseLastValue="0"/>
-    <field name="cn" reuseLastValue="0"/>
-    <field name="createdat" reuseLastValue="0"/>
-    <field name="fliessweg" reuseLastValue="0"/>
-    <field name="gebnam" reuseLastValue="0"/>
-    <field name="hoeheob" reuseLastValue="0"/>
-    <field name="hoeheun" reuseLastValue="0"/>
-    <field name="kommentar" reuseLastValue="0"/>
-    <field name="pk" reuseLastValue="0"/>
-    <field name="regenschreiber" reuseLastValue="0"/>
-    <field name="schnam" reuseLastValue="0"/>
-    <field name="teilgebiet" reuseLastValue="0"/>
+    <field reuseLastValue="0" name="basisabfluss"/>
+    <field reuseLastValue="0" name="cn"/>
+    <field reuseLastValue="0" name="createdat"/>
+    <field reuseLastValue="0" name="fliessweg"/>
+    <field reuseLastValue="0" name="gebnam"/>
+    <field reuseLastValue="0" name="hoeheob"/>
+    <field reuseLastValue="0" name="hoeheun"/>
+    <field reuseLastValue="0" name="kommentar"/>
+    <field reuseLastValue="0" name="pk"/>
+    <field reuseLastValue="0" name="regenschreiber"/>
+    <field reuseLastValue="0" name="schnam"/>
+    <field reuseLastValue="0" name="teilgebiet"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>
