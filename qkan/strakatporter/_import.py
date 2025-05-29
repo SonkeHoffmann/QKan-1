@@ -550,8 +550,21 @@ class ImportTask(Schadenstexte):
         #    der nicht mit anderen Schachtoben übereinstimmt.
         sqls = [
             # 1.0 Fehlende Schacht- und Haltungsbezeichnungen ergänzen
+            # Die 2. Abfrage übernimmt den Schachtnamen nur dann als Haltungsnamen, wenn dadurch keine
+            # neuen Dopplungen entstehen könnten.
             """ UPDATE t_strakatkanal SET schacht_oben = 'SN_' || substr(printf('0000%d', pk), -5)
                 WHERE schacht_oben = '' OR schacht_oben = '0'""",
+            """ UPDATE t_strakatkanal SET haltungsname = schacht_oben
+                WHERE (haltungsname = '' OR haltungsname = '0')
+                  AND schacht_oben NOT IN (
+                        SELECT stk.haltungsname
+                        FROM t_strakatkanal AS stk)
+                  AND schacht_oben IN (
+                        SELECT stk.schacht_oben
+                        FROM t_strakatkanal AS stk
+						GROUP BY stk.schacht_oben
+						HAVING count() = 1
+						)""",
             """ UPDATE t_strakatkanal SET haltungsname = 'HN_' || substr(printf('0000%d', pk), -5)
                 WHERE haltungsname = '' OR haltungsname = '0'""",
             # 1.1 Doppelte Haltungsbezeichnungen eindeutig machen. Erkennungsmerkmal zur späteren
@@ -635,7 +648,7 @@ class ImportTask(Schadenstexte):
             """ WITH ka AS (
                     SELECT n1 AS id, n4, kurz, text
                     FROM t_reflists
-                    WHERE n5 = 0 AND tabtyp = 'schachtart' 
+                    WHERE tabtyp = 'schachtart' 
                 ),
                 sx AS (
                     SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
@@ -1616,7 +1629,7 @@ class ImportTask(Schadenstexte):
             knotenart AS (
                 SELECT n1 AS id, n4, kurz, text
                 FROM t_reflists
-                WHERE n5 = 64 AND tabtyp = 'schachtart' 
+                WHERE tabtyp = 'schachtart' 
             ),
             gebiet AS (
                 SELECT n1 AS id, text, kurz
@@ -1674,7 +1687,8 @@ class ImportTask(Schadenstexte):
                 AND stk.schacht_oben Is Not Null
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
-                AND sd.pk IS NULL                       -- nur neue hinzufügen
+                AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)          -- kein Symbol
+                AND sd.pk IS NULL                                               -- nur neue hinzufügen
             GROUP BY
                 stk.schacht_oben
             """
@@ -1698,7 +1712,7 @@ class ImportTask(Schadenstexte):
             knotenart AS (
                 SELECT n1 AS id, n4, kurz, text
                 FROM t_reflists
-                WHERE n5 <> 0 AND n5 <> 64 AND tabtyp = 'schachtart' 
+                WHERE tabtyp = 'schachtart' 
             )
             INSERT INTO symbole (bezeichnung, art, gruppe, kommentar, geom)
             SELECT
@@ -1709,6 +1723,7 @@ class ImportTask(Schadenstexte):
                 Makepoint(stk.rw_gerinne_o, stk.hw_gerinne_o, :epsg)  AS geom
             FROM t_strakatkanal AS stk
             JOIN knotenart AS k2t       ON stk.schachtart = k2t.id
+            WHERE stk.zuflussnummer1 = 0 AND stk.abflussnummer1 = 0                 -- Symbol
         """
         params = {"epsg": self.epsg}
         if not self.db_qkan.sql(sql, "strakat_import Symbole", params):
@@ -1720,7 +1735,7 @@ class ImportTask(Schadenstexte):
                 'strakat'           AS gruppe,
                 'STRAKAT-Import'    AS kommentar
             FROM t_reflists
-            WHERE n5 <> 0 AND n5 <> 64 AND tabtyp = 'schachtart' 
+            WHERE tabtyp = 'schachtart' 
         """
         if not self.db_qkan.sql(sql, "strakat_import Symbolkatalog", params):
             raise Exception(f"{self.__class__.__name__}: Fehler in strakat_import Symbolkatalog")
@@ -1760,7 +1775,7 @@ class ImportTask(Schadenstexte):
             knotenart AS (
                 SELECT n1 AS id, n4, kurz, text
                 FROM t_reflists
-                WHERE n5 = 64 AND tabtyp = 'schachtart' 
+                WHERE tabtyp = 'schachtart' 
             ),
             gebiet AS (
                 SELECT n1 AS id, text, kurz
@@ -1819,9 +1834,10 @@ class ImportTask(Schadenstexte):
                 LEFT JOIN haltungen         ON haltungen.haltnam = stk.haltungsname
                 LEFT JOIN eigentum  AS eg   ON eg.id = stk.eigentum 
             WHERE stk.laenge > 0.045
-              AND stk.schachtnummer <> 0                         -- nicht geloescht
+              AND stk.schachtnummer <> 0                                        -- nicht geloescht
               AND k2t.n4 <> 0
-              AND haltungen.pk IS NULL                           -- nur neue Haltungen hinzufügen
+              AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)            -- kein Symbol
+              AND haltungen.pk IS NULL                                          -- nur neue Haltungen hinzufügen
               """
 
         params = {"epsg": self.epsg, "coordsFromRohr": QKan.config.strakat.coords_from_rohr}
@@ -1843,7 +1859,7 @@ class ImportTask(Schadenstexte):
                     knotenart AS (
                         SELECT n1 AS id, n4, kurz, text
                         FROM t_reflists
-                        WHERE n5 = 0 AND tabtyp = 'schachtart' 
+                        WHERE tabtyp = 'schachtart' 
                     ),
                     kanal AS (
                         SELECT
@@ -1866,6 +1882,7 @@ class ImportTask(Schadenstexte):
                         FROM
                             t_strakatkanal AS stk
                             JOIN knotenart AS k2t ON k2t.id = stk.schachtart
+                            WHERE (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)          -- kein Symbol
                     ),
                     ko AS (
                         SELECT k1.*
@@ -1969,12 +1986,13 @@ class ImportTask(Schadenstexte):
                 Trim(anschlussschun)            AS schunten,
                 rohrbreite                      AS hoehe,
                 rohrbreite                      AS breite,
+                strakatid                       AS strakatid,
                 geom                            AS geom
             FROM t_strakathausanschluesse
             WHERE geloescht = 0
             )
             INSERT INTO anschlussleitungen (leitnam, schoben, schunten, 
-                hoehe, breite, laenge,
+                hoehe, breite, laenge, haltnam, 
                 simstatus, kommentar, geom)
             SELECT
                 ha.leitnam,
@@ -1983,12 +2001,14 @@ class ImportTask(Schadenstexte):
                 ha.hoehe,
                 ha.breite,
                 GLength(ha.geom)                    AS laenge,
+                stk.haltungsname                    AS haltnam,
                 'in Betrieb'                        AS simstatus,
                 'QKan-STRAKAT-Import'               AS kommentar,
                 ha.geom                             AS geom
             FROM
                 ha
                 LEFT JOIN anschlussleitungen    USING (leitnam, schoben, schunten)
+                LEFT JOIN t_strakatkanal AS stk ON stk.strakatid = ha.strakatid 
             WHERE anschlussleitungen.pk IS NULL                         -- nur neue Anschlussleitungen hinzufügen
 			"""
 
@@ -2047,10 +2067,11 @@ class ImportTask(Schadenstexte):
             WHERE
                     stk.schachtnummer <> 0
                 AND stb.geloescht = 0
-                AND stk.schachtart <> 0                 -- keine Knickpunkte
+                AND stk.schachtart <> 0                                         -- keine Knickpunkte
                 AND schnam Is Not Null
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
+                AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)          -- kein Symbol
                 AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                 AND (   (stb.untersuchungsrichtung = 1 AND stb.station_untersucher < 0.01) 
                      OR (stb.untersuchungsrichtung = 0 AND stb.station_untersucher > stk.laenge * 0.9)
@@ -2088,10 +2109,11 @@ class ImportTask(Schadenstexte):
             WHERE
                     stk.schachtnummer <> 0
                 AND stb.geloescht = 0
-                AND stk.schachtart <> 0                 -- keine Knickpunkte
+                AND stk.schachtart <> 0                                         -- keine Knickpunkte
                 AND schnam Is Not Null
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
+                AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)          -- kein Symbol
                 AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                 AND (   (stb.untersuchungsrichtung = 0 AND stb.station_untersucher < 0.01) 
                      OR (stb.untersuchungsrichtung = 1 AND stb.station_untersucher > stk.laenge * 0.9)
@@ -2179,6 +2201,7 @@ class ImportTask(Schadenstexte):
                   AND stk.schachtnummer <> 0
                   AND stb.geloescht = 0
                   AND stb.hausanschlid = '00000000-0000-0000-0000-000000000000'
+                  AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)                -- kein Symbol
                   AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                   AND (   (stb.untersuchungsrichtung = 1 AND stb.station_untersucher < 0.01) 
                        OR (stb.untersuchungsrichtung = 0 AND stb.station_untersucher > stk.laenge * 0.9)
@@ -2224,6 +2247,7 @@ class ImportTask(Schadenstexte):
                   AND stk.schachtnummer <> 0
                   AND stb.geloescht = 0
                   AND stb.hausanschlid = '00000000-0000-0000-0000-000000000000'
+                  AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)                -- kein Symbol
                   AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                   AND (   (stb.untersuchungsrichtung = 0 AND stb.station_untersucher < 0.01) 
                        OR (stb.untersuchungsrichtung = 1 AND stb.station_untersucher > stk.laenge * 0.9)
@@ -2342,6 +2366,7 @@ class ImportTask(Schadenstexte):
                    stb.geloescht = 0 AND
                    hu.pk IS NULL AND
                    stb.hausanschlid = '00000000-0000-0000-0000-000000000000' AND
+                   (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0) AND               -- kein Symbol
                    (substr(stb.atv_kuerzel, 1, 1) <> 'D' OR substr(stb.atv_kuerzel, 2, 1) = '-') 
             GROUP BY stk.strakatid, stb.datum
         """
@@ -2428,6 +2453,7 @@ class ImportTask(Schadenstexte):
                   stb.geloescht = 0 AND
                   usd.pk IS NULL AND
                   stb.hausanschlid = '00000000-0000-0000-0000-000000000000' AND
+                  (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0) AND                -- kein Symbol
                   (substr(stb.atv_kuerzel, 1, 1) <> 'D' OR substr(stb.atv_kuerzel, 2, 1) = '-')
         """
 
@@ -2584,6 +2610,7 @@ class ImportTask(Schadenstexte):
                     JOIN t_strakatkanal         AS stk  ON stk.nummer = sha.anschlusshalnr
                     LEFT JOIN strassen                  ON stk.strassennummer = strassen.id
                 WHERE stb.geloescht = 0
+                  AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)                  -- kein Symbol
             )
             INSERT INTO untersuchdat_anschlussleitung (
                 untersuchleit, schoben, schunten,

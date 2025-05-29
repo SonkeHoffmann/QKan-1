@@ -848,18 +848,8 @@ class QKanTools(QKanPlugin):
         get_database_QKan(silent=True)
         self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
-        # with DBConnection(dbname=self.database_name) as db_qkan:
-        #     if not db_qkan.connected:
-        #         fehlermeldung(
-        #             "Fehler Info",
-        #             f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-        #         )
-        #         self.iface.messageBar().pushMessage(
-        #             "Fehler Info",
-        #             f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-        #             level=Qgis.Critical,
-        #         )
-        #         return False
+        self.dlgfp.lineEdit.setText(QKan.config.xml.ordner_video)
+        self.dlgfp.lineEdit_2.setText(QKan.config.xml.ordner_bild)
 
         # show the dialog
         self.dlgfp.show()
