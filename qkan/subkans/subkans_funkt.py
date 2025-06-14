@@ -4,6 +4,7 @@ from datetime import datetime
 from qkan.utils import get_logger
 from math import pi, floor, ceil
 from qkan.database.dbfunc import DBConnection
+from qkan.database.qkan_utils import round_up, formf
 import time
 
 from qgis.core import (
@@ -62,89 +63,6 @@ class Subkans_funkt:
         db = self.db
         crs = self.crs
         haltung = self.haltung
-
-        #data = db_x
-        # db = spatialite_connect(db_x)
-        # curs = db.cursor()
-
-        # if self.datetype == 'Befahrungsdatum':
-        #
-        #     if haltung == True:
-        #         sql = """
-        #                     SELECT
-        #                         substanz_haltung_bewertung.pk,
-        #                         substanz_haltung_bewertung.untersuchhal,
-        #                         NULL,
-        #                         substanz_haltung_bewertung.schoben,
-        #                         substanz_haltung_bewertung.schunten,
-        #                         substanz_haltung_bewertung.id,
-        #                         substanz_haltung_bewertung.videozaehler,
-        #                         substanz_haltung_bewertung.inspektionslaenge,
-        #                         substanz_haltung_bewertung.station,
-        #                         substanz_haltung_bewertung.timecode,
-        #                         substanz_haltung_bewertung.kuerzel,
-        #                         substanz_haltung_bewertung.charakt1,
-        #                         substanz_haltung_bewertung.charakt2,
-        #                         substanz_haltung_bewertung.quantnr1,
-        #                         substanz_haltung_bewertung.quantnr2,
-        #                         substanz_haltung_bewertung.streckenschaden,
-        #                         substanz_haltung_bewertung.pos_von,
-        #                         substanz_haltung_bewertung.pos_bis,
-        #                         substanz_haltung_bewertung.foto_dateiname,
-        #                         substanz_haltung_bewertung.film_dateiname,
-        #                         substanz_haltung_bewertung.kommentar,
-        #                         substanz_haltung_bewertung.bw_bs,
-        #                         substanz_haltung_bewertung.createdat,
-        #                         haltungen.haltnam,
-        #                         haltungen.material,
-        #                         haltungen.hoehe,
-        #                         haltungen.createdat,
-        #                         substanz_haltung_bewertung.untersuchtag
-        #                     FROM substanz_haltung_bewertung, haltungen
-        #                     WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ?
-        #                 """
-        #         data = (date,)
-        #
-        #         db.sql(sql,parameters=data)
-        #
-        # if self.datetype == 'Importdatum':
-        #
-        #     if haltung == True:
-        #         sql = """
-        #                     SELECT
-        #                         substanz_haltung_bewertung.pk,
-        #                         substanz_haltung_bewertung.untersuchhal,
-        #                         NULL,
-        #                         substanz_haltung_bewertung.schoben,
-        #                         substanz_haltung_bewertung.schunten,
-        #                         substanz_haltung_bewertung.id,
-        #                         substanz_haltung_bewertung.videozaehler,
-        #                         substanz_haltung_bewertung.inspektionslaenge,
-        #                         substanz_haltung_bewertung.station,
-        #                         substanz_haltung_bewertung.timecode,
-        #                         substanz_haltung_bewertung.kuerzel,
-        #                         substanz_haltung_bewertung.charakt1,
-        #                         substanz_haltung_bewertung.charakt2,
-        #                         substanz_haltung_bewertung.quantnr1,
-        #                         substanz_haltung_bewertung.quantnr2,
-        #                         substanz_haltung_bewertung.streckenschaden,
-        #                         substanz_haltung_bewertung.pos_von,
-        #                         substanz_haltung_bewertung.pos_bis,
-        #                         substanz_haltung_bewertung.foto_dateiname,
-        #                         substanz_haltung_bewertung.film_dateiname,
-        #                         substanz_haltung_bewertung.kommentar,
-        #                         substanz_haltung_bewertung.bw_bs,
-        #                         substanz_haltung_bewertung.createdat,
-        #                         haltungen.haltnam,
-        #                         haltungen.material,
-        #                         haltungen.hoehe,
-        #                         haltungen.createdat
-        #                     FROM substanz_haltung_bewertung, haltungen
-        #                     WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ?
-        #                 """
-        #         data = (date,)
-        #
-        #         db.sql(sql,parameters=data)
 
 
         # jh: subkans_update_dichtheit
@@ -230,10 +148,25 @@ class Subkans_funkt:
         except:
             pass
 
+        sql = """SELECT RecoverSpatialIndex('substanz_haltung_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
+            db.commit()
+        except:
+            pass
+
+
         sql = """SELECT RecoverGeometryColumn('substanz_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
         data = (crs,)
         try:
             db.sql(sql,parameters=data)
+            db.commit()
+        except:
+            pass
+
+        sql = """SELECT RecoverSpatialIndex('haltungen_substanz_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
             db.commit()
         except:
             pass
@@ -248,7 +181,7 @@ class Subkans_funkt:
 
     def einzelfallbetrachtung_haltung(self):
 
-        date = self.date+'%'
+        date = self.date
         db = self.db
         db_x = db
         data = db
@@ -300,6 +233,13 @@ class Subkans_funkt:
                         geom
                         FROM untersuchdat_haltung_bewertung"""
         db.sql(sql)
+
+        sql = """SELECT CreateSpatialIndex('substanz_haltung_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
+            db.commit()
+        except:
+            pass
 
 
         #db = spatialite_connect(db_x)
@@ -371,6 +311,13 @@ class Subkans_funkt:
                                FROM haltungen_untersucht_bewertung """
         db.sql(sql)
 
+        sql = """SELECT CreateSpatialIndex('haltungen_substanz_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
+            db.commit()
+        except:
+            pass
+
         if self.datetype == 'Befahrungsdatum':
 
             if haltung:
@@ -415,7 +362,7 @@ class Subkans_funkt:
                             OR
                             substanz_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
                             OR
-                            substanz_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND substanz_haltung_bewertung.untersuchtag like ? """
+                            substanz_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120"""
                 data = (date,)
                 db.sql(sql, parameters=data)
             db.commit()
@@ -469,7 +416,7 @@ class Subkans_funkt:
                             OR
                             substanz_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
                             OR
-                            substanz_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND substanz_haltung_bewertung.createdat like ? """
+                            substanz_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 """
                 data = (date,)
                 db.sql(sql, parameters=data)
             db.commit()
@@ -752,7 +699,7 @@ class Subkans_funkt:
                             continue
                         except:
                             pass
-            if attr[10] == "BAC":
+            elif attr[10] == "BAC":
                 if attr[11] == "A":
                     z = '1'
                     sql = f"""
@@ -864,7 +811,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAD":
+            elif attr[10] == "BAD":
                 if attr[11] == "A":
                     z = '2'
                     sql = f"""
@@ -1025,7 +972,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAE":
+            elif attr[10] == "BAE":
                 if attr[13] >= 100:
                     z = '2'
                 if attr[13] < 100:
@@ -1063,7 +1010,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BAF":
+            elif attr[10] == "BAF":
                 if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
                     z = '4'
                     sql = f"""
@@ -1387,7 +1334,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAG":
+            elif attr[10] == "BAG":
                 if attr[25] <= 0.25:
                     if attr[13] >= 50:
                         z = '0'
@@ -1442,7 +1389,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BAH":
+            elif attr[10] == "BAH":
                 if attr[11] in ["B", "C", "D"]:
                     z = '2'
                     sql = f"""
@@ -1496,7 +1443,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAI":
+            elif attr[10] == "BAI":
                 if attr[11] == "A":
                     if attr[12] == "A":
                         z = '2'
@@ -1575,7 +1522,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAJ":
+            elif attr[10] == "BAJ":
                 if attr[11] == "A":
                     if attr[25] <= 0.4:
                         if attr[13] >= 70:
@@ -1800,7 +1747,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAK":
+            elif attr[10] == "BAK":
                 if attr[11] == "A":
                     if attr[13] >= 50:
                         z = '0'
@@ -2128,7 +2075,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAL":
+            elif attr[10] == "BAL":
                 if attr[11] == "A" and attr[12] in ["A", "B", "C", "D"]:
                     z = '1'
                     sql = f"""
@@ -2263,7 +2210,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAM":
+            elif attr[10] == "BAM":
                 if (attr[11] == "A" or attr[11] == "C"):
                     z = '2'
                     sql = f"""
@@ -2316,7 +2263,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BAN":
+            elif attr[10] == "BAN":
                 z = '2'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2341,7 +2288,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BAO":
+            elif attr[10] == "BAO":
                 z = '1'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2366,7 +2313,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BAP":
+            elif attr[10] == "BAP":
                 z = '1'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2392,7 +2339,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
+            elif attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
                 z = '2'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2427,7 +2374,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BBB" and attr[11] == "A":
+            elif attr[10] == "BBB" and attr[11] == "A":
                 z = '3'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2464,7 +2411,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BBB" and (attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
+            elif attr[10] == "BBB" and (attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
                 if attr[13] >= 30:
                     z = '0'
                 elif 30 > attr[13] >= 20:
@@ -2489,7 +2436,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BBC":
+            elif attr[10] == "BBC":
                 if (attr[11] == "A" or attr[11] == "B"):
                     z = '4'
                     sql = f"""
@@ -2529,7 +2476,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
+            elif attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
                 z = '1'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2576,7 +2523,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BBE":
+            elif attr[10] == "BBE":
                 if (attr[11] == "D" or attr[11] == "G"):
                     z = '2'
                     sql = f"""
@@ -2639,7 +2586,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BBF":
+            elif attr[10] == "BBF":
                 if attr[11] == "A":
                     z = '2'
                     sql = f"""
@@ -2753,7 +2700,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BBG":
+            elif attr[10] == "BBG":
                 z = '1'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2779,7 +2726,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
+            elif attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
                 z = '-'
                 sql = f"""
                     UPDATE substanz_haltung_bewertung
@@ -2793,7 +2740,7 @@ class Subkans_funkt:
                     continue
                 except:
                     pass
-            if attr[10] == "BDB":
+            elif attr[10] == "BDB":
                 if attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
                     z = '3'
                     sql = f"""
@@ -2844,7 +2791,7 @@ class Subkans_funkt:
                         continue
                     except:
                         pass
-            if attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"]:
+            elif attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E"]:
                 if attr[12] == "A":
                     z = '1'
                     sql = f"""
@@ -2914,124 +2861,6 @@ class Subkans_funkt:
             except:
                 pass
 
-        # if self.datetype == 'Befahrungsdatum':
-        #
-        #     sql = """SELECT
-        #                             substanz_haltung_bewertung.pk,
-        #                             substanz_haltung_bewertung.untersuchhal,
-        #                             NULL,
-        #                             substanz_haltung_bewertung.schoben,
-        #                             substanz_haltung_bewertung.schunten,
-        #                             substanz_haltung_bewertung.id,
-        #                             substanz_haltung_bewertung.videozaehler,
-        #                             substanz_haltung_bewertung.inspektionslaenge,
-        #                             substanz_haltung_bewertung.station,
-        #                             substanz_haltung_bewertung.timecode,
-        #                             substanz_haltung_bewertung.kuerzel,
-        #                             substanz_haltung_bewertung.charakt1,
-        #                             substanz_haltung_bewertung.charakt2,
-        #                             substanz_haltung_bewertung.quantnr1,
-        #                             substanz_haltung_bewertung.quantnr2,
-        #                             substanz_haltung_bewertung.streckenschaden,
-        #                             substanz_haltung_bewertung.pos_von,
-        #                             substanz_haltung_bewertung.pos_bis,
-        #                             substanz_haltung_bewertung.foto_dateiname,
-        #                             substanz_haltung_bewertung.film_dateiname,
-        #                             substanz_haltung_bewertung.kommentar,
-        #                             substanz_haltung_bewertung.bw_bs,
-        #                             substanz_haltung_bewertung.createdat,
-        #                             haltungen.haltnam,
-        #                             haltungen.material,
-        #                             haltungen.hoehe,
-        #                             haltungen.createdat,
-        #                             substanz_haltung_bewertung.Zustandsklasse_D,
-        #                             substanz_haltung_bewertung.Zustandsklasse_S,
-        #                             substanz_haltung_bewertung.Zustandsklasse_B,
-        #                             substanz_haltung_bewertung.untersuchtag
-        #                             FROM
-        #                             substanz_haltung_bewertung, haltungen
-        #                             WHERE
-        #                             haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
-        #                             AND (substanz_haltung_bewertung.kuerzel == 'BCA') OR ( substanz_haltung_bewertung.kuerzel == 'BCB')
-        #                              AND substanz_haltung_bewertung.untersuchtag like ? """
-        #     data = (date,)
-        #     db.sql(sql,parameters=data)
-        #
-        # if self.datetype == 'Importdatum':
-        #
-        #     sql = """SELECT
-        #                             substanz_haltung_bewertung.pk,
-        #                             substanz_haltung_bewertung.untersuchhal,
-        #                             NULL,
-        #                             substanz_haltung_bewertung.schoben,
-        #                             substanz_haltung_bewertung.schunten,
-        #                             substanz_haltung_bewertung.id,
-        #                             substanz_haltung_bewertung.videozaehler,
-        #                             substanz_haltung_bewertung.inspektionslaenge,
-        #                             substanz_haltung_bewertung.station,
-        #                             substanz_haltung_bewertung.timecode,
-        #                             substanz_haltung_bewertung.kuerzel,
-        #                             substanz_haltung_bewertung.charakt1,
-        #                             substanz_haltung_bewertung.charakt2,
-        #                             substanz_haltung_bewertung.quantnr1,
-        #                             substanz_haltung_bewertung.quantnr2,
-        #                             substanz_haltung_bewertung.streckenschaden,
-        #                             substanz_haltung_bewertung.pos_von,
-        #                             substanz_haltung_bewertung.pos_bis,
-        #                             substanz_haltung_bewertung.foto_dateiname,
-        #                             substanz_haltung_bewertung.film_dateiname,
-        #                             substanz_haltung_bewertung.kommentar,
-        #                             substanz_haltung_bewertung.bw_bs,
-        #                             substanz_haltung_bewertung.createdat,
-        #                             haltungen.haltnam,
-        #                             haltungen.material,
-        #                             haltungen.hoehe,
-        #                             haltungen.createdat,
-        #                             substanz_haltung_bewertung.Zustandsklasse_D,
-        #                             substanz_haltung_bewertung.Zustandsklasse_S,
-        #                             substanz_haltung_bewertung.Zustandsklasse_B
-        #                             FROM
-        #                             substanz_haltung_bewertung, haltungen
-        #                             WHERE
-        #                             haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
-        #                             AND (substanz_haltung_bewertung.kuerzel == 'BCA') OR ( substanz_haltung_bewertung.kuerzel == 'BCB')
-        #                              AND substanz_haltung_bewertung.createdat like ? """
-        #     data = (date,)
-        #     db.sql(sql,parameters=data)
-        #
-        # for attr in curs.fetchall():
-        #     if attr[10] == "BCA" and (attr[11] == "C" or attr[11] == "E"):
-        #         z = '4'
-        #         sql = f"""
-        #                             UPDATE substanz_haltung_bewertung
-        #                             SET Zustandsklasse_D = ?
-        #                             WHERE substanz_haltung_bewertung.pk = ?;
-        #                             """
-        #         data = (z, attr[0])
-        #         try:
-        #             db.sql(sql,parameters=data)
-        #             continue
-        #         except:
-        #             pass
-        #
-        #     if attr[10] == "BCB":
-        #         z = '4'
-        #         sql = f"""
-        #                             UPDATE substanz_haltung_bewertung
-        #                             SET Zustandsklasse_B = ?
-        #                             WHERE substanz_haltung_bewertung.pk = ?;
-        #                             """
-        #         data = (z, attr[0])
-        #         try:
-        #             db.sql(sql,parameters=data)
-        #             continue
-        #         except:
-        #             pass
-        #
-        #     try:
-        #         db.commit()
-        #     except:
-        #         pass
 
             z = '-'
             sql = f"""
@@ -3103,11 +2932,24 @@ class Subkans_funkt:
         except:
             pass
 
+        sql = """SELECT RecoverSpatialIndex('substanz_haltung_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
+            db.commit()
+        except:
+            pass
 
         sql = """SELECT RecoverGeometryColumn('substanz_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
         data = (crs,)
         try:
             db.sql(sql,parameters=data)
+            db.commit()
+        except:
+            pass
+
+        sql = """SELECT RecoverSpatialIndex('haltungen_substanz_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
             db.commit()
         except:
             pass
@@ -3148,7 +2990,7 @@ class Subkans_funkt:
 
 
     def bewertung_subkans(self):
-        date = self.date + '%'
+        date = self.date
         db = self.db
         db_x = db
         data = db
@@ -3164,6 +3006,7 @@ class Subkans_funkt:
         #db = spatialite_connect(data)
         #curs = db.cursor()
         if self.datetype == 'Befahrungsdatum':
+
 
             # jh: subkans_zustand_bc_ab_untersuchdat
             sql = """SELECT
@@ -3203,7 +3046,7 @@ class Subkans_funkt:
                                     WHERE
                                     haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
                                     AND ((substanz_haltung_bewertung.kuerzel = 'BCA') OR ( substanz_haltung_bewertung.kuerzel = 'BCB'))
-                                     AND substanz_haltung_bewertung.untersuchtag like ? """
+                                     AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 """
 
         elif self.datetype == 'Importdatum':
 
@@ -3243,7 +3086,7 @@ class Subkans_funkt:
                                     WHERE
                                     haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
                                     AND ((substanz_haltung_bewertung.kuerzel = 'BCA') OR ( substanz_haltung_bewertung.kuerzel = 'BCB'))
-                                     AND substanz_haltung_bewertung.createdat like ? """
+                                    AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 """
         else:
             logger.error_code(f"{self.datetype=} ist ungültig")
             raise BaseException
@@ -3356,7 +3199,7 @@ class Subkans_funkt:
             pass
         #Schadensart und -ausprägung ergänzen
 
-        date = self.date + '%'
+        date = self.date
         db_x = self.db
         crs = self.crs
         haltung = self.haltung
@@ -3400,6 +3243,13 @@ class Subkans_funkt:
                 geom
                 FROM untersuchdat_haltung_bewertung """
         db.sql(sql)
+
+        sql = """SELECT CreateSpatialIndex('substanz_haltung_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
+            db.commit()
+        except:
+            pass
 
         # db = spatialite_connect(db_x)
         # curs = db.cursor()
@@ -3491,7 +3341,7 @@ class Subkans_funkt:
                        haltungen.createdat,
                        substanz_haltung_bewertung.untersuchtag
                    FROM substanz_haltung_bewertung, haltungen
-                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? AND Zustandsklasse_ges IN (0,1,2,3,4)
+                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 AND Zustandsklasse_ges IN (0,1,2,3,4)
                """
 
 
@@ -3527,7 +3377,7 @@ class Subkans_funkt:
                        haltungen.hoehe,
                        haltungen.createdat
                    FROM substanz_haltung_bewertung, haltungen
-                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? AND Zustandsklasse_ges IN (0,1,2,3,4)
+                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 AND Zustandsklasse_ges IN (0,1,2,3,4)
                """
         else:
             logger.error_code(f"{self.datetype=} ist ungültig")
@@ -3541,6 +3391,7 @@ class Subkans_funkt:
             #     return False
         data = (date,)
         db.sql(sql, parameters=data)
+        db.commit()
 
 
         for attr in db.fetchall():
@@ -3891,7 +3742,7 @@ class Subkans_funkt:
                             pass
 
             # 3 BAC-ABC
-            if attr[10] == "BAC" and attr[11] in ["A", "B","C"]:
+            elif attr[10] == "BAC" and attr[11] in ["A", "B","C"]:
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -3948,7 +3799,7 @@ class Subkans_funkt:
                         pass
 
             # 4 BAD-ABCD-AB
-            if attr[10] == "BAD" and attr[11] in ["A", "B", "C", "D"] and attr[12] in ["A","B"]:
+            elif attr[10] == "BAD" and attr[11] in ["A", "B", "C", "D"] and attr[12] in ["A","B"]:
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4005,7 +3856,7 @@ class Subkans_funkt:
                         pass
 
             # 5 BAE
-            if attr[10] == "BAE":
+            elif attr[10] == "BAE":
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4061,7 +3912,7 @@ class Subkans_funkt:
                     except:
                         pass
 
-            if attr[10] == "BAF":
+            elif attr[10] == "BAF":
                 # 6 BAF-ABCDEFGHJKZ-ABCDEZ
                 if attr[11] in ["A", "C", "D", "E", "F", "G", "H","J", "Z"]:
                     if attr[15] in ["", None, "not found"]:
@@ -4208,7 +4059,7 @@ class Subkans_funkt:
                             pass
 
             # 7 BAG
-            if (attr[10] == "BAG"):
+            elif (attr[10] == "BAG"):
                 z = 'PktS'
                 sql = f"""
                                          UPDATE substanz_haltung_bewertung
@@ -4238,7 +4089,7 @@ class Subkans_funkt:
 
 
             # 8 BAH-ABCDZ
-            if attr[10] == "BAH" and attr[11] in ["A", "B", "C", "D", "Z"]:
+            elif attr[10] == "BAH" and attr[11] in ["A", "B", "C", "D", "Z"]:
                 z = 'PktS'
                 sql = f"""
                                          UPDATE substanz_haltung_bewertung
@@ -4267,7 +4118,7 @@ class Subkans_funkt:
                     pass
 
             # 9 BAI-AZ-ABCD
-            if attr[10] == "BAI" and attr[11] in ["A", "Z"] and attr[12] in ["A", "B", "C", "D"]:
+            elif attr[10] == "BAI" and attr[11] in ["A", "Z"] and attr[12] in ["A", "B", "C", "D"]:
 
                 z = 'UmfS'
                 sql = f"""
@@ -4297,7 +4148,7 @@ class Subkans_funkt:
                     pass
 
             # 10 BAJ-ABC
-            if attr[10] == "BAJ" and attr[11] in ["A", "B", "C"]:
+            elif attr[10] == "BAJ" and attr[11] in ["A", "B", "C"]:
                 z = 'UmfS'
                 sql = f"""
                                          UPDATE substanz_haltung_bewertung
@@ -4326,7 +4177,7 @@ class Subkans_funkt:
                     pass
 
             # 11 BAK-ABCDEFGHIJKLMN-ABCD
-            if attr[10] == "BAK":
+            elif attr[10] == "BAK":
                 if attr[11] in ["A", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"] and attr[12] in ["A", "B", "C", "D"]:
                     if attr[15] in ["", None,
                                     "not found"]:  # hier muss noch eine Unterscheidung für UmfS statt nur PktS/StrS getroffen werden. Wie sähe der Tabellenwert dann aus?
@@ -4443,7 +4294,7 @@ class Subkans_funkt:
                             pass
 
             # 12 BAL-ABCDFGZ-ABCD
-            if attr[10] == "BAL":
+            elif attr[10] == "BAL":
                 if attr[11] in ["A", "B", "C", "D", "F", "G", "Z"] and attr[12] in ["A", "B", "C", "D"]:
                     if attr[15] in ["", None,
                                     "not found"]:  # hier muss noch eine Unterscheidung für UmfS statt nur PktS/StrS getroffen werden. Wie sähe der Tabellenwert dann aus?
@@ -4560,7 +4411,7 @@ class Subkans_funkt:
                             pass
 
             # 13 BAM-A
-            if attr[10] == "BAM":
+            elif attr[10] == "BAM":
                 if attr[11] == "A":
                     if attr[15] in ["", None, "not found"]:
                         z = 'PktS'
@@ -4704,7 +4555,7 @@ class Subkans_funkt:
                             pass
 
             # 14 BAN
-            if attr[10] == "BAN":
+            elif attr[10] == "BAN":
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4761,7 +4612,7 @@ class Subkans_funkt:
                         pass
 
             # 15 BAO
-            if attr[10] == "BAO":
+            elif attr[10] == "BAO":
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4818,7 +4669,7 @@ class Subkans_funkt:
                         pass
 
             # 16 BAP
-            if attr[10] == "BAP":
+            elif attr[10] == "BAP":
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4875,7 +4726,7 @@ class Subkans_funkt:
                         pass
 
             # 17 BBA-ABC
-            if attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
+            elif attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4932,7 +4783,7 @@ class Subkans_funkt:
                         pass
 
             # 18 BBB-ABCZ
-            if attr[10] == "BBB" and attr[11] in ["A", "B", "C", "Z"]:
+            elif attr[10] == "BBB" and attr[11] in ["A", "B", "C", "Z"]:
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -4989,7 +4840,7 @@ class Subkans_funkt:
                         pass
 
             # 19 BBC-ABC
-            if attr[10] == "BBC" and attr[11] in ["A", "B", "C"]:
+            elif attr[10] == "BBC" and attr[11] in ["A", "B", "C"]:
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -5046,7 +4897,7 @@ class Subkans_funkt:
                         pass
 
             # 19 BBC-Z
-            if (attr[10] == "BBC" and attr[11] == "Z"):
+            elif (attr[10] == "BBC" and attr[11] == "Z"):
                 if attr[15] in ["", None, "not found"]:
                     z = '-'
                     sql = f"""
@@ -5103,7 +4954,7 @@ class Subkans_funkt:
                         pass
 
             # 20 BBD
-            if (attr[10] == "BBD"):
+            elif (attr[10] == "BBD"):
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
                     sql = f"""
@@ -5160,7 +5011,7 @@ class Subkans_funkt:
                         pass
 
             # 21 BBE-ABDEFG
-            if attr[10] == "BBE":
+            elif attr[10] == "BBE":
                 if attr[11] in ["A", "B", "D", "E", "F", "G"]:
                     z = 'PktS'
                     sql = f"""
@@ -5247,7 +5098,7 @@ class Subkans_funkt:
                             pass
 
             # 22 BBF-ABCD
-            if attr[10] == "BBF" and attr[11] in ["A", "B", "C", "D"]:
+            elif attr[10] == "BBF" and attr[11] in ["A", "B", "C", "D"]:
                 z = 'PktS'
                 sql = f"""
                                          UPDATE substanz_haltung_bewertung
@@ -5276,7 +5127,7 @@ class Subkans_funkt:
                     pass
 
             # 23 BBG
-            if (attr[10] == "BBG"):
+            elif (attr[10] == "BBG"):
                 z = 'PktS'
                 sql = f"""
                                          UPDATE substanz_haltung_bewertung
@@ -5305,7 +5156,7 @@ class Subkans_funkt:
                     pass
 
             # 25 BCA-ABCDEFZ
-            if attr[10] == "BCA" and attr[11] in ["A", "B", "C", "D", "E", "F", "Z"] and attr[12] in ["A", "B"]:
+            elif attr[10] == "BCA" and attr[11] in ["A", "B", "C", "D", "E", "F", "Z"] and attr[12] in ["A", "B"]:
                 z = 'PktS'
                 sql = f"""
                                          UPDATE substanz_haltung_bewertung
@@ -5334,7 +5185,7 @@ class Subkans_funkt:
                     pass
 
             # 26 BCB-AF
-            if attr[10] == "BCB":
+            elif attr[10] == "BCB":
                 if attr[11] in ["A", "F"]:
                     z = 'StrS'
                     sql = f"""
@@ -5479,7 +5330,7 @@ class Subkans_funkt:
                         pass
 
             # "keine Relevanz":  #24 BBH-ABZ, #27 BCC-AB, #28 BDB, #31 BDE-ACDEYY, #32 BDF-ABCZ, #33 BDG-ABCZ
-            if (attr[10] == "BBH" and attr[11] in ["A", "B", "Z"]) \
+            elif (attr[10] == "BBH" and attr[11] in ["A", "B", "Z"]) \
                     or (attr[10] == "BCC" and attr[11] in ["A", "B"])\
                     or (attr[10] == "BDB") \
                     or (attr[10] == "BDE" and attr[11] in ["A", "C", "D", "E","YY"])\
@@ -5516,7 +5367,7 @@ class Subkans_funkt:
                     pass
 
             # "keine Relevanz": #8 BAH-E, #29 BDC-ABCZ, #30 BDD-ABCDE
-            if (attr[10] == "BAH" and attr[11] == "E") or (attr[10] == "BDC" and attr[11] in ["A", "B","C", "Z"]) or (
+            elif (attr[10] == "BAH" and attr[11] == "E") or (attr[10] == "BDC" and attr[11] in ["A", "B","C", "Z"]) or (
                     attr[10] == "BDD" and attr[11] in ["A", "B", "C", "D", "E"]):
                 if attr[15] in ["", None, "not found"]:
                     z = 'PktS'
@@ -5619,7 +5470,7 @@ class Subkans_funkt:
 
         #Überlagerung SOB bei Punkt und Umfangschäden werden SOB nicht überlagert
         #Streckenschäden SOB werden nicht überlagert.
-        date = self.date + '%'
+        date = self.date
         db = self.db
         crs = self.crs
         haltung = self.haltung
@@ -5659,6 +5510,7 @@ class Subkans_funkt:
             db1.commit()
         except:
             pass
+
 
         if self.datetype == 'Befahrungsdatum':
 
@@ -5701,7 +5553,7 @@ class Subkans_funkt:
                                                                    haltungen.profilnam,
                                                                    substanz_haltung_bewertung.untersuchtag
                                                                FROM substanz_haltung_bewertung, haltungen
-                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
                                                                AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                            """
@@ -5744,7 +5596,7 @@ class Subkans_funkt:
                                                                    haltungen.createdat,
                                                                    haltungen.profilnam
                                                                FROM substanz_haltung_bewertung, haltungen
-                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
                                                                AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                            """
@@ -5772,10 +5624,10 @@ class Subkans_funkt:
                 #für Ei-Profile berechnung vom Umfang nach DWA 110!
 
                 if attr[32] in ['Ei', 'Ei (B:H = 2:3)', 'Ei überhöht (B:H=2:3.5)', 'Ei breit (B:H=2:2.5)', 'Ei gedrückt (B:H=2:2)' ]:
-                    sl = (self.round_up_down(7.93 * attr[32] / 1000/ 2, 3))
+                    sl = float((formf(7.93 * attr[32] / 1000/ 2, 5)))
 
                 else:
-                    sl = self.round_up_down(attr[32] / 1000 * pi, 3)
+                    sl = float(formf(attr[32] / 1000 * pi, 5))
 
 
                 sql = """UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?"""
@@ -5846,7 +5698,7 @@ class Subkans_funkt:
                                                                                haltungen.createdat,
                                                                                substanz_haltung_bewertung.untersuchtag
                                                                            FROM substanz_haltung_bewertung, haltungen
-                                                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
                                                                            AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
                                                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -5890,7 +5742,7 @@ class Subkans_funkt:
                                                                                haltungen.hoehe,
                                                                                haltungen.createdat
                                                                            FROM substanz_haltung_bewertung, haltungen
-                                                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
                                                                            AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
                                                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -5949,14 +5801,14 @@ class Subkans_funkt:
                             stg = stg_neu
 
                 sql = """UPDATE substanz_haltung_bewertung SET Startgewicht = ? WHERE substanz_haltung_bewertung.pk = ?"""
-                data = (self.round_up(stg, 2), attr[0])
+                data = (round_up(stg, 2), attr[0])
 
                 db.sql(sql,parameters=data)
 
                 # sg in tabelle schreiben
 
                 sql = """UPDATE substanz_haltung_bewertung SET Schadensgewicht = ? WHERE substanz_haltung_bewertung.pk = ?"""
-                data = (self.round_up(sg, 2), attr[0])
+                data = (round_up(sg, 2), attr[0])
 
                 db.sql(sql,parameters=data)
 
@@ -6005,7 +5857,7 @@ class Subkans_funkt:
                                haltungen.createdat,
                                substanz_haltung_bewertung.untersuchtag
                            FROM substanz_haltung_bewertung, haltungen
-                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
                            AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A') 
                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                            AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6049,7 +5901,7 @@ class Subkans_funkt:
                                haltungen.hoehe,
                                haltungen.createdat
                            FROM substanz_haltung_bewertung, haltungen
-                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
                            AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A') 
                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                            AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6242,7 +6094,7 @@ class Subkans_funkt:
             #                            haltungen.hoehe,
             #                            haltungen.createdat
             #                        FROM substanz_haltung_bewertung, haltungen
-            #                        WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ?
+            #                        WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
             #                        AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')
             #                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
             #                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6434,7 +6286,7 @@ class Subkans_funkt:
                                            haltungen.createdat,
                                            substanz_haltung_bewertung.untersuchtag
                                        FROM substanz_haltung_bewertung, haltungen
-                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
                                        AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A') 
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6478,7 +6330,7 @@ class Subkans_funkt:
                                            haltungen.hoehe,
                                            haltungen.createdat
                                        FROM substanz_haltung_bewertung, haltungen
-                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
                                        AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A') 
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6584,7 +6436,6 @@ class Subkans_funkt:
 
                                 len_neu = length2 - ueberlappung
 
-
                                 a = vergl[entf][0]
 
                                 sql = 'UPDATE substanz_haltung_bewertung SET schadenslaenge = ? WHERE pk=?'
@@ -6597,8 +6448,6 @@ class Subkans_funkt:
                             zielwert = zustand[z_min]
 
                             other_indices = [i for i, v in enumerate(zustand) if v == zielwert and i != z_min]
-
-
 
                             if other_indices:  # Überprüfen, ob ein anderer Index gefunden wurde
                                 entf = other_indices[0]  # Nehme den ersten passenden Index
@@ -6635,7 +6484,6 @@ class Subkans_funkt:
                                     db.sql(sql,parameters=data)
 
                         x += 1
-
 
             db1.commit()
 
@@ -6678,7 +6526,7 @@ class Subkans_funkt:
                                                haltungen.createdat,
                                                substanz_haltung_bewertung.untersuchtag
                                            FROM substanz_haltung_bewertung, haltungen
-                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
                                            AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6721,7 +6569,7 @@ class Subkans_funkt:
                                                haltungen.hoehe,
                                                haltungen.createdat
                                            FROM substanz_haltung_bewertung, haltungen
-                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
                                            AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6744,7 +6592,6 @@ class Subkans_funkt:
                     if x[1] == attr[1]:
                         new_list.append(x)
                 dictionary[attr[1]] = new_list
-
 
             for values in dictionary.values():
                 entf_list = []
@@ -6830,7 +6677,7 @@ class Subkans_funkt:
                                                        haltungen.createdat,
                                                        substanz_haltung_bewertung.untersuchtag
                                                    FROM substanz_haltung_bewertung, haltungen
-                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
                                                    AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
                                                    AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                    AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6873,7 +6720,7 @@ class Subkans_funkt:
                                                        haltungen.hoehe,
                                                        haltungen.createdat
                                                    FROM substanz_haltung_bewertung, haltungen
-                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
                                                    AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
                                                    AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                    AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -6896,6 +6743,7 @@ class Subkans_funkt:
                     if x[1] == attr[1]:
                         new_list.append(x)
                 dictionary[attr[1]] = new_list
+
 
             for values in dictionary.values():
                 entf_list = []
@@ -6981,7 +6829,7 @@ class Subkans_funkt:
                                                            haltungen.createdat,
                                                            substanz_haltung_bewertung.untersuchtag
                                                        FROM substanz_haltung_bewertung, haltungen
-                                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
                                                        AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -7024,7 +6872,7 @@ class Subkans_funkt:
                                                            haltungen.hoehe,
                                                            haltungen.createdat
                                                        FROM substanz_haltung_bewertung, haltungen
-                                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
                                                        AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
                                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -7132,7 +6980,7 @@ class Subkans_funkt:
                                                                    haltungen.createdat,
                                                                    substanz_haltung_bewertung.untersuchtag
                                                                FROM substanz_haltung_bewertung, haltungen
-                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
                                                                AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                                AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -7175,7 +7023,7 @@ class Subkans_funkt:
                                                                    haltungen.hoehe,
                                                                    haltungen.createdat
                                                                FROM substanz_haltung_bewertung, haltungen
-                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
                                                                AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
                                                                AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
                                                                AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -7248,7 +7096,7 @@ class Subkans_funkt:
     def subkans(self):
         #Berechnung der Substanzklassen
 
-        date = self.date + '%'
+        date = self.date
         db = self.db
         crs = self.crs
         haltung = self.haltung
@@ -7285,6 +7133,13 @@ class Subkans_funkt:
                         FROM haltungen_untersucht_bewertung """
         db.sql(sql)
 
+        sql = """SELECT CreateSpatialIndex('haltungen_substanz_bewertung', 'geom');"""
+        try:
+            db.sql(sql)
+            db.commit()
+        except:
+            pass
+
         try:
             db.sql("""ALTER TABLE haltungen_substanz_bewertung ADD COLUMN Abnutzung INT ;""")
         except:
@@ -7294,6 +7149,7 @@ class Subkans_funkt:
             db.sql("""ALTER TABLE haltungen_substanz_bewertung ADD COLUMN Substanzklasse INT ;""")
         except:
             pass
+
 
         if self.datetype == 'Befahrungsdatum':
             if haltung:
@@ -7336,7 +7192,7 @@ class Subkans_funkt:
                                            haltungen.createdat,
                                            substanz_haltung_bewertung.untersuchtag
                                        FROM substanz_haltung_bewertung, haltungen
-                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.untersuchtag like ? 
+                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
                                        AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -7381,7 +7237,7 @@ class Subkans_funkt:
                                            haltungen.hoehe,
                                            haltungen.createdat
                                        FROM substanz_haltung_bewertung, haltungen
-                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND substanz_haltung_bewertung.createdat like ? 
+                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
                                        AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
                                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                        AND Zustandsklasse_ges IN (0,1,2,3,4)
@@ -7426,40 +7282,67 @@ class Subkans_funkt:
 
             #sg in tabelle schreiben
             sql = """UPDATE substanz_haltung_bewertung SET Schadensgewicht = ? WHERE substanz_haltung_bewertung.pk = ?"""
-            data = (self.round_up(sg,2), attr[0])
+            data = (round_up(sg,2), attr[0])
 
             db.sql(sql,parameters=data)
 
-
         #Bruttoschadenslänge BSL und Abnutzung ABN
-        sql = """SELECT
-                    substanz_haltung_bewertung.pk AS pk,
-                    substanz_haltung_bewertung.untersuchhal,
-                    SUM(substanz_haltung_bewertung.Schadensgewicht) AS Gesamtschadensgewicht,
-                    haltungen_untersucht.haltnam,
-                    coalesce(MIN(
-                        CASE 
-                            WHEN substanz_haltung_bewertung.kuerzel = 'BCE' 
-                                 AND substanz_haltung_bewertung.station < haltungen_untersucht.laenge  
-                            THEN substanz_haltung_bewertung.station
-                            ELSE haltungen_untersucht.laenge
-                        END
-                    ),haltungen.laenge),  
-                haltungen_substanz_bewertung.pk,
-                haltungen_substanz_bewertung.objektklasse_gesamt
-                FROM 
-                    substanz_haltung_bewertung
-                JOIN 
-                    haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
-                JOIN 
-                    haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = substanz_haltung_bewertung.untersuchhal
-                JOIN 
-                    haltungen ON substanz_haltung_bewertung.untersuchhal = haltungen.haltnam
-                GROUP BY 
-                    substanz_haltung_bewertung.untersuchhal;"""
+        if self.datetype == 'Befahrungsdatum':
+            sql = """SELECT
+                        substanz_haltung_bewertung.pk AS pk,
+                        substanz_haltung_bewertung.untersuchhal,
+                        SUM(substanz_haltung_bewertung.Schadensgewicht) AS Gesamtschadensgewicht,
+                        haltungen_untersucht.haltnam,
+                        coalesce(MIN(
+                            CASE 
+                                WHEN substanz_haltung_bewertung.kuerzel = 'BCE' 
+                                     AND substanz_haltung_bewertung.station < haltungen_untersucht.laenge  
+                                THEN substanz_haltung_bewertung.station
+                                ELSE haltungen_untersucht.laenge
+                            END
+                        ),haltungen.laenge),  
+                    haltungen_substanz_bewertung.pk,
+                    haltungen_substanz_bewertung.objektklasse_gesamt
+                    FROM 
+                        substanz_haltung_bewertung
+                    JOIN 
+                        haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
+                    JOIN 
+                        haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = substanz_haltung_bewertung.untersuchhal
+                    JOIN 
+                        haltungen ON substanz_haltung_bewertung.untersuchhal = haltungen.haltnam
+                    WHERE ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                    GROUP BY 
+                        substanz_haltung_bewertung.untersuchhal;"""
+        elif self.datetype == 'Importdatum':
+            sql = """SELECT
+                                    substanz_haltung_bewertung.pk AS pk,
+                                    substanz_haltung_bewertung.untersuchhal,
+                                    SUM(substanz_haltung_bewertung.Schadensgewicht) AS Gesamtschadensgewicht,
+                                    haltungen_untersucht.haltnam,
+                                    coalesce(MIN(
+                                        CASE 
+                                            WHEN substanz_haltung_bewertung.kuerzel = 'BCE' 
+                                                 AND substanz_haltung_bewertung.station < haltungen_untersucht.laenge  
+                                            THEN substanz_haltung_bewertung.station
+                                            ELSE haltungen_untersucht.laenge
+                                        END
+                                    ),haltungen.laenge),  
+                                haltungen_substanz_bewertung.pk,
+                                haltungen_substanz_bewertung.objektklasse_gesamt
+                                FROM 
+                                    substanz_haltung_bewertung
+                                JOIN 
+                                    haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
+                                JOIN 
+                                    haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = substanz_haltung_bewertung.untersuchhal
+                                JOIN 
+                                    haltungen ON substanz_haltung_bewertung.untersuchhal = haltungen.haltnam
+                                WHERE ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                                GROUP BY 
+                                    substanz_haltung_bewertung.untersuchhal;"""
 
-
-        data = ()
+        data = (date,)
 
         db.sql(sql,parameters=data)
         sbk='-'
@@ -7468,10 +7351,10 @@ class Subkans_funkt:
         for attr in db.fetchall():
             # abn = bsl/länge*100
             if attr[2] not in ("","not found", None, None) and attr[3] not in ("","not found", None, None):
-                abn=self.round_up_down(float(attr[2])/float(attr[4])*100,2)
+                abn=formf(float(attr[2])/float(attr[4])*100,4)
 
                 # #substanzklasse
-                sub_ges = 100-abn
+                sub_ges = 100-float(abn)
 
                 if sub_ges >= 95:
                     sbk = 5

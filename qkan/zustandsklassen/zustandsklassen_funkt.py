@@ -8,6 +8,7 @@ from qgis.core import (
 	QgsDataSourceUri,
 )
 from qgis.utils import iface, spatialite_connect
+from qkan.database.dbfunc import DBConnection
 
 from qkan.utils import get_logger
 
@@ -17,10 +18,10 @@ logger = get_logger("QKan.zustand.import")
 
 
 class Zustandsklassen_funkt:
-	def __init__(self, check_cb, db, date, epsg, datetype):
+	def __init__(self, check_cb,  db_qkan: DBConnection, date, epsg, datetype):
 
 		self.check_cb = check_cb
-		self.db = db
+		self.db = db_qkan
 		self.date = date
 		self.crs = epsg
 		self.datetype = datetype
@@ -115,26 +116,31 @@ class Zustandsklassen_funkt:
 			self.tab_isybau_schacht()
 
 	def bewertungstexte_haltung(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		data = db
+
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		logger.debug(f'Start_Haltungstexte.liste: {datetime.now()}')
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung"""
-		curs.execute(sql)
+		db.sql(sql)
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Beschreibung TEXT ;""")
 			db.commit()
 		except:
 			pass
+
+		sql = """SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -169,45 +175,45 @@ class Zustandsklassen_funkt:
 						haltungen.hoehe,
 						haltungen.createdat
 					FROM untersuchdat_haltung_bewertung, haltungen
-					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ?
+					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
 				"""
 				data = (date, )
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			elif leitung is True:
 
 				sql = """
 						SELECT
-							untersuchdat_haltung_bewertung.pk,
-							untersuchdat_haltung_bewertung.untersuchhal,
+							untersuchdat_anschlussleitung_bewertung.pk,
+							untersuchdat_anschlussleitung_bewertung.untersuchhal,
 							anschlussleitungen.createdat,
-							untersuchdat_haltung_bewertung.schoben,
-							untersuchdat_haltung_bewertung.schunten,
-							untersuchdat_haltung_bewertung.id,
-							untersuchdat_haltung_bewertung.videozaehler,
-							untersuchdat_haltung_bewertung.inspektionslaenge,
-							untersuchdat_haltung_bewertung.station,
-							untersuchdat_haltung_bewertung.timecode,
-							untersuchdat_haltung_bewertung.kuerzel,
-							untersuchdat_haltung_bewertung.charakt1,
-							untersuchdat_haltung_bewertung.charakt2,
-							untersuchdat_haltung_bewertung.quantnr1,
-							untersuchdat_haltung_bewertung.quantnr2,
-							untersuchdat_haltung_bewertung.streckenschaden,
-							untersuchdat_haltung_bewertung.pos_von,
-							untersuchdat_haltung_bewertung.pos_bis,
-							untersuchdat_haltung_bewertung.foto_dateiname,
-							untersuchdat_haltung_bewertung.film_dateiname,
-							untersuchdat_haltung_bewertung.kommentar,
-							untersuchdat_haltung_bewertung.untersuchtag,
+							untersuchdat_anschlussleitung_bewertung.schoben,
+							untersuchdat_anschlussleitung_bewertung.schunten,
+							untersuchdat_anschlussleitung_bewertung.id,
+							untersuchdat_anschlussleitung_bewertung.videozaehler,
+							untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+							untersuchdat_anschlussleitung_bewertung.station,
+							untersuchdat_anschlussleitung_bewertung.timecode,
+							untersuchdat_anschlussleitung_bewertung.kuerzel,
+							untersuchdat_anschlussleitung_bewertung.charakt1,
+							untersuchdat_anschlussleitung_bewertung.charakt2,
+							untersuchdat_anschlussleitung_bewertung.quantnr1,
+							untersuchdat_anschlussleitung_bewertung.quantnr2,
+							untersuchdat_anschlussleitung_bewertung.streckenschaden,
+							untersuchdat_anschlussleitung_bewertung.pos_von,
+							untersuchdat_anschlussleitung_bewertung.pos_bis,
+							untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+							untersuchdat_anschlussleitung_bewertung.film_dateiname,
+							untersuchdat_anschlussleitung_bewertung.kommentar,
+							untersuchdat_anschlussleitung_bewertung.untersuchtag,
 							anschlussleitungen.leitnam,
 							anschlussleitungen.material,
 							anschlussleitungen.hoehe
-						FROM untersuchdat_haltung_bewertung, anschlussleitungen
-						WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ? 
+						FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+						WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 					"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Importdatum':
 
@@ -242,46 +248,46 @@ class Zustandsklassen_funkt:
 						haltungen.hoehe,
 						haltungen.createdat
 					FROM untersuchdat_haltung_bewertung, haltungen
-					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ?
+					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
 				"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			elif leitung is True:
 				sql = """
 						SELECT
-							untersuchdat_haltung_bewertung.pk,
-							untersuchdat_haltung_bewertung.untersuchhal,
+							untersuchdat_anschlussleitung_bewertung.pk,
+							untersuchdat_anschlussleitung_bewertung.untersuchhal,
 							anschlussleitungen.createdat,
-							untersuchdat_haltung_bewertung.schoben,
-							untersuchdat_haltung_bewertung.schunten,
-							untersuchdat_haltung_bewertung.id,
-							untersuchdat_haltung_bewertung.videozaehler,
-							untersuchdat_haltung_bewertung.inspektionslaenge,
-							untersuchdat_haltung_bewertung.station,
-							untersuchdat_haltung_bewertung.timecode,
-							untersuchdat_haltung_bewertung.kuerzel,
-							untersuchdat_haltung_bewertung.charakt1,
-							untersuchdat_haltung_bewertung.charakt2,
-							untersuchdat_haltung_bewertung.quantnr1,
-							untersuchdat_haltung_bewertung.quantnr2,
-							untersuchdat_haltung_bewertung.streckenschaden,
-							untersuchdat_haltung_bewertung.pos_von,
-							untersuchdat_haltung_bewertung.pos_bis,
-							untersuchdat_haltung_bewertung.foto_dateiname,
-							untersuchdat_haltung_bewertung.film_dateiname,
-							untersuchdat_haltung_bewertung.kommentar,
-							untersuchdat_haltung_bewertung.createdat,
+							untersuchdat_anschlussleitung_bewertung.schoben,
+							untersuchdat_anschlussleitung_bewertung.schunten,
+							untersuchdat_anschlussleitung_bewertung.id,
+							untersuchdat_anschlussleitung_bewertung.videozaehler,
+							untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+							untersuchdat_anschlussleitung_bewertung.station,
+							untersuchdat_anschlussleitung_bewertung.timecode,
+							untersuchdat_anschlussleitung_bewertung.kuerzel,
+							untersuchdat_anschlussleitung_bewertung.charakt1,
+							untersuchdat_anschlussleitung_bewertung.charakt2,
+							untersuchdat_anschlussleitung_bewertung.quantnr1,
+							untersuchdat_anschlussleitung_bewertung.quantnr2,
+							untersuchdat_anschlussleitung_bewertung.streckenschaden,
+							untersuchdat_anschlussleitung_bewertung.pos_von,
+							untersuchdat_anschlussleitung_bewertung.pos_bis,
+							untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+							untersuchdat_anschlussleitung_bewertung.film_dateiname,
+							untersuchdat_anschlussleitung_bewertung.kommentar,
+							untersuchdat_anschlussleitung_bewertung.createdat,
 							anschlussleitungen.leitnam,
 							anschlussleitungen.material,
 							anschlussleitungen.hoehe
-						FROM untersuchdat_haltung_bewertung, anschlussleitungen
-						WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ? 
+						FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+						WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120 
 					"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 			sql = ""
 			data = ()
@@ -295,7 +301,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -311,7 +317,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -326,7 +332,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -341,7 +347,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -356,7 +362,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				#     db.commit()
 					continue
 				except:
@@ -371,7 +377,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -386,7 +392,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -401,7 +407,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -416,7 +422,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -430,7 +436,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -444,7 +450,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -458,7 +464,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -472,7 +478,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -486,7 +492,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -500,7 +506,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -514,7 +520,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -528,7 +534,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -542,7 +548,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -556,7 +562,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -570,7 +576,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -584,7 +590,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -598,7 +604,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -612,7 +618,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -626,7 +632,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -640,7 +646,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -654,7 +660,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -668,7 +674,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -682,7 +688,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -696,7 +702,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -710,7 +716,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -724,7 +730,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -738,7 +744,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -752,7 +758,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -766,7 +772,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -780,7 +786,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -794,7 +800,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -808,7 +814,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -822,7 +828,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -836,7 +842,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -850,7 +856,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -864,7 +870,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -878,7 +884,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -892,7 +898,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -906,7 +912,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -920,7 +926,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -934,7 +940,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -948,7 +954,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -962,7 +968,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -976,7 +982,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -990,7 +996,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1004,7 +1010,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1018,7 +1024,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1032,7 +1038,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1046,7 +1052,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1060,7 +1066,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1074,7 +1080,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1088,7 +1094,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1102,7 +1108,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1116,7 +1122,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1130,7 +1136,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1144,7 +1150,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1158,7 +1164,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1172,7 +1178,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1186,7 +1192,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1200,7 +1206,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1214,7 +1220,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1228,7 +1234,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1242,7 +1248,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1256,7 +1262,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1270,7 +1276,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1284,7 +1290,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1298,7 +1304,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1312,7 +1318,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -1324,7 +1330,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -1332,7 +1345,7 @@ class Zustandsklassen_funkt:
 		logger.debug(f'Ende_Haltungstexte.liste: {datetime.now()}')
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
@@ -1357,23 +1370,27 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def bewertungstexte_leitung(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
 		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		logger.debug(f'Start_Haltungstexte.liste: {datetime.now()}')
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung"""
-		curs.execute(sql)
+		db.sql(sql)
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+		except:
+			pass
+
+		sql = """SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
 		except:
 			pass
 
@@ -1410,10 +1427,10 @@ class Zustandsklassen_funkt:
 							anschlussleitungen.hoehe,
 							anschlussleitungen.createdat
 						FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-						WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND untersuchdat_anschlussleitung_bewertung.createdat like ? 
+						WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120  
 					"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 		if self.datetype == 'Befahrungsdatum':
 
 			if leitung is True:
@@ -1446,13 +1463,13 @@ class Zustandsklassen_funkt:
 							anschlussleitungen.hoehe,
 							anschlussleitungen.createdat
 						FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-						WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND untersuchdat_anschlussleitung_bewertung.untersuchtag like ? 
+						WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120  
 					"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 			sql = ""
 			data = ()
 
@@ -1467,7 +1484,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1483,7 +1500,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1498,7 +1515,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1513,7 +1530,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1528,7 +1545,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				#     db.commit()
 					continue
 				except:
@@ -1543,7 +1560,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1558,7 +1575,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1573,7 +1590,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1588,7 +1605,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1602,7 +1619,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1616,7 +1633,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1630,7 +1647,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1644,7 +1661,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1658,7 +1675,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1672,7 +1689,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1686,7 +1703,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1700,7 +1717,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1714,7 +1731,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1728,7 +1745,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1742,7 +1759,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1756,7 +1773,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1770,7 +1787,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1784,7 +1801,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1798,7 +1815,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1812,7 +1829,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1826,7 +1843,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1840,7 +1857,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1854,7 +1871,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1868,7 +1885,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1882,7 +1899,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1896,7 +1913,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1910,7 +1927,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1924,7 +1941,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1938,7 +1955,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1952,7 +1969,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1966,7 +1983,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1980,7 +1997,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -1994,7 +2011,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2008,7 +2025,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2022,7 +2039,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2036,7 +2053,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2050,7 +2067,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2064,7 +2081,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2078,7 +2095,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2092,7 +2109,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2106,7 +2123,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2120,7 +2137,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2134,7 +2151,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2148,7 +2165,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2162,7 +2179,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2176,7 +2193,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2190,7 +2207,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2204,7 +2221,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2218,7 +2235,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2232,7 +2249,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2246,7 +2263,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2260,7 +2277,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2274,7 +2291,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2288,7 +2305,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2302,7 +2319,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2316,7 +2333,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2330,7 +2347,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2344,7 +2361,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2358,7 +2375,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2372,7 +2389,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2386,7 +2403,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2400,7 +2417,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2414,7 +2431,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2428,7 +2445,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2442,7 +2459,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2456,7 +2473,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2470,7 +2487,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2484,7 +2501,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#     db.commit()
 					continue
 				except:
@@ -2496,7 +2513,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -2504,7 +2528,7 @@ class Zustandsklassen_funkt:
 		logger.debug(f'Ende_Haltungstexte.liste: {datetime.now()}')
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
@@ -2531,21 +2555,25 @@ class Zustandsklassen_funkt:
 
 
 	def bewertungstexte_schacht(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
 		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
-		db_x = self.db
 		crs = self.crs
 
 		logger.debug(f'Start_Schachttexte.liste: {datetime.now()}')
 
 		sql = """CREATE TABLE IF NOT EXISTS Untersuchdat_schacht_bewertung AS SELECT * FROM Untersuchdat_schacht"""
-		curs.execute(sql)
+		db.sql(sql)
+
+		sql = """SELECT CreateSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -2570,10 +2598,10 @@ class Zustandsklassen_funkt:
 					Untersuchdat_schacht_bewertung.foto_dateiname,
 					Untersuchdat_schacht_bewertung.createdat
 				FROM Untersuchdat_schacht_bewertung
-				WHERE Untersuchdat_schacht_bewertung.createdat like ? 
+				WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
 			"""
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 		if self.datetype == 'Befahrungsdatum':
 			sql = """
@@ -2595,13 +2623,13 @@ class Zustandsklassen_funkt:
 								Untersuchdat_schacht_bewertung.foto_dateiname,
 								Untersuchdat_schacht_bewertung.untersuchtag
 							FROM Untersuchdat_schacht_bewertung
-							WHERE Untersuchdat_schacht_bewertung.untersuchtag like ? 
+							WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 						"""
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 
 			if attr[5] == "DAA":
@@ -2613,7 +2641,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2627,7 +2655,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2641,7 +2669,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2655,7 +2683,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2669,7 +2697,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2683,7 +2711,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2697,7 +2725,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2711,7 +2739,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2725,7 +2753,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2739,7 +2767,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2753,7 +2781,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2767,7 +2795,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2781,7 +2809,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2795,7 +2823,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2809,7 +2837,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2823,7 +2851,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2837,7 +2865,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2851,7 +2879,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2865,7 +2893,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2879,7 +2907,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2893,7 +2921,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2907,7 +2935,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2921,7 +2949,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2935,7 +2963,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2949,7 +2977,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2963,7 +2991,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2977,7 +3005,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -2991,7 +3019,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3005,7 +3033,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3019,7 +3047,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3033,7 +3061,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3047,7 +3075,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3061,7 +3089,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3075,7 +3103,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3089,7 +3117,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3103,7 +3131,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3117,7 +3145,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3131,7 +3159,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3145,7 +3173,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3159,7 +3187,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3173,7 +3201,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3187,7 +3215,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3201,7 +3229,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3215,7 +3243,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3229,7 +3257,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3243,7 +3271,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3257,7 +3285,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3271,7 +3299,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3285,7 +3313,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3299,7 +3327,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3313,7 +3341,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3327,7 +3355,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3341,7 +3369,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3355,7 +3383,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3369,7 +3397,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3383,7 +3411,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3397,7 +3425,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3411,7 +3439,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3425,7 +3453,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3439,7 +3467,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3453,7 +3481,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3467,7 +3495,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3481,7 +3509,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3495,7 +3523,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3509,7 +3537,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3523,7 +3551,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3537,7 +3565,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3551,7 +3579,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3565,7 +3593,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3579,7 +3607,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3593,7 +3621,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3607,7 +3635,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -3620,7 +3648,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -3628,7 +3663,7 @@ class Zustandsklassen_funkt:
 		logger.debug(f'Ende_Schachttexte.liste: {datetime.now()}')
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
@@ -3655,15 +3690,12 @@ class Zustandsklassen_funkt:
 
 
 	def bewertung_dwa_neu_haltung(self):
-		date = self.date+'%'
-		db_x = self.db
+		date = self.date
+		db = self.db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
 
-		data = db_x
-		db = spatialite_connect(db_x)
-		curs = db.cursor()
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -3697,47 +3729,47 @@ class Zustandsklassen_funkt:
 								haltungen.material,
 								haltungen.hoehe
 							FROM untersuchdat_haltung_bewertung, haltungen
-							WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ? 
+							WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
 						"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			elif leitung is True:
 				sql = """
 							SELECT
-								untersuchdat_haltung_bewertung.pk,
-								untersuchdat_haltung_bewertung.untersuchhal,
+								untersuchdat_anschlussleitung_bewertung.pk,
+								untersuchdat_anschlussleitung_bewertung.untersuchhal,
 								anschlussleitungen.createdat,
-								untersuchdat_haltung_bewertung.schoben,
-								untersuchdat_haltung_bewertung.schunten,
-								untersuchdat_haltung_bewertung.id,
-								untersuchdat_haltung_bewertung.videozaehler,
-								untersuchdat_haltung_bewertung.inspektionslaenge,
-								untersuchdat_haltung_bewertung.station,
-								untersuchdat_haltung_bewertung.timecode,
-								untersuchdat_haltung_bewertung.kuerzel,
-								untersuchdat_haltung_bewertung.charakt1,
-								untersuchdat_haltung_bewertung.charakt2,
-								untersuchdat_haltung_bewertung.quantnr1,
-								untersuchdat_haltung_bewertung.quantnr2,
-								untersuchdat_haltung_bewertung.streckenschaden,
-								untersuchdat_haltung_bewertung.pos_von,
-								untersuchdat_haltung_bewertung.pos_bis,
-								untersuchdat_haltung_bewertung.foto_dateiname,
-								untersuchdat_haltung_bewertung.film_dateiname,
-								untersuchdat_haltung_bewertung.kommentar,
-								untersuchdat_haltung_bewertung.bw_bs,
-								untersuchdat_haltung_bewertung.untersuchtag,
+								untersuchdat_anschlussleitung_bewertung.schoben,
+								untersuchdat_anschlussleitung_bewertung.schunten,
+								untersuchdat_anschlussleitung_bewertung.id,
+								untersuchdat_anschlussleitung_bewertung.videozaehler,
+								untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+								untersuchdat_anschlussleitung_bewertung.station,
+								untersuchdat_anschlussleitung_bewertung.timecode,
+								untersuchdat_anschlussleitung_bewertung.kuerzel,
+								untersuchdat_anschlussleitung_bewertung.charakt1,
+								untersuchdat_anschlussleitung_bewertung.charakt2,
+								untersuchdat_anschlussleitung_bewertung.quantnr1,
+								untersuchdat_anschlussleitung_bewertung.quantnr2,
+								untersuchdat_anschlussleitung_bewertung.streckenschaden,
+								untersuchdat_anschlussleitung_bewertung.pos_von,
+								untersuchdat_anschlussleitung_bewertung.pos_bis,
+								untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+								untersuchdat_anschlussleitung_bewertung.film_dateiname,
+								untersuchdat_anschlussleitung_bewertung.kommentar,
+								untersuchdat_anschlussleitung_bewertung.bw_bs,
+								untersuchdat_anschlussleitung_bewertung.untersuchtag,
 								anschlussleitungen.leitnam,
 								anschlussleitungen.material,
 								anschlussleitungen.hoehe
-							FROM untersuchdat_haltung_bewertung, anschlussleitungen
-							WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ? 
+							FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+							WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 						"""
 				data = (date, )
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		if self.datetype == 'Importdatum':
 
@@ -3771,51 +3803,51 @@ class Zustandsklassen_funkt:
 								haltungen.material,
 								haltungen.hoehe
 							FROM untersuchdat_haltung_bewertung, haltungen
-							WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ? 
+							WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
 						"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			elif leitung is True:
 				sql = """
 							SELECT
-								untersuchdat_haltung_bewertung.pk,
-								untersuchdat_haltung_bewertung.untersuchhal,
+								untersuchdat_anschlussleitung_bewertung.pk,
+								untersuchdat_anschlussleitung_bewertung.untersuchhal,
 								anschlussleitungen.createdat,
-								untersuchdat_haltung_bewertung.schoben,
-								untersuchdat_haltung_bewertung.schunten,
-								untersuchdat_haltung_bewertung.id,
-								untersuchdat_haltung_bewertung.videozaehler,
-								untersuchdat_haltung_bewertung.inspektionslaenge,
-								untersuchdat_haltung_bewertung.station,
-								untersuchdat_haltung_bewertung.timecode,
-								untersuchdat_haltung_bewertung.kuerzel,
-								untersuchdat_haltung_bewertung.charakt1,
-								untersuchdat_haltung_bewertung.charakt2,
-								untersuchdat_haltung_bewertung.quantnr1,
-								untersuchdat_haltung_bewertung.quantnr2,
-								untersuchdat_haltung_bewertung.streckenschaden,
-								untersuchdat_haltung_bewertung.pos_von,
-								untersuchdat_haltung_bewertung.pos_bis,
-								untersuchdat_haltung_bewertung.foto_dateiname,
-								untersuchdat_haltung_bewertung.film_dateiname,
-								untersuchdat_haltung_bewertung.kommentar,
-								untersuchdat_haltung_bewertung.bw_bs,
-								untersuchdat_haltung_bewertung.createdat,
+								untersuchdat_anschlussleitung_bewertung.schoben,
+								untersuchdat_anschlussleitung_bewertung.schunten,
+								untersuchdat_anschlussleitung_bewertung.id,
+								untersuchdat_anschlussleitung_bewertung.videozaehler,
+								untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+								untersuchdat_anschlussleitung_bewertung.station,
+								untersuchdat_anschlussleitung_bewertung.timecode,
+								untersuchdat_anschlussleitung_bewertung.kuerzel,
+								untersuchdat_anschlussleitung_bewertung.charakt1,
+								untersuchdat_anschlussleitung_bewertung.charakt2,
+								untersuchdat_anschlussleitung_bewertung.quantnr1,
+								untersuchdat_anschlussleitung_bewertung.quantnr2,
+								untersuchdat_anschlussleitung_bewertung.streckenschaden,
+								untersuchdat_anschlussleitung_bewertung.pos_von,
+								untersuchdat_anschlussleitung_bewertung.pos_bis,
+								untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+								untersuchdat_anschlussleitung_bewertung.film_dateiname,
+								untersuchdat_anschlussleitung_bewertung.kommentar,
+								untersuchdat_anschlussleitung_bewertung.bw_bs,
+								untersuchdat_anschlussleitung_bewertung.createdat,
 								anschlussleitungen.leitnam,
 								anschlussleitungen.material,
 								anschlussleitungen.hoehe
-							FROM untersuchdat_haltung_bewertung, anschlussleitungen
-							WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ? 
+							FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+							WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
 						"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung 
+			db.sql("""UPDATE haltungen_untersucht_bewertung 
 								SET objektklasse_dichtheit =
 								(SELECT min(Zustandsklasse_D) 
 								FROM untersuchdat_haltung_bewertung
@@ -3826,7 +3858,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung 
+			db.sql("""UPDATE haltungen_untersucht_bewertung 
 								SET objektklasse_standsicherheit =
 								(SELECT min(Zustandsklasse_S) 
 								FROM untersuchdat_haltung_bewertung
@@ -3837,7 +3869,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung 
+			db.sql("""UPDATE haltungen_untersucht_bewertung 
 								SET objektklasse_betriebssicherheit =
 								(SELECT min(Zustandsklasse_B) 
 								FROM untersuchdat_haltung_bewertung
@@ -3848,7 +3880,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung 
+			db.sql("""update haltungen_untersucht_bewertung 
 								set objektklasse_standsicherheit = '-'
 								WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -3856,7 +3888,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung 
+			db.sql("""update haltungen_untersucht_bewertung 
 								set objektklasse_dichtheit = '-'
 								WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -3864,7 +3896,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung 
+			db.sql("""update haltungen_untersucht_bewertung 
 								set objektklasse_betriebssicherheit = '-'
 								WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -3872,21 +3904,31 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-								haltungen_untersucht_bewertung
-								SET
-								objektklasse_gesamt =
-								(
-								   SELECT MIN(wert)
-								   FROM (
-									   SELECT objektklasse_dichtheit AS wert
-									   UNION ALL
-									   SELECT objektklasse_standsicherheit
-									   UNION ALL
-									   SELECT objektklasse_betriebssicherheit
-								   )
-								   WHERE wert IS NOT NULL
-							   );""")
+			db.sql("""Update
+						haltungen_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_haltung_bewertung WHERE untersuchdat_haltung_bewertung.untersuchhal = haltungen_untersucht_bewertung.haltnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);
+					""")
 			db.commit()
 		except:
 			pass
@@ -3894,7 +3936,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -3902,13 +3951,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
@@ -3934,7 +3990,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -3959,15 +4015,11 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def bewertung_dwa_neu_leitung(self):
-		date = self.date+'%'
-		db_x = self.db
+		date = self.date
+		db = self.db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-
-		data = db_x
-		db = spatialite_connect(db_x)
-		curs = db.cursor()
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -4002,11 +4054,11 @@ class Zustandsklassen_funkt:
 								anschlussleitungen.hoehe,
 								anschlussleitungen.createdat
 							FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-							WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND untersuchdat_anschlussleitung_bewertung.untersuchtag like ? 
+							WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120  
 						"""
 				data = (date, )
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Importdatum':
 			if leitung is True:
@@ -4040,15 +4092,15 @@ class Zustandsklassen_funkt:
 								anschlussleitungen.hoehe,
 								anschlussleitungen.createdat
 							FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-							WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND untersuchdat_anschlussleitung_bewertung.createdat like ? 
+							WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120 
 						"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung 
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung 
 								SET objektklasse_dichtheit =
 								(SELECT min(Zustandsklasse_D) 
 								FROM untersuchdat_anschlussleitung_bewertung
@@ -4059,7 +4111,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung 
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung 
 								SET objektklasse_standsicherheit =
 								(SELECT min(Zustandsklasse_S) 
 								FROM untersuchdat_anschlussleitung_bewertung
@@ -4070,7 +4122,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung 
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung 
 								SET objektklasse_betriebssicherheit =
 								(SELECT min(Zustandsklasse_B) 
 								FROM untersuchdat_anschlussleitung_bewertung
@@ -4081,7 +4133,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung 
+			db.sql("""update anschlussleitungen_untersucht_bewertung 
 								set objektklasse_standsicherheit = '-'
 								WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -4089,7 +4141,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung 
+			db.sql("""update anschlussleitungen_untersucht_bewertung 
 								set objektklasse_dichtheit = '-'
 								WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -4097,7 +4149,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung 
+			db.sql("""update anschlussleitungen_untersucht_bewertung 
 								set objektklasse_betriebssicherheit = '-'
 								WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -4105,21 +4157,31 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-								anschlussleitungen_untersucht_bewertung
-								SET
-								objektklasse_gesamt =
-								(
-								   SELECT MIN(wert)
-								   FROM (
-									   SELECT objektklasse_dichtheit AS wert
-									   UNION ALL
-									   SELECT objektklasse_standsicherheit
-									   UNION ALL
-									   SELECT objektklasse_betriebssicherheit
-								   )
-								   WHERE wert IS NOT NULL
-							   );""")
+			db.sql("""Update
+						anschlussleitungen_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_anschlussleitung_bewertung WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.leitnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);
+				""")
 			db.commit()
 		except:
 			pass
@@ -4127,7 +4189,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -4135,13 +4204,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
@@ -4166,7 +4242,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -4191,13 +4267,10 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def bewertung_dwa_neu_schaechte(self):
-		date = self.date+'%'
-		db_x = self.db
+		date = self.date
+		db = self.db
 		crs = self.crs
 
-		data = db_x
-		db = spatialite_connect(db_x)
-		curs = db.cursor()
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -4221,10 +4294,10 @@ class Zustandsklassen_funkt:
 							Untersuchdat_schacht_bewertung.bw_bs,
 							Untersuchdat_schacht_bewertung.untersuchtag
 						FROM Untersuchdat_schacht_bewertung  
-						WHERE Untersuchdat_schacht_bewertung.untersuchtag like ? 
+						WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
 					"""
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Importdatum':
 			sql = """
@@ -4247,14 +4320,14 @@ class Zustandsklassen_funkt:
 										Untersuchdat_schacht_bewertung.bw_bs,
 										Untersuchdat_schacht_bewertung.createdat
 									FROM Untersuchdat_schacht_bewertung  
-									WHERE Untersuchdat_schacht_bewertung.createdat like ? 
+									WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
 								"""
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_dichtheit =
 									(SELECT min(Zustandsklasse_D) 
 									FROM Untersuchdat_schacht_bewertung
@@ -4265,7 +4338,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_standsicherheit =
 									(SELECT min(Zustandsklasse_S) 
 									FROM Untersuchdat_schacht_bewertung
@@ -4276,7 +4349,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_betriebssicherheit =
 									(SELECT min(Zustandsklasse_B) 
 									FROM Untersuchdat_schacht_bewertung
@@ -4287,7 +4360,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_standsicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -4295,7 +4368,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_dichtheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -4303,7 +4376,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_betriebssicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -4311,21 +4384,31 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-									schaechte_untersucht_bewertung
-									set
-									objektklasse_gesamt =
-									(
-									   SELECT MIN(wert)
-									   FROM (
-										   SELECT objektklasse_dichtheit AS wert
-										   UNION ALL
-										   SELECT objektklasse_standsicherheit
-										   UNION ALL
-										   SELECT objektklasse_betriebssicherheit
-									   )
-									   WHERE wert IS NOT NULL
-								   );""")
+			db.sql("""Update
+						schaechte_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_schacht_bewertung WHERE untersuchdat_schacht_bewertung.untersuchsch = schaechte_untersucht_bewertung.schnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);
+					""")
 			db.commit()
 		except:
 			pass
@@ -4333,7 +4416,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -4341,13 +4431,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
@@ -4372,7 +4469,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geop'
@@ -4397,22 +4494,25 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def bewertung_dwa_haltung(self):
-		date = self.date+'%'
-		db_x = self.db
+		date = self.date
+		db = self.db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
 
-		data = db_x
-
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
 
 		logger.debug(f'Start_Bewertung_Haltungen.liste: {datetime.now()}')
 		# nach DWA
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung"""
-		curs1.execute(sql)
+		db.sql(sql)
+
+		sql = """SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		if haltung is True:
 			sql = """
@@ -4437,17 +4537,17 @@ class Zustandsklassen_funkt:
 				"""
 
 		try:
-			curs1.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs1.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs1.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -4468,7 +4568,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -4489,42 +4589,39 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 			else:
 				continue
-		db1.commit()
+		db.commit()
 
-
-		db = spatialite_connect(db_x)
-		curs = db.cursor()
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Zustandsklasse_D = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Zustandsklasse_D = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Zustandsklasse_B = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Zustandsklasse_B = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Zustandsklasse_S = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Zustandsklasse_S = NULL ;""")
 		except:
 			pass
 
@@ -4562,47 +4659,47 @@ class Zustandsklassen_funkt:
 						haltungen.material,
 						haltungen.hoehe
 					FROM untersuchdat_haltung_bewertung, haltungen
-					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ? 
+					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 				"""
 				data = (date, )
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			if leitung is True:
 				sql = """
 					SELECT
-						untersuchdat_haltung_bewertung.pk,
-						untersuchdat_haltung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.pk,
+						untersuchdat_anschlussleitung_bewertung.untersuchhal,
 						anschlussleitungen.createdat,
-						untersuchdat_haltung_bewertung.schoben,
-						untersuchdat_haltung_bewertung.schunten,
-						untersuchdat_haltung_bewertung.id,
-						untersuchdat_haltung_bewertung.videozaehler,
-						untersuchdat_haltung_bewertung.inspektionslaenge,
-						untersuchdat_haltung_bewertung.station,
-						untersuchdat_haltung_bewertung.timecode,
-						untersuchdat_haltung_bewertung.kuerzel,
-						untersuchdat_haltung_bewertung.charakt1,
-						untersuchdat_haltung_bewertung.charakt2,
-						untersuchdat_haltung_bewertung.quantnr1,
-						untersuchdat_haltung_bewertung.quantnr2,
-						untersuchdat_haltung_bewertung.streckenschaden,
-						untersuchdat_haltung_bewertung.pos_von,
-						untersuchdat_haltung_bewertung.pos_bis,
-						untersuchdat_haltung_bewertung.foto_dateiname,
-						untersuchdat_haltung_bewertung.film_dateiname,
-						untersuchdat_haltung_bewertung.kommentar,
-						untersuchdat_haltung_bewertung.bw_bs,
-						untersuchdat_haltung_bewertung.untersuchtag,
+						untersuchdat_anschlussleitung_bewertung.schoben,
+						untersuchdat_anschlussleitung_bewertung.schunten,
+						untersuchdat_anschlussleitung_bewertung.id,
+						untersuchdat_anschlussleitung_bewertung.videozaehler,
+						untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+						untersuchdat_anschlussleitung_bewertung.station,
+						untersuchdat_anschlussleitung_bewertung.timecode,
+						untersuchdat_anschlussleitung_bewertung.kuerzel,
+						untersuchdat_anschlussleitung_bewertung.charakt1,
+						untersuchdat_anschlussleitung_bewertung.charakt2,
+						untersuchdat_anschlussleitung_bewertung.quantnr1,
+						untersuchdat_anschlussleitung_bewertung.quantnr2,
+						untersuchdat_anschlussleitung_bewertung.streckenschaden,
+						untersuchdat_anschlussleitung_bewertung.pos_von,
+						untersuchdat_anschlussleitung_bewertung.pos_bis,
+						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+						untersuchdat_anschlussleitung_bewertung.film_dateiname,
+						untersuchdat_anschlussleitung_bewertung.kommentar,
+						untersuchdat_anschlussleitung_bewertung.bw_bs,
+						untersuchdat_anschlussleitung_bewertung.untersuchtag,
 						anschlussleitungen.leitnam,
 						anschlussleitungen.material,
 						anschlussleitungen.hoehe
-					FROM untersuchdat_haltung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag , 0, 15 like ? 
+					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 				"""
 				data = (date, )
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Importdatum':
 
@@ -4636,51 +4733,51 @@ class Zustandsklassen_funkt:
 						haltungen.material,
 						haltungen.hoehe
 					FROM untersuchdat_haltung_bewertung, haltungen
-					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ? 
+					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
 				"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			if leitung is True:
 				sql = """
 					SELECT
-						untersuchdat_haltung_bewertung.pk,
-						untersuchdat_haltung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.pk,
+						untersuchdat_anschlussleitung_bewertung.untersuchhal,
 						anschlussleitungen.createdat,
-						untersuchdat_haltung_bewertung.schoben,
-						untersuchdat_haltung_bewertung.schunten,
-						untersuchdat_haltung_bewertung.id,
-						untersuchdat_haltung_bewertung.videozaehler,
-						untersuchdat_haltung_bewertung.inspektionslaenge,
-						untersuchdat_haltung_bewertung.station,
-						untersuchdat_haltung_bewertung.timecode,
-						untersuchdat_haltung_bewertung.kuerzel,
-						untersuchdat_haltung_bewertung.charakt1,
-						untersuchdat_haltung_bewertung.charakt2,
-						untersuchdat_haltung_bewertung.quantnr1,
-						untersuchdat_haltung_bewertung.quantnr2,
-						untersuchdat_haltung_bewertung.streckenschaden,
-						untersuchdat_haltung_bewertung.pos_von,
-						untersuchdat_haltung_bewertung.pos_bis,
-						untersuchdat_haltung_bewertung.foto_dateiname,
-						untersuchdat_haltung_bewertung.film_dateiname,
-						untersuchdat_haltung_bewertung.kommentar,
-						untersuchdat_haltung_bewertung.bw_bs,
-						untersuchdat_haltung_bewertung.createdat,
+						untersuchdat_anschlussleitung_bewertung.schoben,
+						untersuchdat_anschlussleitung_bewertung.schunten,
+						untersuchdat_anschlussleitung_bewertung.id,
+						untersuchdat_anschlussleitung_bewertung.videozaehler,
+						untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+						untersuchdat_anschlussleitung_bewertung.station,
+						untersuchdat_anschlussleitung_bewertung.timecode,
+						untersuchdat_anschlussleitung_bewertung.kuerzel,
+						untersuchdat_anschlussleitung_bewertung.charakt1,
+						untersuchdat_anschlussleitung_bewertung.charakt2,
+						untersuchdat_anschlussleitung_bewertung.quantnr1,
+						untersuchdat_anschlussleitung_bewertung.quantnr2,
+						untersuchdat_anschlussleitung_bewertung.streckenschaden,
+						untersuchdat_anschlussleitung_bewertung.pos_von,
+						untersuchdat_anschlussleitung_bewertung.pos_bis,
+						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+						untersuchdat_anschlussleitung_bewertung.film_dateiname,
+						untersuchdat_anschlussleitung_bewertung.kommentar,
+						untersuchdat_anschlussleitung_bewertung.bw_bs,
+						untersuchdat_anschlussleitung_bewertung.createdat,
 						anschlussleitungen.leitnam,
 						anschlussleitungen.material,
 						anschlussleitungen.hoehe
-					FROM untersuchdat_haltung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat , 0, 15 like ? 
+					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
 				"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		logger.debug(f'Start_forloop_Bewertung_Haltungen.liste: {datetime.now()}')
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 			# Tab A.2
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "A") or (
@@ -4704,7 +4801,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 				except:
 					pass
@@ -4727,7 +4824,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 					continue
 				except:
@@ -4753,7 +4850,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 				except:
 					pass
@@ -4776,7 +4873,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 					continue
 				except:
@@ -4796,7 +4893,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#     db.commit()
 						continue
 					except:
@@ -4818,7 +4915,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#     db.commit()
 						except:
 							pass
@@ -4842,7 +4939,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -4865,7 +4962,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -4890,7 +4987,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -4915,7 +5012,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -4929,7 +5026,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -4943,7 +5040,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -4958,7 +5055,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -4970,7 +5067,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -4982,7 +5079,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -4996,7 +5093,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5008,7 +5105,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5022,7 +5119,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5033,7 +5130,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5044,7 +5141,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5059,7 +5156,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5070,7 +5167,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5082,7 +5179,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5096,7 +5193,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5107,7 +5204,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5121,7 +5218,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5132,7 +5229,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5146,7 +5243,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5157,7 +5254,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5169,7 +5266,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5183,7 +5280,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5194,7 +5291,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5205,7 +5302,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5224,7 +5321,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -5245,7 +5342,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -5260,7 +5357,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5271,7 +5368,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5285,7 +5382,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5297,7 +5394,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5311,7 +5408,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5323,7 +5420,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5337,7 +5434,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5349,7 +5446,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5363,7 +5460,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5375,7 +5472,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5389,7 +5486,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5401,7 +5498,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5415,7 +5512,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5427,7 +5524,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5441,7 +5538,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5453,7 +5550,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5467,7 +5564,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5479,7 +5576,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5491,7 +5588,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5505,7 +5602,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5517,7 +5614,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5531,7 +5628,7 @@ class Zustandsklassen_funkt:
 											"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5545,7 +5642,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5557,7 +5654,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5569,7 +5666,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5626,7 +5723,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -5641,7 +5738,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5655,7 +5752,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5669,7 +5766,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5683,7 +5780,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5694,7 +5791,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5709,7 +5806,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5721,7 +5818,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5735,7 +5832,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5747,7 +5844,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5772,7 +5869,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5799,7 +5896,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -5823,7 +5920,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -5847,7 +5944,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -5859,7 +5956,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5884,7 +5981,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5896,7 +5993,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -5908,7 +6005,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -5934,7 +6031,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -5958,7 +6055,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -5982,7 +6079,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -5994,7 +6091,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6020,7 +6117,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6034,7 +6131,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6048,7 +6145,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6059,7 +6156,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6073,7 +6170,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6087,7 +6184,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6098,7 +6195,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6112,7 +6209,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6135,7 +6232,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6149,7 +6246,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6163,7 +6260,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6177,7 +6274,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6191,7 +6288,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6205,7 +6302,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6219,7 +6316,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6231,7 +6328,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6245,7 +6342,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6257,7 +6354,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6271,7 +6368,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6285,7 +6382,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6299,7 +6396,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6310,7 +6407,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6321,7 +6418,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6336,7 +6433,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6350,7 +6447,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6364,7 +6461,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6378,7 +6475,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6403,7 +6500,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6417,7 +6514,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6431,7 +6528,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6445,7 +6542,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6456,7 +6553,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6471,7 +6568,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6483,7 +6580,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6497,7 +6594,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6509,7 +6606,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6523,7 +6620,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6534,7 +6631,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -6548,7 +6645,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6559,7 +6656,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -6573,7 +6670,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6585,7 +6682,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -6599,7 +6696,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6620,7 +6717,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -6635,7 +6732,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6658,7 +6755,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6683,7 +6780,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6698,7 +6795,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6723,7 +6820,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6737,7 +6834,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6749,7 +6846,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6770,7 +6867,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -6785,7 +6882,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6808,7 +6905,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6833,7 +6930,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6848,7 +6945,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6860,7 +6957,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6872,7 +6969,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6886,7 +6983,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6898,7 +6995,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6910,7 +7007,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6924,7 +7021,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6935,7 +7032,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -6947,7 +7044,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -6961,7 +7058,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -6973,7 +7070,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -6987,7 +7084,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -7002,7 +7099,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -7013,7 +7110,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -7027,7 +7124,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -7042,7 +7139,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -7057,7 +7154,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -7071,7 +7168,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -7088,7 +7185,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -7099,7 +7196,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -7110,7 +7207,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -7129,7 +7226,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -7140,7 +7237,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -7151,7 +7248,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -7163,7 +7260,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, )
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -7174,7 +7271,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, )
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -7185,7 +7282,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, )
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -7197,43 +7294,51 @@ class Zustandsklassen_funkt:
 
 
 		sql = """CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+
+		sql = """SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+
+		try:
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
 			#db.commit()
 		except:
 			pass
@@ -7242,7 +7347,7 @@ class Zustandsklassen_funkt:
 		#Objektklasse berechnen für jede Haltung dafür abfragen
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung 
+			db.sql("""UPDATE haltungen_untersucht_bewertung 
 							SET objektklasse_dichtheit =
 							(SELECT min(Zustandsklasse_D) 
 							FROM untersuchdat_haltung_bewertung
@@ -7253,7 +7358,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung 
+			db.sql("""UPDATE haltungen_untersucht_bewertung 
 							SET objektklasse_standsicherheit =
 							(SELECT min(Zustandsklasse_S) 
 							FROM untersuchdat_haltung_bewertung
@@ -7264,7 +7369,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung 
+			db.sql("""UPDATE haltungen_untersucht_bewertung 
 							SET objektklasse_betriebssicherheit =
 							(SELECT min(Zustandsklasse_B) 
 							FROM untersuchdat_haltung_bewertung
@@ -7275,7 +7380,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung 
+			db.sql("""update haltungen_untersucht_bewertung 
 							set objektklasse_standsicherheit = '-'
 							WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -7283,7 +7388,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung 
+			db.sql("""update haltungen_untersucht_bewertung 
 							set objektklasse_dichtheit = '-'
 							WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -7291,7 +7396,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung 
+			db.sql("""update haltungen_untersucht_bewertung 
 							set objektklasse_betriebssicherheit = '-'
 							WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -7299,21 +7404,30 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-							haltungen_untersucht_bewertung
-							SET
-							objektklasse_gesamt =
-							(
-							   SELECT MIN(wert)
-							   FROM (
-								   SELECT objektklasse_dichtheit AS wert
-								   UNION ALL
-								   SELECT objektklasse_standsicherheit
-								   UNION ALL
-								   SELECT objektklasse_betriebssicherheit
-							   )
-							   WHERE wert IS NOT NULL
-						   );""")
+			db.sql("""Update
+						haltungen_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_haltung_bewertung WHERE untersuchdat_haltung_bewertung.untersuchhal = haltungen_untersucht_bewertung.haltnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);""")
 			db.commit()
 		except:
 			pass
@@ -7321,7 +7435,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -7329,7 +7450,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -7337,7 +7465,7 @@ class Zustandsklassen_funkt:
 		logger.debug(f'Ende_Bewertung_Haltungen.liste: {datetime.now()}')
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
@@ -7364,7 +7492,7 @@ class Zustandsklassen_funkt:
 
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -7390,22 +7518,24 @@ class Zustandsklassen_funkt:
 
 
 	def bewertung_dwa_leitung(self):
-		date = self.date+'%'
-		db_x = self.db
+		date = self.date
+		db = self.db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-
-		data = db_x
-
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
 
 		logger.debug(f'Start_Bewertung_Haltungen.liste: {datetime.now()}')
 		# nach DWA
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung"""
-		curs1.execute(sql)
+		db.sql(sql)
+
+		sql = """SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		if leitung is True:
 			sql = """
@@ -7419,17 +7549,17 @@ class Zustandsklassen_funkt:
 				"""
 
 		try:
-			curs1.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs1.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs1.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -7450,7 +7580,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -7471,42 +7601,38 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 			else:
 				continue
-		db1.commit()
-
-
-		db = spatialite_connect(db_x)
-		curs = db.cursor()
+		db.commit()
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_D = NULL ;""")
+			db.sql("""update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_D = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_B = NULL ;""")
+			db.sql("""update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_B = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_S = NULL ;""")
+			db.sql("""update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_S = NULL ;""")
 		except:
 			pass
 
@@ -7545,11 +7671,11 @@ class Zustandsklassen_funkt:
 						anschlussleitungen.hoehe,
 						anschlussleitungen.createdat
 					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchhal AND untersuchdat_anschlussleitung_bewertung.createdat , 0, 15 like ? 
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120  
 				"""
 				data = (date, )
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Befahrungsdatum':
 
@@ -7584,15 +7710,15 @@ class Zustandsklassen_funkt:
 						anschlussleitungen.hoehe,
 						anschlussleitungen.createdat
 					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchhal AND untersuchdat_anschlussleitung_bewertung.untersuchtag , 0, 15 like ? 
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 				"""
 				data = (date,)
 
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		logger.debug(f'Start_forloop_Bewertung_Haltungen.liste: {datetime.now()}')
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 
 			# Tab A.2
@@ -7617,7 +7743,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 				except:
 					pass
@@ -7640,7 +7766,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 					continue
 				except:
@@ -7666,7 +7792,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 				except:
 					pass
@@ -7689,7 +7815,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					db.commit()
 					continue
 				except:
@@ -7709,7 +7835,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#     db.commit()
 						continue
 					except:
@@ -7731,7 +7857,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						#     db.commit()
 						except:
 							pass
@@ -7755,7 +7881,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -7778,7 +7904,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -7803,7 +7929,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -7828,7 +7954,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -7842,7 +7968,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -7856,7 +7982,7 @@ class Zustandsklassen_funkt:
 											"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -7871,7 +7997,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7883,7 +8009,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7895,7 +8021,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -7909,7 +8035,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7921,7 +8047,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -7935,7 +8061,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7946,7 +8072,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7957,7 +8083,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -7972,7 +8098,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7983,7 +8109,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -7995,7 +8121,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8009,7 +8135,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8020,7 +8146,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8034,7 +8160,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8045,7 +8171,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8059,7 +8185,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8070,7 +8196,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8082,7 +8208,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8096,7 +8222,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8107,7 +8233,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8118,7 +8244,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8137,7 +8263,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -8158,7 +8284,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -8173,7 +8299,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8184,7 +8310,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8198,7 +8324,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8210,7 +8336,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8224,7 +8350,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8236,7 +8362,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8250,7 +8376,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8262,7 +8388,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8276,7 +8402,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8288,7 +8414,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8302,7 +8428,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8314,7 +8440,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8328,7 +8454,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8340,7 +8466,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8354,7 +8480,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8366,7 +8492,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8380,7 +8506,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8392,7 +8518,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8404,7 +8530,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8418,7 +8544,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8430,7 +8556,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8444,7 +8570,7 @@ class Zustandsklassen_funkt:
 														"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8458,7 +8584,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8470,7 +8596,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8482,7 +8608,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8537,7 +8663,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -8552,7 +8678,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8566,7 +8692,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8580,7 +8706,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8594,7 +8720,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8605,7 +8731,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8620,7 +8746,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8632,7 +8758,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8640,25 +8766,25 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_haltung_bewertung
 										SET Zustandsklasse_D = ?
 										WHERE untersuchdat_haltung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
 					z = '3'
-					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
-										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+					sql = f""" 
+								UPDATE untersuchdat_haltung_bewertung
+									SET Zustandsklasse_B = ?
+									WHERE untersuchdat_haltung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8683,7 +8809,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8710,7 +8836,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -8734,7 +8860,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -8758,7 +8884,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -8770,7 +8896,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8795,7 +8921,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8807,7 +8933,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8819,7 +8945,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8845,7 +8971,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -8869,7 +8995,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -8893,7 +9019,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -8905,7 +9031,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8931,7 +9057,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8945,7 +9071,7 @@ class Zustandsklassen_funkt:
 													"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8959,7 +9085,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -8970,7 +9096,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8984,7 +9110,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -8998,7 +9124,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9009,7 +9135,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9023,7 +9149,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9046,7 +9172,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9060,7 +9186,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9074,7 +9200,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9088,7 +9214,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9102,7 +9228,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9116,7 +9242,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9130,7 +9256,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9142,7 +9268,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9156,7 +9282,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9168,7 +9294,7 @@ class Zustandsklassen_funkt:
 													"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9182,7 +9308,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9196,7 +9322,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9210,7 +9336,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9221,7 +9347,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9232,7 +9358,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9247,7 +9373,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9261,7 +9387,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9275,7 +9401,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9289,7 +9415,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9314,7 +9440,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9328,7 +9454,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9342,7 +9468,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9356,7 +9482,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9367,7 +9493,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9382,7 +9508,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9394,7 +9520,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9408,7 +9534,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9420,7 +9546,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9434,7 +9560,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9445,7 +9571,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9459,7 +9585,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9470,7 +9596,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9484,7 +9610,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9496,7 +9622,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9510,7 +9636,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9531,7 +9657,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9546,7 +9672,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9569,7 +9695,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9594,7 +9720,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9609,7 +9735,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9634,7 +9760,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9648,7 +9774,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9660,7 +9786,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9681,7 +9807,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9696,7 +9822,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9719,7 +9845,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9744,7 +9870,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9759,7 +9885,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9771,7 +9897,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9783,7 +9909,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9797,7 +9923,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9809,7 +9935,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9821,7 +9947,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9835,7 +9961,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9846,7 +9972,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9858,7 +9984,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9872,7 +9998,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -9884,7 +10010,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9898,7 +10024,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -9913,7 +10039,7 @@ class Zustandsklassen_funkt:
 													"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -9924,7 +10050,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9938,7 +10064,7 @@ class Zustandsklassen_funkt:
 											"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9953,7 +10079,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -9968,7 +10094,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9982,7 +10108,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -9998,7 +10124,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -10009,7 +10135,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -10020,7 +10146,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -10039,7 +10165,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -10050,7 +10176,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -10061,7 +10187,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -10073,7 +10199,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, )
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -10084,7 +10210,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, )
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -10095,7 +10221,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, )
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -10107,43 +10233,51 @@ class Zustandsklassen_funkt:
 
 
 		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+
+		sql = """SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+
+		try:
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
 			#db.commit()
 		except:
 			pass
@@ -10152,7 +10286,7 @@ class Zustandsklassen_funkt:
 		#Objektklasse berechnen für jede Haltung dafür abfragen
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung 
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung 
 							SET objektklasse_dichtheit =
 							(SELECT min(Zustandsklasse_D) 
 							FROM untersuchdat_anschlussleitung_bewertung
@@ -10163,7 +10297,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung 
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung 
 							SET objektklasse_standsicherheit =
 							(SELECT min(Zustandsklasse_S) 
 							FROM untersuchdat_anschlussleitung_bewertung
@@ -10174,7 +10308,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung 
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung 
 							SET objektklasse_betriebssicherheit =
 							(SELECT min(Zustandsklasse_B) 
 							FROM untersuchdat_anschlussleitung_bewertung
@@ -10185,7 +10319,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung 
+			db.sql("""update anschlussleitungen_untersucht_bewertung 
 							set objektklasse_standsicherheit = '-'
 							WHERE objektklasse_standsicherheit IS NULL;""")
 			#db.commit()
@@ -10193,7 +10327,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung 
+			db.sql("""update anschlussleitungen_untersucht_bewertung 
 							set objektklasse_dichtheit = '-'
 							WHERE objektklasse_dichtheit IS NULL;""")
 			#db.commit()
@@ -10201,7 +10335,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung 
+			db.sql("""update anschlussleitungen_untersucht_bewertung 
 							set objektklasse_betriebssicherheit = '-'
 							WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -10209,21 +10343,30 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-							anschlussleitungen_untersucht_bewertung
-							SET
-							objektklasse_gesamt =
-							(
-							   SELECT MIN(wert)
-							   FROM (
-								   SELECT objektklasse_dichtheit AS wert
-								   UNION ALL
-								   SELECT objektklasse_standsicherheit
-								   UNION ALL
-								   SELECT objektklasse_betriebssicherheit
-							   )
-							   WHERE wert IS NOT NULL
-						   );""")
+			db.sql("""Update
+						anschlussleitungen_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_anschlussleitung_bewertung WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.leitnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);""")
 			db.commit()
 		except:
 			pass
@@ -10231,7 +10374,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -10239,7 +10389,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -10247,7 +10404,7 @@ class Zustandsklassen_funkt:
 		logger.debug(f'Ende_Bewertung_Haltungen.liste: {datetime.now()}')
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
@@ -10274,7 +10431,7 @@ class Zustandsklassen_funkt:
 
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -10300,20 +10457,23 @@ class Zustandsklassen_funkt:
 
 
 	def bewertung_dwa_schacht(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
 		crs = self.crs
-		db_x = db
 
-		data = db
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
 		# nach DWA
 
 		logger.debug(f'Start_Bewertung_Schaechte.liste: {datetime.now()}')
 
 		sql = """CREATE TABLE IF NOT EXISTS Untersuchdat_schacht_bewertung AS SELECT * FROM Untersuchdat_schacht"""
-		curs1.execute(sql)
+		db.sql(sql)
+
+		sql = """SELECT CreateSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		sql = """
 			SELECT
@@ -10325,16 +10485,16 @@ class Zustandsklassen_funkt:
 		"""
 
 		try:
-			curs1.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
 
-		for attr1 in curs1.fetchall():
+		for attr1 in db.fetchall():
 			try:
-				curs1.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -10355,7 +10515,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -10376,39 +10536,37 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
-		db1.commit()
+		db.commit()
 
-		db = spatialite_connect(db_x)
-		curs = db.cursor()
 
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
-		except:
-			pass
-
-		try:
-			curs.execute("""update Untersuchdat_schacht_bewertung set Zustandsklasse_D = NULL ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update Untersuchdat_schacht_bewertung set Zustandsklasse_B = NULL ;""")
+			db.sql("""update Untersuchdat_schacht_bewertung set Zustandsklasse_D = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update Untersuchdat_schacht_bewertung set Zustandsklasse_S = NULL ;""")
+			db.sql("""update Untersuchdat_schacht_bewertung set Zustandsklasse_B = NULL ;""")
+		except:
+			pass
+
+		try:
+			db.sql("""update Untersuchdat_schacht_bewertung set Zustandsklasse_S = NULL ;""")
 		except:
 			pass
 
@@ -10436,10 +10594,10 @@ class Zustandsklassen_funkt:
 					Untersuchdat_schacht_bewertung.bw_bs,
 					Untersuchdat_schacht_bewertung.createdat
 				FROM Untersuchdat_schacht_bewertung  
-				WHERE Untersuchdat_schacht_bewertung.createdat like ?  
+				WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
 			"""
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Befahrungsdatum':
 
@@ -10463,13 +10621,13 @@ class Zustandsklassen_funkt:
 					Untersuchdat_schacht_bewertung.bw_bs,
 					Untersuchdat_schacht_bewertung.untersuchtag
 				FROM Untersuchdat_schacht_bewertung  
-				WHERE Untersuchdat_schacht_bewertung.untersuchtag like ?  
+				WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
 			"""
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 			if attr[5] == "DAA" and attr[6] in ["A", "B"]:
 				if attr[8] >= 40:
@@ -10491,7 +10649,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -10503,7 +10661,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -10528,7 +10686,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -10542,7 +10700,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -10559,7 +10717,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10571,7 +10729,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10582,7 +10740,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10598,7 +10756,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10609,7 +10767,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10621,7 +10779,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10641,7 +10799,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10653,7 +10811,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10664,7 +10822,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10689,7 +10847,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10703,7 +10861,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10717,7 +10875,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10734,7 +10892,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10746,7 +10904,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10757,7 +10915,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10771,7 +10929,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10783,7 +10941,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10794,7 +10952,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10807,7 +10965,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10818,7 +10976,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10834,7 +10992,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10846,7 +11004,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10857,7 +11015,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10871,7 +11029,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10883,7 +11041,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10894,7 +11052,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10907,7 +11065,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10923,7 +11081,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10935,7 +11093,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10946,7 +11104,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -10960,7 +11118,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10972,7 +11130,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10983,7 +11141,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -10996,7 +11154,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11007,7 +11165,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11024,7 +11182,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11037,7 +11195,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11050,7 +11208,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11062,7 +11220,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11076,7 +11234,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11092,7 +11250,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11105,7 +11263,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11118,7 +11276,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11132,7 +11290,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11148,7 +11306,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11161,7 +11319,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11175,7 +11333,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11191,7 +11349,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11204,7 +11362,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11217,7 +11375,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11230,7 +11388,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11251,7 +11409,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -11269,7 +11427,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -11290,7 +11448,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -11307,7 +11465,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11321,7 +11479,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11336,7 +11494,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11350,7 +11508,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11365,7 +11523,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -11379,7 +11537,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -11394,7 +11552,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11408,7 +11566,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11423,7 +11581,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11437,7 +11595,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11452,7 +11610,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11466,7 +11624,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11481,7 +11639,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11495,7 +11653,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11510,7 +11668,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11524,7 +11682,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11539,7 +11697,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11552,7 +11710,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11567,7 +11725,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -11579,7 +11737,7 @@ class Zustandsklassen_funkt:
 												"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -11593,7 +11751,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -11608,7 +11766,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11621,7 +11779,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11649,7 +11807,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11663,7 +11821,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11679,7 +11837,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11693,7 +11851,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11708,7 +11866,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11723,7 +11881,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11739,7 +11897,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11753,7 +11911,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							#curs.execute(sql, data)
+							#db.sql(sql, parameters=data)
 							db.commit()
 						except:
 							pass
@@ -11766,7 +11924,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11781,7 +11939,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11796,7 +11954,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -11809,7 +11967,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -11837,7 +11995,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11862,7 +12020,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11876,7 +12034,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11891,7 +12049,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11905,7 +12063,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11916,7 +12074,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11931,7 +12089,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11944,7 +12102,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -11960,7 +12118,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -11984,7 +12142,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12009,7 +12167,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12023,7 +12181,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12037,7 +12195,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12051,7 +12209,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12066,7 +12224,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12080,7 +12238,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12096,7 +12254,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12110,7 +12268,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12125,7 +12283,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12139,7 +12297,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12154,7 +12312,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12167,7 +12325,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12181,7 +12339,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12197,7 +12355,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12211,7 +12369,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12225,7 +12383,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12240,7 +12398,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12251,7 +12409,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12262,7 +12420,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12278,7 +12436,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12292,7 +12450,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12307,7 +12465,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12322,7 +12480,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12336,7 +12494,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12351,7 +12509,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12365,7 +12523,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12391,7 +12549,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12416,7 +12574,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12431,7 +12589,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12445,7 +12603,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12460,7 +12618,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12474,7 +12632,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12488,7 +12646,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -12499,7 +12657,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12515,7 +12673,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12528,7 +12686,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12542,7 +12700,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12558,7 +12716,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12571,7 +12729,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12585,7 +12743,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12601,7 +12759,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12614,7 +12772,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12628,7 +12786,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12644,7 +12802,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -12657,7 +12815,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12671,7 +12829,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12686,7 +12844,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -12699,7 +12857,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12713,7 +12871,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12728,7 +12886,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -12741,7 +12899,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12755,7 +12913,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12770,7 +12928,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12784,7 +12942,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12798,7 +12956,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12812,7 +12970,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12827,7 +12985,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12841,7 +12999,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12855,7 +13013,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12869,7 +13027,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12883,7 +13041,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12899,7 +13057,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12912,7 +13070,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -12924,7 +13082,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12939,7 +13097,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -12952,7 +13110,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -12977,7 +13135,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -12991,7 +13149,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -13006,7 +13164,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -13019,7 +13177,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13033,7 +13191,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -13045,7 +13203,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13060,7 +13218,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13075,7 +13233,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13088,7 +13246,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13100,7 +13258,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13114,7 +13272,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13129,7 +13287,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13142,7 +13300,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13154,7 +13312,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13170,7 +13328,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13183,7 +13341,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13195,7 +13353,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13210,7 +13368,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13223,7 +13381,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13235,7 +13393,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13250,7 +13408,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13263,7 +13421,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -13275,7 +13433,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13289,7 +13447,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -13301,7 +13459,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -13315,7 +13473,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -13329,7 +13487,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -13344,7 +13502,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13358,7 +13516,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13373,7 +13531,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -13386,7 +13544,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13401,7 +13559,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -13415,7 +13573,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -13429,7 +13587,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -13444,7 +13602,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13458,7 +13616,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -13474,7 +13632,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -13485,7 +13643,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -13496,7 +13654,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -13515,7 +13673,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -13526,7 +13684,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -13537,7 +13695,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -13549,7 +13707,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -13560,7 +13718,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -13571,7 +13729,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -13584,48 +13742,54 @@ class Zustandsklassen_funkt:
 
 
 		sql = """CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
 		#db.commit()
+		sql = """SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
 			#db.commit()
 		except:
 			pass
@@ -13634,7 +13798,7 @@ class Zustandsklassen_funkt:
 		# objektklasse berechnen für jede Schacht dafür abfragen
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_dichtheit =
 									(SELECT min(Zustandsklasse_D) 
 									FROM Untersuchdat_schacht_bewertung
@@ -13645,7 +13809,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_standsicherheit =
 									(SELECT min(Zustandsklasse_S) 
 									FROM Untersuchdat_schacht_bewertung
@@ -13656,7 +13820,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_betriebssicherheit =
 									(SELECT min(Zustandsklasse_B) 
 									FROM Untersuchdat_schacht_bewertung
@@ -13667,7 +13831,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_standsicherheit = '-'
 									WHERE objektklasse_standsicherheit IS NULL;""")
 			#db.commit()
@@ -13675,7 +13839,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_dichtheit = '-'
 									WHERE objektklasse_dichtheit IS NULL;""")
 			#db.commit()
@@ -13683,7 +13847,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_betriebssicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 			#db.commit()
@@ -13691,21 +13855,31 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-									schaechte_untersucht_bewertung
-									set
-									objektklasse_gesamt =
-									(
-									   SELECT MIN(wert)
-									   FROM (
-										   SELECT objektklasse_dichtheit AS wert
-										   UNION ALL
-										   SELECT objektklasse_standsicherheit
-										   UNION ALL
-										   SELECT objektklasse_betriebssicherheit
-									   )
-									   WHERE wert IS NOT NULL
-								   );""")
+			db.sql("""Update
+						schaechte_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_schacht_bewertung WHERE untersuchdat_schacht_bewertung.untersuchsch = schaechte_untersucht_bewertung.schnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);"""
+					)
 			db.commit()
 		except:
 			pass
@@ -13713,7 +13887,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -13721,13 +13902,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
@@ -13754,7 +13942,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geop'
@@ -13780,21 +13968,24 @@ class Zustandsklassen_funkt:
 
 
 	def bewertung_isy_haltung(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		db_x = db
-		data = db
+
 		leitung = self.leitung
 		haltung = self.haltung
 		crs = self.crs
 
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
 
 		# nach Isybau
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung"""
-		curs1.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		if haltung is True:
 			sql = """
@@ -13819,16 +14010,16 @@ class Zustandsklassen_funkt:
 			"""
 
 		try:
-			curs1.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs1.fetchall():
+		for attr1 in db.fetchall():
 			untersuchhalt = attr1[0]
 			try:
-				curs1.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -13849,7 +14040,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -13870,40 +14061,37 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
-		db1.commit()
+		db.commit()
 
-		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Schadensklasse_D = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Schadensklasse_D = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Schadensklasse_S = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Schadensklasse_S = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Schadensklasse_B = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Schadensklasse_B = NULL ;""")
 		except:
 			pass
 
@@ -13941,46 +14129,46 @@ class Zustandsklassen_funkt:
 						haltungen.material,
 						haltungen.hoehe
 					FROM untersuchdat_haltung_bewertung, Haltungen
-					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ?
+					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
 				"""
 				data = (date, )
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			elif leitung is True:
 				sql = """
 				
 					SELECT
-						untersuchdat_haltung_bewertung.pk,
-						untersuchdat_haltung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.pk,
+						untersuchdat_anschlussleitung_bewertung.untersuchhal,
 						anschlussleitungen.createdat,
-						untersuchdat_haltung_bewertung.schoben,
-						untersuchdat_haltung_bewertung.schunten,
-						untersuchdat_haltung_bewertung.id,
-						untersuchdat_haltung_bewertung.videozaehler,
-						untersuchdat_haltung_bewertung.inspektionslaenge,
-						untersuchdat_haltung_bewertung.station,
-						untersuchdat_haltung_bewertung.timecode,
-						untersuchdat_haltung_bewertung.kuerzel,
-						untersuchdat_haltung_bewertung.charakt1,
-						untersuchdat_haltung_bewertung.charakt2,
-						untersuchdat_haltung_bewertung.quantnr1,
-						untersuchdat_haltung_bewertung.quantnr2,
-						untersuchdat_haltung_bewertung.streckenschaden,
-						untersuchdat_haltung_bewertung.pos_von,
-						untersuchdat_haltung_bewertung.pos_bis,
-						untersuchdat_haltung_bewertung.foto_dateiname,
-						untersuchdat_haltung_bewertung.film_dateiname,
+						untersuchdat_anschlussleitung_bewertung.schoben,
+						untersuchdat_anschlussleitung_bewertung.schunten,
+						untersuchdat_anschlussleitung_bewertung.id,
+						untersuchdat_anschlussleitung_bewertung.videozaehler,
+						untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+						untersuchdat_anschlussleitung_bewertung.station,
+						untersuchdat_anschlussleitung_bewertung.timecode,
+						untersuchdat_anschlussleitung_bewertung.kuerzel,
+						untersuchdat_anschlussleitung_bewertung.charakt1,
+						untersuchdat_anschlussleitung_bewertung.charakt2,
+						untersuchdat_anschlussleitung_bewertung.quantnr1,
+						untersuchdat_anschlussleitung_bewertung.quantnr2,
+						untersuchdat_anschlussleitung_bewertung.streckenschaden,
+						untersuchdat_anschlussleitung_bewertung.pos_von,
+						untersuchdat_anschlussleitung_bewertung.pos_bis,
+						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+						untersuchdat_anschlussleitung_bewertung.film_dateiname,
 						NULL,
-						untersuchdat_haltung_bewertung.bw_bs,
-						untersuchdat_haltung_bewertung.createdat,
+						untersuchdat_anschlussleitung_bewertung.bw_bs,
+						untersuchdat_anschlussleitung_bewertung.createdat,
 						anschlussleitungen.leitnam,
 						anschlussleitungen.material,
 						anschlussleitungen.hoehe
-					FROM untersuchdat_haltung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.createdat like ? 
+					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120 
 				"""
 				data = (date, )
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Befahrungsdatum':
 
@@ -14014,49 +14202,49 @@ class Zustandsklassen_funkt:
 						haltungen.material,
 						haltungen.hoehe
 					FROM untersuchdat_haltung_bewertung, Haltungen
-					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ?
+					WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
 				"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			elif leitung is True:
 				sql = """
 
 					SELECT
-						untersuchdat_haltung_bewertung.pk,
-						untersuchdat_haltung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.pk,
+						untersuchdat_anschlussleitung_bewertung.untersuchhal,
 						anschlussleitungen.createdat,
-						untersuchdat_haltung_bewertung.schoben,
-						untersuchdat_haltung_bewertung.schunten,
-						untersuchdat_haltung_bewertung.id,
-						untersuchdat_haltung_bewertung.videozaehler,
-						untersuchdat_haltung_bewertung.inspektionslaenge,
-						untersuchdat_haltung_bewertung.station,
-						untersuchdat_haltung_bewertung.timecode,
-						untersuchdat_haltung_bewertung.kuerzel,
-						untersuchdat_haltung_bewertung.charakt1,
-						untersuchdat_haltung_bewertung.charakt2,
-						untersuchdat_haltung_bewertung.quantnr1,
-						untersuchdat_haltung_bewertung.quantnr2,
-						untersuchdat_haltung_bewertung.streckenschaden,
-						untersuchdat_haltung_bewertung.pos_von,
-						untersuchdat_haltung_bewertung.pos_bis,
-						untersuchdat_haltung_bewertung.foto_dateiname,
-						untersuchdat_haltung_bewertung.film_dateiname,
+						untersuchdat_anschlussleitung_bewertung.schoben,
+						untersuchdat_anschlussleitung_bewertung.schunten,
+						untersuchdat_anschlussleitung_bewertung.id,
+						untersuchdat_anschlussleitung_bewertung.videozaehler,
+						untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+						untersuchdat_anschlussleitung_bewertung.station,
+						untersuchdat_anschlussleitung_bewertung.timecode,
+						untersuchdat_anschlussleitung_bewertung.kuerzel,
+						untersuchdat_anschlussleitung_bewertung.charakt1,
+						untersuchdat_anschlussleitung_bewertung.charakt2,
+						untersuchdat_anschlussleitung_bewertung.quantnr1,
+						untersuchdat_anschlussleitung_bewertung.quantnr2,
+						untersuchdat_anschlussleitung_bewertung.streckenschaden,
+						untersuchdat_anschlussleitung_bewertung.pos_von,
+						untersuchdat_anschlussleitung_bewertung.pos_bis,
+						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+						untersuchdat_anschlussleitung_bewertung.film_dateiname,
 						NULL,
-						untersuchdat_haltung_bewertung.bw_bs,
-						untersuchdat_haltung_bewertung.untersuchtag,
+						untersuchdat_anschlussleitung_bewertung.bw_bs,
+						untersuchdat_anschlussleitung_bewertung.untersuchtag,
 						anschlussleitungen.leitnam,
 						anschlussleitungen.material,
 						anschlussleitungen.hoehe
-					FROM untersuchdat_haltung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal AND untersuchdat_haltung_bewertung.untersuchtag like ? 
+					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 				"""
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
@@ -14075,7 +14263,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -14098,7 +14286,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -14124,7 +14312,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -14148,7 +14336,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -14165,7 +14353,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14176,7 +14364,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14190,7 +14378,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14212,7 +14400,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14225,7 +14413,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14239,7 +14427,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14255,7 +14443,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14268,7 +14456,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						db.commit()
 					except:
 						pass
@@ -14280,7 +14468,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14294,7 +14482,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14305,7 +14493,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14316,7 +14504,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14331,7 +14519,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14342,7 +14530,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14354,7 +14542,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14368,7 +14556,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14379,7 +14567,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14393,7 +14581,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14404,7 +14592,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14415,7 +14603,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14429,7 +14617,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14440,7 +14628,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14451,7 +14639,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14471,7 +14659,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -14490,7 +14678,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -14505,7 +14693,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14516,7 +14704,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14530,7 +14718,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14542,7 +14730,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14556,7 +14744,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14568,7 +14756,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14582,7 +14770,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14594,7 +14782,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14608,7 +14796,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14620,7 +14808,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14634,7 +14822,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14646,7 +14834,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14660,7 +14848,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14672,7 +14860,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14686,7 +14874,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14698,7 +14886,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14712,7 +14900,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14724,7 +14912,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14736,7 +14924,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14750,7 +14938,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14762,7 +14950,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14776,7 +14964,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14790,7 +14978,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14801,7 +14989,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14812,7 +15000,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14837,7 +15025,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -14852,7 +15040,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14866,7 +15054,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14880,7 +15068,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14895,7 +15083,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14907,7 +15095,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14921,7 +15109,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -14933,7 +15121,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14958,7 +15146,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -14985,7 +15173,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15009,7 +15197,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15033,7 +15221,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15045,7 +15233,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15070,7 +15258,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15082,7 +15270,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15099,7 +15287,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15125,7 +15313,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15149,7 +15337,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15173,7 +15361,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15185,7 +15373,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15211,7 +15399,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15225,7 +15413,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15239,7 +15427,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15250,7 +15438,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15265,7 +15453,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -15278,7 +15466,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -15293,7 +15481,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15316,7 +15504,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15330,7 +15518,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15344,7 +15532,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15358,7 +15546,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15372,7 +15560,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15386,7 +15574,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15400,7 +15588,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15414,7 +15602,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15425,7 +15613,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15439,7 +15627,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15453,7 +15641,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15467,7 +15655,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15478,7 +15666,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15489,7 +15677,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15504,7 +15692,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15518,7 +15706,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15543,7 +15731,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15557,7 +15745,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15571,7 +15759,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15585,7 +15773,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15596,7 +15784,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15611,7 +15799,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15624,7 +15812,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15638,7 +15826,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15652,7 +15840,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -15663,7 +15851,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -15677,7 +15865,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -15688,7 +15876,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -15702,7 +15890,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -15714,7 +15902,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -15729,7 +15917,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15750,7 +15938,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15774,7 +15962,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15799,7 +15987,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -15813,7 +16001,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -15825,7 +16013,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -15846,7 +16034,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -15861,7 +16049,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15886,7 +16074,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15901,7 +16089,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15913,7 +16101,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15925,7 +16113,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15939,7 +16127,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15952,7 +16140,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15965,7 +16153,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -15977,7 +16165,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -15991,7 +16179,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -16003,12 +16191,12 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
 					pass
-			#TODO: BBH nicht mehr enthalten in isybau?
+			# BBH nicht mehr enthalten in isybau
 			elif attr[10] == "BDB":
 				if attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 					z = '2'
@@ -16019,7 +16207,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -16030,7 +16218,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -16044,7 +16232,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -16058,7 +16246,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -16073,7 +16261,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -16087,7 +16275,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -16103,7 +16291,7 @@ class Zustandsklassen_funkt:
 								   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -16114,7 +16302,7 @@ class Zustandsklassen_funkt:
 								   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -16125,7 +16313,7 @@ class Zustandsklassen_funkt:
 								   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -16144,7 +16332,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -16155,7 +16343,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -16166,7 +16354,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -16178,7 +16366,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -16189,7 +16377,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -16200,31 +16388,31 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN vorlaufige_Schadenszahl_D INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN vorlaufige_Schadenszahl_B INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN vorlaufige_Schadenszahl_S INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_haltung_bewertung
 					SET vorlaufige_Schadenszahl_D = (Case 
 					WHEN Schadensklasse_D = 1  THEN 10
@@ -16239,7 +16427,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_haltung_bewertung
 					SET vorlaufige_Schadenszahl_B = (Case 
 					WHEN Schadensklasse_B = 1  THEN 10
@@ -16254,7 +16442,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_haltung_bewertung
 					SET vorlaufige_Schadenszahl_S = (Case 
 					WHEN Schadensklasse_S = 1  THEN 10
@@ -16271,13 +16459,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
@@ -16302,40 +16497,46 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		sql = """CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
 			#db.commit()
 		except:
 			pass
@@ -16343,13 +16544,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -16374,21 +16582,23 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def bewertung_isy_leitung(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		db_x = db
-		data = db
 		leitung = self.leitung
 		haltung = self.haltung
 		crs = self.crs
 
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
 
 		# nach Isybau
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung"""
-		curs1.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		if leitung is True:
 			sql = """
@@ -16402,16 +16612,16 @@ class Zustandsklassen_funkt:
 			"""
 
 		try:
-			curs1.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs1.fetchall():
+		for attr1 in db.fetchall():
 			untersuchleitt = attr1[0]
 			try:
-				curs1.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -16432,7 +16642,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -16453,38 +16663,35 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
-		db1.commit()
+		db.commit()
 
-		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Schadensklasse_D = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Schadensklasse_D = NULL ;""")
 		except:
 			pass
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Schadensklasse_S = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Schadensklasse_S = NULL ;""")
 		except:
 			pass
 		try:
-			curs.execute("""update untersuchdat_haltung_bewertung set Schadensklasse_B = NULL ;""")
+			db.sql("""update untersuchdat_haltung_bewertung set Schadensklasse_B = NULL ;""")
 		except:
 			pass
 
@@ -16523,10 +16730,10 @@ class Zustandsklassen_funkt:
 						anschlussleitungen.hoehe,
 						anschlussleitungen.createdat
 					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND untersuchdat_anschlussleitung_bewertung.createdat like ? 
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120  
 				"""
 				data = (date, )
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -16561,13 +16768,13 @@ class Zustandsklassen_funkt:
 						anschlussleitungen.hoehe,
 						anschlussleitungen.createdat
 					FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
-					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND untersuchdat_anschlussleitung_bewertung.untersuchtag like ? 
+					WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
 				"""
 				data = (date, )
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
@@ -16587,7 +16794,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -16610,7 +16817,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -16636,7 +16843,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -16660,7 +16867,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -16677,7 +16884,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16688,7 +16895,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16702,7 +16909,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16724,7 +16931,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16737,7 +16944,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16751,7 +16958,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16767,7 +16974,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16780,7 +16987,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						db.commit()
 					except:
 						pass
@@ -16792,12 +16999,12 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
 						pass
-				if attr[11] == "C":
+				elif attr[11] == "C":
 					z = '5'
 					sql = f"""
 						  UPDATE untersuchdat_haltung_bewertung
@@ -16806,7 +17013,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16817,7 +17024,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16828,7 +17035,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16843,7 +17050,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16854,7 +17061,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16866,7 +17073,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16880,7 +17087,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16891,7 +17098,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16905,7 +17112,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16916,7 +17123,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16927,7 +17134,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16941,7 +17148,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16952,7 +17159,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -16963,7 +17170,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -16983,7 +17190,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -17002,7 +17209,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -17017,7 +17224,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17028,7 +17235,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17042,7 +17249,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17054,7 +17261,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17068,7 +17275,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17080,7 +17287,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17094,7 +17301,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17106,7 +17313,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17120,7 +17327,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17132,7 +17339,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17146,7 +17353,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17158,7 +17365,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17172,7 +17379,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17184,7 +17391,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17198,7 +17405,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17210,7 +17417,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17224,7 +17431,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17236,7 +17443,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17248,7 +17455,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17262,7 +17469,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17274,7 +17481,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17288,7 +17495,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17302,7 +17509,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17313,7 +17520,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17324,7 +17531,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17349,7 +17556,7 @@ class Zustandsklassen_funkt:
 							"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -17364,7 +17571,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17378,7 +17585,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17392,7 +17599,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17407,7 +17614,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17419,7 +17626,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17433,7 +17640,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17445,7 +17652,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17470,7 +17677,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17497,7 +17704,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17521,7 +17728,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17545,7 +17752,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17557,7 +17764,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17582,7 +17789,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17594,7 +17801,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17611,7 +17818,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17637,7 +17844,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17661,7 +17868,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17685,7 +17892,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17697,7 +17904,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17723,7 +17930,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17737,7 +17944,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17751,7 +17958,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17762,7 +17969,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17777,7 +17984,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -17790,7 +17997,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -17805,7 +18012,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17828,7 +18035,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17842,7 +18049,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17856,7 +18063,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17870,7 +18077,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17884,7 +18091,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17898,7 +18105,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17912,7 +18119,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17926,7 +18133,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17937,7 +18144,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17951,7 +18158,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17965,7 +18172,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -17979,7 +18186,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -17990,7 +18197,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18001,7 +18208,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18016,7 +18223,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18030,7 +18237,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18055,7 +18262,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18069,7 +18276,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18083,7 +18290,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18097,7 +18304,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18108,7 +18315,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18123,7 +18330,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18136,7 +18343,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18150,7 +18357,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18164,7 +18371,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -18175,7 +18382,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18189,7 +18396,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -18200,7 +18407,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18214,7 +18421,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -18226,7 +18433,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18241,7 +18448,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18262,7 +18469,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18286,7 +18493,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18311,7 +18518,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18325,7 +18532,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -18337,7 +18544,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -18358,7 +18565,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18373,7 +18580,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18398,7 +18605,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18413,7 +18620,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18425,7 +18632,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18437,7 +18644,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18451,7 +18658,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18464,7 +18671,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18477,7 +18684,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18489,7 +18696,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18503,7 +18710,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -18515,12 +18722,12 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
 					pass
-			# TODO: BBH nicht mehr enthalten in isybau?
+			#BBH nicht mehr enthalten in isybau?
 			elif attr[10] == "BDB":
 				if attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 					z = '2'
@@ -18531,7 +18738,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -18542,7 +18749,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18556,7 +18763,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18570,7 +18777,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18585,7 +18792,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18599,7 +18806,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -18615,7 +18822,7 @@ class Zustandsklassen_funkt:
 								   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -18626,7 +18833,7 @@ class Zustandsklassen_funkt:
 								   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -18637,7 +18844,7 @@ class Zustandsklassen_funkt:
 								   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -18656,7 +18863,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -18667,7 +18874,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -18678,7 +18885,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -18690,7 +18897,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -18701,7 +18908,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -18712,31 +18919,31 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN vorlaufige_Schadenszahl_D INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN vorlaufige_Schadenszahl_B INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN vorlaufige_Schadenszahl_S INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_anschlussleitung_bewertung
 					SET vorlaufige_Schadenszahl_D = (Case 
 					WHEN Schadensklasse_D = 1  THEN 10
@@ -18751,7 +18958,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_anschlussleitung_bewertung
 					SET vorlaufige_Schadenszahl_B = (Case 
 					WHEN Schadensklasse_B = 1  THEN 10
@@ -18766,7 +18973,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_anschlussleitung_bewertung
 					SET vorlaufige_Schadenszahl_S = (Case 
 					WHEN Schadensklasse_S = 1  THEN 10
@@ -18783,13 +18990,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
@@ -18814,40 +19028,46 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
 			#db.commit()
 		except:
 			pass
@@ -18855,13 +19075,21 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
 
+		sql = """SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+
+
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -18886,18 +19114,21 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def bewertung_isy_schacht(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		db_x = db
 		crs = self.crs
 
-		data = db
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
+
 		# nach Isybau
 
 		sql = """CREATE TABLE IF NOT EXISTS Untersuchdat_schacht_bewertung AS SELECT * FROM Untersuchdat_schacht"""
-		curs1.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		sql = """
 					SELECT
@@ -18908,17 +19139,17 @@ class Zustandsklassen_funkt:
 						INNER JOIN Untersuchdat_schacht_bewertung  ON schaechte.schnam = Untersuchdat_schacht_bewertung.untersuchsch
 				"""
 		try:
-			curs1.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Schächte konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs1.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchhalt = attr1[0]
 			try:
-				curs1.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -18939,7 +19170,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -18960,40 +19191,36 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs1.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
-		db1.commit()
-
-		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
+		db.commit()
 
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update Untersuchdat_schacht_bewertung set Schadensklasse_D = NULL ;""")
+			db.sql("""update Untersuchdat_schacht_bewertung set Schadensklasse_D = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update Untersuchdat_schacht_bewertung set Schadensklasse_S = NULL ;""")
+			db.sql("""update Untersuchdat_schacht_bewertung set Schadensklasse_S = NULL ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""update Untersuchdat_schacht_bewertung set Schadensklasse_B = NULL ;""")
+			db.sql("""update Untersuchdat_schacht_bewertung set Schadensklasse_B = NULL ;""")
 		except:
 			pass
 
@@ -19021,11 +19248,11 @@ class Zustandsklassen_funkt:
 					Untersuchdat_schacht_bewertung.bw_bs,
 					Untersuchdat_schacht_bewertung.createdat
 				FROM Untersuchdat_schacht_bewertung
-				WHERE Untersuchdat_schacht_bewertung.createdat like ? 
+				WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
 			"""
 			data = (date,)
 
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Befahrungsdatum':
 			sql = """
@@ -19048,13 +19275,13 @@ class Zustandsklassen_funkt:
 					Untersuchdat_schacht_bewertung.bw_bs,
 					Untersuchdat_schacht_bewertung.untersuchtag
 				FROM Untersuchdat_schacht_bewertung
-				WHERE Untersuchdat_schacht_bewertung.untersuchtag like ? 
+				WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
 			"""
 			data = (date,)
 
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 
 
 			if attr[5] == "DAA":
@@ -19078,7 +19305,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -19090,7 +19317,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19116,7 +19343,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -19128,7 +19355,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19144,7 +19371,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19157,7 +19384,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19173,7 +19400,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19186,7 +19413,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19210,7 +19437,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -19224,7 +19451,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -19238,7 +19465,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -19254,7 +19481,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19267,7 +19494,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19291,7 +19518,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19305,7 +19532,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19319,7 +19546,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19336,7 +19563,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19349,7 +19576,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19362,7 +19589,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19376,7 +19603,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19392,7 +19619,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19405,7 +19632,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19419,7 +19646,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19435,7 +19662,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19448,7 +19675,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19462,7 +19689,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19473,7 +19700,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19490,7 +19717,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19503,7 +19730,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19516,7 +19743,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19528,7 +19755,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19542,7 +19769,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19558,7 +19785,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19571,7 +19798,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19584,7 +19811,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19598,7 +19825,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19614,7 +19841,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19627,7 +19854,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19640,7 +19867,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19656,7 +19883,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19669,7 +19896,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19682,7 +19909,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -19695,7 +19922,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -19716,7 +19943,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -19734,7 +19961,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19755,7 +19982,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19771,7 +19998,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19785,7 +20012,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19799,7 +20026,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19813,7 +20040,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19827,7 +20054,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19841,7 +20068,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19855,7 +20082,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19869,7 +20096,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19883,7 +20110,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19897,7 +20124,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19911,7 +20138,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19925,7 +20152,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19939,7 +20166,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19953,7 +20180,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19967,7 +20194,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19981,7 +20208,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -19996,7 +20223,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20009,7 +20236,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20023,7 +20250,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20039,7 +20266,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20052,7 +20279,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20066,7 +20293,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20081,7 +20308,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20094,7 +20321,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20121,7 +20348,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20135,7 +20362,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20151,7 +20378,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20165,7 +20392,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20180,7 +20407,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20196,7 +20423,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20210,7 +20437,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20225,7 +20452,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20240,7 +20467,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -20253,7 +20480,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20280,7 +20507,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20305,7 +20532,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20320,7 +20547,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20335,7 +20562,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20349,7 +20576,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20360,7 +20587,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20375,7 +20602,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20388,7 +20615,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20404,7 +20631,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20428,7 +20655,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20453,7 +20680,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20468,7 +20695,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20483,7 +20710,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20498,7 +20725,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20514,7 +20741,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20528,7 +20755,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20544,7 +20771,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20558,7 +20785,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20573,7 +20800,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20587,7 +20814,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20602,7 +20829,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20615,7 +20842,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20628,7 +20855,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20643,7 +20870,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20657,7 +20884,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20672,7 +20899,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20686,7 +20913,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20697,7 +20924,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20708,7 +20935,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20724,7 +20951,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20738,7 +20965,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20753,7 +20980,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20768,7 +20995,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20782,7 +21009,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20797,7 +21024,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20811,7 +21038,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20837,7 +21064,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20862,7 +21089,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20877,7 +21104,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20891,7 +21118,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20906,7 +21133,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20920,7 +21147,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20934,7 +21161,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -20945,7 +21172,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -20961,7 +21188,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -20974,7 +21201,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -20989,7 +21216,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21004,7 +21231,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21020,7 +21247,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -21033,7 +21260,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21047,7 +21274,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21063,7 +21290,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -21076,7 +21303,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21090,7 +21317,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21106,7 +21333,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -21119,7 +21346,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21133,7 +21360,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21149,7 +21376,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21163,7 +21390,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21177,7 +21404,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21191,7 +21418,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21206,7 +21433,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21220,7 +21447,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21234,7 +21461,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21248,7 +21475,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21262,7 +21489,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21278,7 +21505,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21291,7 +21518,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21304,7 +21531,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21320,7 +21547,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21345,7 +21572,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21359,7 +21586,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21374,7 +21601,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -21387,7 +21614,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21401,7 +21628,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -21413,7 +21640,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21429,7 +21656,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21443,7 +21670,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -21457,7 +21684,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21471,7 +21698,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21488,7 +21715,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21501,7 +21728,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21514,7 +21741,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21527,7 +21754,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -21542,7 +21769,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21555,7 +21782,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21568,7 +21795,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21581,7 +21808,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21595,7 +21822,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21608,7 +21835,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21621,7 +21848,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21634,7 +21861,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -21647,7 +21874,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 				except:
 					pass
@@ -21659,7 +21886,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -21673,7 +21900,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -21687,7 +21914,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -21702,7 +21929,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21716,7 +21943,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21731,7 +21958,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -21745,7 +21972,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -21759,7 +21986,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -21774,7 +22001,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21788,7 +22015,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -21805,7 +22032,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -21816,7 +22043,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -21827,7 +22054,7 @@ class Zustandsklassen_funkt:
 							   """
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -21846,7 +22073,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -21857,7 +22084,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -21868,7 +22095,7 @@ class Zustandsklassen_funkt:
 				"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -21880,7 +22107,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -21891,7 +22118,7 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -21902,31 +22129,31 @@ class Zustandsklassen_funkt:
 					"""
 			data = (z,)
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN vorlaufige_Schadenszahl_D INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN vorlaufige_Schadenszahl_B INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN vorlaufige_Schadenszahl_S INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE Untersuchdat_schacht_bewertung
 					SET vorlaufige_Schadenszahl_D = (Case 
 					WHEN Schadensklasse_D = 1  THEN 10
@@ -21941,7 +22168,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE Untersuchdat_schacht_bewertung
 					SET vorlaufige_Schadenszahl_B = (Case 
 					WHEN Schadensklasse_B = 1  THEN 10
@@ -21956,7 +22183,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE Untersuchdat_schacht_bewertung
 					SET vorlaufige_Schadenszahl_S = (Case 
 					WHEN Schadensklasse_S = 1  THEN 10
@@ -21973,13 +22200,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geop'
@@ -22004,34 +22238,40 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		sql = """CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
 			#db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
 			#db.commit()
 		except:
 			pass
@@ -22039,13 +22279,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geop'
@@ -22071,22 +22318,15 @@ class Zustandsklassen_funkt:
 
 	def einzelfallbetrachtung_haltung(self):
 
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		db_x = db
-		data = db
 		leitung = self.leitung
 		haltung = self.haltung
 		crs = self.crs
 		liste_pk =[]
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
+
 
 		# nach Isybau
-
-		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		if self.datetype == 'Importdatum':
 
@@ -22130,9 +22370,9 @@ class Zustandsklassen_funkt:
 							OR
 							untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 							OR
-							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND untersuchdat_haltung_bewertung.createdat like ? """
+							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 """
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			if self.check_cb['cb18']:
 				sql = """SELECT
@@ -22174,9 +22414,9 @@ class Zustandsklassen_funkt:
 							OR
 							untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 							OR
-							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND untersuchdat_haltung_bewertung.createdat like ? """
+							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 """
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -22220,9 +22460,9 @@ class Zustandsklassen_funkt:
 							OR
 							untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 							OR
-							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND untersuchdat_haltung_bewertung.untersuchtag like ? """
+							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 """
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 			if self.check_cb['cb18']:
 				sql = """SELECT
@@ -22264,11 +22504,11 @@ class Zustandsklassen_funkt:
 							OR
 							untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 							OR
-							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND untersuchdat_haltung_bewertung.untersuchtag like ? """
+							untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 """
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 			liste_pk.append(attr[0])
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
@@ -22288,7 +22528,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -22311,7 +22551,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -22337,7 +22577,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -22361,7 +22601,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -22378,7 +22618,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22389,7 +22629,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22403,7 +22643,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22425,7 +22665,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22438,7 +22678,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22452,7 +22692,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22468,7 +22708,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22481,7 +22721,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						db.commit()
 					except:
 						pass
@@ -22493,7 +22733,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22507,7 +22747,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22518,7 +22758,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22529,7 +22769,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22544,7 +22784,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22555,7 +22795,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22567,7 +22807,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22581,7 +22821,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22592,7 +22832,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22606,7 +22846,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22617,7 +22857,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22628,7 +22868,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22642,7 +22882,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22653,7 +22893,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22664,7 +22904,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22684,7 +22924,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -22703,7 +22943,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -22718,7 +22958,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22729,7 +22969,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22743,7 +22983,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22755,7 +22995,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22769,7 +23009,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22781,7 +23021,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22795,7 +23035,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22807,7 +23047,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22821,7 +23061,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22833,7 +23073,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22847,7 +23087,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22859,7 +23099,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22873,7 +23113,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22885,7 +23125,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22899,7 +23139,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22911,7 +23151,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22925,7 +23165,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22937,7 +23177,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22949,7 +23189,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22963,7 +23203,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -22975,7 +23215,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -22989,7 +23229,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23003,7 +23243,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23014,7 +23254,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23025,7 +23265,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23050,7 +23290,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -23065,7 +23305,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -23079,7 +23319,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23093,7 +23333,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23108,7 +23348,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23120,7 +23360,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23134,7 +23374,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23146,7 +23386,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23171,7 +23411,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23198,7 +23438,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23222,7 +23462,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23246,7 +23486,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23258,7 +23498,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23283,7 +23523,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23295,7 +23535,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23312,7 +23552,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23338,7 +23578,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23362,7 +23602,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23386,7 +23626,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23398,7 +23638,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23424,7 +23664,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23438,7 +23678,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23452,7 +23692,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23463,7 +23703,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23478,7 +23718,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 						except:
 							pass
@@ -23491,7 +23731,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -23506,7 +23746,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23529,7 +23769,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23543,7 +23783,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23557,7 +23797,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23571,7 +23811,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23585,7 +23825,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23599,7 +23839,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23613,7 +23853,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23627,7 +23867,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23638,7 +23878,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23652,7 +23892,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23666,7 +23906,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23680,7 +23920,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23691,7 +23931,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23703,7 +23943,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23718,7 +23958,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23732,7 +23972,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23757,7 +23997,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23771,7 +24011,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23785,7 +24025,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23799,7 +24039,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23810,7 +24050,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23825,7 +24065,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23838,7 +24078,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23852,7 +24092,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23866,7 +24106,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -23877,7 +24117,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -23891,7 +24131,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -23902,7 +24142,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -23916,7 +24156,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -23928,7 +24168,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -23943,7 +24183,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -23964,7 +24204,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -23988,7 +24228,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24013,7 +24253,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -24027,7 +24267,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -24039,7 +24279,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -24060,7 +24300,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -24075,7 +24315,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24100,7 +24340,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24115,7 +24355,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -24127,7 +24367,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -24139,7 +24379,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24153,7 +24393,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -24166,7 +24406,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -24179,7 +24419,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 					except:
 						pass
@@ -24191,7 +24431,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24205,7 +24445,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -24217,7 +24457,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -24232,7 +24472,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24243,7 +24483,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24257,7 +24497,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24271,7 +24511,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					#db.commit()
 					continue
 				except:
@@ -24286,7 +24526,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24300,7 +24540,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24319,7 +24559,7 @@ class Zustandsklassen_funkt:
 							"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -24330,7 +24570,7 @@ class Zustandsklassen_funkt:
 							"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -24341,7 +24581,7 @@ class Zustandsklassen_funkt:
 							"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -24353,7 +24593,7 @@ class Zustandsklassen_funkt:
 							"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -24364,7 +24604,7 @@ class Zustandsklassen_funkt:
 							"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -24375,7 +24615,7 @@ class Zustandsklassen_funkt:
 							"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -24395,7 +24635,7 @@ class Zustandsklassen_funkt:
 					   END)
 					   WHERE untersuchdat_haltung_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -24411,7 +24651,7 @@ class Zustandsklassen_funkt:
 								   END)
 								   WHERE untersuchdat_haltung_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -24427,7 +24667,7 @@ class Zustandsklassen_funkt:
 											   END)
 											   WHERE untersuchdat_haltung_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -24436,7 +24676,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -24444,13 +24691,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_haltung_bewertung'
 		geom_column = 'geom'
@@ -24475,7 +24729,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'haltungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -24501,22 +24755,15 @@ class Zustandsklassen_funkt:
 
 	def einzelfallbetrachtung_leitung(self):
 
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		db_x = db
-		data = db
 		leitung = self.leitung
 		haltung = self.haltung
 		crs = self.crs
 		liste_pk =[]
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
+
 
 		# nach Isybau
-
-		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		if self.datetype == 'Importdatum':
 
@@ -24560,9 +24807,9 @@ class Zustandsklassen_funkt:
 							OR
 							untersuchdat_anschlussleitung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 							OR
-							untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND untersuchdat_anschlussleitung_bewertung.createdat like ? """
+							untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120  """
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
 		if self.datetype == 'Befahrungsdatum':
 
@@ -24606,11 +24853,11 @@ class Zustandsklassen_funkt:
 							OR
 							untersuchdat_anschlussleitung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 							OR
-							untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND untersuchdat_anschlussleitung_bewertung.untersuchtag like ? """
+							untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120  """
 				data = (date,)
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 			liste_pk.append(attr[0])
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
@@ -24630,7 +24877,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 				except:
 					pass
@@ -24653,7 +24900,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -24679,7 +24926,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -24703,7 +24950,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -24720,7 +24967,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24731,7 +24978,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24745,7 +24992,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24767,7 +25014,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24780,7 +25027,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24794,7 +25041,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24810,7 +25057,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24823,7 +25070,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						db.commit()
 					except:
 						pass
@@ -24835,7 +25082,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24849,7 +25096,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24860,7 +25107,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24871,7 +25118,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24886,7 +25133,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24897,7 +25144,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24909,7 +25156,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24923,7 +25170,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24934,7 +25181,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24948,7 +25195,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24959,7 +25206,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24970,7 +25217,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -24984,7 +25231,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -24995,7 +25242,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25006,7 +25253,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25026,7 +25273,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -25045,7 +25292,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -25060,7 +25307,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25071,7 +25318,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25085,7 +25332,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25097,7 +25344,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25111,7 +25358,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25123,7 +25370,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25137,7 +25384,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25149,7 +25396,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25163,7 +25410,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25175,7 +25422,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25189,7 +25436,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25201,7 +25448,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25215,7 +25462,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25227,7 +25474,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25241,7 +25488,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25253,7 +25500,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25267,7 +25514,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25279,7 +25526,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25291,7 +25538,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25305,7 +25552,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25317,7 +25564,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25331,7 +25578,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25345,7 +25592,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25356,7 +25603,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25367,7 +25614,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25392,7 +25639,7 @@ class Zustandsklassen_funkt:
 									"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -25407,7 +25654,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25421,7 +25668,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25435,7 +25682,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25450,7 +25697,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25462,7 +25709,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25476,7 +25723,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25488,7 +25735,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25513,7 +25760,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25540,7 +25787,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25564,7 +25811,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25588,7 +25835,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25600,7 +25847,7 @@ class Zustandsklassen_funkt:
 										"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25625,7 +25872,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25637,7 +25884,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25654,7 +25901,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25680,7 +25927,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25704,7 +25951,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25728,7 +25975,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25740,7 +25987,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25766,7 +26013,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25780,7 +26027,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25794,7 +26041,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25805,7 +26052,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25820,7 +26067,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -25833,7 +26080,7 @@ class Zustandsklassen_funkt:
 										"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -25848,7 +26095,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25871,7 +26118,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25885,7 +26132,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25899,7 +26146,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25913,7 +26160,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25927,7 +26174,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25941,7 +26188,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25955,7 +26202,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25969,7 +26216,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -25980,7 +26227,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -25994,7 +26241,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26008,7 +26255,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26022,7 +26269,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26033,7 +26280,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26045,7 +26292,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26060,7 +26307,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26074,7 +26321,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26099,7 +26346,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26113,7 +26360,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26127,7 +26374,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26141,7 +26388,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26152,7 +26399,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26167,7 +26414,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26180,7 +26427,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26194,7 +26441,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26208,7 +26455,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -26219,7 +26466,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26233,7 +26480,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -26244,7 +26491,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26258,7 +26505,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -26270,7 +26517,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26285,7 +26532,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26306,7 +26553,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26330,7 +26577,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26355,7 +26602,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26369,7 +26616,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -26381,7 +26628,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -26402,7 +26649,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26417,7 +26664,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26442,7 +26689,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26457,7 +26704,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26469,7 +26716,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26481,7 +26728,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26495,7 +26742,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26508,7 +26755,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26521,7 +26768,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26533,7 +26780,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26547,7 +26794,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -26559,7 +26806,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26574,7 +26821,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26585,7 +26832,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26599,7 +26846,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26613,7 +26860,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -26628,7 +26875,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26642,7 +26889,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26661,7 +26908,7 @@ class Zustandsklassen_funkt:
 							"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -26672,7 +26919,7 @@ class Zustandsklassen_funkt:
 							"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -26683,7 +26930,7 @@ class Zustandsklassen_funkt:
 							"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -26695,7 +26942,7 @@ class Zustandsklassen_funkt:
 							"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -26706,7 +26953,7 @@ class Zustandsklassen_funkt:
 							"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -26717,7 +26964,7 @@ class Zustandsklassen_funkt:
 							"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -26737,7 +26984,7 @@ class Zustandsklassen_funkt:
 					   END)
 					   WHERE untersuchdat_anschlussleitung_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -26753,7 +27000,7 @@ class Zustandsklassen_funkt:
 								   END)
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -26769,7 +27016,7 @@ class Zustandsklassen_funkt:
 											   END)
 											   WHERE untersuchdat_anschlussleitung_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -26778,7 +27025,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -26786,13 +27040,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'untersuchdat_anschlussleitung_bewertung'
 		geom_column = 'geom'
@@ -26817,7 +27078,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'anschlussleitungen_untersucht_bewertung'
 		geom_column = 'geom'
@@ -26842,20 +27103,13 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 	def einzelfallbetrachtung_schacht(self):
-		date = self.date+'%'
+		date = self.date
 		db = self.db
-		db_x = db
 		crs = self.crs
 		liste_pk = []
 
-		data = db
-		db1 = spatialite_connect(data)
-		curs1 = db1.cursor()
 		# nach Isybau
 
-		data = db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 		if self.datetype == 'Importdatum':
 			sql = """SELECT
 							Untersuchdat_schacht_bewertung.pk,
@@ -26889,9 +27143,9 @@ class Zustandsklassen_funkt:
 									OR
 									Untersuchdat_schacht_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 									OR
-									Untersuchdat_schacht_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND Untersuchdat_schacht_bewertung.createdat like ? """
+									Untersuchdat_schacht_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120  """
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 		elif self.datetype == 'Befahrungsdatum':
 			sql = """SELECT
@@ -26926,13 +27180,13 @@ class Zustandsklassen_funkt:
 									OR
 									Untersuchdat_schacht_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
 									OR
-									Untersuchdat_schacht_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND Untersuchdat_schacht_bewertung.untersuchtag like ? """
+									Untersuchdat_schacht_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120  """
 			data = (date,)
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 
 
 
-		for attr in curs.fetchall():
+		for attr in db.fetchall():
 			liste_pk.append(attr[0])
 
 			if attr[5] == "DAA":
@@ -26956,7 +27210,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -26968,7 +27222,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -26994,7 +27248,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -27006,7 +27260,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27022,7 +27276,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27035,7 +27289,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27051,7 +27305,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27064,7 +27318,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27088,7 +27342,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27102,7 +27356,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27116,7 +27370,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27132,7 +27386,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27145,7 +27399,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27169,7 +27423,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27183,7 +27437,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27197,7 +27451,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27214,7 +27468,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27227,7 +27481,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27240,7 +27494,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27254,7 +27508,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27270,7 +27524,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27283,7 +27537,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27297,7 +27551,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27313,7 +27567,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27326,7 +27580,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27340,7 +27594,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27351,7 +27605,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27368,7 +27622,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27381,7 +27635,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27394,7 +27648,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27406,7 +27660,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27420,7 +27674,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27436,7 +27690,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27449,7 +27703,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27462,7 +27716,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27476,7 +27730,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27492,7 +27746,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27505,7 +27759,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27518,7 +27772,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27534,7 +27788,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27547,7 +27801,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27560,7 +27814,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -27573,7 +27827,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -27594,7 +27848,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -27612,7 +27866,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27633,7 +27887,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27650,7 +27904,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27664,7 +27918,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27678,7 +27932,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27692,7 +27946,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27707,7 +27961,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27721,7 +27975,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27736,7 +27990,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27750,7 +28004,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27765,7 +28019,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27779,7 +28033,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27794,7 +28048,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27808,7 +28062,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27823,7 +28077,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27837,7 +28091,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27852,7 +28106,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27866,7 +28120,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27881,7 +28135,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27894,7 +28148,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27908,7 +28162,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27924,7 +28178,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27937,7 +28191,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -27951,7 +28205,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -27966,7 +28220,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 						# db.commit()
 						except:
 							pass
@@ -27979,7 +28233,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -28008,7 +28262,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -28022,7 +28276,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -28038,7 +28292,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -28052,7 +28306,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -28067,7 +28321,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							# db.commit()
 							continue
 						except:
@@ -28083,7 +28337,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28097,7 +28351,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28112,7 +28366,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28127,7 +28381,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -28140,7 +28394,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -28167,7 +28421,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -28192,7 +28446,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -28207,7 +28461,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28222,7 +28476,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28236,7 +28490,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28247,7 +28501,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28262,7 +28516,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28275,7 +28529,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28291,7 +28545,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28315,7 +28569,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28340,7 +28594,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28355,7 +28609,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28370,7 +28624,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28385,7 +28639,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28401,7 +28655,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28415,7 +28669,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28431,7 +28685,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28445,7 +28699,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28460,7 +28714,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28474,7 +28728,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28489,7 +28743,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28502,7 +28756,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28515,7 +28769,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28530,7 +28784,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28544,7 +28798,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28559,7 +28813,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28573,7 +28827,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28584,7 +28838,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28595,7 +28849,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28611,7 +28865,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28625,7 +28879,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28640,7 +28894,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28655,7 +28909,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28669,7 +28923,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28684,7 +28938,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28698,7 +28952,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28724,7 +28978,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28749,7 +29003,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28764,7 +29018,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28778,7 +29032,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28793,7 +29047,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28807,7 +29061,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28821,7 +29075,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -28832,7 +29086,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -28848,7 +29102,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -28861,7 +29115,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28876,7 +29130,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28891,7 +29145,7 @@ class Zustandsklassen_funkt:
 									"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -28907,7 +29161,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -28920,7 +29174,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -28934,7 +29188,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -28950,7 +29204,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					# db.commit()
 					except:
 						pass
@@ -28963,7 +29217,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -28977,7 +29231,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -28993,7 +29247,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -29006,7 +29260,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29020,7 +29274,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29036,7 +29290,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29050,7 +29304,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29064,7 +29318,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29078,7 +29332,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29093,7 +29347,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29107,7 +29361,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29121,7 +29375,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29135,7 +29389,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29149,7 +29403,7 @@ class Zustandsklassen_funkt:
 								"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29165,7 +29419,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29178,7 +29432,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29191,7 +29445,7 @@ class Zustandsklassen_funkt:
 								"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -29207,7 +29461,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29232,7 +29486,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -29246,7 +29500,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -29261,7 +29515,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -29274,7 +29528,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29288,7 +29542,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -29300,7 +29554,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29316,7 +29570,7 @@ class Zustandsklassen_funkt:
 							"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 						continue
 					except:
@@ -29330,7 +29584,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						#db.commit()
 					except:
 						pass
@@ -29344,7 +29598,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -29358,7 +29612,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -29375,7 +29629,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29388,7 +29642,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29401,7 +29655,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29414,7 +29668,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 							continue
 						except:
@@ -29429,7 +29683,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29442,7 +29696,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29455,7 +29709,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29468,7 +29722,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29482,7 +29736,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29495,7 +29749,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29508,7 +29762,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29521,7 +29775,7 @@ class Zustandsklassen_funkt:
 							"""
 						data = (z, attr[0])
 						try:
-							curs.execute(sql, data)
+							db.sql(sql, parameters=data)
 							#db.commit()
 						except:
 							pass
@@ -29534,7 +29788,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				# db.commit()
 				except:
 					pass
@@ -29546,7 +29800,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -29560,7 +29814,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -29574,7 +29828,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -29589,7 +29843,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29603,7 +29857,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29618,7 +29872,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -29632,7 +29886,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -29646,7 +29900,7 @@ class Zustandsklassen_funkt:
 					"""
 				data = (z, attr[0])
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 					# db.commit()
 					continue
 				except:
@@ -29661,7 +29915,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29675,7 +29929,7 @@ class Zustandsklassen_funkt:
 						"""
 					data = (z, attr[0])
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 						# db.commit()
 						continue
 					except:
@@ -29693,7 +29947,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -29704,7 +29958,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				#db.commit()
 			except:
 				pass
@@ -29715,7 +29969,7 @@ class Zustandsklassen_funkt:
 						"""
 			data = (z, attr[0])
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -29727,7 +29981,7 @@ class Zustandsklassen_funkt:
 						"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			#db.commit()
 		except:
 			pass
@@ -29738,7 +29992,7 @@ class Zustandsklassen_funkt:
 						"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			#db.commit()
 		except:
 			pass
@@ -29749,7 +30003,7 @@ class Zustandsklassen_funkt:
 						"""
 		data = (z,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
 			db.commit()
 		except:
 			pass
@@ -29769,7 +30023,7 @@ class Zustandsklassen_funkt:
 					   END)
 					   WHERE Untersuchdat_schacht_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -29785,7 +30039,7 @@ class Zustandsklassen_funkt:
 								   END)
 								   WHERE Untersuchdat_schacht_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -29801,7 +30055,7 @@ class Zustandsklassen_funkt:
 											   END)
 											   WHERE Untersuchdat_schacht_bewertung.pk = ? ;"""
 			try:
-				curs.execute(sql, data)
+				db.sql(sql, parameters=data)
 				db.commit()
 			except:
 				pass
@@ -29809,7 +30063,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -29817,13 +30078,20 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
 		geom_column = 'geom'
@@ -29848,7 +30116,7 @@ class Zustandsklassen_funkt:
 		atcGroup.addLayer(vlayer)
 
 		uri = QgsDataSourceUri()
-		uri.setDatabase(db_x)
+		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'schaechte_untersucht_bewertung'
 		geom_column = 'geom'
@@ -29876,19 +30144,21 @@ class Zustandsklassen_funkt:
 		#tabellen DWA anlegen und vorhandene Zustandsklassen in richtige Spalte kopieren
 		date = self.date
 		db = self.db
-		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+		try:
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -29905,17 +30175,17 @@ class Zustandsklassen_funkt:
 
 
 		try:
-			curs.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -29936,7 +30206,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -29957,77 +30227,83 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 			else:
 				continue
 		db.commit()
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""Update untersuchdat_haltung_bewertung set Zustandsklasse_B = ZB ;""")
+			db.sql("""Update untersuchdat_haltung_bewertung set Zustandsklasse_B = ZB ;""")
 		except:
 			pass
 		try:
-			curs.execute("""Update untersuchdat_haltung_bewertung set Zustandsklasse_D = ZD ;""")
+			db.sql("""Update untersuchdat_haltung_bewertung set Zustandsklasse_D = ZD ;""")
 		except:
 			pass
 		try:
-			curs.execute("""Update untersuchdat_haltung_bewertung set Zustandsklasse_S = ZS ;""")
+			db.sql("""Update untersuchdat_haltung_bewertung set Zustandsklasse_S = ZS ;""")
 		except:
 			pass
 		sql = """CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+			db.sql(sql)
+			db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+		except:
+			pass
+		try:
+			db.sql(
 				"""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
 		# db.commit()
 		except:
 			pass
@@ -30035,7 +30311,7 @@ class Zustandsklassen_funkt:
 		#Objektklasse berechnen für jede Haltung dafür abfragen
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung
+			db.sql("""UPDATE haltungen_untersucht_bewertung
 									SET objektklasse_dichtheit =
 									(SELECT min(Zustandsklasse_D)
 									FROM untersuchdat_haltung_bewertung
@@ -30046,7 +30322,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung
+			db.sql("""UPDATE haltungen_untersucht_bewertung
 									SET objektklasse_standsicherheit =
 									(SELECT min(Zustandsklasse_S)
 									FROM untersuchdat_haltung_bewertung
@@ -30057,7 +30333,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE haltungen_untersucht_bewertung
+			db.sql("""UPDATE haltungen_untersucht_bewertung
 									SET objektklasse_betriebssicherheit =
 									(SELECT min(Zustandsklasse_B)
 									FROM untersuchdat_haltung_bewertung
@@ -30068,7 +30344,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung
+			db.sql("""update haltungen_untersucht_bewertung
 									set objektklasse_standsicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30076,7 +30352,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung
+			db.sql("""update haltungen_untersucht_bewertung
 									set objektklasse_dichtheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30084,7 +30360,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update haltungen_untersucht_bewertung
+			db.sql("""update haltungen_untersucht_bewertung
 									set objektklasse_betriebssicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30092,21 +30368,30 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-									haltungen_untersucht_bewertung
-									SET
-									objektklasse_gesamt =
-									(
-									   SELECT MIN(wert)
-									   FROM (
-										   SELECT objektklasse_dichtheit AS wert
-										   UNION ALL
-										   SELECT objektklasse_standsicherheit
-										   UNION ALL
-										   SELECT objektklasse_betriebssicherheit
-									   )
-									   WHERE wert IS NOT NULL
-								   );""")
+			db.sql("""Update
+						haltungen_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_haltung_bewertung WHERE untersuchdat_haltung_bewertung.untersuchhal = haltungen_untersucht_bewertung.haltnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);""")
 			db.commit()
 		except:
 			pass
@@ -30114,7 +30399,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30122,7 +30414,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30131,19 +30430,21 @@ class Zustandsklassen_funkt:
 		#tabellen DWA anlegen und vorhandene Zustandsklassen in richtige Spalte kopieren
 		date = self.date
 		db = self.db
-		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+		try:
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -30158,17 +30459,17 @@ class Zustandsklassen_funkt:
 			"""
 
 		try:
-			curs.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -30189,7 +30490,7 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -30210,77 +30511,83 @@ class Zustandsklassen_funkt:
 						"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 			else:
 				continue
 		db.commit()
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""Update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_B = ZB ;""")
+			db.sql("""Update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_B = ZB ;""")
 		except:
 			pass
 		try:
-			curs.execute("""Update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_D = ZD ;""")
+			db.sql("""Update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_D = ZD ;""")
 		except:
 			pass
 		try:
-			curs.execute("""Update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_S = ZS ;""")
+			db.sql("""Update untersuchdat_anschlussleitung_bewertung set Zustandsklasse_S = ZS ;""")
 		except:
 			pass
 		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+			db.sql(sql)
+			db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+		except:
+			pass
+		try:
+			db.sql(
 				"""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
 		# db.commit()
 		except:
 			pass
@@ -30288,7 +30595,7 @@ class Zustandsklassen_funkt:
 		#Objektklasse berechnen für jede Haltung dafür abfragen
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung
 									SET objektklasse_dichtheit =
 									(SELECT min(Zustandsklasse_D)
 									FROM untersuchdat_anschlussleitung_bewertung
@@ -30299,7 +30606,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung
 									SET objektklasse_standsicherheit =
 									(SELECT min(Zustandsklasse_S)
 									FROM untersuchdat_anschlussleitung_bewertung
@@ -30310,7 +30617,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE anschlussleitungen_untersucht_bewertung
+			db.sql("""UPDATE anschlussleitungen_untersucht_bewertung
 									SET objektklasse_betriebssicherheit =
 									(SELECT min(Zustandsklasse_B)
 									FROM untersuchdat_anschlussleitung_bewertung
@@ -30321,7 +30628,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung
+			db.sql("""update anschlussleitungen_untersucht_bewertung
 									set objektklasse_standsicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30329,7 +30636,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung
+			db.sql("""update anschlussleitungen_untersucht_bewertung
 									set objektklasse_dichtheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30337,7 +30644,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update anschlussleitungen_untersucht_bewertung
+			db.sql("""update anschlussleitungen_untersucht_bewertung
 									set objektklasse_betriebssicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30345,21 +30652,31 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-									anschlussleitungen_untersucht_bewertung
-									SET
-									objektklasse_gesamt =
-									(
-								   SELECT MIN(wert)
-								   FROM (
-									   SELECT objektklasse_dichtheit AS wert
-									   UNION ALL
-									   SELECT objektklasse_standsicherheit
-									   UNION ALL
-									   SELECT objektklasse_betriebssicherheit
-								   )
-								   WHERE wert IS NOT NULL
-							   );""")
+			db.sql("""Update
+						anschlussleitungen_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_anschlussleitung_bewertung WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.leitnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);
+					""")
 			db.commit()
 		except:
 			pass
@@ -30367,7 +30684,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30375,7 +30699,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30384,19 +30715,21 @@ class Zustandsklassen_funkt:
 		#tabellen DWA anlegen und vorhandene Zustandsklassen in richtige Spalte kopieren
 		date = self.date
 		db = self.db
-		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 
 		sql = """CREATE TABLE IF NOT EXISTS Untersuchdat_schacht_bewertung AS SELECT * FROM Untersuchdat_schacht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+		try:
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -30410,15 +30743,15 @@ class Zustandsklassen_funkt:
 				"""
 
 		try:
-			curs.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs.fetchall():
+		for attr1 in db.fetchall():
 			try:
-				curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -30442,7 +30775,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -30466,82 +30799,88 @@ class Zustandsklassen_funkt:
 								"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 		db.commit()
 
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Zustandsklasse_B TEXT ;""")
 		except:
 			pass
 
 		try:
-			curs.execute("""Update Untersuchdat_schacht_bewertung set Zustandsklasse_B = ZB ;""")
+			db.sql("""Update Untersuchdat_schacht_bewertung set Zustandsklasse_B = ZB ;""")
 		except:
 			pass
 		try:
-			curs.execute("""Update Untersuchdat_schacht_bewertung set Zustandsklasse_D = ZD ;""")
+			db.sql("""Update Untersuchdat_schacht_bewertung set Zustandsklasse_D = ZD ;""")
 		except:
 			pass
 		try:
-			curs.execute("""Update Untersuchdat_schacht_bewertung set Zustandsklasse_S = ZS ;""")
+			db.sql("""Update Untersuchdat_schacht_bewertung set Zustandsklasse_S = ZS ;""")
 		except:
 			pass
 		sql = """CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+			db.sql(sql)
+			db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_dichtheit INTEGER ;""")
+		except:
+			pass
+		try:
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_standsicherheit INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_betriebssicherheit INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN objektklasse_gesamt INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN hydraulische_auslastung TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN lage_grundwasser TEXT;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN ueberdeckung INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN bodengruppe TEXT ;""")
 		# db.commit()
 		except:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_dichtheit =
 									(SELECT min(Zustandsklasse_D) 
 									FROM Untersuchdat_schacht_bewertung
@@ -30552,7 +30891,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_standsicherheit =
 									(SELECT min(Zustandsklasse_S) 
 									FROM Untersuchdat_schacht_bewertung
@@ -30563,7 +30902,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""UPDATE schaechte_untersucht_bewertung 
+			db.sql("""UPDATE schaechte_untersucht_bewertung 
 									SET objektklasse_betriebssicherheit =
 									(SELECT min(Zustandsklasse_B) 
 									FROM Untersuchdat_schacht_bewertung
@@ -30574,7 +30913,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_standsicherheit = '-'
 									WHERE objektklasse_standsicherheit IS NULL;""")
 		# db.commit()
@@ -30582,7 +30921,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_dichtheit = '-'
 									WHERE objektklasse_dichtheit IS NULL;""")
 		# db.commit()
@@ -30590,7 +30929,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""update schaechte_untersucht_bewertung 
+			db.sql("""update schaechte_untersucht_bewertung 
 									set objektklasse_betriebssicherheit = '-'
 									WHERE objektklasse_betriebssicherheit IS NULL;""")
 		# db.commit()
@@ -30598,21 +30937,31 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute("""Update
-									schaechte_untersucht_bewertung
-									set
-									objektklasse_gesamt =
-									(
-									   SELECT MIN(wert)
-									   FROM (
-										   SELECT objektklasse_dichtheit AS wert
-										   UNION ALL
-										   SELECT objektklasse_standsicherheit
-										   UNION ALL
-										   SELECT objektklasse_betriebssicherheit
-									   )
-									   WHERE wert IS NOT NULL
-								   );""")
+			db.sql("""Update
+						schaechte_untersucht_bewertung
+					   SET objektklasse_gesamt = (
+					 SELECT
+					  CASE
+					  WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_schacht_bewertung WHERE untersuchdat_schacht_bewertung.untersuchsch = schaechte_untersucht_bewertung.schnam)
+					  THEN '-'
+						WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+						WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+						WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+						WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+					
+						ELSE (
+						  SELECT MIN(wert)
+						  FROM (
+							SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+							UNION ALL
+							SELECT CAST(objektklasse_standsicherheit AS REAL)
+							UNION ALL
+							SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+						  )
+						)
+					  END AS ergebnis
+					);
+				""")
 			db.commit()
 		except:
 			pass
@@ -30620,7 +30969,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30628,7 +30984,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30638,18 +31001,21 @@ class Zustandsklassen_funkt:
 
 		date = self.date
 		db = self.db
-		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
+
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+		try:
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -30665,17 +31031,17 @@ class Zustandsklassen_funkt:
 				"""
 
 		try:
-			curs.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -30699,7 +31065,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -30723,7 +31089,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 			else:
@@ -30731,53 +31097,53 @@ class Zustandsklassen_funkt:
 		db.commit()
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
-		except:
-			pass
-
-
-		try:
-			curs.execute("""Update untersuchdat_haltung_bewertung set Schadensklasse_B = ZB ;""")
-		except:
-			pass
-		try:
-			curs.execute("""Update untersuchdat_haltung_bewertung set Schadensklasse_D = ZD ;""")
-		except:
-			pass
-		try:
-			curs.execute("""Update untersuchdat_haltung_bewertung set Schadensklasse_S = ZS ;""")
+			db.sql("""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
 		except:
 			pass
 
 
 		try:
-			curs.execute(
+			db.sql("""Update untersuchdat_haltung_bewertung set Schadensklasse_B = ZB ;""")
+		except:
+			pass
+		try:
+			db.sql("""Update untersuchdat_haltung_bewertung set Schadensklasse_D = ZD ;""")
+		except:
+			pass
+		try:
+			db.sql("""Update untersuchdat_haltung_bewertung set Schadensklasse_S = ZS ;""")
+		except:
+			pass
+
+
+		try:
+			db.sql(
 				"""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN vorlaufige_Schadenszahl_D INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN vorlaufige_Schadenszahl_B INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_haltung_bewertung ADD COLUMN vorlaufige_Schadenszahl_S INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_haltung_bewertung
 					SET vorlaufige_Schadenszahl_D = (Case 
 					WHEN Schadensklasse_D = 1  THEN 10
@@ -30792,7 +31158,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_haltung_bewertung
 					SET vorlaufige_Schadenszahl_B = (Case 
 					WHEN Schadensklasse_B = 1  THEN 10
@@ -30807,7 +31173,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_haltung_bewertung
 					SET vorlaufige_Schadenszahl_S = (Case 
 					WHEN Schadensklasse_S = 1  THEN 10
@@ -30821,42 +31187,48 @@ class Zustandsklassen_funkt:
 		except:
 			pass
 		sql = """CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
+			db.sql("""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE haltungen_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
 		# db.commit()
 		except:
@@ -30865,7 +31237,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30873,7 +31252,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -30882,18 +31268,20 @@ class Zustandsklassen_funkt:
 		# tabellen ISYBAU anlegen und vorhandene Zustandsklassen in richtige Spalte kopieren
 		date = self.date
 		db = self.db
-		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		sql = """CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+		try:
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -30908,17 +31296,17 @@ class Zustandsklassen_funkt:
 					"""
 
 		try:
-			curs.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -30942,7 +31330,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 
@@ -30966,7 +31354,7 @@ class Zustandsklassen_funkt:
 								"""
 				data = (bw_bs, x)
 				try:
-					curs.execute(sql, data)
+					db.sql(sql, parameters=data)
 				except:
 					pass
 			else:
@@ -30974,53 +31362,53 @@ class Zustandsklassen_funkt:
 		db.commit()
 
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
-		except:
-			pass
-
-
-		try:
-			curs.execute("""Update untersuchdat_anschlussleitung_bewertung set Schadensklasse_B = ZB ;""")
-		except:
-			pass
-		try:
-			curs.execute("""Update untersuchdat_anschlussleitung_bewertung set Schadensklasse_D = ZD ;""")
-		except:
-			pass
-		try:
-			curs.execute("""Update untersuchdat_anschlussleitung_bewertung set Schadensklasse_S = ZS ;""")
+			db.sql("""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
 		except:
 			pass
 
 
 		try:
-			curs.execute(
+			db.sql("""Update untersuchdat_anschlussleitung_bewertung set Schadensklasse_B = ZB ;""")
+		except:
+			pass
+		try:
+			db.sql("""Update untersuchdat_anschlussleitung_bewertung set Schadensklasse_D = ZD ;""")
+		except:
+			pass
+		try:
+			db.sql("""Update untersuchdat_anschlussleitung_bewertung set Schadensklasse_S = ZS ;""")
+		except:
+			pass
+
+
+		try:
+			db.sql(
 				"""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN vorlaufige_Schadenszahl_D INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN vorlaufige_Schadenszahl_B INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE untersuchdat_anschlussleitung_bewertung ADD COLUMN vorlaufige_Schadenszahl_S INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_anschlussleitung_bewertung
 					SET vorlaufige_Schadenszahl_D = (Case 
 					WHEN Schadensklasse_D = 1  THEN 10
@@ -31035,7 +31423,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_anschlussleitung_bewertung
 					SET vorlaufige_Schadenszahl_B = (Case 
 					WHEN Schadensklasse_B = 1  THEN 10
@@ -31050,7 +31438,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE untersuchdat_anschlussleitung_bewertung
 					SET vorlaufige_Schadenszahl_S = (Case 
 					WHEN Schadensklasse_S = 1  THEN 10
@@ -31064,42 +31452,48 @@ class Zustandsklassen_funkt:
 		except:
 			pass
 		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
+			db.sql("""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE anschlussleitungen_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
 		# db.commit()
 		except:
@@ -31108,7 +31502,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -31116,7 +31517,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -31126,18 +31534,20 @@ class Zustandsklassen_funkt:
 
 		date = self.date
 		db = self.db
-		data = db
 		crs = self.crs
 		leitung = self.leitung
 		haltung = self.haltung
-		db_x = self.db
-		db = spatialite_connect(data)
-		curs = db.cursor()
 
 		sql = """CREATE TABLE IF NOT EXISTS Untersuchdat_schacht_bewertung AS SELECT * FROM Untersuchdat_schacht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Beschreibung TEXT ;""")
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
+		try:
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Beschreibung TEXT ;""")
 		except:
 			pass
 
@@ -31151,17 +31561,17 @@ class Zustandsklassen_funkt:
 						"""
 
 		try:
-			curs.execute(sql)
+			db.sql(sql)
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
 										   level=Qgis.Critical)
 
-		for attr1 in curs.fetchall():
+		for attr1 in db.fetchall():
 
 			untersuchleit = attr1[0]
 			try:
-				curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
+				db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN bw_bs TEXT;""")
 			except:
 				pass
 
@@ -31188,7 +31598,7 @@ class Zustandsklassen_funkt:
 									"""
 					data = (bw_bs, x)
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					except:
 						pass
 
@@ -31213,59 +31623,59 @@ class Zustandsklassen_funkt:
 									"""
 					data = (bw_bs, x)
 					try:
-						curs.execute(sql, data)
+						db.sql(sql, parameters=data)
 					except:
 						pass
 			db.commit()
 
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_D TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_S TEXT ;""")
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
-		except:
-			pass
-
-
-		try:
-			curs.execute("""Update Untersuchdat_schacht_bewertung set Schadensklasse_B = ZB ;""")
-		except:
-			pass
-		try:
-			curs.execute("""Update Untersuchdat_schacht_bewertung set Schadensklasse_D = ZD ;""")
-		except:
-			pass
-		try:
-			curs.execute("""Update Untersuchdat_schacht_bewertung set Schadensklasse_S = ZS ;""")
+			db.sql("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadensklasse_B TEXT ;""")
 		except:
 			pass
 
 
 		try:
-			curs.execute(
+			db.sql("""Update Untersuchdat_schacht_bewertung set Schadensklasse_B = ZB ;""")
+		except:
+			pass
+		try:
+			db.sql("""Update Untersuchdat_schacht_bewertung set Schadensklasse_D = ZD ;""")
+		except:
+			pass
+		try:
+			db.sql("""Update Untersuchdat_schacht_bewertung set Schadensklasse_S = ZS ;""")
+		except:
+			pass
+
+
+		try:
+			db.sql(
 				"""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN vorlaufige_Schadenszahl_D INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN vorlaufige_Schadenszahl_B INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN vorlaufige_Schadenszahl_S INTEGER ;""")
 		except:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE Untersuchdat_schacht_bewertung
 					SET vorlaufige_Schadenszahl_D = (Case 
 					WHEN Schadensklasse_D = 1  THEN 10
@@ -31280,7 +31690,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE Untersuchdat_schacht_bewertung
 					SET vorlaufige_Schadenszahl_B = (Case 
 					WHEN Schadensklasse_B = 1  THEN 10
@@ -31295,7 +31705,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""UPDATE Untersuchdat_schacht_bewertung
 					SET vorlaufige_Schadenszahl_S = (Case 
 					WHEN Schadensklasse_S = 1  THEN 10
@@ -31309,42 +31719,48 @@ class Zustandsklassen_funkt:
 		except:
 			pass
 		sql = """CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht"""
-		curs.execute(sql)
+		db.sql(sql)
+		sql = """SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
+			db.commit()
+		except:
+			pass
 
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Entwaesserungssystem TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Abwasserart TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Wasserschutzzone TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Grundwasserabstand INTEGER ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Bodenart TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
+			db.sql("""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Lage_am_Umfang TEXT ;""")
 		# db.commit()
 		except:
 			pass
 		try:
-			curs.execute(
+			db.sql(
 				"""ALTER TABLE schaechte_untersucht_bewertung ADD COLUMN Lage_an_Bauteilverbindung TEXT ;""")
 		# db.commit()
 		except:
@@ -31353,7 +31769,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('Untersuchdat_schacht_bewertung', 'geom');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass
@@ -31361,7 +31784,14 @@ class Zustandsklassen_funkt:
 		sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
 		data = (crs,)
 		try:
-			curs.execute(sql, data)
+			db.sql(sql, parameters=data)
+			db.commit()
+		except:
+			pass
+
+		sql = """SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');"""
+		try:
+			db.sql(sql)
 			db.commit()
 		except:
 			pass

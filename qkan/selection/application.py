@@ -68,16 +68,16 @@ class Selections(QKanPlugin):
                     return False
 
                 check_cb = {}
-                check_cb['cb1'] = self.select_dlg.checkBox.isChecked()
-                check_cb['cb2'] = self.select_dlg.checkBox_2.isChecked()
-                check_cb['cb3'] = self.select_dlg.checkBox_3.isChecked()
-                check_cb['cb4'] = self.select_dlg.checkBox_4.isChecked()
-                check_cb['cb5'] = self.select_dlg.checkBox_5.isChecked()
-                check_cb['cb6'] = self.select_dlg.checkBox_6.isChecked()
-                check_cb['cb7'] = self.select_dlg.checkBox_7.isChecked()
-                check_cb['cb8'] = self.select_dlg.checkBox_8.isChecked()
-                check_cb['cb9'] = self.select_dlg.checkBox_9.isChecked()
-                check_cb['cb10'] = self.select_dlg.checkBox_10.isChecked()
+                check_cb['cb1'] = self.select_dlg.radioButton.isChecked()
+                check_cb['cb2'] = self.select_dlg.radioButton_2.isChecked()
+                check_cb['cb3'] = self.select_dlg.radioButton_4.isChecked()
+                check_cb['cb4'] = self.select_dlg.radioButton_5.isChecked()
+                check_cb['cb5'] = self.select_dlg.radioButton_6.isChecked()
+                check_cb['cb6'] = self.select_dlg.radioButton_7.isChecked()
+                check_cb['cb7'] = self.select_dlg.radioButton_8.isChecked()
+                check_cb['cb8'] = self.select_dlg.radioButton_3.isChecked()
+                check_cb['cb9'] = self.select_dlg.radioButton_9.isChecked()
+                check_cb['cb10'] = self.select_dlg.radioButton_10.isChecked()
 
                 imp = Selection(
                     db_qkan,

@@ -15,6 +15,7 @@ from qgis.PyQt.QtWidgets import (
     QTextBrowser,
     QDialog,
     QButtonGroup,
+    QRadioButton,
 )
 
 
@@ -42,16 +43,16 @@ class _Dialog(QDialog):
 
 class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
     #button_box: QDialogButtonBox
-    checkBox: QCheckBox
-    checkBox_2: QCheckBox
-    checkBox_3: QCheckBox
-    checkBox_4: QCheckBox
-    checkBox_5: QCheckBox
-    checkBox_6: QCheckBox
-    checkBox_7: QCheckBox
-    checkBox_8: QCheckBox
-    checkBox_9: QCheckBox
-    checkBox_10: QCheckBox
+    radioButton: QRadioButton
+    radioButton_2: QRadioButton
+    radioButton_3: QRadioButton
+    radioButton_4: QRadioButton
+    radioButton_5: QRadioButton
+    radioButton_6: QRadioButton
+    radioButton_7: QRadioButton
+    radioButton_8: QRadioButton
+    radioButton_9: QRadioButton
+    radioButton_10: QRadioButton
 
 
     def __init__(self,
@@ -61,18 +62,3 @@ class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
     ):
         super().__init__(default_dir, tr, parent)
 
-        self.button_group = QButtonGroup(self)
-        self.button_group.setExclusive(True)
-        self.button_group.addButton(self.checkBox_3)
-        self.button_group.addButton(self.checkBox_4)
-        self.button_group.addButton(self.checkBox_5)
-        self.button_group.addButton(self.checkBox_6)
-        self.button_group.addButton(self.checkBox_7)
-        self.button_group.addButton(self.checkBox_9)
-        self.button_group.addButton(self.checkBox_10)
-
-        self.button_group2 = QButtonGroup(self)
-        self.button_group2.setExclusive(True)
-        self.button_group2.addButton(self.checkBox)
-        self.button_group2.addButton(self.checkBox_2)
-        self.button_group2.addButton(self.checkBox_8)

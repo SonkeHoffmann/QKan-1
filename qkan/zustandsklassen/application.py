@@ -149,16 +149,16 @@ class Zustandsklassen(QKanPlugin):
                 )
                 return False
 
-        self.log.info("DB creation finished, starting Zustandsklassen")
-        zustand = Zustandsklassen_funkt(
-            check_cb,
-            QKan.config.database.qkan,
-            QKan.config.zustand.date,
-            QKan.config.epsg,
-            datetype,
-        )
-        zustand.run()
-        del zustand
+            self.log.info("DB creation finished, starting Zustandsklassen")
+            zustand = Zustandsklassen_funkt(
+                check_cb,
+                db_qkan,
+                QKan.config.zustand.date,
+                QKan.config.epsg,
+                datetype,
+            )
+            zustand.run()
+            del zustand
 
         # TODO: Some layers don't have a valid EPSG attached or wrong coordinates
         return True
