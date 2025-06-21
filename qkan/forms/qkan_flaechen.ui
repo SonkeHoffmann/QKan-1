@@ -133,7 +133,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Neigunsklasse</string>
+      <string>Neigungsklasse</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="neigkl">
