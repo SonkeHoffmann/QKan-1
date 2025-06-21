@@ -223,6 +223,9 @@ class SWMMPorter(QKanPlugin):
         """
         self.log.info("Creating DB")
 
+        QKan.config.database.qkan = self.import_dlg.tf_database.text()
+        QKan.config.project.file = self.import_dlg.tf_project.text()
+
         with DBConnection(dbname=QKan.config.database.qkan, epsg=QKan.config.epsg) as db_qkan:
             if not db_qkan.connected:
                 fehlermeldung(

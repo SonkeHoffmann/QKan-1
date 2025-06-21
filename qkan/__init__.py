@@ -41,6 +41,7 @@ PLUGIN_LIST = [
     "floodTools.application.FloodTools",
     "tools.application.QKanTools",
     "info.application.Infos",
+    "selection.application.Selections",
 ]
 
 
@@ -151,9 +152,6 @@ class QKan:
         self.toolbar = self.iface.addToolBar("QKan")
         self.toolbar.setObjectName("QKan")
 
-        # Activate Macros
-        QgsSettings().setValue('qgis/enableMacros', 'Always')
-
         # Add QKan SVG path
         qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")
         svgPaths = QgsSettings().value('svg/searchPathsForSVG')
@@ -226,7 +224,7 @@ class QKan:
 
             safe_add_action(allgemein, "Allgemeine Optionen")
             safe_add_action(allgemein, "QKan-Projekt aktualisieren")
-            safe_add_action(allgemein, "QKan-Projektdatei laden")
+            safe_add_action(allgemein, "QKan-Projektdatei übertragen")
 
             safe_add_action(verwaltung, "QKan-Datenbank aktualisieren")
             safe_add_action(verwaltung, "Neue QKan-Datenbank erstellen")
@@ -236,6 +234,7 @@ class QKan:
             safe_add_action(daten, "Tabellendaten aus Clipboard einfügen")
             safe_add_action(daten, "Tabellendaten aus Clipboard: Zuordnung anzeigen")
             safe_add_action(daten, "Längsschnitt")
+            safe_add_action(daten, "Selektion")
 
             safe_add_action(flaechen, "Erzeuge unbefestigte Flächen...")
             safe_add_action(flaechen, "Erzeuge Voronoiflächen zu Haltungen")

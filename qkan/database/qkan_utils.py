@@ -7,7 +7,7 @@ from xml.etree.ElementTree import ElementTree
 from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry, QgsDataSourceUri
 from qgis.utils import iface, pluginDirectory
 from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
-
+from math import ceil
 from qkan import QKan, enums
 from ..utils import get_logger
 
@@ -589,6 +589,10 @@ def formf(zahl: Optional[float], anz: Optional[int]) -> str:
             fmt = "{0:>" + "{:d}s".format(anz) + "}"
             erg = fmt.format(erg.rstrip("0"))
     return erg
+
+def round_up( n, decimals=2):
+    expoN = n * 10 ** decimals
+    return ceil(expoN) / 10 ** decimals
 
 
 def fzahl(text: str, n: float = 0.0, default: float = 0.0) -> float:

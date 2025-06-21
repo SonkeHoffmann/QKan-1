@@ -4,7 +4,13 @@ __copyright__ = "(C) 2020, Joerg Hoettges"
 
 from pathlib import Path
 from typing import Dict, List, cast
-
+from qgis.utils import iface
+from qgis.core import (
+	Qgis,
+	QgsProject,
+	QgsVectorLayer,
+	QgsDataSourceUri,
+)
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
@@ -69,7 +75,7 @@ class ImportTask:
         self.db_qkan.sql("SELECT RecoverSpatialIndex()")
 
     def read(self) -> None:
-        with self.inpobject.open("r") as inp:
+        with self.inpobject.open("r", encoding='utf-8', errors='replace') as inp:
             position = inp.tell()
             block = ""
 
@@ -628,6 +634,7 @@ class ImportTask:
         """Liest die Profildaten zu den Haltungen ein. Dabei werden sowohl Haltungsdaten ergänzt
         als auch Profildaten erfasst"""
         #TODO nochmal prüfen
+        #TODO profiletypes ergänzen!
 
         profiltypes = {"CIRCULAR": "Kreisquerschnitt"}
 
@@ -635,6 +642,7 @@ class ImportTask:
         for line in data:
             # Attribute bitte aus qkan.database.qkan_database.py entnehmen
             line_tokens = line.split()
+
             haltnam = line_tokens[0]
             xsection = line_tokens[1]  # shape
             if xsection == "IRREGULAR":
@@ -647,8 +655,11 @@ class ImportTask:
                 hoehe = "NULL"
                 breite = "NULL"
             else: # der Normalfall
-                hoehe = line_tokens[2]*1000  # Geom1
-                breite = line_tokens[3]*1000  # Geom2
+                hoehe = float(line_tokens[2])*1000  # Geom1
+                if line_tokens[3] == '0':
+                    breite = hoehe
+                else:
+                    breite = float(line_tokens[3])*1000  # Geom2
 
             if xsection in profiltypes:
                 profilnam = profiltypes[xsection]

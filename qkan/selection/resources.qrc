@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/qkan/selection" >
+        <file>res/selection.png</file>
+    </qresource>
+</RCC>
