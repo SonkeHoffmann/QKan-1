@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>795</height>
+    <height>639</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,8 +37,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>507</width>
-        <height>771</height>
+        <width>511</width>
+        <height>619</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -464,13 +464,13 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>100</height>
+           <height>50</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>100</height>
+           <height>50</height>
           </size>
          </property>
          <property name="font">
@@ -513,8 +513,8 @@
          <widget class="QCheckBox" name="checkBox_2">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>50</y>
+            <x>180</x>
+            <y>20</y>
             <width>131</width>
             <height>17</height>
            </rect>
@@ -532,8 +532,8 @@
          <widget class="QCheckBox" name="checkBox_3">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>80</y>
+            <x>310</x>
+            <y>20</y>
             <width>131</width>
             <height>17</height>
            </rect>

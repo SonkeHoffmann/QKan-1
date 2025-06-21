@@ -8,32 +8,32 @@
     :maxdepth: 2
     :caption: Allgemeines 
 
-    Qkan_allgemein
-    Qkan_aufsetzen
-    Qkan_faq
+    QKan_allgemein
+    QKan_aufsetzen
+    QKan_faq
 
 
 .. toctree::
     :maxdepth: 2
     :caption: Funktionen
 
-    Qkan_Datenaustausch
-    Qkan_flaechen
-    Qkan_Daten
-    Qkan_workflow
-    Qkan_qfield
-    Qkan_edit
-	QKan_Zustandsklassifizierung
-	QKan_Sanierungsbedarfszahl
-	QKan_Substanzklassifizierung
+    QKan_Datenaustausch
+    QKan_flaechen
+    QKan_Daten
+    QKan_workflow
+    QKan_qfield
+    QKan_edit
+    QKan_Zustandsklassifizierung
+    QKan_Sanierungsbedarfszahl
+    QKan_Substanzklassifizierung
     
  
 .. toctree::
     :maxdepth: 3
     :caption: Übersicht
     
-    Qkan_Formulare
-    Qkan_Tabellen
+    QKan_Formulare
+    QKan_Tabellen
 
 
 Register und Tabellen

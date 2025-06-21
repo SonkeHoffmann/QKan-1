@@ -266,7 +266,7 @@ class ImportTask(Schadenstexte):
         geom_g = QgsGeometry()  # falls kein Objekt für Bauwerk oder Deckel, wird Kreis aus Gerinne übernommen
         geop = QgsPoint()
         geom = QgsGeometry()
-        sohle_b = None  # falls kein Gerinnepunktobjekt, wird Sohlhöhe aus Beuwerk übernommen
+        sohle_b = None  # falls kein Gerinnepunktobjekt, wird Sohlhöhe aus Bauwerk übernommen
         blocks_go = block.findall("GO")
         if len(blocks_go) == 0:
             logger.warning(f'Keine Daten in <GO> bei <KG001> = {name}')
@@ -2260,7 +2260,7 @@ class ImportTask(Schadenstexte):
                       'datenart': anschluss_untersucht.datenart, 'max_ZD': anschluss_untersucht.max_ZD,
                       'max_ZB': anschluss_untersucht.max_ZB, 'max_ZS': anschluss_untersucht.max_ZS,
                       'geom': anschluss_untersucht.geom, 'epsg': QKan.config.epsg,
-}
+            }
 
             # logger.debug(f'm150porter.import - insertdata:\ntabnam: haltungen_untersucht\n'
             #              f'params: {params}')

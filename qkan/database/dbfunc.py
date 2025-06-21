@@ -109,6 +109,7 @@ class DBConnection:
         self.dbtype = None
 
         self.sqlnam = None
+        self.sqls = {}
 
         self._connect()
 
@@ -133,7 +134,7 @@ class DBConnection:
 
         self.module = module
         # Bei Wechsel des Datenbanktyps QKan.sqls zurücksetzen
-        if QKan.dbtype and (QKan.dbtype != self.dbtype):
+        if QKan.dbtype != self.dbtype:
             QKan.sqls = {}
         # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
         # noch nicht gelesen
@@ -149,7 +150,7 @@ class DBConnection:
                 QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
 
         # set sqls for active module
-        self.sqls = QKan.sqls[module]
+        self.sqls |= QKan.sqls[module]
 
     def _connect(self) -> None:
         """Connects to SQLite3 or PostgreSAL database.
@@ -238,7 +239,7 @@ class DBConnection:
             else:
                 QKan.instance.iface.messageBar().pushMessage(
                     "Information",
-                    "SpatiaLite-Datenbank wird erstellt. Bitte waren...",
+                    "SpatiaLite-Datenbank wird erstellt. Bitte warten...",
                     level=Qgis.Info,
                 )
 

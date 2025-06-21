@@ -328,7 +328,7 @@ Mit :guilabel:`Alle aktualisieren` wird die Änderung für alle Flächen überno
  
 Danach müssen alle Flächen ausgewählt werden, die mehreren Haltungen zugeordnet werden können (z.B. Straßen, große Gebäude oder große unbefestigte Flächen). 
 
-Die Auswahl könnte beispielsweiße so aussehen: 
+Die Auswahl könnte beispielsweise so aussehen: 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/auswahl_grosse_flaechen.png 
 

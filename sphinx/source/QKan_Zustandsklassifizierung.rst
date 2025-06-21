@@ -1,8 +1,8 @@
 Zustandsklassifizierung
-====
+=======================
 
 Zustandsklassifizierung
----------------------
+-----------------------
 
 Um das Plugin Zustandsklassen zu nutzen, muss im Vorhinein eine Datenbank mit den notwendigen Informationen mit Hilfe des Plugins QKan erstellt werden. 
 Dafür muss das Plugin QKan heruntergeladen werden und im Plugin Ordner von QGIS gespeichert werden. Dann kann zum Beispiel die Funktion „Import aus ISYBAU-XML" genutzt 
@@ -11,14 +11,14 @@ Zustandsklassen enthält.
 Um die Zustandsklassen nun zu ermitteln, muss über die Menüleiste in QGIS die Schaltfläche „QKan" geklickt werden. Dort kann das Plugin Zustandsklassen ausgewählt werden.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Zustandsklassen/zustand1.png
+.. |Zustandsklassifizierung1| image:: ./QKan_Bilder/Zustandsklassen/zustand1.png
                              :width: 1.25 em
 
 
 Daraufhin öffnet sich das im folgenden gezeigte Eingabefenster:
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Zustandsklassen/zustand2.png
+.. |Zustandsklassifizierung2| image:: ./QKan_Bilder/Zustandsklassen/zustand2.png
                              :width: 1.25 em
 
 
@@ -41,14 +41,14 @@ und neue Layer wurden dem Projekt zugefügt.
 Wenn die Klassifizierung nach DWA-M 149 durchgeführt wurde, werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Zustandsklassen/zustand3.png
+.. |Zustandsklassifizierung3| image:: ./QKan_Bilder/Zustandsklassen/zustand3.png
                              :width: 1.25 em
 
 
 Bei einer Klassifizierung nach ISYBAU werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Zustandsklassen/zustand3.png
+.. |Zustandsklassifizierung4| image:: ./QKan_Bilder/Zustandsklassen/zustand4.png
                              :width: 1.25 em
 
 
@@ -61,5 +61,3 @@ Einzelfallbetrachtung“ durchgeführt werden.
 
 Alternativ kann die Zustandsklassifizierung auch übersprungen werden und nur die Tabellen angelegt werden. Dabei werden schon vorhandene Klassifizierungen aus den Grundlagentabellen 
 übernommen.
-
-

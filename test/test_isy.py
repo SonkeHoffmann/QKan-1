@@ -17,12 +17,14 @@ class TestISYQKan(QgisTest):
         super().setUpClass()
 
         # Extract files
-        with ZipFile(BASE_DATA / "test_isybau_aj_import.zip") as z:
+        # with ZipFile(BASE_DATA / "test_isybau_aj_import.zip") as z:
+        with ZipFile(BASE_DATA / "test_ISYBAU13_HKuSuHA.zip") as z:
             z.extractall(BASE_WORK)
 
     def test_import(self) -> None:
-        QKan.config.database.qkan = str(BASE_WORK / "test.sqlite")
-        QKan.config.xml.import_file = str(BASE_WORK / "Datenausgabe ISYBAU-2017_29-01-21.xml")
+        QKan.config.database.qkan = str(BASE_WORK / "blankenhd.sqlite")
+        # QKan.config.xml.import_file = str(BASE_WORK / "Datenausgabe ISYBAU-2017_29-01-21.xml")
+        QKan.config.xml.import_file = str(BASE_WORK / "ISYBAU13_HKuSuHA.xml")
         QKan.config.project.file = str(BASE_WORK / "plan.qgs")
         QKan.config.epsg = 25832
 

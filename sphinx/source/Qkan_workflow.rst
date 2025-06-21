@@ -294,26 +294,13 @@ Die Aufteilung der Flächen geschieht erst beim Export in das Simulationsprogram
 
 Bevor die automatische Flächenzuordnung jedoch durchgeführt werden kann, müssen die Daten noch entsprechend vorbereitet werden. 
 Dafür sollten als erstes die Haltungen markiert werden, an welche kein Regenwasser angeschlossen ist, da sie bei der automatischen Flächenzuordnung ignoriert werden sollen. 
-Diese Markierung geschieht über das Attribut "Entwässerungssysteme" der Haltungsdaten. 
-Hierfür muss der Layer Haltungen → Haltungen ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungsmodus| sein. 
+Diese Markierung geschieht über das Attribut "hat RW-Anschlüsse" der Haltungsdaten. 
+Hierfür muss der Layer "Haltungen" ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungsmodus| sein. 
 Es sollten nun alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist (z.B. Haltungen die "nur" zum Auslauf führen; kurze Haltungen in Kreuzungsbereichen etc.). 
 Anschließend können die gewählten Haltungen in der Attributtabelle über den Filter :guilabel:`Alle gewählten Objekte anzeigen` (siehe Bild unten) angezeigt werden. 
-Das Entwässerungssystem muss nun für diese Haltungen von "Mischwasser" auf "MW nicht angeschlossen" geändert werden.
-Dafür sollte von der Listen-Ansicht auf die Formular-Ansicht gewechselt werden (Schaltfäche rechts unten, siehe Bild unten). 
-
-.. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_haltungen.png 
-
-Hierbei sollte darauf geachtet werden, dass eine der gewählten Haltungen ausgewählt ist (und nicht die erste Haltung der Liste). 
-Dies kann sichergestellt werden, indem man über den Pfeil links unten, einen Schritt nach vorne geht (siehe Bild unten). 
-Der Haltungsname oben im Formular sollte nun mit einem Eintrag aus der Liste (links, grau hinterlegt) übereinstimmen.
-Anschließend kann das :guilabel:`Entwässerungssystem` über die Drop-Down-Liste von "Mischwasser" zu "MW nicht angeschlossen" geändert werden. 
-
-.. image:: ./QKan_Bilder/Flaechen_vorbereiten/formular_haltung.png 
-
-Nun kann wieder in die Listen-Ansicht gewechselt werden. 
-Mit einem Rechtsklick auf die geänderte Zelle kann der Zellinhalt kopiert werden. 
-Anschließend kann in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte :guilabel:`Entwässerungssystem` gewählt werden. 
-In das Formelfenster wird der kopierte Zellinhalt **mit Anführungsstrichen** eingefügt und mit :guilabel:`Gewählte aktualisieren` werden alle ausgewählten Haltungen entsprechend angepasst. 
+Der Status "hat RW-Anschlüsse" muss nun für diese Haltungen von 1 (True) auf 0 (False) geändert werden. Dazu muss in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte 
+:guilabel:`hat RW-Anschlüsse` gewählt werden. Im Formelfenster wird 0 eingetragen und mit :guilabel:`Gewählte aktualisieren` werden alle ausgewählten Haltungen entsprechend 
+angepasst. 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_aktualisieren.png 
 
@@ -328,7 +315,7 @@ Mit :guilabel:`Alle aktualisieren` wird die Änderung für alle Flächen überno
  
 Danach müssen alle Flächen ausgewählt werden, die mehreren Haltungen zugeordnet werden können (z.B. Straßen, große Gebäude oder große unbefestigte Flächen). 
 
-Die Auswahl könnte beispielsweiße so aussehen: 
+Die Auswahl könnte beispielsweise so aussehen: 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/auswahl_grosse_flaechen.png 
 

@@ -89,6 +89,9 @@ class ReadData:  # type: ignore
 
         if layer.providerType() == "spatialite":
             self.read_clipboard()
+            # Redraw map
+            project = QgsProject.instance()
+            project.reloadAllLayers()
         else:
             return
 
@@ -348,9 +351,6 @@ class ReadData:  # type: ignore
             qkan_columntypes,
             tabnam_db
         )
-        # Redraw map
-        project = QgsProject.instance()
-        project.reloadAllLayers()
 
         self.iface.messageBar().pushMessage(
             "Info",

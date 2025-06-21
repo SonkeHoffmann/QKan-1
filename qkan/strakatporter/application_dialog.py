@@ -113,14 +113,23 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
     def select_import(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
-        dirname = QFileDialog.getExistingDirectory(
-            self,
-            self.tr("Zu importierendes STRAKAT-Verzeichnis"),
-            self.default_dir,
-        )
-        if dirname:
-            self.tf_import.setText(dirname)
-            self.default_dir = os.path.dirname(dirname)
+        while True:
+            dirname = QFileDialog.getExistingDirectory(
+                self,
+                self.tr("Zu importierendes STRAKAT-Verzeichnis"),
+                self.default_dir,
+            )
+
+            if dirname == '':
+                return
+            elif os.path.exists(os.path.join(dirname, 'kanal.rwtopen')):
+                self.tf_import.setText(dirname)
+                self.default_dir = os.path.dirname(dirname)
+                return
+            else:
+                logger.warning(
+                    "Fehler: Bitte wählen Sie den Ordner, der die Datei 'kanal.rwtopen' enthält"
+                )
 
     def select_project(self) -> None:
         # noinspection PyArgumentList,PyCallByClass

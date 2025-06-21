@@ -50,7 +50,13 @@ class StrakatPorter(QKanPlugin):
             # Read from form and save to config
             QKan.config.database.qkan = self.import_dlg.tf_database.text()
             QKan.config.project.file = self.import_dlg.tf_project.text()
-            QKan.config.strakat.import_dir = self.import_dlg.tf_import.text()
+
+            # Falls der Unterordner 'system' ausgewählt wurde, Ordner darüber festlegen
+            strakat_import_dir = self.import_dlg.tf_import.text()
+            if os.path.split(strakat_import_dir)[1] == 'system':
+                QKan.config.strakat.import_dir = os.path.dirname(strakat_import_dir).split[0]
+            else:
+                QKan.config.strakat.import_dir = strakat_import_dir
 
             QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text().replace('/', '\\')
             QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text().replace('/', '\\')

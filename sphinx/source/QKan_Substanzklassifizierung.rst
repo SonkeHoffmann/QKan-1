@@ -1,8 +1,5 @@
 SubKanS
-====
-
-SubKanS
----------------------
+=======
 
 Das Plugin SubKans beruht auf dem Projekt „ Entwicklung eines Standards zur Bewertung und Klassifizierung der baulichen Substanz von Abwasserkanälen und Schächten (SubKanS)“, 
 welches 2021 in Zusammenarbeit der FH Aachen, der HS Magdeburg Stendal, dem Kompetenzzentrum Wasser Berlin gGmbh, dem Franz Fischer Ingenieurbüro GmbH, dem Ingenieurbüro Dr.-Ing. 
@@ -14,14 +11,14 @@ Zustandsklassifizierung aufbaut. Aktuell ist die Substanzklassifizierung nur fü
 Der Aufruf des Plugins erfolgt nach dem Klick auf die Schaltfläche SubKans.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/subkans/subkans1.png
+.. |Zustandsklassifizierung1| image:: ./QKan_Bilder/subkans/subkans1.png
                              :width: 1.25 em
 							 
 
 Daraufhin öffnet sich die folgende Eingabemaske:
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/subkans/subkans2.png
+.. |Zustandsklassifizierung2| image:: ./QKan_Bilder/subkans/subkans2.png
                              :width: 1.25 em
 							 
 
@@ -42,9 +39,10 @@ statt. Die Schadenslänge für die Umfangschäden wird für Ei-Profile nach DWA 
 Zum Schluss erfolgt die Berechnung der Substanzklassen, diese werden anhand der vorher ermittelten Abnutzung berechnet. Die folgende Zuordnung wird vorgenommen:
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/subkans/subkans3.png
+.. |Zustandsklassifizierung3| image:: ./QKan_Bilder/subkans/subkans3.png
                              :width: 1.25 em
 							 
 
 Bei der Berechnung der Abnutzung wird die kleinste Länge die in der Datenbank vorliegt genutzt. Dafür wird die Länge in den Stammdaten, Befahrungsdaten und die letzte Stationierung miteinander verglichen.
-Die oben erläuterten Schritte können durch die Auswahlmöglichkeit in der Eingabemaske alle zusammen oder in einzelnen Schritten durchgeführt werden. Am Ende werden zwei neue Layer haltungen_substanz_bewertung und substanz_haltung_bewertung in QGIS angezeigt, diese enthalten alle Informationen aus der Substanzklassifizierung.
+Die oben erläuterten Schritte können durch die Auswahlmöglichkeit in der Eingabemaske alle zusammen oder in einzelnen Schritten durchgeführt werden. Am Ende werden zwei neue Layer 
+haltungen_substanz_bewertung und substanz_haltung_bewertung in QGIS angezeigt, diese enthalten alle Informationen aus der Substanzklassifizierung.

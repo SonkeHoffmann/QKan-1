@@ -139,37 +139,17 @@ Die nachfolgend erläuterten Schritte dienen der Datenvorbereitung.
 
 Markierung von Transporthaltungen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Die Markierung erfolgt hier indirekt über die Zuordnung einer entsprechenden Entwässerungsart: In der 
-entsprechenden Referenztabelle, die in der Layerkontrolle in der Gruppe "Referenztabellen" zu finden ist, 
-sind eigene Datensätze für Transporthaltungen enthalten, die in der Spalte "ohne RW-Zufluss" den Wert 1 haben sollen 
-bzw. das Häkchen gesetzt sein soll. Für betreffenden Haltungen muss nun eine dieser Entwässerungsarten gesetzt werden.
-Dazu sollen alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist. Das sind zum einen 
-Transporthaltungen aber auch kurze Verbindungs-Haltungen in Kreuzungsbereichen oder ähnlichem, denen im Folgenden 
-keine Flächen zugeordnet werden sollen (siehe Bild unten).
-
-Sind alle Flächen ausgewählt, kann mit :guilabel:`F6` die Attributtabelle geöffnet werden und der 
-|Tool_bearbeitungsmodus| :guilabel:`Bearbeitungsmodus` eingeschalten werden. Es empfiehlt sich, nur die 
-ausgewählten Datensätze anzeigen zu lassen. Dazu kann unten links in der Schaltfläche 
-:guilabel:`Alle gewählten Objekte anzeigen` ausgewählt werden (roter Kasten links, siehe Bild unten).
-
-Um Tippfehler beim nächsten Schritt zu vermeiden, sollte zunächst einen Datensatz in der Formularansicht bearbeitet 
-werden. Dazu dient die zweiten Schaltfläche rechts unten (roter Kasten rechts, siehe Bild unten).
-
-.. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_haltungen.png
-
-.. |Tool_bearbeitungsmodus| image:: ./QKan_Bilder/Tool_bearbeitungsmodus.png
-                             :width: 1.25 em
-
-Nun wird als Entwässerungssystem eine der nicht angeschlossenen Arten, z. B. "MW nicht angeschlossen" gewählt. 
-Anschließend kann wieder in die Listen-Ansicht gewechselt werden. 
-Mit einem Rechtsklick auf die geänderte Zelle kann der Zellinhalt kopiert werden. 
-Dann kann in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte :guilabel:`Entwässerungssystem` 
-gewählt werden. In das Formelfenster wird der kopierte Zellinhalt **mit Anführungsstrichen** eingefügt und mit 
-:guilabel:`Gewählte aktualisieren` werden alle ausgewählten Haltungen entsprechend angepasst.
+Diese Markierung geschieht über das Attribut "hat RW-Anschlüsse" der Haltungsdaten. 
+Hierfür muss der Layer "Haltungen" ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungsmodus| sein. 
+Es sollten nun alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist (z.B. Haltungen die "nur" zum Auslauf führen; kurze Haltungen in Kreuzungsbereichen etc.). 
+Anschließend können die gewählten Haltungen in der Attributtabelle über den Filter :guilabel:`Alle gewählten Objekte anzeigen` (siehe Bild unten) angezeigt werden. 
+Der Status "hat RW-Anschlüsse" muss nun für diese Haltungen von 1 (True) auf 0 (False) geändert werden. Dazu muss in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte 
+:guilabel:`hat RW-Anschlüsse` gewählt werden. Im Formelfenster wird 0 eingetragen und mit :guilabel:`Gewählte aktualisieren` werden alle ausgewählten Haltungen entsprechend 
+angepasst. 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_aktualisieren.png 
 
-Nun können die Änderungen gespeichert, der Bearbeitungsmodus ausgeschalten und die Auswahl aufgehoben werden.
+Nun können die Änderungen gespeichert, der Bearbeitungsmodus ausgeschalten und die Auswahl aufgehoben werden. 
 
 .. _linkflaechenaufteilung:
 

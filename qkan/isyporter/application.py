@@ -200,6 +200,9 @@ class IsyPorter(QKanPlugin):
                 return False
 
             self.log.info("DB creation finished, starting importer")
+
+            db_qkan.loadmodule("isyporter")
+
             imp = ImportTask(
                 db_qkan,
                 QKan.config.xml.import_file,

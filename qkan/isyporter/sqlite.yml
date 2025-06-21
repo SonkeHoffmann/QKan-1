@@ -1,0 +1,9 @@
+isy_update_schaechte_untersucht: "
+UPDATE schaechte_untersucht
+SET geop = s.geop, kommentar = s.kommentar
+FROM (
+    SELECT schnam, geop, kommentar
+    FROM schaechte 
+) AS s
+WHERE schaechte_untersucht.schnam = s.schnam
+"
