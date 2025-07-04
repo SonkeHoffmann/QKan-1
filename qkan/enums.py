@@ -57,6 +57,7 @@ class UntersuchBezugpunkt(enum.Enum):
 
 
 class LAYERBEZ(enum.Enum):
+    #Allgemeine Layer
     NOTIZ = "Notizen"
     SCHAECHTE = "Schächte"
     AUSLAESSE = "Auslässe"
@@ -86,8 +87,25 @@ class LAYERBEZ(enum.Enum):
     EINZELSCHAEDEN_SCHAECHTE = "Einzelschäden_Schächte"
     ZUSTAND_HA_LEITUNGEN_GESAMT = "Zustand_HA-Leitungen_gesamt"
     EINZELSCHAEDEN_HA_LEITUNGEN = "Einzelschäden_HA-Leitungen"
-    FEHLERLISTE = "Fehlerliste"
-    UEBERSTAUSCHAECHTE = "Überstau Schächte"
+    FEHLERLISTE             = "Fehlerliste"
+    PRUEFABFRAGEN           = "Prüfabfragen"
+    UEBERSTAUSCHAECHTE      = "Überstau Schächte"
+
+    #Referenztabellen
+    ENTWAESSERUNGSARTEN     = "Entwässerungsarten"
+    PROFILE                 = "Profile"
+    PUMPENTYPEN             = "Pumpentypen"
+    EIGENTUM                = "Eigentum"
+    AUSLASSTYPEN            = "Auslasstypen"
+    PLANUNGSSTATUS          = "Planungsstatus"
+    BODENARTEN              = "Bodenarten"
+    ABFLUSSPARAMETER        = "Abflussparameter"
+    ABFLUSSTYPEN            = "Abflussmodelle"
+    KNOTENTYPEN             = "Knotentypen"
+    SCHACHTTYPEN            = "Schachttypen"
+    SYMBOLKATALOG           = "Symbolkatalog"
+    FLAECHENTYPEN           = "Flächentypen"
+
 
     #Ergebnislayer
     ZK_EINZELSCHAEDEN_HA_LEITUNGEN = "Ergebnis_ZK_Einzelschäden_HA_Leitungen"

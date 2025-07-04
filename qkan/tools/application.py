@@ -67,7 +67,7 @@ class QKanTools(QKanPlugin):
         icon_qgsadapt_path = ":/plugins/qkan/tools/res/icon_qgsadapt.png"
         QKan.instance.add_action(
             icon_qgsadapt_path,
-            text=self.tr("QKan-Projektdatei laden"),
+            text=self.tr("QKan-Projektdatei übertragen"),
             callback=self.run_qgsadapt,
             parent=self.iface.mainWindow(),
         )

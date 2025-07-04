@@ -110,7 +110,7 @@
       </font>
      </property>
      <property name="text">
-      <string>abw. Sohlhöhe</string>
+      <string>Sohlhöhe</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_14">
@@ -264,7 +264,7 @@
       </font>
      </property>
      <property name="text">
-      <string>abw. Sohlhöhe</string>
+      <string>Sohlhöhe</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_15">

@@ -1043,13 +1043,9 @@ class DBConnection:
             parlis = [
                 "schnam",
                 "durchm",
+                "baujahr",
                 "bezugspunkt",
                 "id",
-                "xsch",
-                "ysch",
-                "kommentar",
-                "createdat",
-                "baujahr",
                 "untersuchtag",
                 "untersucher",
                 "wetter",
@@ -1060,6 +1056,9 @@ class DBConnection:
                 "max_ZD",
                 "max_ZB",
                 "max_ZS",
+                "kommentar",
+                "createdat",
+                "geop",
             ]
             for el in parlis:
                 if param1.get(el, None) is None:

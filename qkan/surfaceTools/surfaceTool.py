@@ -354,7 +354,10 @@ class SurfaceTask:
                 fl AS (
                 SELECT
                     printf('hf_%1', v.haltnam) AS flnam,
-                    CastToMultiPolygon(ST_Difference(ST_Intersection(v.geom, tg.geom), co.geom)) AS geom
+                    CASE WHEN co.geom IS NULL
+                    THEN CastToMultiPolygon(ST_Intersection(v.geom, tg.geom))
+                    ELSE CastToMultiPolygon(ST_Difference(ST_Intersection(v.geom, tg.geom), co.geom))
+                    END AS geom
                     FROM t_voronoi AS v,
                     covered AS co,
                     tg

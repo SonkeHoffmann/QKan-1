@@ -58,7 +58,7 @@ Projektdatei auf andere Datenbank übertragen
 --------------------------------------------
 
 Oft entstehen nach einiger Zeit komplexe Projektdateien, die besondere Layerdarstellungen enthalten und quasi „Firmenstandards“ darstellen. 
-Solch eine Projektdatei kann mit der Funktion |Tool_projektdatei_uebertragen| :guilabel:`QKan-Projektdatei laden` folgendermaßen auf
+Solch eine Projektdatei kann mit der Funktion |Tool_projektdatei_uebertragen| :guilabel:`QKan-Projektdatei übertragen` folgendermaßen auf
 ein anderes Projekt übertragen werden:
 
 .. _image_qkan_qgsAdapt:

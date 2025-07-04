@@ -128,7 +128,7 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
     # todo: dynamically decide where to log to, configurable in settings
     qgis_handler = QgisPanelLogger(iface)
     qgis_handler.setFormatter(logging.Formatter(fmt="%(name)s - %(message)s"))
-    qgis_handler.setLevel(logging.INFO)
+    qgis_handler.setLevel(logging.DEBUG)
     logger.addHandler(qgis_handler)
 
     if log_to_console:

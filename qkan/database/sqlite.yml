@@ -366,7 +366,7 @@ database_add_schaechte_geop: "
 SELECT AddGeometryColumn('schaechte', 'geop', :epsg, 'POINT', 2);"
 
 database_add_schaechte_geom: "
-SELECT AddGeometryColumn('schaechte', 'geom', :epsg, 'MULTIPOLYGON',2);"
+SELECT AddGeometryColumn('schaechte', 'geom', :epsg, 'MULTILINESTRING',2);"
 
 database_createspatialindex_schaechte_geom: "
 SELECT CreateSpatialIndex('schaechte', 'geom')"

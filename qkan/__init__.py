@@ -75,7 +75,7 @@ class QKan:
     forms: str
 
     dbVersion = "3.4.6"  # Version der QKan-Datenbank
-    qgsVersion = "3.4.6"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
+    qgsVersion = "3.4.7"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
 
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
     sqls: dict = {}                     # SQL-Statements for all loaded modules

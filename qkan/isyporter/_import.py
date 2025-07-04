@@ -5,7 +5,7 @@ from typing import Dict, Iterator, Tuple, Union
 from lxml import etree
 
 from qgis.PyQt.QtCore import QByteArray
-from qgis.core import QgsGeometry, QgsPoint, QgsPointXY, QgsCircle
+from qgis.core import QgsGeometry, QgsPoint, QgsPointXY, QgsCircle, QgsMultiPolygon
 
 from qkan import QKan
 from qkan.config import ClassObject
@@ -15,7 +15,6 @@ from qkan.utils import get_logger
 from qkan.tools.k_schadenstexte import Schadenstexte
 
 logger = get_logger("QKan.xml.import")
-
 
 # region objects
 class Schacht(ClassObject):
@@ -94,6 +93,7 @@ class Haltung(ClassObject):
     hoehe: float = 0.0
     breite: float = 0.0
     laenge: float = 0.0
+    laengehyd: float = 0.0
     sohleoben: float = 0.0
     sohleunten: float = 0.0
     deckeloben: float = 0.0
@@ -117,28 +117,32 @@ class Haltung(ClassObject):
 
 class Haltung_untersucht(ClassObject):
     haltnam: str = ""
+    bezugspunkt: str = ""
     schoben: str = ""
     schunten: str = ""
     hoehe: float = 0.0
     breite: float = 0.0
     laenge: float = 0.0
     baujahr: int = 0
-    kommentar: str = ""
+    id: int = 0
     untersuchtag: str = ""
     untersucher: str = ""
+    untersuchrichtung: str = ""
     wetter: str = ""
-    strasse: str = ""
     bewertungsart: str = ""
     bewertungstag: str = ""
+    strasse: str = ""
     datenart: str = ""
+    auftragsbezeichnung: str = ""
     max_ZD: int = None
     max_ZB: int = None
     max_ZS: int = None
-    geom: QByteArray = None
     xschob: float = 0.0
     yschob: float = 0.0
     xschun: float = 0.0
     yschun: float = 0.0
+    kommentar: str = ""
+    geom: QByteArray = None
 
 class Untersuchdat_haltung(ClassObject):
     untersuchhal: str = ""
@@ -178,6 +182,7 @@ class Anschlussleitung(ClassObject):
     leitnam: str = ""
     schoben: str = ""
     schunten: str = ""
+    haltnam: str = ""
     hoehe: float = 0.0
     breite: float = 0.0
     laenge: float = 0.0
@@ -236,7 +241,7 @@ class Pumpe(ClassObject):
 
 # endregion
 
-def _get_float(value: Union[str, float], default: float = 0.0) -> float:
+def _get_float(value: Union[str, float], default: float = None) -> float:
     if isinstance(value, float):
         return value
 
@@ -249,7 +254,7 @@ def _get_float(value: Union[str, float], default: float = 0.0) -> float:
     return default
 
 
-def _get_int(value: Union[str, int], default: int = 0) -> int:
+def _get_int(value: Union[str, int], default: int = None) -> int:
     if isinstance(value, int):
         return value
 
@@ -257,7 +262,7 @@ def _get_int(value: Union[str, int], default: int = 0) -> int:
         try:
             return int(value)
         except ValueError:
-            logger.error_code("isyporter._import.py._get_int: %s" % sys.exc_info()[1])
+            logger.error("isyporter._import.py._get_int: %s" % sys.exc_info()[1])
 
     return default
 
@@ -287,27 +292,32 @@ class ImportTask(Schadenstexte):
         #self.mapper_bewertungsart: Dict[str, str] = {}
         #self.mapper_druckdicht: Dict[str, str] = {}
 
+        # dictionary zum Ergänzen der Daten beim Einlesen von Schaechte-, Haltungen- und Hausanschluessen_untersucht
+        self.schachtdaten = {}
+        self.haltungsdaten = {}
+        self.anschlussdaten = {}
+        self.hydraulikdaten = {}
 
         # Load XML
         self.xml = ElementTree.ElementTree()
         self.xml.parse(xml_file)
 
-        # Get Namespace
-        tree = etree.parse(xml_file)
-        x = tree.xpath('namespace-uri(.)')
-        self.NS = {"d": x}
+        # Set Namespace
+        # tree = etree.parse(xml_file)
+        # x = tree.xpath('namespace-uri(.)')
+        self.NS = {"": "http://www.ofd-hannover.la/Identifikation"}
 
     def _consume_smp_block(self,
             _block: ElementTree.Element,
     ) -> Tuple[str, int, float, float, float]:
-        name = _block.findtext("d:Objektbezeichnung", None, self.NS)
+        name = _block.findtext("Objektbezeichnung", None, self.NS)
         schacht_typ = 0
 
-        for _schacht in _block.findall("d:Knoten", self.NS):
-            schacht_typ = _get_int(_schacht.findtext("d:KnotenTyp", None, self.NS))
+        for _schacht in _block.findall("Knoten", self.NS):
+            schacht_typ = _get_int(_schacht.findtext("KnotenTyp", None, self.NS))
 
         smp = _block.find(
-            "d:Geometrie/d:Geometriedaten/d:Knoten/d:Punkt[d:PunktattributAbwasser='SMP']",
+            "Geometrie/Geometriedaten/Knoten/Punkt[PunktattributAbwasser='SMP']",
             self.NS,
         )
 
@@ -316,25 +326,27 @@ class ImportTask(Schadenstexte):
             #    "Fehler beim XML-Import: Schächte",
             #    f'Keine Geometrie "SMP" für Schacht {name}',
             #)
-            xsch = _get_float(_block.findtext("d:Geometrie/d:Geometriedaten/d:Knoten/d:Punkt/d:Rechtswert", None, self.NS))
-            ysch = _get_float(_block.findtext("d:Geometrie/d:Geometriedaten/d:Knoten/d:Punkt/d:Hochwert", None, self.NS))
-            sohlhoehe = _get_float(_block.findtext("d:Geometrie/d:Geometriedaten/d:Knoten/d:Punkt/d:Punkthoehe", None, self.NS))
+            xsch = _get_float(_block.findtext("Geometrie/Geometriedaten/Knoten/Punkt/Rechtswert", None, self.NS))
+            ysch = _get_float(_block.findtext("Geometrie/Geometriedaten/Knoten/Punkt/Hochwert", None, self.NS))
+            sohlhoehe = _get_float(_block.findtext("Geometrie/Geometriedaten/Knoten/Punkt/Punkthoehe", None, self.NS))
             #xsch, ysch, sohlhoehe = (0.0,) * 3
         else:
-            xsch = _get_float(smp.findtext("d:Rechtswert", None, self.NS))
-            ysch = _get_float(smp.findtext("d:Hochwert", None, self.NS))
-            sohlhoehe = _get_float(smp.findtext("d:Punkthoehe", None, self.NS))
+            xsch = _get_float(smp.findtext("Rechtswert", None, self.NS))
+            ysch = _get_float(smp.findtext("Hochwert", None, self.NS))
+            sohlhoehe = _get_float(smp.findtext("Punkthoehe", None, self.NS))
         return name, schacht_typ, xsch, ysch, sohlhoehe
 
-    def _get_knoten2(self, x_geodaten: ElementTree.Element) -> Tuple[
+    def _get_knoten2(self, x_geodaten: ElementTree.Element, with_grafik: bool = True) -> Tuple[
         Union[bytes, None],
         Union[bytes, None],
         Union[float, None],
         Union[float, None],
     ]:
-        """Liest ein doppeltes Geooobjekt aus dem Geometriedatenblock <Geometrie>: Punkt, Multipoloygon
+        """Liest ein Geooobjekt, dass ggfs. aus mehreren Teilen besteht, aus dem Geometriedatenblock <Geometrie>: Punkt, Multipoloygon
 
             :param x_geodaten:  xml-Block mit den Geodaten
+
+            :param with_grafik:   Zusätzliches Einlesen der Schachtgrafik (geom)
 
             :returns: Objektname, Schachttyp, Punktobjekt, Multipolygonobjekt, Sohlhöhe, Deckelhöhe, Baujahr
         """
@@ -343,73 +355,95 @@ class ImportTask(Schadenstexte):
 
         geop = None                     # Schacht als Punktobjekt
         geom = None                     # Schacht als Multipolygon
-        xs = ys = xd = yd = xp = yp = sohlhoehe = deckelhoehe = None
+        xs = ys = xd = yd = xa = ya = sohlhoehe = deckelhoehe = None
 
-        for x_pkt in x_geodaten.findall("d:Knoten/d:Punkt", self.NS):
-            _typ = x_pkt.findtext("d:PunktattributAbwasser", None, self.NS)
+        plis = []
+        for x_pkt in x_geodaten.findall("Knoten/Punkt", self.NS):
+            _typ = x_pkt.findtext("PunktattributAbwasser", None, self.NS)
             if _typ == 'SMP':
-                xs = _get_float(x_pkt.findtext("d:Rechtswert", None, self.NS))
-                ys = _get_float(x_pkt.findtext("d:Hochwert", None, self.NS))
-                zs = _get_float(x_pkt.findtext("d:Punkthoehe", None, self.NS))
+                xs = _get_float(x_pkt.findtext("Rechtswert", None, self.NS))
+                ys = _get_float(x_pkt.findtext("Hochwert", None, self.NS))
+                zs = _get_float(x_pkt.findtext("Punkthoehe", None, self.NS))
                 sohlhoehe = zs
                 xp = xs
                 yp = ys
             elif _typ == 'DMP':
-                xd = _get_float(x_pkt.findtext("d:Rechtswert", None, self.NS))
-                yd = _get_float(x_pkt.findtext("d:Hochwert", None, self.NS))
-                zd = _get_float(x_pkt.findtext("d:Punkthoehe", None, self.NS))
+                xd = _get_float(x_pkt.findtext("Rechtswert", None, self.NS))
+                yd = _get_float(x_pkt.findtext("Hochwert", None, self.NS))
+                zd = _get_float(x_pkt.findtext("Punkthoehe", None, self.NS))
                 deckelhoehe = zd
                 xp = xd
                 yp = yd
             else:
-                logger.warning(f'Schacht darf als PunktattributAbwasser nur "SMP" oder "DMP", '
-                               f'aber nicht {_typ} haben')
+                xa = _get_float(x_pkt.findtext("Rechtswert", None, self.NS))
+                ya = _get_float(x_pkt.findtext("Hochwert", None, self.NS))
+                xp = xa
+                yp = ya
+                # logger.warning(f'Schacht darf als PunktattributAbwasser nur "SMP" oder "DMP", '
+                #                f'aber nicht {_typ} haben')
 
-            # geom kann aus mehreren Objekten bestehen, wenn diese um mehr als 0.03 verschoben liegen
-            if geom is None:
-                geom = QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), 1.0).toCircularString(36))
-            elif xd is not None and xs is not None and abs((xd - xs)**2 + (yd - ys)**2) > 0.03**2:
-                geom.combine(QgsGeometry.fromPolyline(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), 1.0).points(36)))
+            # Alle Punkte sammeln, die mehr als 0.03 auseinander liegen
+            for x, y in plis:
+                if abs((x - xp)**2 + (y - yp)**2) < 0.03 **2:
+                    break
+            else:
+                plis.append([xp, yp])
+
+            # geom wird nur erzeugt, wenn es aus mehreren Punkten besteht, die um mehr als 0.03 verschoben liegen
+        if len(plis) > 1:
+            xp, yp = plis[0]
+            geom = QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), 1.0).toLineString())
+            geom.convertToMultiType()
+            for xp, yp in plis[1:]:
+                geom = geom.combine(QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), 1.0).toLineString()))
 
         if xs is not None:
-            geop = QgsGeometry.fromPointXY(QgsPointXY(xs, ys))
+            geop = QgsGeometry.fromPointXY(QgsPointXY(xs, ys))      # Standard: SMP
+        elif xa is not None:
+            geop = QgsGeometry.fromPointXY(QgsPointXY(xa, ya))      # Alternativ: Andere "V106 PunktattributAbwasser"
         elif xd is not None:
-            geop = QgsGeometry.fromPointXY(QgsPointXY(xs, ys))
+            geop = QgsGeometry.fromPointXY(QgsPointXY(xd, yd))      # Falls nichts anderes gegeben: DMP
 
-        for x_polygon in x_geodaten.findall("d:Polygone/d:Polygon", self.NS):
-            polygonart = x_polygon.findtext("d:Polygonart", None, self.NS)
+        if geop:
+            geop_wkb = geop.asWkb()
+            logger.debug(f'geop = {geop.asWkt()}')
+        else:
+            geop_wkb = None
+
+        if not with_grafik:
+            return geop_wkb, None, sohlhoehe, deckelhoehe
+
+        for x_polygon in x_geodaten.findall("Polygone/Polygon", self.NS):
+            polygonart = x_polygon.findtext("Polygonart", None, self.NS)
             gplis = []
-            for x_kante in x_polygon.findall("d:Kante", self.NS):
+            for x_kante in x_polygon.findall("Kante", self.NS):
                 if gplis == []:  # nur 1. Kante
-                    x = _get_float(x_kante.findtext("d:Start/d:Rechtswert", None, self.NS))
-                    y = _get_float(x_kante.findtext("d:Start/d:Hochwert", None, self.NS))
+                    x = _get_float(x_kante.findtext("Start/Rechtswert", None, self.NS))
+                    y = _get_float(x_kante.findtext("Start/Hochwert", None, self.NS))
                     gplis.append([x, y])
-                x = _get_float(x_kante.findtext("d:Ende/d:Rechtswert", None, self.NS))
-                y = _get_float(x_kante.findtext("d:Ende/d:Hochwert", None, self.NS))
+                x = _get_float(x_kante.findtext("Ende/Rechtswert", None, self.NS))
+                y = _get_float(x_kante.findtext("Ende/Hochwert", None, self.NS))
                 gplis.append([x, y])
 
-                mpunkt = _get_float(x_kante.findtext("d:Mitte", None, self.NS))
-                if mpunkt:
-                    logger.error_code("Kreisbögen können zurzeit nicht verarbeitet werden")
+                mpunkt = _get_float(x_kante.findtext("Mitte", None, self.NS))
+                if mpunkt is not None:
+                    logger.error("Kreisbögen können zurzeit nicht verarbeitet werden")
 
             ptlis = [QgsPointXY(x, y) for x, y in gplis]
             if geom is None:
-                geom = QgsGeometry.fromPolygonXY([ptlis])
-            elif polygonart in ('2', '3', ''):
-                geom = geom.combine(QgsGeometry.fromPolygonXY([ptlis]))         # Achtung: combine ist anders bei QgsGeometry
-            elif polygonart == '1':
-                geom = geom.difference(QgsGeometry.fromPolygonXY([ptlis]))
+                geom = QgsGeometry.fromPolylineXY(ptlis)
+                geom.convertToMultiType()
+            elif polygonart in ('1', '2', '3', ''):
+                geom = geom.combine(QgsGeometry.fromPolylineXY(ptlis))         # Achtung: combine ist anders bei QgsGeometry
+            # elif polygonart == '1':
+            #     geom = geom.difference(QgsGeometry.fromPolylineXY(ptlis))
             else:
                 logger.error(f'Die Polygonart {polygonart} kann nicht verarbeitet werden!')
                 raise BaseException
 
-        if geop:
-            geop_wkb = geop.asWkb()
-        else:
-            geop_wkb = None
-
         if geom:
             geom_wkb = geom.asWkb()
+            logger.debug(f'geom = {geom.asWkt()}')
         else:
             geom_wkb = None
 
@@ -426,41 +460,41 @@ class ImportTask(Schadenstexte):
         if not x_geodaten:
             return None
         gplis = []
-        for x_kante in x_geodaten.findall("d:Kanten/d:Kante", self.NS):
+        for x_kante in x_geodaten.findall("Kanten/Kante", self.NS):
             if not gplis:  # nur 1. Kante
-                x = _get_float(x_kante.findtext("d:Start/d:Rechtswert", None, self.NS))
-                y = _get_float(x_kante.findtext("d:Start/d:Hochwert", None, self.NS))
+                x = _get_float(x_kante.findtext("Start/Rechtswert", None, self.NS))
+                y = _get_float(x_kante.findtext("Start/Hochwert", None, self.NS))
                 gplis.append([x, y])
-            x = _get_float(x_kante.findtext("d:Ende/d:Rechtswert", None, self.NS))
-            y = _get_float(x_kante.findtext("d:Ende/d:Hochwert", None, self.NS))
+            x = _get_float(x_kante.findtext("Ende/Rechtswert", None, self.NS))
+            y = _get_float(x_kante.findtext("Ende/Hochwert", None, self.NS))
             gplis.append([x, y])
 
-            mpunkt = _get_float(x_kante.findtext("d:Mitte", None, self.NS))
-            if mpunkt:
-                logger.error_code("Kreisbögen können zurzeit nicht verarbeitet werden")
-        for x_polygon in x_geodaten.findall("d:Polygone/d:Polygon", self.NS):
-            polygonart = x_polygon.findtext("d:Polygonart", None, self.NS)
+            mpunkt = _get_float(x_kante.findtext("Mitte", None, self.NS))
+            if mpunkt is not None:
+                logger.error("Kreisbögen können zurzeit nicht verarbeitet werden")
+        for x_polygon in x_geodaten.findall("Polygone/Polygon", self.NS):
+            polygonart = x_polygon.findtext("Polygonart", None, self.NS)
             if polygonart != '3':
-                logger.error_code("Innere und äußere Polygone können zurzeit nicht verarbeitet werden.")
-            for x_kante in x_polygon.findall("d:Kante", self.NS):
+                logger.error("Innere und äußere Polygone können zurzeit nicht verarbeitet werden.")
+            for x_kante in x_polygon.findall("Kante", self.NS):
                 if not gplis:  # nur 1. Kante
-                    x = _get_float(x_kante.findtext("d:Start/d:Rechtswert", None, self.NS))
-                    y = _get_float(x_kante.findtext("d:Start/d:Hochwert", None, self.NS))
+                    x = _get_float(x_kante.findtext("Start/Rechtswert", None, self.NS))
+                    y = _get_float(x_kante.findtext("Start/Hochwert", None, self.NS))
                     gplis.append([x, y])
-                x = _get_float(x_kante.findtext("d:Ende/d:Rechtswert", None, self.NS))
-                y = _get_float(x_kante.findtext("d:Ende/d:Hochwert", None, self.NS))
+                x = _get_float(x_kante.findtext("Ende/Rechtswert", None, self.NS))
+                y = _get_float(x_kante.findtext("Ende/Hochwert", None, self.NS))
                 gplis.append([x, y])
 
-                mpunkt = _get_float(x_kante.findtext("d:Mitte", None, self.NS))
-                if mpunkt:
-                    logger.error_code("Kreisbögen können zurzeit nicht verarbeitet werden")
+                mpunkt = _get_float(x_kante.findtext("Mitte", None, self.NS))
+                if mpunkt is not None:
+                    logger.error("Kreisbögen können zurzeit nicht verarbeitet werden")
 
         # Geoobjekt erstellen
         if gplis:
             ptlis = [QgsPoint(x, y) for x, y in gplis]
             geomobj = QgsGeometry.fromPolyline(ptlis)
             if not geomobj:
-                logger.error_code(f'Fehler bei polyline: {ptlis}')
+                logger.error(f'Fehler bei polyline: {ptlis}')
             geom = geomobj.asWkb()
         else:
             geom = None
@@ -479,7 +513,6 @@ class ImportTask(Schadenstexte):
             self._pumpen()
         if getattr(QKan.config.xml, "import_haus", True):
             self._anschlussleitungen()
-            self._anschlussleitunggeom()
         if getattr(QKan.config.xml, "import_zustand", True):
             self._schaechte_untersucht()
             self._untersuchdat_schaechte()
@@ -763,27 +796,27 @@ class ImportTask(Schadenstexte):
         def _iter() -> Iterator[Schacht]:
             # .//Schacht/../.. nimmt AbwassertechnischeAnlage
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektart='2']",
+                "Datenkollektive/Stammdatenkollektiv/AbwassertechnischeAnlage/[Objektart='2']",
                 self.NS,
             )
 
-            x_hydraulik = self.xml.find("d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                                        f"d:HydraulikObjekte",
+            x_hydraulik = self.xml.find("Datenkollektive/Hydraulikdatenkollektiv/Rechennetz/"
+                                        f"HydraulikObjekte",
                                         self.NS)
 
             logger.debug(f"Anzahl Schächte: {len(x_anlagen)}")
 
             for x_anlage in x_anlagen:
-                schnam = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                schacht_typ = _get_int(x_anlage.findtext("d:Knoten/d:KnotenTyp", None, self.NS), 0)
-                baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS))
+                schnam = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                schacht_typ = _get_int(x_anlage.findtext("Knoten/KnotenTyp", None, self.NS), 0)
+                baujahr = _get_int(x_anlage.findtext("Baujahr", None, self.NS))
 
                 if schacht_typ == 1:
                     schachttyp = 'Anschlussschacht'
                 else:
                     schachttyp = 'Schacht'
 
-                x_geometrie = x_anlage.find("d:Geometrie/d:Geometriedaten",self.NS)
+                x_geometrie = x_anlage.find("Geometrie/Geometriedaten",self.NS)
                 try:
                     geop, geom, sohlhoehe, deckelhohe = self._get_knoten2(x_geometrie)
                 except:
@@ -792,7 +825,7 @@ class ImportTask(Schadenstexte):
 
                 if x_hydraulik is not None:
                     druckdicht = _get_int(x_hydraulik.findtext(
-                        "d:HydraulikObjekt/[d:Objektbezeichnung='{schnam}']/d:Schacht/d:DruckdichterDeckel",
+                        "HydraulikObjekt/[Objektbezeichnung='{schnam}']/Schacht/DruckdichterDeckel",
                         None,
                         self.NS), 0)
                 else:
@@ -803,15 +836,15 @@ class ImportTask(Schadenstexte):
                     sohlhoehe=sohlhoehe,
                     deckelhoehe=deckelhohe,
                     durchm=1.0,  # TODO: Not listed in ISYBAU?
-                    entwart=x_anlage.findtext("d:Entwaesserungsart", None, self.NS),
-                    strasse=x_anlage.findtext("d:Lage/d:Strassenname", None, self.NS),
+                    entwart=x_anlage.findtext("Entwaesserungsart", None, self.NS),
+                    strasse=x_anlage.findtext("Lage/Strassenname", None, self.NS),
                     baujahr=baujahr,
                     knotentyp='Normalschacht',
                     schachttyp=schachttyp,
                     druckdicht=druckdicht,
-                    simstatus=x_anlage.findtext("d:Status", None, self.NS),
-                    material=x_anlage.findtext("d:Knoten/d:Schacht/d:Aufbau/d:MaterialAufbau", None, self.NS),
-                    kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
+                    simstatus=x_anlage.findtext("Status", None, self.NS),
+                    material=x_anlage.findtext("Knoten/Schacht/Aufbau/MaterialAufbau", None, self.NS),
+                    kommentar=x_anlage.findtext("Kommentar", None, self.NS),
                     geom=geom,
                     geop=geop,
                 )
@@ -854,11 +887,23 @@ class ImportTask(Schadenstexte):
                 'kuerzel',
             )
 
+            # Schachtdaten für Zustand in dict übernehmen
+            if getattr(QKan.config.xml, "import_zustand", True):
+                self.schachtdaten[schacht.schnam] = {
+                    'durchm': schacht.durchm,
+                    'kommentar': schacht.kommentar,
+                    'baujahr': schacht.baujahr,
+                    'xsch': None,
+                    'ysch': None,
+                    'geop': schacht.geop,
+                }
+
             params = {'schnam': schacht.schnam, 'sohlhoehe': schacht.sohlhoehe, 'deckelhoehe': schacht.deckelhoehe,
                       'durchm': schacht.durchm, 'entwart': entwart, 'strasse': schacht.strasse,
                       'baujahr': schacht.baujahr, 'knotentyp': schacht.knotentyp, 'schachttyp': schacht.schachttyp,
                       'druckdicht': schacht.druckdicht, 'simstatus': simstatus, 'material': material,
-                      'kommentar': schacht.kommentar, 'geom': schacht.geom, 'geop': schacht.geop}
+                      'kommentar': schacht.kommentar, 'geom': schacht.geom, 'geop': schacht.geop,
+                      'epsg': QKan.config.epsg}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: schaechte\n'
                          f'params: {params}')
@@ -877,21 +922,21 @@ class ImportTask(Schadenstexte):
         def _iter() -> Iterator[Schacht_untersucht]:
 
             x_zustandsdaten = self.xml.findall(
-                "d:Datenkollektive/d:Zustandsdatenkollektiv",
+                "Datenkollektive/Zustandsdatenkollektiv",
                 self.NS,
             )
 
             for x_zustandsdat in x_zustandsdaten:
 
                 x_inspektionen = x_zustandsdat.findall(
-                    "d:InspizierteAbwassertechnischeAnlage",
+                    "InspizierteAbwassertechnischeAnlage/[Anlagentyp='3']",
                     self.NS,
                 )
 
                 for x_inspektion in x_inspektionen:
 
                     x_zustaende = x_inspektion.findall(
-                        "d:OptischeInspektion/d:Knoten/../..",
+                        "OptischeInspektion/Knoten/../..",
                         self.NS,
                     )
                     logger.debug(f"Anzahl Schaechte: {len(x_zustaende)}")
@@ -907,33 +952,29 @@ class ImportTask(Schadenstexte):
                     datenart = self.datenart
 
                     for x_zustand in x_zustaende:
-                        schnam = x_zustand.findtext("d:Objektbezeichnung", None, self.NS)
-                        baujahr = _get_int(x_zustand.findtext("d:Baujahr", None, self.NS))
-                        strasse = x_zustand.findtext("d:Lage/d:Strassenname", None, self.NS)
+                        schnam = x_zustand.findtext("Objektbezeichnung", None, self.NS)
+                        baujahr = _get_int(x_zustand.findtext("Baujahr", None, self.NS))
+                        strasse = x_zustand.findtext("Lage/Strassenname", None, self.NS)
 
-                        for _schacht in x_zustand.findall("d:OptischeInspektion", self.NS):
-                            untersuchtag = _schacht.findtext("d:Inspektionsdatum", None, self.NS)
-                            untersucher = _schacht.findtext("d:NameUntersucher", None, self.NS)
-                            wetter = _schacht.findtext("d:Wetter", None, self.NS)
+                        for _schacht in x_zustand.findall("OptischeInspektion", self.NS):
+                            untersuchtag = _schacht.findtext("Inspektionsdatum", None, self.NS)
+                            untersucher = _schacht.findtext("NameUntersucher", None, self.NS)
+                            wetter = _schacht.findtext("Wetter", None, self.NS)
 
-                            for _schachtz in _schacht.findall("d:Knoten/d:Bewertung", self.NS):
-                                bewertungsart = _schachtz.findtext("d:Bewertungsverfahren", None, self.NS)
-                                bewertungstag = _schachtz.findtext("d:Bewertungsdatum", None, self.NS)
+                            for _schachtz in _schacht.findall("Knoten/Bewertung", self.NS):
+                                bewertungsart = _schachtz.findtext("Bewertungsverfahren", None, self.NS)
+                                bewertungstag = _schachtz.findtext("Bewertungsdatum", None, self.NS)
 
-                    yield Schacht_untersucht(
-                        schnam=schnam,
-                        durchm=1.0,  # TODO: Not listed in ISYBAU?
-                        kommentar=None,                             # wird später aus schaechte ergänzt
-                        baujahr=baujahr,
-                        untersuchtag=untersuchtag,
-                        untersucher=untersucher,
-                        wetter=wetter,
-                        strasse=strasse,
-                        bewertungsart=bewertungsart,
-                        bewertungstag=bewertungstag,
-                        datenart=datenart,
-                        geop=None,                                  # wird später aus schaechte ergänzt
-                    )
+                        yield Schacht_untersucht(
+                            schnam=schnam,
+                            untersuchtag=untersuchtag,
+                            untersucher=untersucher,
+                            wetter=wetter,
+                            strasse=strasse,
+                            bewertungsart=bewertungsart,
+                            bewertungstag=bewertungstag,
+                            datenart=datenart,
+                        )
 
         for schacht_untersucht in _iter():
 
@@ -948,16 +989,20 @@ class ImportTask(Schadenstexte):
             )
 
             # Datensatz einfügen
-            params = {'schnam': schacht_untersucht.schnam, 'xsch': schacht_untersucht.xsch,
-                      'ysch': schacht_untersucht.ysch, 'durchm': schacht_untersucht.durchm,
+
+            if (pdat := self.schachtdaten.get(schacht_untersucht.schnam, {})) == {}:
+                logger.warning(f'Untersuchter Schacht {schacht_untersucht.schnam} fehlt in den Stammdaten')
+                continue
+
+            params = {'schnam': schacht_untersucht.schnam,
                       'untersuchtag': schacht_untersucht.untersuchtag,
                       'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
-                      'baujahr': schacht_untersucht.baujahr, 'strasse': schacht_untersucht.strasse,
+                      'strasse': schacht_untersucht.strasse,
                       'bewertungsart': schacht_untersucht.bewertungsart,
                       'bewertungstag': schacht_untersucht.bewertungstag,
                       'datenart': schacht_untersucht.datenart,
-                      'kommentar': schacht_untersucht.kommentar,
-                      'geop': schacht_untersucht.geop, 'epsg': QKan.config.epsg}
+                      'epsg': QKan.config.epsg} \
+                     | pdat
 
             # logger.debug(f'isyporter.import - insertdata:\ntabnam: schaechte_untersucht\n'
             #              f'params: {params}')
@@ -970,11 +1015,6 @@ class ImportTask(Schadenstexte):
                 del self.db_qkan
                 return
 
-        self.db_qkan.sqlyml(
-            "isy_update_schaechte_untersucht",
-            "ISYBAU-Import Schächte untersucht"
-        )
-
         self.db_qkan.commit()
 
     def _untersuchdat_schaechte(self) -> None:
@@ -983,14 +1023,14 @@ class ImportTask(Schadenstexte):
             ordner_bild = self.ordner_bild
 
             x_zustandsdaten = self.xml.findall(
-                "d:Datenkollektive/d:Zustandsdatenkollektiv",
+                "Datenkollektive/Zustandsdatenkollektiv",
                 self.NS,
             )
 
             for x_zustandsdat in x_zustandsdaten:
 
                 x_anlagen = x_zustandsdat.findall(
-                    "d:InspizierteAbwassertechnischeAnlage",
+                    "InspizierteAbwassertechnischeAnlage",
                     self.NS,
                 )
 
@@ -998,50 +1038,51 @@ class ImportTask(Schadenstexte):
 
                 for x_anlage in x_anlagen:
 
-                    untersuchsch = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
+                    untersuchsch = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
                     inspektionslaenge = _get_float(x_anlage.findtext(
-                        "d:OptischeInspektion/d:Knoten/d:Inspektionsdaten/d:KZustand[d:InspektionsKode='DDB']"
-                        "[d:Streckenschaden='B']/d:VertikaleLage",
+                        "OptischeInspektion/Knoten/Inspektionsdaten/KZustand[InspektionsKode='DDB']"
+                        "[Streckenschaden='B']/VertikaleLage",
                         None, self.NS))
 
-                    for _untersuchdat_schacht in x_anlage.findall("d:OptischeInspektion/d:Knoten/d:Inspektionsdaten/d:KZustand", self.NS):
+                    for _untersuchdat_schacht in x_anlage.findall("OptischeInspektion/Knoten/Inspektionsdaten/KZustand", self.NS):
 
-                        id = _get_int(_untersuchdat_schacht.findtext("d:Index", None, self.NS))
-                        videozaehler = _get_int(_untersuchdat_schacht.findtext("d:Videozaehler", None, self.NS))
-                        timecode = _untersuchdat_schacht.findtext("d:Timecode", None, self.NS)
-                        kuerzel = _untersuchdat_schacht.findtext("d:InspektionsKode", None, self.NS)
-                        charakt1 = _untersuchdat_schacht.findtext("d:Charakterisierung1", None, self.NS)
-                        charakt2 = _untersuchdat_schacht.findtext("d:Charakterisierung2", None, self.NS)
-                        quantnr1 = _get_float(_untersuchdat_schacht.findtext("d:Quantifizierung1Numerisch", None, self.NS))
-                        quantnr2 = _get_float(_untersuchdat_schacht.findtext("d:Quantifizierung2Numerisch", None, self.NS))
-                        streckenschaden = _untersuchdat_schacht.findtext("d:Streckenschaden", None, self.NS)
-                        streckenschaden_lfdnr = _get_int(_untersuchdat_schacht.findtext("d:StreckenschadenLfdNr", None, self.NS))
-                        pos_von = _get_int(_untersuchdat_schacht.findtext("d:PositionVon", None, self.NS))
-                        pos_bis = _get_int(_untersuchdat_schacht.findtext("d:PositionBis", None, self.NS))
-                        vertikale_lage = _get_float(_untersuchdat_schacht.findtext("d:VertikaleLage", None, self.NS))
-                        bereich = _untersuchdat_schacht.findtext("d:Schachtbereich", None, self.NS)
+                        id = _get_int(_untersuchdat_schacht.findtext("Index", None, self.NS))
+                        videozaehler = _get_int(_untersuchdat_schacht.findtext("Videozaehler", None, self.NS))
+                        timecode = _untersuchdat_schacht.findtext("Timecode", None, self.NS)
+                        kuerzel = _untersuchdat_schacht.findtext("InspektionsKode", None, self.NS)
+                        charakt1 = _untersuchdat_schacht.findtext("Charakterisierung1", None, self.NS)
+                        charakt2 = _untersuchdat_schacht.findtext("Charakterisierung2", None, self.NS)
+                        quantnr1 = _get_float(_untersuchdat_schacht.findtext("Quantifizierung1Numerisch", None, self.NS))
+                        quantnr2 = _get_float(_untersuchdat_schacht.findtext("Quantifizierung2Numerisch", None, self.NS))
+                        streckenschaden = _untersuchdat_schacht.findtext("Streckenschaden", None, self.NS)
+                        streckenschaden_lfdnr = _get_int(_untersuchdat_schacht.findtext("StreckenschadenLfdNr", None, self.NS))
+                        pos_von = _get_int(_untersuchdat_schacht.findtext("PositionVon", None, self.NS))
+                        pos_bis = _get_int(_untersuchdat_schacht.findtext("PositionBis", None, self.NS))
+                        vertikale_lage = _get_float(_untersuchdat_schacht.findtext("VertikaleLage", None, self.NS))
+                        bereich = _untersuchdat_schacht.findtext("Schachtbereich", None, self.NS)
 
-                        _datei = _untersuchdat_schacht.findtext("d:Fotodatei", None, self.NS)
+                        _datei = _untersuchdat_schacht.findtext("Fotodatei", None, self.NS)
                         if _datei is not None and self.ordner_bild is not None:
                             foto_dateiname = os.path.join(self.ordner_bild, _datei)
                         else:
                             foto_dateiname = None
 
-                        ZD = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", None, self.NS))
-                        ZS = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKSvAuto", None, self.NS))
-                        ZB = _get_int(_untersuchdat_schacht.findtext("d:Klassifizierung/d:Standsicherheit/d:SKBvAuto", None, self.NS))
+                        ZD = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
+                        ZS = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Betriebssicherheit/SKSvAuto", None, self.NS))
+                        ZB = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Standsicherheit/SKBvAuto", None, self.NS))
 
                         x_filme = self.xml.findall(
-                            "d:Datenkollektive/d:Zustandsdatenkollektiv/d:Filme"
-                            f"/d:FilmObjekte/d:FilmObjekt/[d:Objektbezeichnung='{untersuchsch}']/../..",
+                            "Datenkollektive/Zustandsdatenkollektiv/Filme"
+                            f"/FilmObjekte/FilmObjekt/[Objektbezeichnung='{untersuchsch}']/../..",
                             self.NS,
                         )
                         logger.debug(f"Anzahl Filme in Untersuchdat_schacht zu Schacht {untersuchsch}: {len(x_filme)}")
 
                         for x_film in x_filme:
-                            for _untersuchdat_schacht in x_film.findall("d:Film", self.NS):
+                            for _untersuchdat_schacht in x_film.findall("Film", self.NS):
 
-                                _datei = _untersuchdat_schacht.findtext("d:Filmname", None, self.NS)
+                                _datei = _untersuchdat_schacht.findtext("Filmname", None, self.NS)
                                 if _datei is not None and self.ordner_bild is not None:
                                     film_dateiname = os.path.join(self.ordner_video, _datei)
                                 else:
@@ -1050,6 +1091,7 @@ class ImportTask(Schadenstexte):
                                 yield Untersuchdat_schacht(
                                 untersuchsch = untersuchsch,
                                 id = id,
+                                untersuchtag = untersuchtag,
                                 videozaehler = videozaehler,
                                 timecode = timecode,
                                 kuerzel = kuerzel,
@@ -1075,6 +1117,7 @@ class ImportTask(Schadenstexte):
         for untersuchdat_schacht in _iter():
 
             params = {'untersuchsch': untersuchdat_schacht.untersuchsch, 'id': untersuchdat_schacht.id,
+                      'untersuchtag': untersuchdat_schacht.untersuchtag,
                       'videozaehler': untersuchdat_schacht.videozaehler, 'timecode': untersuchdat_schacht.timecode,
                       'kuerzel': untersuchdat_schacht.kuerzel, 'charakt1': untersuchdat_schacht.charakt1,
                       'charakt2': untersuchdat_schacht.charakt2, 'quantnr1': untersuchdat_schacht.quantnr1,
@@ -1117,15 +1160,15 @@ class ImportTask(Schadenstexte):
         def _iter() -> Iterator[Schacht]:
             # .//Auslaufbauwerk/../../.. nimmt AbwassertechnischeAnlage
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/"
-                "d:Knoten/d:Bauwerk/d:Auslaufbauwerk/../../..", self.NS,)
+                "Datenkollektive/Stammdatenkollektiv/AbwassertechnischeAnlage/"
+                "Knoten/Bauwerk/Auslaufbauwerk/../../..", self.NS,)
 
             logger.debug(f"Anzahl Ausläufe: {len(x_anlagen)}")
 
             for x_anlage in x_anlagen:
                 name, knoten_typ, xsch, ysch, sohlhoehe = self._consume_smp_block(x_anlage)
 
-                baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS))
+                baujahr = _get_int(x_anlage.findtext("Baujahr", None, self.NS))
 
                 yield Schacht(
                     schnam=name,
@@ -1134,20 +1177,20 @@ class ImportTask(Schadenstexte):
                     sohlhoehe=sohlhoehe,
                     deckelhoehe=_get_float(
                         x_anlage.findtext(
-                            "d:Geometrie/d:Geometriedaten/d:Knoten"
-                            "/d:Punkt[d:PunktattributAbwasser='GOK']/d:Punkthoehe",
+                            "Geometrie/Geometriedaten/Knoten"
+                            "/Punkt[PunktattributAbwasser='GOK']/Punkthoehe",
                             None,
                             self.NS,
                         )
                     ),
                     baujahr=baujahr,
                     durchm=0.5,
-                    entwart=x_anlage.findtext("d:Entwaesserungsart", None, self.NS),
-                    strasse=x_anlage.findtext("d:Lage/d:Strassenname", None, self.NS),
+                    entwart=x_anlage.findtext("Entwaesserungsart", None, self.NS),
+                    strasse=x_anlage.findtext("Lage/Strassenname", None, self.NS),
                     knotentyp=knoten_typ,
-                    material=x_anlage.findtext("d:Knoten/d:Bauwerk/d:Auslaufbauwerk/d:Material", None, self.NS),
-                    simstatus=x_anlage.findtext("d:Status", None, self.NS),
-                    kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
+                    material=x_anlage.findtext("Knoten/Bauwerk/Auslaufbauwerk/Material", None, self.NS),
+                    simstatus=x_anlage.findtext("Status", None, self.NS),
+                    kommentar=x_anlage.findtext("Kommentar", None, self.NS),
                 )
 
         for auslass in _iter():
@@ -1234,8 +1277,8 @@ class ImportTask(Schadenstexte):
         def _iter() -> Iterator[Schacht]:
             # .//Becken/../../.. nimmt AbwassertechnischeAnlage
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage"
-                "/d:Knoten/d:Bauwerk/d:Becken/../../..",
+                "Datenkollektive/Stammdatenkollektiv/AbwassertechnischeAnlage"
+                "/Knoten/Bauwerk/Becken/../../..",
                 self.NS,
             )
 
@@ -1244,11 +1287,11 @@ class ImportTask(Schadenstexte):
             knoten_typ = 'Schacht'
             knoten = 0
             for x_anlage in x_anlagen:
-                name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS))
+                name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                baujahr = _get_int(x_anlage.findtext("Baujahr", None, self.NS))
 
-                for _schacht in x_anlage.findall("d:Knoten", self.NS):
-                    knoten = _get_int(_schacht.findtext("d:Bauwerkstyp", None, self.NS))
+                for _schacht in x_anlage.findall("Knoten", self.NS):
+                    knoten = _get_int(_schacht.findtext("Bauwerkstyp", None, self.NS))
                     if knoten == 1:
                         knoten_typ = 'Regenrückhaltebecken(RRB)'
                     if knoten == 2:
@@ -1261,7 +1304,7 @@ class ImportTask(Schadenstexte):
                         knoten_typ = 'Bodenfilter'
 
                 smp = x_anlage.find(
-                    "d:Geometrie/d:Geometriedaten/d:Knoten/d:Punkt[d:PunktattributAbwasser='KOP']",
+                    "Geometrie/Geometriedaten/Knoten/Punkt[PunktattributAbwasser='KOP']",
                     self.NS,
                 )
 
@@ -1272,11 +1315,11 @@ class ImportTask(Schadenstexte):
                     )
                     xsch, ysch, sohlhoehe = (0.0,) * 3
                 else:
-                    xsch = _get_float(smp.findtext("d:Rechtswert", None, self.NS))
+                    xsch = _get_float(smp.findtext("Rechtswert", None, self.NS))
                     ysch = _get_float(
-                        smp.findtext("d:Hochwert", None, self.NS),
+                        smp.findtext("Hochwert", None, self.NS)
                     )
-                    sohlhoehe = _get_float(smp.findtext("d:Punkthoehe", None, self.NS))
+                    sohlhoehe = _get_float(smp.findtext("Punkthoehe", None, self.NS))
 
                 yield Schacht(
                     schnam=name,
@@ -1285,19 +1328,19 @@ class ImportTask(Schadenstexte):
                     sohlhoehe=sohlhoehe,
                     deckelhoehe=float(
                         x_anlage.findtext(
-                            "d:Geometrie/d:Geometriedaten/d:Knoten"
-                            "/d:Punkt[d:PunktattributAbwasser='DMP']/d:Punkthoehe",
+                            "Geometrie/Geometriedaten/Knoten"
+                            "/Punkt[PunktattributAbwasser='DMP']/Punkthoehe",
                             None,
                             self.NS,
                         )
                     ),
                     baujahr=baujahr,
                     durchm=0.5,
-                    entwart=x_anlage.findtext("d:Entwaesserungsart", None, self.NS),
-                    strasse=x_anlage.findtext("d:Lage/d:Strassenname", None, self.NS),
+                    entwart=x_anlage.findtext("Entwaesserungsart", None, self.NS),
+                    strasse=x_anlage.findtext("Lage/Strassenname", None, self.NS),
                     knotentyp=knoten_typ,
-                    simstatus=x_anlage.findtext("d:Status", None, self.NS),
-                    kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
+                    simstatus=x_anlage.findtext("Status", None, self.NS),
+                    kommentar=x_anlage.findtext("Kommentar", None, self.NS),
                 )
 
         for speicher in _iter():
@@ -1332,11 +1375,45 @@ class ImportTask(Schadenstexte):
         self.db_qkan.commit()
 
     def _haltungen(self) -> None:
+        """Import der Haltungsdaten"""
+
+        def _iter1() -> Iterator[Haltung]:
+            """Hydraulikdaten zu Haltungen einlesen und in self.hydraulikdaten einfügen"""
+
+            x_hydrauliken = self.xml.findall("Datenkollektive/Hydraulikdatenkollektiv/Rechennetz/"
+                                          "HydraulikObjekte/HydraulikObjekt/Haltung",
+                                           self.NS)
+            logger.debug(f"Anzahl HydraulikObjekte_Haltungen: {len(x_hydrauliken)}")
+
+            ks = 1.5
+            laengehyd = 0.0
+            haltnam = ""
+            for x_hydraulik in x_hydrauliken:
+                haltnam = x_hydraulik.findtext("../Objektbezeichnung", None, self.NS)
+                _rauansatz = x_hydraulik.findtext("Rauigkeitsansatz", None, self.NS)
+                if _rauansatz == "1":
+                    ks = _get_float(x_hydraulik.findtext("RauigkeitsbeiwertKb", None, self.NS))
+                elif _rauansatz == "2":
+                    ks = _get_float(x_hydraulik.findtext("RauigkeitsbeiwertKst", None, self.NS))
+                else:
+                    ks = None
+                    logger.warning("Fehler im XML-Import von HydraulikObjekte_Haltungen",
+                                   f"Ungültiger Wert für Rauigkeitsansatz {_rauansatz} in Haltung {haltnam}",
+                                   )
+
+                laengehyd = _get_float(x_hydraulik.findtext("Berechnungslaenge", None, self.NS))
+
+                yield Haltung(
+                    haltnam=haltnam,
+                    laengehyd=laengehyd,
+                    ks=ks,
+                )
+
         def _iter() -> Iterator[Haltung]:
 
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/"
-                "[d:Objektart='1']/d:Kante/d:Haltung/../..", self.NS
+                "Datenkollektive/Stammdatenkollektiv/AbwassertechnischeAnlage/"
+                "[Objektart='1']/Kante/Haltung/../..", self.NS
             )
             logger.debug(f"Anzahl Haltungen: {len(x_anlagen)}")
 
@@ -1345,61 +1422,39 @@ class ImportTask(Schadenstexte):
                 sohleunten = deckeloben = deckelunten = profilnam = \
                 ks = aussendurchmesser = profilauskleidung = innenmaterial = None
 
-                haltnam = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS), None)
-                entwart = x_anlage.findtext("d:Entwaesserungsart", None, self.NS)
-                strasse = x_anlage.findtext("d:Lage/d:Strassenname", None, self.NS)
-                simstatus = x_anlage.findtext("d:Status", None, self.NS)
-                kommentar = x_anlage.findtext("d:Kommentar", None, self.NS)
+                haltnam = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                baujahr = _get_int(x_anlage.findtext("Baujahr", None, self.NS), None)
+                entwart = x_anlage.findtext("Entwaesserungsart", None, self.NS)
+                strasse = x_anlage.findtext("Lage/Strassenname", None, self.NS)
+                simstatus = x_anlage.findtext("Status", None, self.NS)
+                kommentar = x_anlage.findtext("Kommentar", None, self.NS)
 
-                x_kante = x_anlage.find("d:Kante", self.NS)
+                x_kante = x_anlage.find("Kante", self.NS)
                 if x_kante is not None:
-                    schoben = x_kante.findtext("d:KnotenZulauf", None, self.NS)
-                    schunten = x_kante.findtext("d:KnotenAblauf", None, self.NS)
-                    sohleoben = _get_float(x_kante.findtext("d:SohlhoeheZulauf", None, self.NS))
-                    sohleunten = _get_float(x_kante.findtext("d:SohlhoeheAblauf", None, self.NS))
-                    laenge = _get_float(x_kante.findtext("d:Laenge", None, self.NS))
-                    material = x_kante.findtext("d:Material", None, self.NS)
+                    schoben = x_kante.findtext("KnotenZulauf", None, self.NS)
+                    schunten = x_kante.findtext("KnotenAblauf", None, self.NS)
+                    sohleoben = _get_float(x_kante.findtext("SohlhoeheZulauf", None, self.NS))
+                    sohleunten = _get_float(x_kante.findtext("SohlhoeheAblauf", None, self.NS))
+                    laenge = _get_float(x_kante.findtext("Laenge", None, self.NS))
+                    material = x_kante.findtext("Material", None, self.NS)
 
-                    x_profil = x_kante.find("d:Profil", self.NS)
+                    x_profil = x_kante.find("Profil", self.NS)
                     if x_profil:
-                        aussendurchmesser = _get_float(x_profil.findtext("d:Aussendurchmesser", None, self.NS))
-                        profilnam = x_profil.findtext("d:Profilart", None, self.NS)
-                        hoehe = _get_float(x_profil.findtext("d:Profilhoehe", None, self.NS))
-                        breite = _get_float(x_profil.findtext("d:Profilbreite", None, self.NS))
+                        aussendurchmesser = _get_float(x_profil.findtext("Aussendurchmesser", None, self.NS))
+                        profilnam = x_profil.findtext("Profilart", None, self.NS)
+                        hoehe = _get_float(x_profil.findtext("Profilhoehe", None, self.NS))
+                        breite = _get_float(x_profil.findtext("Profilbreite", None, self.NS))
 
-                    x_haltung = x_kante.find("d:Haltung", self.NS)
+                    x_haltung = x_kante.find("Haltung", self.NS)
                     if x_haltung:
-                        profilauskleidung = x_haltung.findtext("d:Auskleidung", None, self.NS)
-                        innenmaterial = x_haltung.findtext("d:MaterialAuskleidung", None, self.NS)
+                        profilauskleidung = x_haltung.findtext("Auskleidung", None, self.NS)
+                        innenmaterial = x_haltung.findtext("MaterialAuskleidung", None, self.NS)
 
                 # hier ergännzen mit dem fall das x,y unter Polygone steht!!
                 # Haltungen können alternativ als Kanten oder als Polygone vorkommen.
 
-                x_geodaten = x_anlage.find("d:Geometrie/d:Geometriedaten", self.NS)
+                x_geodaten = x_anlage.find("Geometrie/Geometriedaten", self.NS)
                 geom = self._get_kante(x_geodaten)
-
-                # print("d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/"
-                # f"[d:Objektbezeichnung='{haltnam}']/d:Baujahr")
-                x_hydraulik = self.xml.find("d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                                       f"d:HydraulikObjekte/d:HydraulikObjekt/[d:Objektbezeichnung='{haltnam}']/d:Haltung",
-                                       self.NS)
-
-                if x_hydraulik is not None:
-                    _rauansatz = x_hydraulik.findtext("d:Rauigkeitsansatz", None, self.NS)
-                    if _rauansatz == "1":
-                        ks = _get_float(x_hydraulik.findtext("d:RauigkeitsbeiwertKb", None, self.NS))
-                    elif _rauansatz == "2":
-                        ks = _get_float(x_hydraulik.findtext("d:RauigkeitsbeiwertKst", None, self.NS))
-                    else:
-                        ks = None
-                        logger.warning("Fehler im XML-Import von HydraulikObjekte_Haltungen",
-                                       f"Ungültiger Wert für Rauigkeitsansatz {_rauansatz} in Haltung {haltnam}",
-                                       )
-
-                    rlaenge = _get_float(x_hydraulik.findtext("d:Berechnungslaenge", None, self.NS))
-                else:
-                    logger.debug(f'Objekt {haltnam} konnte in Hydraulikdaten nicht gefunden werden')
 
                 yield Haltung(
                     haltnam=haltnam,
@@ -1417,7 +1472,6 @@ class ImportTask(Schadenstexte):
                     baujahr=baujahr,
                     entwart=entwart,
                     strasse=strasse,
-                    ks=ks,
                     simstatus=simstatus,
                     kommentar=kommentar,
                     aussendurchmesser=aussendurchmesser,
@@ -1427,7 +1481,14 @@ class ImportTask(Schadenstexte):
                 )
 
 
-        # 1. Teil: Hier werden die Stammdaten zu den Haltungen in die Datenbank geschrieben
+        # 1. Teil: Vorab werden die Hydraulikdaten in das dict "hydraulikdaten" geschrieben
+        for hydraulik in _iter1():
+            self.hydraulikdaten[hydraulik.haltnam] = {
+                'laengehyd':    hydraulik.laengehyd,
+                'ks':           hydraulik.ks,
+            }
+
+        # 2. Teil: Hier werden die Stammdaten zu den Haltungen in die Datenbank geschrieben
         for haltung in _iter():
             # Simulationsstatus
             simstatus = self.db_qkan.get_from_mapper(
@@ -1477,6 +1538,25 @@ class ImportTask(Schadenstexte):
                 'kuerzel',
             )
 
+            # Haltungsdaten für Zustand in dict übernehmen
+            if getattr(QKan.config.xml, "import_zustand", True):
+                self.haltungsdaten[haltung.haltnam] = {
+                    'schoben': haltung.schoben,
+                    'schunten': haltung.schunten,
+                    'hoehe': haltung.hoehe,
+                    'breite': haltung.breite,
+                    'laenge': haltung.laenge,
+                    'kommentar': haltung.kommentar,
+                    'baujahr': haltung.baujahr,
+                    'geom': haltung.geom,
+                }
+
+            if (pdat := self.hydraulikdaten.get(haltung.haltnam, {})) == {}:
+                logger.info(f'Haltung {haltung.haltnam} fehlt in den Hydraulikdaten')
+                pdat = {
+                    'laengehyd':    None,
+                    'ks':           None,
+                }
 
             params = {'haltnam': haltung.haltnam,
                       'schoben': haltung.schoben,
@@ -1491,14 +1571,14 @@ class ImportTask(Schadenstexte):
                       'profilnam': profilnam,
                       'entwart': entwart,
                       'strasse': haltung.strasse,
-                      'ks': haltung.ks,
                       'simstatus': simstatus,
                       'aussendurchmesser': haltung.aussendurchmesser,
                       'profilauskleidung': haltung.profilauskleidung,
                       'innenmaterial': haltung.innenmaterial,
                       'kommentar': haltung.kommentar,
                       'epsg': QKan.config.epsg,
-                      'geom': haltung.geom}
+                      'geom': haltung.geom}\
+                     | pdat
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen\n'
                          f'params: {params}')
@@ -1516,150 +1596,10 @@ class ImportTask(Schadenstexte):
 
     #Haltung_untersucht
     def _haltungen_untersucht(self) -> None:
+        """Einlesen der untersuchten Haltungen"""
         def _iter() -> Iterator[Haltung_untersucht]:
-            xschob = 0.0
-            yschob = 0.0
-            xschun = 0.0
-            yschun = 0.0
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektart='1']/"
-                "d:Kante/d:Haltung/../..",
-                self.NS,
-            )
-
-            logger.debug(f"Anzahl Haltungen: {len(x_anlagen)}")
-
-
-            schoben, schunten, profilnam = ("",) * 3
-            (
-                sohleoben,
-                sohleunten,
-                laenge,
-                hoehe,
-                breite,
-                deckeloben,
-                deckelunten,
-            ) = (0.0,) * 7
-            for x_anlage in x_anlagen:
-
-                name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS))
-
-                # TODO: Does <AbwassertechnischeAnlage> even contain multiple <Kante>?
-                for _haltung in x_anlage.findall("d:Kante/d:KantenTyp/..", self.NS):
-                    schoben = _haltung.findtext("d:KnotenZulauf", None, self.NS)
-                    schunten = _haltung.findtext("d:KnotenAblauf", None, self.NS)
-
-                    laenge = _get_float(_haltung.findtext("d:Laenge", None, self.NS))
-
-
-                    for profil in _haltung.findall("d:Profil", self.NS):
-                        hoehe = (
-                            _get_float(profil.findtext("d:Profilhoehe", None, self.NS))
-
-                        )
-                        breite = (
-                            _get_float(profil.findtext("d:Profilbreite", None, self.NS))
-
-                        )
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Kanten/d:Kante/d:Start", self.NS
-                ):
-                    if _haltung is not None:
-                        xschob = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschob = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckeloben = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante/d:Start",
-                        self.NS
-                ):
-                    if _haltung is not None:
-                        xschob = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschob = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckeloben = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Kanten/d:Kante/d:Ende", self.NS
-                ):
-                    if _haltung is not None:
-                        xschun = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschun = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckelunten = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante/d:Ende",
-                        self.NS
-                ):
-                    if _haltung is not None:
-                        xschun = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschun = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckelunten = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-                yield Haltung_untersucht(
-                    haltnam=name,
-                    schoben=schoben,
-                    schunten=schunten,
-                    hoehe=hoehe,
-                    breite=breite,
-                    laenge=laenge,
-                    kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
-                    baujahr=baujahr,
-                    xschob=xschob,
-                    yschob=yschob,
-                    xschun=xschun,
-                    yschun=yschun,
-                )
-                #else:
-                 #   pass
-
-        def _iter2() -> Iterator[Haltung_untersucht]:
-            x_hyobjekte = self.xml.findall(
-                "d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                "d:HydraulikObjekte/d:HydraulikObjekt/d:Haltung/..",
-                self.NS,
-            )
-            logger.debug(f"Anzahl HydraulikObjekte_Haltungen: {len(x_hyobjekte)}")
-
-            laenge = 0.0
-            for x_hydobjekt in x_hyobjekte:
-                name = x_hydobjekt.findtext("d:Objektbezeichnung", None, self.NS)
-
-                # RauigkeitsbeiwertKst nach Manning-Strickler oder RauigkeitsbeiwertKb nach Prandtl-Colebrook?
-                # TODO: Does <HydraulikObjekt> even contain multiple <Haltung>?
-                for _haltung in x_hydobjekt.findall("d:Haltung", self.NS):
-
-                    laenge = _get_float(
-                        _haltung.findtext("d:Berechnungslaenge", None, self.NS)
-                    )
-
-                yield Haltung_untersucht(
-                    haltnam=name,
-                    laenge=laenge,
-                )
-
-        def _iter3() -> Iterator[Haltung_untersucht]:
-            x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Zustandsdatenkollektiv/d:InspizierteAbwassertechnischeAnlage/"
-                "d:OptischeInspektion/d:Rohrleitung/../..",
+                "Datenkollektive/Zustandsdatenkollektiv/InspizierteAbwassertechnischeAnlage/[Anlagentyp='1']",
                 self.NS,
             )
             logger.debug(f"Anzahl Haltungen: {len(x_anlagen)}")
@@ -1667,34 +1607,41 @@ class ImportTask(Schadenstexte):
             untersuchtag = ""
             untersucher = ""
             wetter = None
-            strasse = ""
             bewertungsart = None
             bewertungstag = ""
+            inspektionslaenge = None
+            untersuchrichtung = None
             datenart = self.datenart
 
             for x_anlage in x_anlagen:
-                name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                strasse = x_anlage.findtext("d:Lage/d:Strassenname", None, self.NS)
+                haltnam = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                strasse = x_anlage.findtext("Lage/Strassenname", None, self.NS)
 
-                for _haltung in x_anlage.findall("d:OptischeInspektion", self.NS):
+                for _haltung in x_anlage.findall("OptischeInspektion", self.NS):
+                    untersuchtag = _haltung.findtext("Inspektionsdatum", None, self.NS)
+                    untersucher = _haltung.findtext("NameUntersucher", None, self.NS)
+                    wetter = _haltung.findtext("Wetter", None, self.NS)
+                    inspektionslaenge = _get_float(_haltung.findtext("Rohrleitung/Inspektionslaenge", None, self.NS))
+                    _ = _haltung.findtext("Rohrleitung/Inspektionsrichtung", None, self.NS)
+                    if _ == "O":
+                        untersuchrichtung = "in Fließrichtung"
+                    elif _ == "U":
+                        untersuchrichtung = "gegen Fließrichtung"
+                    else:
+                        logger.warning(f"Haltung untersucht: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
+                        untersuchrichtung = None
 
-                    untersuchtag = _haltung.findtext("d:Inspektionsdatum", None, self.NS)
-
-                    untersucher = _haltung.findtext("d:NameUntersucher", None, self.NS)
-
-                    wetter = _haltung.findtext("d:Wetter", None, self.NS)
-
-                    for _haltungz in _haltung.findall("d:Rohrleitung/d:Bewertung", self.NS):
-
-                        bewertungsart = _haltungz.findtext("d:Bewertungsverfahren", None, self.NS)
-
-                        bewertungstag = _haltungz.findtext("d:Bewertungsdatum", None, self.NS)
+                    for _haltungz in _haltung.findall("Rohrleitung/Bewertung", self.NS):
+                        bewertungsart = _haltungz.findtext("Bewertungsverfahren", None, self.NS)
+                        bewertungstag = _haltungz.findtext("Bewertungsdatum", None, self.NS)
 
                 yield Haltung_untersucht(
-                    haltnam=name,
+                    haltnam=haltnam,
                     untersuchtag=untersuchtag,
                     untersucher=untersucher,
                     wetter=wetter,
+                    laenge= inspektionslaenge,
+                    untersuchrichtung=untersuchrichtung,
                     strasse=strasse,
                     bewertungsart=bewertungsart,
                     bewertungstag=bewertungstag,
@@ -1703,16 +1650,39 @@ class ImportTask(Schadenstexte):
 
         # 1. Teil: Hier werden die Stammdaten zu den Haltungen in die Datenbank geschrieben
         for haltung_untersucht in _iter():
+            # Wetter
+            wetter = self.db_qkan.get_from_mapper(
+                haltung_untersucht.wetter,
+                self.mapper_wetter,
+                'haltungen_untersucht',
+                'wetter',
+                'bezeichnung',
+                'isybau',
+                'bemerkung',
+            )
 
-            params = {'haltnam': haltung_untersucht.haltnam, 'schoben': haltung_untersucht.schoben,
-                      'schunten': haltung_untersucht.schunten, 'hoehe': haltung_untersucht.hoehe,
-                      'breite': haltung_untersucht.breite, 'laenge': haltung_untersucht.laenge,
-                      'kommentar': haltung_untersucht.kommentar, 'baujahr': haltung_untersucht.baujahr,
-                      'strasse': haltung_untersucht.strasse, 'xschob': haltung_untersucht.xschob,
-                      'yschob': haltung_untersucht.yschob, 'xschub': haltung_untersucht.xschun,
-                      'yschun': haltung_untersucht.yschun, 'epsg': QKan.config.epsg}
+            if (pdat := self.haltungsdaten.get(haltung_untersucht.haltnam, {})) == {}:
+                logger.warning(f'Untersuchte Haltung {haltung_untersucht.haltnam} fehlt in den Stammdaten')
+                continue
 
-            logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen_untersucht\n'
+            # Länge vorrangig aus Untersuchungsdaten, sonst aus Stammdaten (in pdat)
+            if haltung_untersucht.laenge is not None:
+                pdat['laenge'] = haltung_untersucht.laenge
+
+
+            params = {'haltnam': haltung_untersucht.haltnam,
+                      'untersuchtag': haltung_untersucht.untersuchtag,
+                      'untersucher': haltung_untersucht.untersucher,
+                      'wetter': haltung_untersucht.wetter,
+                      'untersuchrichtung': haltung_untersucht.untersuchrichtung,
+                      'strasse': haltung_untersucht.strasse,
+                      'bewertungsart': haltung_untersucht.bewertungsart,
+                      'bewertungstag': haltung_untersucht.bewertungstag,
+                      'datenart': haltung_untersucht.datenart,
+                      'epsg': QKan.config.epsg,}\
+                     | pdat
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen\n'
                          f'params: {params}')
 
             if not self.db_qkan.insertdata(
@@ -1725,45 +1695,11 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.commit()
 
-        # 2. Teil: Hier werden die hydraulischen Haltungsdaten in die Datenbank geschrieben
-        for haltung_untersucht in _iter2():
-            if not self.db_qkan.sql(
-                "UPDATE haltungen_untersucht SET laenge = ? WHERE haltnam = ?",
-                "xml_import Haltungen_untersucht [2]",
-                parameters=[haltung_untersucht.laenge, haltung_untersucht.haltnam],
-            ):
-                return None
-
-        self.db_qkan.commit()
-
-        for haltung_untersucht in _iter3():
-            # Wetter
-            wetter = self.db_qkan.get_from_mapper(
-                haltung_untersucht.wetter,
-                self.mapper_wetter,
-                'haltungen_untersucht',
-                'wetter',
-                'bezeichnung',
-                'isybau',
-                'bemerkung',
-            )
-
-            if not self.db_qkan.sql(
-                "UPDATE haltungen_untersucht SET untersuchtag=?, untersucher=?, wetter=?, strasse=?, bewertungsart=?," 
-                "bewertungstag=?, datenart=? WHERE haltnam = ?",
-                "xml_import Haltungen_untersucht [5]",
-                parameters=[haltung_untersucht.untersuchtag, haltung_untersucht.untersucher, wetter, haltung_untersucht.strasse, haltung_untersucht.bewertungsart, haltung_untersucht.bewertungstag,
-                            haltung_untersucht.datenart, haltung_untersucht.haltnam],
-            ):
-                return None
-
-        self.db_qkan.commit()
-
     def _untersuchdat_haltung(self) -> None:
         def _iter() -> Iterator[Untersuchdat_haltung]:
             x_anlagen = self.xml.findall(
-               "d:Datenkollektive/d:Zustandsdatenkollektiv/d:InspizierteAbwassertechnischeAnlage/[d:Anlagentyp='1']/"
-               "d:OptischeInspektion/d:Rohrleitung/d:Inspektionsdaten/d:RZustand/../../../..",
+               "Datenkollektive/Zustandsdatenkollektiv/InspizierteAbwassertechnischeAnlage/[Anlagentyp='1']/"
+               "OptischeInspektion/Rohrleitung/Inspektionsdaten/RZustand/../../../..",
                self.NS,
             )
 
@@ -1794,12 +1730,12 @@ class ImportTask(Schadenstexte):
 
 
             for x_anlage in x_anlagen:
-                name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
+                name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
 
-                untersuchtag = x_anlage.findtext("d:OptischeInspektion/d:Inspektionsdatum", None, self.NS)
-                for _untersuchdat_haltung in x_anlage.findall("d:OptischeInspektion/d:Rohrleitung", self.NS):
+                untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+                for _untersuchdat_haltung in x_anlage.findall("OptischeInspektion/Rohrleitung", self.NS):
 
-                    _ = _untersuchdat_haltung.findtext("d:Inspektionsrichtung", None, self.NS)
+                    _ = _untersuchdat_haltung.findtext("Inspektionsrichtung", None, self.NS)
                     if _ == "O":
                         untersuchrichtung = "in Fließrichtung"
                     elif _ == "U":
@@ -1808,39 +1744,39 @@ class ImportTask(Schadenstexte):
                         logger.warning(f"Untersuchungsdaten Haltung: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
                         untersuchrichtung = None
 
-                    inspektionslaenge = _get_float(_untersuchdat_haltung.findtext("d:Inspektionslaenge", None, self.NS))
+                    inspektionslaenge = _get_float(_untersuchdat_haltung.findtext("Inspektionslaenge", None, self.NS))
                     if inspektionslaenge == 0.0:
-                        inspektionslaenge = _get_float(_untersuchdat_haltung.findtext("d:Inspektionsdaten/d:RZustand[d:InspektionsKode='BCE'][d:Charakterisierung1='XP']/d:Station", None, self.NS))
+                        inspektionslaenge = _get_float(_untersuchdat_haltung.findtext("Inspektionsdaten/RZustand[InspektionsKode='BCE'][Charakterisierung1='XP']/Station", None, self.NS))
 
 
-                    schoben = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenZulauf", None, self.NS)
-                    schunten = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenAblauf", None, self.NS)
+                    schoben = _untersuchdat_haltung.findtext("RGrunddaten/KnotenZulauf", None, self.NS)
+                    schunten = _untersuchdat_haltung.findtext("RGrunddaten/KnotenAblauf", None, self.NS)
 
-                    for _untersuchdat in _untersuchdat_haltung.findall("d:Inspektionsdaten/d:RZustand", self.NS):
+                    for _untersuchdat in _untersuchdat_haltung.findall("Inspektionsdaten/RZustand", self.NS):
 
-                        id = _get_int(_untersuchdat.findtext("d:Index", None, self.NS))
-                        videozaehler = _get_int(_untersuchdat.findtext("d:Videozaehler", None, self.NS))
-                        station = _get_float(_untersuchdat.findtext("d:Station", None, self.NS))
-                        timecode = _untersuchdat.findtext("d:Timecode", None, self.NS)
-                        kuerzel = _untersuchdat.findtext("d:InspektionsKode", None, self.NS)
-                        charakt1 = _untersuchdat.findtext("d:Charakterisierung1", None, self.NS)
-                        charakt2 = _untersuchdat.findtext("d:Charakterisierung2", None, self.NS)
-                        quantnr1 = _get_float(_untersuchdat.findtext("d:Quantifizierung1Numerisch", None, self.NS))
-                        quantnr2 = _get_float(_untersuchdat.findtext("d:Quantifizierung2Numerisch", None, self.NS))
-                        streckenschaden = _untersuchdat.findtext("d:Streckenschaden", None, self.NS)
-                        streckenschaden_lfdnr = _get_int(_untersuchdat.findtext("d:StreckenschadenLfdNr", None, self.NS))
-                        pos_von = _get_int(_untersuchdat.findtext("d:PositionVon", None, self.NS))
-                        pos_bis = _get_int(_untersuchdat.findtext("d:PositionBis", None, self.NS))
+                        id = _get_int(_untersuchdat.findtext("Index", None, self.NS))
+                        videozaehler = _get_int(_untersuchdat.findtext("Videozaehler", None, self.NS))
+                        station = _get_float(_untersuchdat.findtext("Station", None, self.NS))
+                        timecode = _untersuchdat.findtext("Timecode", None, self.NS)
+                        kuerzel = _untersuchdat.findtext("InspektionsKode", None, self.NS)
+                        charakt1 = _untersuchdat.findtext("Charakterisierung1", None, self.NS)
+                        charakt2 = _untersuchdat.findtext("Charakterisierung2", None, self.NS)
+                        quantnr1 = _get_float(_untersuchdat.findtext("Quantifizierung1Numerisch", None, self.NS))
+                        quantnr2 = _get_float(_untersuchdat.findtext("Quantifizierung2Numerisch", None, self.NS))
+                        streckenschaden = _untersuchdat.findtext("Streckenschaden", None, self.NS)
+                        streckenschaden_lfdnr = _get_int(_untersuchdat.findtext("StreckenschadenLfdNr", None, self.NS))
+                        pos_von = _get_int(_untersuchdat.findtext("PositionVon", None, self.NS))
+                        pos_bis = _get_int(_untersuchdat.findtext("PositionBis", None, self.NS))
 
-                        _datei = _untersuchdat.findtext("d:Fotodatei", None, self.NS)
+                        _datei = _untersuchdat.findtext("Fotodatei", None, self.NS)
                         if _datei is not None and self.ordner_bild is not None:
                             foto_dateiname = os.path.join(self.ordner_bild, _datei)
                         else:
                             foto_dateiname = None
 
-                        ZD = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", None, self.NS))
-                        ZS = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKSvAuto", None, self.NS))
-                        ZB = _get_int(_untersuchdat.findtext("d:Klassifizierung/d:Standsicherheit/d:SKBvAuto", None, self.NS))
+                        ZD = _get_int(_untersuchdat.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
+                        ZS = _get_int(_untersuchdat.findtext("Klassifizierung/Betriebssicherheit/SKSvAuto", None, self.NS))
+                        ZB = _get_int(_untersuchdat.findtext("Klassifizierung/Standsicherheit/SKBvAuto", None, self.NS))
 
 
                         yield Untersuchdat_haltung(
@@ -1875,24 +1811,24 @@ class ImportTask(Schadenstexte):
 
         def _iter2() -> Iterator[Untersuchdat_haltung]:
                 x_filme = self.xml.findall(
-                    "d:Datenkollektive/d:Zustandsdatenkollektiv/d:Filme/d:Film/d:Filmname/../..",
+                    "Datenkollektive/Zustandsdatenkollektiv/Filme/Film/Filmname/../..",
                     self.NS,
                 )
                 logger.debug(f"Anzahl Untersuchdat_haltung: {len(x_filme)}")
 
                 film_dateiname = ""
                 for x_film in x_filme:
-                    for _untersuchdat_haltung in x_film.findall("d:Film/d:FilmObjekte/..", self.NS):
+                    for _untersuchdat_haltung in x_film.findall("Film/FilmObjekte/..", self.NS):
 
-                        name = _untersuchdat_haltung.findtext("d:FilmObjekte/d:FilmObjekt/d:Objektbezeichnung", None, self.NS)
+                        name = _untersuchdat_haltung.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
 
-                        _datei = _untersuchdat_haltung.findtext("d:Filmname", None, self.NS)
+                        _datei = _untersuchdat_haltung.findtext("Filmname", None, self.NS)
                         if _datei is not None and self.ordner_bild is not None:
                             film_dateiname = os.path.join(self.ordner_video, _datei)
                         else:
                             film_dateiname = None
 
-                        # bandnr = _get_int(_untersuchdat_haltung.findtext("d:Videoablagereferenz", None, self.NS))
+                        # bandnr = _get_int(_untersuchdat_haltung.findtext("Videoablagereferenz", None, self.NS))
 
                         yield Untersuchdat_haltung(
                             untersuchhal=name,
@@ -1905,7 +1841,8 @@ class ImportTask(Schadenstexte):
             params = {'untersuchhal': untersuchdat_haltung.untersuchhal,
                       'untersuchrichtung': untersuchdat_haltung.untersuchrichtung,
                       'schoben': untersuchdat_haltung.schoben, 'schunten': untersuchdat_haltung.schunten,
-                      'id': untersuchdat_haltung.id, 'videozaehler': untersuchdat_haltung.videozaehler,
+                      'id': untersuchdat_haltung.id, 'untersuchtag': untersuchdat_haltung.untersuchtag,
+                      'videozaehler': untersuchdat_haltung.videozaehler,
                       'inspektionslaenge': untersuchdat_haltung.inspektionslaenge,
                       'station': untersuchdat_haltung.station,
                       'timecode': untersuchdat_haltung.timecode, 'kuerzel': untersuchdat_haltung.kuerzel,
@@ -1953,103 +1890,109 @@ class ImportTask(Schadenstexte):
         def _iter() -> Iterator[Anschlussleitung]:
 
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektart='1']",
+                "Datenkollektive/Stammdatenkollektiv/AbwassertechnischeAnlage/[Objektart='1']",
                 self.NS,
             )
             logger.debug(f"Anzahl Anschlussleitungen: {len(x_anlagen)}")
 
-            schoben = schunten = material = ""
-            sohleoben = sohleunten = laenge = hoehe = breite = deckeloben = deckelunten = \
-                xschob = yschob = xschun = yschun = 0.0
+            schoben = schunten = material = haltnam = ""
+            sohleoben = sohleunten = laenge = hoehe = breite = deckeloben = deckelunten = 0.0
 
             for x_anlage in x_anlagen:
-                found_leitung = x_anlage.findtext("d:Kante/d:Leitung", None, self.NS)
-                if found_leitung != '':
-                    name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                    baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS))
+                x_leitung = x_anlage.find("Kante/Leitung", self.NS)
+                if x_leitung is not None:
+                    name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                    baujahr = _get_int(x_anlage.findtext("Baujahr", None, self.NS))
+                    haltnam = x_leitung.findtext("Anschlussdaten/Objektbezeichnung", None, self.NS)
+                    entwart = x_anlage.findtext("Entwaesserungsart", None, self.NS)
+                    ks = 1.5  # in Hydraulikdaten enthalten.
+                    simstatus = x_anlage.findtext("Status", None, self.NS)
+                    kommentar = x_anlage.findtext("Kommentar", None, self.NS)
 
-                    # TODO: Does <AbwassertechnischeAnlage> even contain multiple <Kante>?
-                    for _haltung in x_anlage.findall("d:Kante/d:KantenTyp/..", self.NS):
-                        schoben = _haltung.findtext("d:KnotenZulauf", None, self.NS)
-                        schunten = _haltung.findtext("d:KnotenAblauf", None, self.NS)
+                    for _haltung in x_anlage.findall("Kante/KantenTyp/..", self.NS):
+                        schoben = _haltung.findtext("KnotenZulauf", None, self.NS)
+                        schunten = _haltung.findtext("KnotenAblauf", None, self.NS)
 
                         sohleoben = _get_float(
-                            _haltung.findtext("d:SohlhoeheZulauf", None, self.NS)
+                            _haltung.findtext("SohlhoeheZulauf", None, self.NS)
                         )
                         sohleunten = _get_float(
-                            _haltung.findtext("d:SohlhoeheAblauf", None, self.NS)
+                            _haltung.findtext("SohlhoeheAblauf", None, self.NS)
                         )
-                        laenge = _get_float(_haltung.findtext("d:Laenge", None, self.NS))
+                        laenge = _get_float(_haltung.findtext("Laenge", None, self.NS))
 
-                        material = _haltung.findtext("d:Material", None, self.NS)
+                        material = _haltung.findtext("Material", None, self.NS)
 
-                        for profil in _haltung.findall("d:Profil", self.NS):
-                            # profilnam = profil.findtext("d:Profilart", None, self.NS)     # nicht in QKan verwaltet
+                        for profil in _haltung.findall("Profil", self.NS):
+                            # profilnam = profil.findtext("Profilart", None, self.NS)     # nicht in QKan verwaltet
                             hoehe = (
-                                _get_float(profil.findtext("d:Profilhoehe", None, self.NS))
+                                _get_float(profil.findtext("Profilhoehe", None, self.NS))
 
                             )
                             breite = (
-                                _get_float(profil.findtext("d:Profilbreite", None, self.NS))
+                                _get_float(profil.findtext("Profilbreite", None, self.NS))
 
                             )
 
+                    x_geodaten = x_anlage.find("Geometrie/Geometriedaten", self.NS)
+                    geom = self._get_kante(x_geodaten)
 
-                    for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Kanten/d:Kante/d:Start", self.NS
-                    ):
-                        if _haltung is not None:
-                            xschob = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                            yschob = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                            deckeloben = _get_float(
-                                _haltung.findtext("d:Punkthoehe", None, self.NS)
-                            )
-                        else:
-                            pass
-
-                    for _haltung in x_anlage.findall(
-                            "d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante/d:Start[1]",
-                            self.NS
-                    ):
-                        if _haltung is not None:
-                            xschob = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                            yschob = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                            deckeloben = _get_float(
-                                _haltung.findtext("d:Punkthoehe", None, self.NS)
-                            )
-                        else:
-                            pass
-
-
-                    for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Kanten/d:Kante/d:Ende", self.NS
-                    ):
-                        if _haltung is not None:
-                            xschun = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                            yschun = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                            deckelunten = _get_float(
-                                _haltung.findtext("d:Punkthoehe", None, self.NS)
-                            )
-                        else:
-                            pass
-
-                    for _haltung in x_anlage.findall(
-                            "d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante/d:Ende[last()]",
-                            self.NS
-                    ):
-                        if _haltung is not None:
-                            xschun = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                            yschun = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                            deckelunten = _get_float(
-                                _haltung.findtext("d:Punkthoehe", None, self.NS)
-                            )
-                        else:
-                             pass
+                    # for _haltung in x_anlage.findall(
+                    #     "Geometrie/Geometriedaten/Kanten/Kante/Start", self.NS
+                    # ):
+                    #     if _haltung is not None:
+                    #         xschob = _get_float(_haltung.findtext("Rechtswert", None, self.NS))
+                    #         yschob = _get_float(_haltung.findtext("Hochwert", None, self.NS))
+                    #         deckeloben = _get_float(
+                    #             _haltung.findtext("Punkthoehe", None, self.NS)
+                    #         )
+                    #     else:
+                    #         pass
+                    #
+                    # for _haltung in x_anlage.findall(
+                    #         "Geometrie/Geometriedaten/Polygone/Polygon/Kante/Start[1]",
+                    #         self.NS
+                    # ):
+                    #     if _haltung is not None:
+                    #         xschob = _get_float(_haltung.findtext("Rechtswert", None, self.NS))
+                    #         yschob = _get_float(_haltung.findtext("Hochwert", None, self.NS))
+                    #         deckeloben = _get_float(
+                    #             _haltung.findtext("Punkthoehe", None, self.NS)
+                    #         )
+                    #     else:
+                    #         pass
+                    #
+                    #
+                    # for _haltung in x_anlage.findall(
+                    #     "Geometrie/Geometriedaten/Kanten/Kante/Ende", self.NS
+                    # ):
+                    #     if _haltung is not None:
+                    #         xschun = _get_float(_haltung.findtext("Rechtswert", None, self.NS))
+                    #         yschun = _get_float(_haltung.findtext("Hochwert", None, self.NS))
+                    #         deckelunten = _get_float(
+                    #             _haltung.findtext("Punkthoehe", None, self.NS)
+                    #         )
+                    #     else:
+                    #         pass
+                    #
+                    # for _haltung in x_anlage.findall(
+                    #         "Geometrie/Geometriedaten/Polygone/Polygon/Kante/Ende[last()]",
+                    #         self.NS
+                    # ):
+                    #     if _haltung is not None:
+                    #         xschun = _get_float(_haltung.findtext("Rechtswert", None, self.NS))
+                    #         yschun = _get_float(_haltung.findtext("Hochwert", None, self.NS))
+                    #         deckelunten = _get_float(
+                    #             _haltung.findtext("Punkthoehe", None, self.NS)
+                    #         )
+                    #     else:
+                    #          pass
 
                     yield Anschlussleitung(
                         leitnam=name,
                         schoben=schoben,
                         schunten=schunten,
+                        haltnam=haltnam,
                         hoehe=hoehe,
                         breite=breite,
                         laenge=laenge,
@@ -2059,60 +2002,14 @@ class ImportTask(Schadenstexte):
                         sohleunten=sohleunten,
                         deckeloben=deckeloben,
                         deckelunten=deckelunten,
-                        entwart=x_anlage.findtext("d:Entwaesserungsart", None, self.NS),
-                        ks=1.5,  # in Hydraulikdaten enthalten.
-                        simstatus=x_anlage.findtext("d:Status", None, self.NS),
-                        kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
-                        xschob=xschob,
-                        yschob=yschob,
-                        xschun=xschun,
-                        yschun=yschun,
+                        entwart=entwart,
+                        ks=ks,
+                        simstatus=simstatus,
+                        kommentar=kommentar,
+                        geom=geom,
                     )
                 else:
                     pass
-
-        def _iter2() -> Iterator[Anschlussleitung]:
-            x_hydobjekte = self.xml.findall(
-                "d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                "d:HydraulikObjekte/d:HydraulikObjekt/d:Leitung/..",
-                self.NS,
-            )
-            logger.debug(f"Anzahl HydraulikObjekte_Anschlussleitung: {len(x_hydobjekte)}")
-
-            ks = 1.5
-            laenge = 0.0
-            for x_hydobjekt in x_hydobjekte:
-                name = x_hydobjekt.findtext("d:Objektbezeichnung", None, self.NS)
-
-                # RauigkeitsbeiwertKst nach Manning-Strickler oder RauigkeitsbeiwertKb nach Prandtl-Colebrook?
-                # TODO: Does <HydraulikObjekt> even contain multiple <Haltung>?
-                for _haltung in x_hydobjekt.findall("d:Leitung", self.NS):
-                    cs1 = _haltung.findtext("d:Rauigkeitsansatz", None, self.NS)
-                    if cs1 == "1":
-                        ks = _get_float(
-                            _haltung.findtext("d:RauigkeitsbeiwertKb", None, self.NS)
-                        )
-                    elif cs1 == "2":
-                        ks = _get_float(
-                            _haltung.findtext("d:RauigkeitsbeiwertKst", None, self.NS)
-                        )
-                    else:
-                        ks = 0.0
-                        fehlermeldung(
-                            "Fehler im XML-Import von HydraulikObjekte_Anschlussleitung",
-                            f"Ungültiger Wert für Rauigkeitsansatz {cs1} in Anschlussleitung {name}",
-                        )
-
-                    laenge = _get_float(
-                        _haltung.findtext("d:Berechnungslaenge", None, self.NS)
-                    )
-
-                yield Anschlussleitung(
-                    leitnam=name,
-                    laenge=laenge,
-                    ks=ks,
-                )
-
 
         # 1. Teil: Hier werden die Stammdaten zu den anschlussleitung in die Datenbank geschrieben
         for anschlussleitung in _iter():
@@ -2164,17 +2061,26 @@ class ImportTask(Schadenstexte):
                 'kuerzel',
             )
 
+            # Hausanschlussdaten für Zustand in dict übernehmen
+            if getattr(QKan.config.xml, "import_zustand", True):
+                self.anschlussdaten[anschlussleitung.leitnam] = {
+                    'schoben': anschlussleitung.schoben, 'schunten': anschlussleitung.schunten,
+                    'hoehe': anschlussleitung.hoehe, 'breite': anschlussleitung.breite,
+                    'laenge': anschlussleitung.laenge,
+                    'kommentar': anschlussleitung.kommentar, 'baujahr': anschlussleitung.baujahr,
+                }
+
             params = {'leitnam': anschlussleitung.leitnam,
                       'schoben': anschlussleitung.schoben, 'schunten': anschlussleitung.schunten,
+                      'haltnam': anschlussleitung.haltnam,
                       'hoehe': anschlussleitung.hoehe, 'breite': anschlussleitung.breite,
                       'laenge': anschlussleitung.laenge, 'material': material, 'baujahr': anschlussleitung.baujahr,
                       'sohleoben': anschlussleitung.sohleoben, 'sohleunten': anschlussleitung.sohleunten,
                       'deckeloben': anschlussleitung.deckeloben, 'deckelunten': anschlussleitung.deckelunten,
                       'entwart': entwart,
                       'ks': anschlussleitung.ks, 'simstatus': simstatus,
-                      'kommentar': anschlussleitung.kommentar, 'xschob': anschlussleitung.xschob,
-                      'xschun': anschlussleitung.xschun, 'yschob': anschlussleitung.yschob,
-                      'yschun': anschlussleitung.yschun, 'epsg': QKan.config.epsg}
+                      'kommentar': anschlussleitung.kommentar,
+                      'geom': anschlussleitung.geom, 'epsg': QKan.config.epsg}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: anschlussleitungen\n'
                          f'params: {params}')
@@ -2187,286 +2093,14 @@ class ImportTask(Schadenstexte):
                 del self.db_qkan
                 return
 
-
         self.db_qkan.commit()
 
-        for anschlussleitung in _iter2():
-            if not self.db_qkan.sql(
-                "UPDATE anschlussleitungen SET ks = ?, laenge = ? WHERE leitnam = ?",
-                "xml_import anschlussleitung [4]",
-                parameters=[anschlussleitung.ks, anschlussleitung.laenge, anschlussleitung.leitnam],
-            ):
-                return None
 
-        self.db_qkan.commit()
-
-    def _anschlussleitunggeom(self):
-        #x_anlagen = self.xml.findall("HG")
-        x_anlagen = self.xml.findall(
-            "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektart='1']",
-            self.NS,
-        )
-
-        x_start = 0
-        y_start = 0
-        x_end = 0
-        y_end = 0
-
-        # list = []
-        for x_anlage in x_anlagen:
-            x_liste = []
-            y_liste = []
-
-            found_leitung = x_anlage.findtext("d:Kante/d:Leitung", None, self.NS)
-            if found_leitung != '':
-
-                name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-
-                # hier ergännzen mit dem fall das x,y unter Polygone steht!!
-                # Haltungen können alternativ als Kanten oder als Polygone vorkommen.
-
-                found_kanten = x_anlage.findall("d:Geometrie/d:Geometriedaten/d:Kanten", self.NS)
-                if found_kanten is not None:
-                    if len(found_kanten) > 2:
-                        for _gp in found_kanten:
-                            xschob = _get_float(_gp.findtext("d:Kante/d:Start/d:Rechtswert", None, self.NS))
-                            yschob = _get_float(_gp.findtext("d:Kante/d:Start/d:Hochwert",None, self.NS))
-
-                            x_liste.append(xschob)
-                            y_liste.append(yschob)
-
-                        text = str(name), x_liste, y_liste
-                        list.append(text)
-
-
-                else:
-                    found_kanten = x_anlage.findall("d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante", self.NS)
-                    if found_kanten is not None:
-                        if len(found_kanten) > 1:
-                            for _gp in found_kanten:
-                                xschob = _get_float(_gp.findtext("d:Start/d:Rechtswert", None, self.NS))
-                                yschob = _get_float(_gp.findtext("d:Start/d:Hochwert", None, self.NS))
-
-                                x_liste.append(xschob)
-                                y_liste.append(yschob)
-
-                            text = str(name), x_liste, y_liste
-                            list.append(text)
-        # list.append('Ende')
-
-            if len(x_liste) == 0:
-                continue
-            # for line in list:
-            #line_tokens = line.split(',')
-            # name = line[0]
-            # if line != "Ende":
-            #     x_liste = line[1]   # xsch
-            x_liste.pop(0)
-                #x_liste.pop(-1)
-                # y_liste = line[2]   # ysch
-            y_liste.pop(0)
-                #y_liste.pop(-1)
-
-            npt=1
-
-            for xsch, ysch in zip(x_liste, y_liste):
-                if npt == 1:
-                    # Start und Endpunkt der Haltung ausgeben
-                    sql = f"""Select 
-                                ST_X(StartPoint(geom)) AS xanf,
-                                ST_Y(StartPoint(geom)) AS yanf,
-                                ST_X(EndPoint(geom))   AS xend,
-                                ST_Y(EndPoint(geom))   AS yend
-                            FROM anschlussleitungen
-                            WHERE leitnam =?"""
-
-                    self.db_qkan.sql(sql, parameters=(name,))
-                    for attr in self.db_qkan.fetchall():
-                        x_start, y_start, x_end, y_end = attr
-
-                    # altes haltungsobjekt löschen, da AddPoint ansonsten nicht richtig funktioniert
-                    sql = f"""
-                                                 UPDATE anschlussleitungen SET geom = NULL
-                                                 WHERE leitnam = ?
-                                                 """
-
-                    if not self.db_qkan.sql(
-                            sql, parameters=[name,]
-                    ):
-                        del self.db_qkan
-                        return False
-
-                    sql = f"""
-                                    UPDATE anschlussleitungen SET geom = AddPoint(MakeLine(MakePoint(?, ?, ?), MakePoint(?, ?, ?)),
-                                                    MakePoint(?, ?, ?), ?)
-                                    WHERE leitnam = ?
-                                 """
-
-                    paralist = [x_start, y_start, QKan.config.epsg, x_end, y_end, QKan.config.epsg, xsch, ysch,
-                                QKan.config.epsg, npt, name]
-
-                    if not self.db_qkan.sql(
-                            sql, parameters=paralist
-                    ):
-                        del self.db_qkan
-                        return False
-
-                if npt > 1:
-                    # weitere punkte ergänzen
-                    sql = f"""
-                                        UPDATE anschlussleitungen SET geom = AddPoint(geom,MakePoint(?, ?, ?), ?)
-                                        WHERE leitnam = ?
-                                     """
-
-                    paralist = [xsch, ysch, QKan.config.epsg, npt, name]
-
-                    if not self.db_qkan.sql(
-                            sql, parameters=paralist
-                    ):
-                        del self.db_qkan
-                        return False
-
-                npt+=1
-            self.db_qkan.commit()
-
-    #TODO:Anschlussleitungen_untersucht ergänzen!
     # Anschluss_untersucht
     def _anschluss_untersucht(self) -> None:
         def _iter() -> Iterator[Anschlussleitung_untersucht]:
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektart='1']/"
-                "d:Kante/d:Leitung/../..",
-                self.NS,
-            )
-
-            logger.debug(f"Anzahl Anschlussleitungen: {len(x_anlagen)}")
-
-            schoben, schunten = ("",) * 2
-            (
-                sohleoben,
-                sohleunten,
-                laenge,
-                hoehe,
-                breite,
-                deckeloben,
-                deckelunten,
-            ) = (0.0,) * 7
-            for x_anlage in x_anlagen:
-                name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                baujahr = _get_int(x_anlage.findtext("d:Baujahr", None, self.NS))
-
-                # TODO: Does <AbwassertechnischeAnlage> even contain multiple <Kante>?
-                for _haltung in x_anlage.findall("d:Kante/d:KantenTyp/..", self.NS):
-                    schoben = _haltung.findtext("d:KnotenZulauf", None, self.NS)
-                    schunten = _haltung.findtext("d:KnotenAblauf", None, self.NS)
-
-                    laenge = _get_float(_haltung.findtext("d:Laenge", None, self.NS))
-
-                    for profil in _haltung.findall("d:Profil", self.NS):
-                        hoehe = (
-                                _get_float(profil.findtext("d:Profilhoehe", None, self.NS))
-
-                        )
-                        breite = (
-                                _get_float(profil.findtext("d:Profilbreite", None, self.NS))
-
-                        )
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Kanten/d:Kante/d:Start", self.NS
-                ):
-                    if _haltung is not None:
-                        xschob = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschob = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckeloben = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante/d:Start",
-                        self.NS
-                ):
-                    if _haltung is not None:
-                        xschob = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschob = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckeloben = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Kanten/d:Kante/d:Ende", self.NS
-                ):
-                    if _haltung is not None:
-                        xschun = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschun = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckelunten = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-                for _haltung in x_anlage.findall(
-                        "d:Geometrie/d:Geometriedaten/d:Polygone/d:Polygon/d:Kante/d:Ende",
-                        self.NS
-                ):
-                    if _haltung is not None:
-                        xschun = _get_float(_haltung.findtext("d:Rechtswert", None, self.NS))
-                        yschun = _get_float(_haltung.findtext("d:Hochwert", None, self.NS))
-                        deckelunten = _get_float(
-                            _haltung.findtext("d:Punkthoehe", None, self.NS)
-                        )
-                    else:
-                        pass
-
-            yield Anschlussleitung_untersucht(
-                leitnam=name,
-                schoben=schoben,
-                schunten=schunten,
-                hoehe=hoehe,
-                breite=breite,
-                laenge=laenge,
-                kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
-                baujahr=baujahr,
-                xschob=xschob,
-                yschob=yschob,
-                xschun=xschun,
-                yschun=yschun,
-            )
-            # else:
-            #   pass
-
-        def _iter2() -> Iterator[Anschlussleitung_untersucht]:
-            x_hydobjekte = self.xml.findall(
-                "d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                "d:HydraulikObjekte/d:HydraulikObjekt/d:Haltung/..",
-                self.NS,
-            )
-            logger.debug(f"Anzahl HydraulikObjekte_Haltungen: {len(x_hydobjekte)}")
-
-            laenge = 0.0
-            for x_hydobjekt in x_hydobjekte:
-                name = x_hydobjekt.findtext("d:Objektbezeichnung", None, self.NS)
-
-                # RauigkeitsbeiwertKst nach Manning-Strickler oder RauigkeitsbeiwertKb nach Prandtl-Colebrook?
-                # TODO: Does <HydraulikObjekt> even contain multiple <Haltung>?
-                for _haltung in x_hydobjekt.findall("d:Haltung", self.NS):
-                    laenge = _get_float(
-                        _haltung.findtext("d:Berechnungslaenge", None, self.NS)
-                    )
-
-                yield Anschlussleitung_untersucht(
-                    leitnam=name,
-                    laenge=laenge,
-                )
-
-        def _iter3() -> Iterator[Anschlussleitung_untersucht]:
-            x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Zustandsdatenkollektiv/d:InspizierteAbwassertechnischeAnlage/"
-                "d:OptischeInspektion/d:Rohrleitung/../..",
+                "Datenkollektive/Zustandsdatenkollektiv/InspizierteAbwassertechnischeAnlage/[Anlagentyp='2']",
                 self.NS,
             )
             logger.debug(f"Anzahl Anschlussleitungen: {len(x_anlagen)}")
@@ -2480,23 +2114,23 @@ class ImportTask(Schadenstexte):
             datenart = self.datenart
 
             for x_anlage in x_anlagen:
-                found_leitung = x_anlage.findtext("d:Kante/d:Leitung", None, self.NS)
+                found_leitung = x_anlage.findtext("Kante/Leitung", None, self.NS)
                 if found_leitung != '':
-                    name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
-                    strasse = x_anlage.findtext("d:Lage/d:Strassenname", None, self.NS)
+                    name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                    strasse = x_anlage.findtext("Lage/Strassenname", None, self.NS)
 
-                    for _haltung in x_anlage.findall("d:OptischeInspektion", self.NS):
+                    for _haltung in x_anlage.findall("OptischeInspektion", self.NS):
 
-                        untersuchtag = _haltung.findtext("d:Inspektionsdatum", None, self.NS)
+                        untersuchtag = _haltung.findtext("Inspektionsdatum", None, self.NS)
 
-                        untersucher = _haltung.findtext("d:NameUntersucher", None, self.NS)
+                        untersucher = _haltung.findtext("NameUntersucher", None, self.NS)
 
-                        wetter = _haltung.findtext("d:Wetter", None, self.NS)
+                        wetter = _haltung.findtext("Wetter", None, self.NS)
 
-                        for _haltungz in _haltung.findall("d:Rohrleitung/d:Bewertung", self.NS):
-                            bewertungsart = _haltungz.findtext("d:Bewertungsverfahren", None, self.NS)
+                        for _haltungz in _haltung.findall("Rohrleitung/Bewertung", self.NS):
+                            bewertungsart = _haltungz.findtext("Bewertungsverfahren", None, self.NS)
 
-                            bewertungstag = _haltungz.findtext("d:Bewertungsdatum", None, self.NS)
+                            bewertungstag = _haltungz.findtext("Bewertungsdatum", None, self.NS)
 
                     yield Anschlussleitung_untersucht(
                         haltnam=name,
@@ -2509,42 +2143,7 @@ class ImportTask(Schadenstexte):
                         datenart=datenart,
                     )
 
-        # 1. Teil: Hier werden die Stammdaten zu den Haltungen in die Datenbank geschrieben
         for anschlussleitung_untersucht in _iter():
-
-            params = {'leitnam': anschlussleitung_untersucht.haltnam, 'schoben': anschlussleitung_untersucht.schoben,
-                      'schunten': anschlussleitung_untersucht.schunten, 'hoehe': anschlussleitung_untersucht.hoehe,
-                      'breite': anschlussleitung_untersucht.breite, 'laenge': anschlussleitung_untersucht.laenge,
-                      'kommentar': anschlussleitung_untersucht.kommentar, 'baujahr': anschlussleitung_untersucht.baujahr,
-                      'strasse': anschlussleitung_untersucht.strasse, 'xschob': anschlussleitung_untersucht.xschob,
-                      'yschob': anschlussleitung_untersucht.yschob, 'xschub': anschlussleitung_untersucht.xschun,
-                      'yschun': anschlussleitung_untersucht.yschun, 'epsg': QKan.config.epsg}
-
-            logger.debug(f'isyporter.import - insertdata:\ntabnam: anschlussleitung_untersucht\n'
-                         f'params: {params}')
-
-            if not self.db_qkan.insertdata(
-                    tabnam="anschlussleitungen_untersucht",
-                    mute_logger=False,
-                    parameters=params,
-            ):
-                del self.db_qkan
-                return
-
-        self.db_qkan.commit()
-
-        # 2. Teil: Hier werden die hydraulischen Haltungsdaten in die Datenbank geschrieben
-        for anschlussleitung_untersucht in _iter2():
-            if not self.db_qkan.sql(
-                    "UPDATE anschlussleitungen_untersucht SET laenge = ? WHERE leitnam = ?",
-                    "xml_import anschlussleitungen_untersucht [2]",
-                    parameters=[anschlussleitung_untersucht.laenge, anschlussleitung_untersucht.leitnam],
-            ):
-                return None
-
-        self.db_qkan.commit()
-
-        for anschlussleitung_untersucht in _iter3():
             # Wetter
             wetter = self.db_qkan.get_from_mapper(
                 anschlussleitung_untersucht.wetter,
@@ -2556,23 +2155,34 @@ class ImportTask(Schadenstexte):
                 'bemerkung',
             )
 
-            if not self.db_qkan.sql(
-                    "UPDATE anschlussleitungen_untersucht SET untersuchtag=?, untersucher=?, wetter=?, strasse=?, bewertungsart=?,"
-                    "bewertungstag=?, datenart=? WHERE leitnam = ?",
-                    "xml_import Haltungen_untersucht [5]",
-                    parameters=[anschlussleitung_untersucht.untersuchtag, anschlussleitung_untersucht.untersucher, wetter,
-                                anschlussleitung_untersucht.strasse, anschlussleitung_untersucht.bewertungsart, anschlussleitung_untersucht.bewertungstag,
-                                anschlussleitung_untersucht.datenart, anschlussleitung_untersucht.leitnam],
+            if (pdat := self.anschlussdaten.get(anschlussleitung_untersucht.haltnam, {})) == {}:
+                logger.warning(f'Untersuchte Anschlussleitung {anschlussleitung_untersucht.haltnam} fehlt in den Stammdaten')
+                continue
+
+            params = {'haltnam': anschlussleitung_untersucht.haltnam,
+                      'untersuchtag': anschlussleitung_untersucht.untersuchtag,
+                      'untersucher': anschlussleitung_untersucht.untersucher,
+                      'wetter': wetter,
+                      'strasse': anschlussleitung_untersucht.strasse,
+                      'bewertungsart': anschlussleitung_untersucht.bewertungsart,
+                      'bewertungstag': anschlussleitung_untersucht.bewertungstag,}\
+            | pdat
+
+            if not self.db_qkan.insertdata(
+                    tabnam="anschlussleitungen_untersucht",
+                    mute_logger=False,
+                    parameters=params,
             ):
-                return None
+                del self.db_qkan
+                return
 
         self.db_qkan.commit()
 
     def _untersuchdat_anschluss(self) -> None:
         def _iter() -> Iterator[Untersuchdat_anschlussleitung]:
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Zustandsdatenkollektiv/d:InspizierteAbwassertechnischeAnlage/[d:Anlagentyp='2']/"
-                "d:OptischeInspektion/d:Rohrleitung/d:Inspektionsdaten/d:RZustand/../../../..",
+                "Datenkollektive/Zustandsdatenkollektiv/InspizierteAbwassertechnischeAnlage/[Anlagentyp='2']/"
+                "OptischeInspektion/Rohrleitung/Inspektionsdaten/RZustand/../../../..",
                 self.NS,
             )
 
@@ -2602,14 +2212,15 @@ class ImportTask(Schadenstexte):
             film_dateiname = ""
 
             for x_anlage in x_anlagen:
-                found_leitung = x_anlage.findtext("d:Kante/d:Leitung", None, self.NS)
+                found_leitung = x_anlage.findtext("Kante/Leitung", None, self.NS)
                 if found_leitung != '':
 
-                    name = x_anlage.findtext("d:Objektbezeichnung", None, self.NS)
+                    name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
 
-                    for _untersuchdat_haltung in x_anlage.findall("d:OptischeInspektion/d:Rohrleitung", self.NS):
+                    for _untersuchdat_haltung in x_anlage.findall("OptischeInspektion/Rohrleitung", self.NS):
 
-                        _ = _untersuchdat_haltung.findtext("d:Inspektionsrichtung", None, self.NS)
+                        _ = _untersuchdat_haltung.findtext("Inspektionsrichtung", None, self.NS)
                         if _ == "O":
                             untersuchrichtung = "in Fließrichtung"
                         elif _ == "U":
@@ -2619,43 +2230,43 @@ class ImportTask(Schadenstexte):
                             untersuchrichtung = None
 
                         inspektionslaenge = _get_float(
-                            _untersuchdat_haltung.findtext("d:Inspektionslaenge", None, self.NS))
+                            _untersuchdat_haltung.findtext("Inspektionslaenge", None, self.NS))
                         if inspektionslaenge == 0.0:
                             inspektionslaenge = _get_float(_untersuchdat_haltung.findtext(
-                                "d:Inspektionsdaten/d:RZustand[d:InspektionsKode='BCE'][d:Charakterisierung1='XP']/d:Station",
+                                "Inspektionsdaten/RZustand[InspektionsKode='BCE'][Charakterisierung1='XP']/Station",
                                 None, self.NS))
 
-                        schoben = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenZulauf", None, self.NS)
-                        schunten = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenAblauf", None, self.NS)
+                        schoben = _untersuchdat_haltung.findtext("RGrunddaten/KnotenZulauf", None, self.NS)
+                        schunten = _untersuchdat_haltung.findtext("RGrunddaten/KnotenAblauf", None, self.NS)
 
-                        for _untersuchdat in _untersuchdat_haltung.findall("d:Inspektionsdaten/d:RZustand", self.NS):
-                            id = _get_int(_untersuchdat.findtext("d:Index", None, self.NS))
-                            videozaehler = _get_int(_untersuchdat.findtext("d:Videozaehler", None, self.NS))
-                            station = _get_float(_untersuchdat.findtext("d:Station", None, self.NS))
-                            timecode = _untersuchdat.findtext("d:Timecode", None, self.NS)
-                            kuerzel = _untersuchdat.findtext("d:InspektionsKode", None, self.NS)
-                            charakt1 = _untersuchdat.findtext("d:Charakterisierung1", None, self.NS)
-                            charakt2 = _untersuchdat.findtext("d:Charakterisierung2", None, self.NS)
-                            quantnr1 = _get_float(_untersuchdat.findtext("d:Quantifizierung1Numerisch", None, self.NS))
-                            quantnr2 = _get_float(_untersuchdat.findtext("d:Quantifizierung2Numerisch", None, self.NS))
-                            streckenschaden = _untersuchdat.findtext("d:Streckenschaden", None, self.NS)
+                        for _untersuchdat in _untersuchdat_haltung.findall("Inspektionsdaten/RZustand", self.NS):
+                            id = _get_int(_untersuchdat.findtext("Index", None, self.NS))
+                            videozaehler = _get_int(_untersuchdat.findtext("Videozaehler", None, self.NS))
+                            station = _get_float(_untersuchdat.findtext("Station", None, self.NS))
+                            timecode = _untersuchdat.findtext("Timecode", None, self.NS)
+                            kuerzel = _untersuchdat.findtext("InspektionsKode", None, self.NS)
+                            charakt1 = _untersuchdat.findtext("Charakterisierung1", None, self.NS)
+                            charakt2 = _untersuchdat.findtext("Charakterisierung2", None, self.NS)
+                            quantnr1 = _get_float(_untersuchdat.findtext("Quantifizierung1Numerisch", None, self.NS))
+                            quantnr2 = _get_float(_untersuchdat.findtext("Quantifizierung2Numerisch", None, self.NS))
+                            streckenschaden = _untersuchdat.findtext("Streckenschaden", None, self.NS)
                             streckenschaden_lfdnr = _get_int(
-                                _untersuchdat.findtext("d:StreckenschadenLfdNr", None, self.NS))
-                            pos_von = _get_int(_untersuchdat.findtext("d:PositionVon", None, self.NS))
-                            pos_bis = _get_int(_untersuchdat.findtext("d:PositionBis", None, self.NS))
+                                _untersuchdat.findtext("StreckenschadenLfdNr", None, self.NS))
+                            pos_von = _get_int(_untersuchdat.findtext("PositionVon", None, self.NS))
+                            pos_bis = _get_int(_untersuchdat.findtext("PositionBis", None, self.NS))
 
-                            _datei = _untersuchdat.findtext("d:Fotodatei", None, self.NS)
+                            _datei = _untersuchdat.findtext("Fotodatei", None, self.NS)
                             if _datei is not None and self.ordner_bild is not None:
                                 foto_dateiname = os.path.join(self.ordner_bild, _datei)
                             else:
                                 foto_dateiname = None
 
                             ZD = _get_int(
-                                _untersuchdat.findtext("d:Klassifizierung/d:Dichtheit/d:SKDvAuto", None, self.NS))
+                                _untersuchdat.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
                             ZS = _get_int(
-                                _untersuchdat.findtext("d:Klassifizierung/d:Standsicherheit/d:SKSvAuto", None, self.NS))
+                                _untersuchdat.findtext("Klassifizierung/Standsicherheit/SKSvAuto", None, self.NS))
                             ZB = _get_int(
-                                _untersuchdat.findtext("d:Klassifizierung/d:Betriebssicherheit/d:SKBvAuto", None, self.NS))
+                                _untersuchdat.findtext("Klassifizierung/Betriebssicherheit/SKBvAuto", None, self.NS))
 
                             yield Untersuchdat_anschlussleitung(
                                 untersuchhal=name,
@@ -2663,6 +2274,7 @@ class ImportTask(Schadenstexte):
                                 schoben=schoben,
                                 schunten=schunten,
                                 id=id,
+                                untersuchtag=untersuchtag,
                                 inspektionslaenge=inspektionslaenge,
                                 videozaehler=videozaehler,
                                 station=station,
@@ -2688,24 +2300,24 @@ class ImportTask(Schadenstexte):
 
         def _iter2() -> Iterator[Untersuchdat_anschlussleitung]:
             x_filme = self.xml.findall(
-                "d:Datenkollektive/d:Zustandsdatenkollektiv/d:Filme/d:Film/d:Filmname/../..",
+                "Datenkollektive/Zustandsdatenkollektiv/Filme/Film/Filmname/../..",
                 self.NS,
             )
             logger.debug(f"Anzahl Untersuchdat_haltung: {len(x_filme)}")
 
             film_dateiname = ""
             for x_film in x_filme:
-                for _untersuchdat_haltung in x_film.findall("d:Film/d:FilmObjekte/..", self.NS):
-                    name = _untersuchdat_haltung.findtext("d:FilmObjekte/d:FilmObjekt/d:Objektbezeichnung", None,
+                for _untersuchdat_haltung in x_film.findall("Film/FilmObjekte/..", self.NS):
+                    name = _untersuchdat_haltung.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None,
                                                           self.NS)
 
-                    _datei = _untersuchdat_haltung.findtext("d:Filmname", None, self.NS)
+                    _datei = _untersuchdat_haltung.findtext("Filmname", None, self.NS)
                     if _datei is not None and self.ordner_video is not None:
                         film_dateiname = os.path.join(self.ordner_video, _datei)
                     else:
                         film_dateiname = None
 
-                    # bandnr = _get_int(_untersuchdat_haltung.findtext("d:Videoablagereferenz", None, self.NS))
+                    # bandnr = _get_int(_untersuchdat_haltung.findtext("Videoablagereferenz", None, self.NS))
 
                     yield Untersuchdat_anschlussleitung(
                         untersuchhal=name,
@@ -2715,9 +2327,11 @@ class ImportTask(Schadenstexte):
 
         for untersuchdat_anschlussleitung in _iter():
 
-            params = {'untersuchleit': untersuchdat_anschlussleitung.untersuchhal, 'untersuchrichtung': untersuchdat_anschlussleitung.untersuchrichtung,
+            params = {'untersuchleit': untersuchdat_anschlussleitung.untersuchhal,
+                      'untersuchrichtung': untersuchdat_anschlussleitung.untersuchrichtung,
                       'schoben': untersuchdat_anschlussleitung.schoben, 'schunten': untersuchdat_anschlussleitung.schunten,
-                      'id': untersuchdat_anschlussleitung.id, 'videozaehler': untersuchdat_anschlussleitung.videozaehler,
+                      'id': untersuchdat_anschlussleitung.id, 'untersuchtag': untersuchdat_anschlussleitung.untersuchtag,
+                      'videozaehler': untersuchdat_anschlussleitung.videozaehler,
                       'inspektionslaenge': untersuchdat_anschlussleitung.inspektionslaenge,
                       'station': untersuchdat_anschlussleitung.station,
                       'timecode': untersuchdat_anschlussleitung.timecode, 'kuerzel': untersuchdat_anschlussleitung.kuerzel,
@@ -2766,8 +2380,8 @@ class ImportTask(Schadenstexte):
 
         def _iter() -> Iterator[Wehr]:
             x_hydobjekte = self.xml.findall(
-                "d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                "d:HydraulikObjekte/d:HydraulikObjekt/d:Wehr/..",
+                "Datenkollektive/Hydraulikdatenkollektiv/Rechennetz/"
+                "HydraulikObjekte/HydraulikObjekt/Wehr/..",
                 self.NS,
             )
             logger.debug(f"Anzahl HydraulikObjekte_Wehre: {len(x_hydobjekte)}")
@@ -2776,26 +2390,26 @@ class ImportTask(Schadenstexte):
             schwellenhoehe, kammerhoehe, laenge, uebeiwert = (0.0,) * 4
             for x_hydobjekt in x_hydobjekte:
                 # TODO: Does <HydraulikObjekt> even contain multiple <Wehr>?
-                for _wehr in x_hydobjekt.findall("d:Wehr", self.NS):
-                    schoben = _wehr.findtext("d:SchachtZulauf", None, self.NS)
-                    schunten = _wehr.findtext("d:SchachtAblauf", None, self.NS)
-                    wehrtyp = _wehr.findtext("d:WehrTyp", None, self.NS)
+                for _wehr in x_hydobjekt.findall("Wehr", self.NS):
+                    schoben = _wehr.findtext("SchachtZulauf", None, self.NS)
+                    schunten = _wehr.findtext("SchachtAblauf", None, self.NS)
+                    wehrtyp = _wehr.findtext("WehrTyp", None, self.NS)
 
                     schwellenhoehe = _get_float(
-                        _wehr.findtext("d:Schwellenhoehe", None, self.NS)
+                        _wehr.findtext("Schwellenhoehe", None, self.NS)
                     )
                     laenge = _get_float(
-                        _wehr.findtext("d:LaengeWehrschwelle", None, self.NS)
+                        _wehr.findtext("LaengeWehrschwelle", None, self.NS)
                     )
-                    kammerhoehe = _get_float(_wehr.findtext("d:Kammerhoehe", None, self.NS))
+                    kammerhoehe = _get_float(_wehr.findtext("Kammerhoehe", None, self.NS))
 
                     # Überfallbeiwert der Wehr Kante (abhängig von Form der Kante)
                     uebeiwert = _get_float(
-                        _wehr.findtext("d:Ueberfallbeiwert", None, self.NS)
+                        _wehr.findtext("Ueberfallbeiwert", None, self.NS)
                     )
 
                 yield Wehr(
-                    wnam=x_hydobjekt.findtext("d:Objektbezeichnung", None, self.NS),
+                    wnam=x_hydobjekt.findtext("Objektbezeichnung", None, self.NS),
                     schoben=schoben,
                     schunten=schunten,
                     wehrtyp=wehrtyp,
@@ -2831,24 +2445,24 @@ class ImportTask(Schadenstexte):
     def _pumpen(self) -> None:
         def _iter() -> Iterator[Pumpe]:
             x_anlagen = self.xml.findall(
-                "d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/"
-                "d:Knoten/d:Bauwerk/d:Pumpe/../../..",
+                "Datenkollektive/Stammdatenkollektiv/AbwassertechnischeAnlage/"
+                "Knoten/Bauwerk/Pumpe/../../..",
                 self.NS,
             )
             logger.debug(f"Anzahl Pumpen: {len(x_anlagen)}")
 
             for x_anlage in x_anlagen:
                 yield Pumpe(
-                    pnam=x_anlage.findtext("d:Objektbezeichnung", None, self.NS),
-                    simstatus=x_anlage.findtext("d:Status", None, self.NS),
-                    kommentar=x_anlage.findtext("d:Kommentar", None, self.NS),
+                    pnam=x_anlage.findtext("Objektbezeichnung", None, self.NS),
+                    simstatus=x_anlage.findtext("Status", None, self.NS),
+                    kommentar=x_anlage.findtext("Kommentar", None, self.NS),
                 )
 
         def _iter2() -> Iterator[Pumpe]:
             # Hydraulik
             x_hydobjekte = self.xml.findall(
-                "d:Datenkollektive/d:Hydraulikdatenkollektiv/d:Rechennetz/"
-                "d:HydraulikObjekte/d:HydraulikObjekt/d:Pumpe/..",
+                "Datenkollektive/Hydraulikdatenkollektiv/Rechennetz/"
+                "HydraulikObjekte/HydraulikObjekt/Pumpe/..",
                 self.NS,
             )
             logger.debug(f"Anzahl HydraulikObjekte_Pumpen: {len(x_hydobjekte)}")
@@ -2858,18 +2472,18 @@ class ImportTask(Schadenstexte):
             volanf, volges, sohle = (0.0,) * 3
             for x_hydobjekt in x_hydobjekte:
                 # TODO: Does <HydraulikObjekt> even contain multiple <Pumpe>?
-                # `_pumpe = x_hydobjekt.find("d:Pumpe", self.NS)` should be used if it does not
-                for _pumpe in x_hydobjekt.findall("d:Pumpe", self.NS):
-                    _pumpentyp = _get_int(_pumpe.findtext("d:PumpenTyp", None, self.NS))
-                    schoben = _pumpe.findtext("d:SchachtZulauf", None, self.NS)
-                    schunten = _pumpe.findtext("d:SchachtAblauf", None, self.NS)
-                    steuersch = _pumpe.findtext("d:Steuerschacht", None, self.NS)
-                    sohle = _get_float(_pumpe.findtext("d:Sohlhoehe", None, self.NS))
-                    volanf = _get_float(_pumpe.findtext("d:Anfangsvolumen", None, self.NS))
-                    volges = _get_float(_pumpe.findtext("d:Gesamtvolumen", None, self.NS))
+                # `_pumpe = x_hydobjekt.find("Pumpe", self.NS)` should be used if it does not
+                for _pumpe in x_hydobjekt.findall("Pumpe", self.NS):
+                    _pumpentyp = _get_int(_pumpe.findtext("PumpenTyp", None, self.NS))
+                    schoben = _pumpe.findtext("SchachtZulauf", None, self.NS)
+                    schunten = _pumpe.findtext("SchachtAblauf", None, self.NS)
+                    steuersch = _pumpe.findtext("Steuerschacht", None, self.NS)
+                    sohle = _get_float(_pumpe.findtext("Sohlhoehe", None, self.NS))
+                    volanf = _get_float(_pumpe.findtext("Anfangsvolumen", None, self.NS))
+                    volges = _get_float(_pumpe.findtext("Gesamtvolumen", None, self.NS))
 
                 yield Pumpe(
-                    pnam=x_hydobjekt.findtext("d:Objektbezeichnung", None, self.NS),
+                    pnam=x_hydobjekt.findtext("Objektbezeichnung", None, self.NS),
                     schoben=schoben,
                     schunten=schunten,
                     pumpentyp=_pumpentyp,
