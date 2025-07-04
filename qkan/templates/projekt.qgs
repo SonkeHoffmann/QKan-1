@@ -276,7 +276,7 @@
             <Option />
           </customproperties>
         </layer-tree-layer>
-        <layer-tree-layer patch_size="0,0" legend_split_behavior="0" id="abflussmodelle_b1368d23_11b7_4b53_86a9_44feb5d66c5f" expanded="1" name="Abflussmodelle" source="dbname='blankenhd.sqlite' table=&quot;abflussmodelle&quot;" legend_exp="" providerKey="spatialite" checked="Qt::Checked">
+        <layer-tree-layer patch_size="0,0" legend_split_behavior="0" id="abflussmodelle_b1368d23_11b7_4b53_86a9_44feb5d66c5f" expanded="1" name="Abflussmodelle" source="dbname='blankenhd.sqlite' table=&quot;abflusstypen&quot;" legend_exp="" providerKey="spatialite" checked="Qt::Checked">
           <customproperties>
             <Option />
           </customproperties>
@@ -15478,11 +15478,11 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" type="vector" minScale="0" readOnly="0" refreshOnNotifyEnabled="0" wkbType="NoGeometry" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" styleCategories="AllStyleCategories" refreshOnNotifyMessage="" maxScale="0">
       <id>abflussmodelle_b1368d23_11b7_4b53_86a9_44feb5d66c5f</id>
-      <datasource>dbname='blankenhd.sqlite' table="Abflussmodelle"</datasource>
+      <datasource>dbname='blankenhd.sqlite' table="abflusstypen"</datasource>
       <keywordList>
         <value />
       </keywordList>
-      <layername>Abflusstypen</layername>
+      <layername>Abflussmodelle</layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">
           <wkt />
@@ -43975,7 +43975,7 @@ def closeProject():
                   <Option />
                 </customproperties>
               </layer-tree-layer>
-              <layer-tree-layer patch_size="0,0" legend_split_behavior="0" id="abflussmodelle_b1368d23_11b7_4b53_86a9_44feb5d66c5f" expanded="1" name="Abflussmodelle" source="dbname='blankenhd.sqlite' table=&quot;abflussmodelle&quot;" legend_exp="" providerKey="spatialite" checked="Qt::Checked">
+              <layer-tree-layer patch_size="0,0" legend_split_behavior="0" id="abflussmodelle_b1368d23_11b7_4b53_86a9_44feb5d66c5f" expanded="1" name="Abflussmodelle" source="dbname='blankenhd.sqlite' table=&quot;abflusstypen&quot;" legend_exp="" providerKey="spatialite" checked="Qt::Checked">
                 <customproperties>
                   <Option />
                 </customproperties>
