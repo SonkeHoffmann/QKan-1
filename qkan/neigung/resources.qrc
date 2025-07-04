@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/qkan/neigung" >
+        <file>res/icon_neigung.png</file>
+    </qresource>
+</RCC>

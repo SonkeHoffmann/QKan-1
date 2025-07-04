@@ -42,6 +42,7 @@ PLUGIN_LIST = [
     "tools.application.QKanTools",
     "info.application.Infos",
     "selection.application.Selections",
+    "neigung.application.Neigungs",
 ]
 
 
@@ -245,6 +246,7 @@ class QKan:
             safe_add_action(flaechen, "Erzeuge Verknüpfungslinien von Einzeleinleitungen zu Haltungen")
             safe_add_action(flaechen, "Verknüpfungen bereinigen")
             safe_add_action(flaechen, "Oberflächenabflussparameter eintragen")
+            safe_add_action(flaechen, "Neigungsklassen ermitteln")
 
             safe_add_action(hyex, "Import aus Hystem-Extran 8")
             safe_add_action(hyex, "Export nach Hystem-Extran 8")
