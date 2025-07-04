@@ -1,7 +1,3 @@
-__author__ = "Joerg Hoettges"
-__date__ = "März 2020"
-__copyright__ = "(C) 2020, Joerg Hoettges"
-
 from pathlib import Path
 from typing import Dict, List, cast
 from qgis.utils import iface
@@ -58,6 +54,7 @@ class ImportTask:
         inpfile: str,
         db_qkan: DBConnection,
         projectfile: str,
+        check_cb,
         #offset: List[float],
         epsg: int = 25832,
         dbtyp: str = "SpatiaLite",
@@ -70,6 +67,7 @@ class ImportTask:
         self.projectfile = projectfile
         #self.xoffset, self.yoffset = offset
         self.xoffset, self.yoffset = [0.0,0.0]
+        self.check_cb = check_cb
 
     def __del__(self) -> None:
         self.db_qkan.sql("SELECT RecoverSpatialIndex()")
@@ -209,11 +207,11 @@ class ImportTask:
             line_tokens = line.split()
             name = line_tokens[0] # schnam
             elevation = line_tokens[1]  # sohlhoehe
-            maxdepth = 'NULL'   # ToDo!
+            maxdepth = line_tokens[2]   # Schachttiefe
             #initdepth = line_tokens[3]   # entfällt
 
             params = {'schnam': name,
-                      'sohlhoehe': elevation, 'deckelhoehe': 'NULL',
+                      'sohlhoehe': elevation, 'deckelhoehe': float(elevation) + float(maxdepth),
                       'schachttyp': 'Speicher'}
 
             logger.debug(f'mswmmporter.import - insertdata:\ntabnam: schaechte\n'
@@ -241,7 +239,7 @@ class ImportTask:
 
 
             params = {'schnam': name,
-                      'sohlhoehe': elevation, 'deckelhoehe': elevation + maxdepth,
+                      'sohlhoehe': elevation, 'deckelhoehe': float(elevation) + float(maxdepth),
                       'schachttyp': 'Speicher'}
 
             logger.debug(f'mswmmporter.import - insertdata:\ntabnam: schaechte\n'
@@ -265,7 +263,7 @@ class ImportTask:
             name = line_tokens[0]
             xsch = fzahl(line_tokens[1], 3, self.xoffset) + self.xoffset  # xsch
             ysch = fzahl(line_tokens[2], 3, self.yoffset) + self.yoffset  # ysch
-            du = 1.0
+            du = 1.0 #in SWMM nicht enthalten
 
             sql = f"""
                 UPDATE schaechte SET (xsch, ysch, geop ,geom) =
@@ -284,81 +282,157 @@ class ImportTask:
 
     def _subcatchments(self) -> bool:
         """Liest einen Teil der Daten zu tezg-Flächen ein"""
-        data = self.data.get("subcatchments", [])
-        for line in data:
-            # Attribute bitte aus qkan.database.qkan_database.py entnehmen
-            (name, regenschreiber, schnam, _, befgrad_t, _, neigung_t, *_) = line.split()
-            befgrad = fzahl(befgrad_t)
-            neigung = fzahl(neigung_t)
-            abnam = '$Default_Unbef'
+        if self.check_cb['cb1']:
+            data = self.data.get("subcatchments", [])
+            for line in data:
+                # Attribute bitte aus qkan.database.qkan_database.py entnehmen
+                (name, regenschreiber, schnam, _, befgrad_t, _, neigung_t, *_) = line.split()
+                befgrad = fzahl(befgrad_t)
+                neigung = fzahl(neigung_t)
+                abnam = '$Default_Bef'
 
-            params = {'flnam': name, 'regenschreiber': regenschreiber, 'schnam': schnam,
-                       'befgrad': befgrad, 'neigung': neigung, 'abflussparameter': abnam, 'epsg':QKan.config.epsg }
+                params = {'flnam': name, 'regenschreiber': regenschreiber, 'schnam': schnam,
+                           'befgrad': befgrad, 'neigung': neigung, 'abflussparameter': abnam, 'epsg':QKan.config.epsg }
 
-            logger.debug(f'mswmmporter.import - insertdata:\ntabnam: tezg\n'
-                          f'params: {params}')
-            logger.debug(f'{data=}')
+                logger.debug(f'mswmmporter.import - insertdata:\ntabnam: tezg\n'
+                              f'params: {params}')
+                logger.debug(f'{data=}')
 
-            if not self.db_qkan.insertdata(
-                     tabnam="tezg",
-                     mute_logger=False,
-                     parameters=params,
-            ):
-                return False
+                if not self.db_qkan.insertdata(
+                         tabnam="tezg",
+                         mute_logger=False,
+                         parameters=params,
+                ):
+                    return False
 
-        self.db_qkan.commit()
+            self.db_qkan.commit()
+
+        if self.check_cb['cb2']:
+            data = self.data.get("subcatchments", [])
+            for line in data:
+                # Attribute bitte aus qkan.database.qkan_database.py entnehmen
+                (name, regenschreiber, schnam, _, befgrad_t, _, neigung_t, *_) = line.split()
+                befgrad = fzahl(befgrad_t)
+                neigung = fzahl(neigung_t)
+                abnam = '$Default_Bef'
+
+                params = {'flnam': name, 'regenschreiber': regenschreiber, 'schnam': schnam,
+                            'neigung': neigung, 'abflussparameter': abnam, 'epsg':QKan.config.epsg }
+
+                logger.debug(f'mswmmporter.import - insertdata:\ntabnam: flaechen\n'
+                              f'params: {params}')
+                logger.debug(f'{data=}')
+
+                if not self.db_qkan.insertdata(
+                         tabnam="flaechen",
+                         mute_logger=False,
+                         parameters=params,
+                ):
+                    return False
+
+            self.db_qkan.commit()
 
     def _polygons(self) -> bool:
         """Liest die Polygone zu den bereits angelegten tezg-Flächen ein"""
+        if self.check_cb['cb1']:
+            data = self.data.get("polygons", [])
+            data.append("ende")  # Trick, damit am Ende das letzte Polygon geschrieben wird
 
-        data = self.data.get("polygons", [])
-        data.append("ende")  # Trick, damit am Ende das letzte Polygon geschrieben wird
+            nampoly = ""  # Solange der Name gleich bleibt, gehören
+            # die Eckpunkte zum selben Polygon (tezg-Fläche)
 
-        nampoly = ""  # Solange der Name gleich bleibt, gehören
-        # die Eckpunkte zum selben Polygon (tezg-Fläche)
+            xlis: List[float] = []  # x-Koordinaten zum Polygon
+            ylis: List[float] = []  # y-Koordinaten zum Polygon
+            for line in data:
+                line_tokens = line.split()
+                name = line_tokens[0]
+                if name != "ende":
+                    xsch = fzahl(line_tokens[1], 3, self.xoffset) + self.xoffset  # xsch
+                    ysch = fzahl(line_tokens[2], 3, self.yoffset) + self.yoffset  # ysch
 
-        xlis: List[float] = []  # x-Koordinaten zum Polygon
-        ylis: List[float] = []  # y-Koordinaten zum Polygon
-        for line in data:
-            line_tokens = line.split()
-            name = line_tokens[0]
-            if name != "ende":
-                xsch = fzahl(line_tokens[1], 3, self.xoffset) + self.xoffset  # xsch
-                ysch = fzahl(line_tokens[2], 3, self.yoffset) + self.yoffset  # ysch
+                if nampoly != name:
+                    if nampoly != "":
+                        # Koordinaten des ersten Punkte am Ende nochmal anhängen
+                        xlis.append(xlis[0])
+                        ylis.append(ylis[0])
 
-            if nampoly != name:
-                if nampoly != "":
-                    # Koordinaten des ersten Punkte am Ende nochmal anhängen
-                    xlis.append(xlis[0])
-                    ylis.append(ylis[0])
+                        # Polygon schreiben
+                        coords = ", ".join([f"{x} {y}" for x, y in zip(xlis, ylis)])
 
-                    # Polygon schreiben
-                    coords = ", ".join([f"{x} {y}" for x, y in zip(xlis, ylis)])
-
-                    #iface.messageBar().pushMessage("Error", str(coords),
-                    #                               level=Qgis.Critical)
+                        #iface.messageBar().pushMessage("Error", str(coords),
+                        #                               level=Qgis.Critical)
 
 
-                    sql = "UPDATE tezg SET geom = GeomFromText('MULTIPOLYGON((("+str(coords)+")))',?) WHERE flnam = ? "
+                        sql = "UPDATE tezg SET geom = GeomFromText('MULTIPOLYGON((("+str(coords)+")))',?) WHERE flnam = ? "
 
-                    if not self.db_qkan.sql(
-                            sql, parameters=(QKan.config.epsg, nampoly)
-                    ):
-                        return False
+                        if not self.db_qkan.sql(
+                                sql, parameters=(QKan.config.epsg, nampoly)
+                        ):
+                            return False
 
-                nampoly = name
+                    nampoly = name
 
-                # Listen zurücksetzen
-                xlis = []
-                ylis = []
-            if name == "ende":
-                continue  # Letzte Zeile ist nur ein dummy
+                    # Listen zurücksetzen
+                    xlis = []
+                    ylis = []
+                if name == "ende":
+                    continue  # Letzte Zeile ist nur ein dummy
 
-            # Koordinaten des Eckpunktes übernehmen
-            xlis.append(xsch)
-            ylis.append(ysch)
+                # Koordinaten des Eckpunktes übernehmen
+                xlis.append(xsch)
+                ylis.append(ysch)
 
-        self.db_qkan.commit()
+            self.db_qkan.commit()
+
+        elif self.check_cb['cb2']:
+            data = self.data.get("polygons", [])
+            data.append("ende")  # Trick, damit am Ende das letzte Polygon geschrieben wird
+
+            nampoly = ""  # Solange der Name gleich bleibt, gehören
+            # die Eckpunkte zum selben Polygon (tezg-Fläche)
+
+            xlis: List[float] = []  # x-Koordinaten zum Polygon
+            ylis: List[float] = []  # y-Koordinaten zum Polygon
+            for line in data:
+                line_tokens = line.split()
+                name = line_tokens[0]
+                if name != "ende":
+                    xsch = fzahl(line_tokens[1], 3, self.xoffset) + self.xoffset  # xsch
+                    ysch = fzahl(line_tokens[2], 3, self.yoffset) + self.yoffset  # ysch
+
+                if nampoly != name:
+                    if nampoly != "":
+                        # Koordinaten des ersten Punkte am Ende nochmal anhängen
+                        xlis.append(xlis[0])
+                        ylis.append(ylis[0])
+
+                        # Polygon schreiben
+                        coords = ", ".join([f"{x} {y}" for x, y in zip(xlis, ylis)])
+
+                        # iface.messageBar().pushMessage("Error", str(coords),
+                        #                               level=Qgis.Critical)
+
+                        sql = "UPDATE flaechen SET geom = GeomFromText('MULTIPOLYGON(((" + str(
+                            coords) + ")))',?) WHERE flnam = ? "
+
+                        if not self.db_qkan.sql(
+                                sql, parameters=(QKan.config.epsg, nampoly)
+                        ):
+                            return False
+
+                    nampoly = name
+
+                    # Listen zurücksetzen
+                    xlis = []
+                    ylis = []
+                if name == "ende":
+                    continue  # Letzte Zeile ist nur ein dummy
+
+                # Koordinaten des Eckpunktes übernehmen
+                xlis.append(xsch)
+                ylis.append(ysch)
+
+            self.db_qkan.commit()
 
     def _conduits(self) -> bool:
         """Liest einen Teil der Haltungsdaten ein"""
@@ -462,7 +536,7 @@ class ImportTask:
 
             params = {'haltnam': haltnam, 'schoben': schoben, 'schunten': schunten,
                       'entwart': 'Regenwasser', 'haltungstyp': 'Drosselbauwerk',
-                      'simstatus': '?'} # ToDo!
+                      'simstatus': 'vorhanden'}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen\n'
                          f'params: {params}')
@@ -487,7 +561,7 @@ class ImportTask:
 
             params = {'haltnam': haltnam, 'schoben': schoben, 'schunten': schunten,
                       'entwart': 'Regenwasser', 'haltungstyp': 'Haltung mit Oeffnung',
-                      'simstatus': '?'} # ToDo!
+                      'simstatus': 'vorhanden'}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen\n'
                          f'params: {params}')
@@ -633,10 +707,11 @@ class ImportTask:
     def _xsections(self) -> bool:
         """Liest die Profildaten zu den Haltungen ein. Dabei werden sowohl Haltungsdaten ergänzt
         als auch Profildaten erfasst"""
-        #TODO nochmal prüfen
-        #TODO profiletypes ergänzen!
 
-        profiltypes = {"CIRCULAR": "Kreisquerschnitt"}
+        profiltypes = {"CIRCULAR": "Kreisquerschnitt", "RECTANGULAR": "Rechteck offen", "TRAPEZOIDAL": "Trapez (offen)",
+                        "CLOSED RECTANGULAR": "Rechteck (geschlossen)", "EGG": "Ei (B:H = 2:3)",
+                       "HORIZONTAL ELLIPTOCAL": "Maul (B:H = 2:1,66)", "VERTICAL ELLIPTICAL": "Parabel (B:H=2:2)",
+                       "RECTANGULAR TRIANGULAR": "Rechteck mit geneigter Sohle (B:H=1:1)", "ARCH": "Haube (B:H=2:2.5)"}
 
         data = self.data.get("xsections", [])
         for line in data:
@@ -676,8 +751,6 @@ class ImportTask:
         self.db_qkan.commit()
 
 
-        # todo: SQL-Anweisung wie oben ergänzen
-
     def subareas(self) -> None:
         pass  # in QKan nicht verwaltet
 
@@ -685,6 +758,7 @@ class ImportTask:
         pass  # in QKan nicht verwaltet
 
     def coverages(self) -> None:
+        #TODO: ergänzen in LandUse steht die nutzungsart z.b. straße ust
         pass  # in QKan nicht verwaltet
 
     def evaporation(self) -> None:

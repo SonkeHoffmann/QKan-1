@@ -13,6 +13,7 @@ from qgis.PyQt.QtWidgets import (
     QRadioButton,
     QWidget,
     QDialogButtonBox,
+    QButtonGroup,
 )
 from qgis.core import QgsCoordinateReferenceSystem
 from qgis.gui import QgsProjectionSelectionWidget
@@ -93,6 +94,11 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
 
         self.tf_database.setText(QKan.config.swmm.export_file)
         self.tf_SWMM_template.setText(QKan.config.swmm.template)
+
+        self.group = QButtonGroup(self)
+        self.group.setExclusive(True)  # Nur eine darf aktiv sein
+        self.group.addButton(self.cb_flaechen)
+        self.group.addButton(self.cb_haltungsflaechen)
 
 
     def select_template(self) -> None:
@@ -185,6 +191,23 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         else:
             self.lf_anzahl_flaechen.setText("0")
 
+        # Zu berücksichtigende Haltungsflächen zählen
+        auswahl = ""
+        if len(teilgebiete) != 0:
+            auswahl = " WHERE tezg.teilgebiet in ('{}')".format(
+                "', '".join(teilgebiete)
+            )
+
+        sql = f"SELECT count(*) AS anzahl FROM tezg {auswahl}"
+
+        if not db_qkan.sql(sql, "QKan_ExportSWMM.application.countselection (1)"):
+            return False
+        daten = db_qkan.fetchone()
+        if not (daten is None):
+            self.lf_anzahl_flaechen_2.setText(str(daten[0]))
+        else:
+            self.lf_anzahl_flaechen_2.setText("0")
+
         # Zu berücksichtigende Schächte zählen
         auswahl = ""
         if len(teilgebiete) != 0:
@@ -226,6 +249,9 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
 
         sql = """WITH tgb AS (
                 SELECT teilgebiet FROM flaechen
+                WHERE teilgebiet IS NOT NULL
+                UNION
+                SELECT teilgebiet FROM tezg
                 WHERE teilgebiet IS NOT NULL
                 UNION
                 SELECT teilgebiet FROM haltungen
@@ -302,6 +328,8 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
     tf_database: QLineEdit
     tf_import: QLineEdit
     tf_project: QLineEdit
+    radioButton: QRadioButton
+    radioButton_2: QRadioButton
 
     pb_import: QPushButton
     pb_project: QPushButton
