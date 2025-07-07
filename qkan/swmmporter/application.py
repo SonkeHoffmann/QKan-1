@@ -132,10 +132,7 @@ class SWMMPorter(QKanPlugin):
         QKan.config.check_export.pumpen = self.export_dlg.cb_pumpen.isChecked()
         QKan.config.check_export.wehre = self.export_dlg.cb_wehre.isChecked()
         QKan.config.check_export.flaechen = self.export_dlg.cb_flaechen.isChecked()
-
-        QKan.config.check_export.einzugsgebiete = (
-            self.export_dlg.cb_einzugsgebiete.isChecked()
-        )
+        QKan.config.check_export.tezg_hf = self.export_dlg.cb_haltungsflaechen.isChecked()
 
         QKan.config.check_export.append = self.export_dlg.rb_append.isChecked()
         QKan.config.check_export.update = self.export_dlg.rb_update.isChecked()
@@ -176,6 +173,8 @@ class SWMMPorter(QKanPlugin):
             QKan.config.database.qkan = self.import_dlg.tf_database.text()
             QKan.config.swmm.file = self.import_dlg.tf_project.text()
             QKan.config.swmm.import_file = self.import_dlg.tf_import.text()
+
+            QKan.config.project.file = self.import_dlg.tf_project.text()
 
             QKan.config.save()
 
@@ -238,9 +237,12 @@ class SWMMPorter(QKanPlugin):
                     level=Qgis.Critical,
                 )
                 return False
+            check_cb = {}
+            check_cb['cb1'] = self.import_dlg.radioButton.isChecked()
+            check_cb['cb2'] = self.import_dlg.radioButton_2.isChecked()
 
             self.log.info("DB creation finished, starting importer")
-            imp = ImportTask(QKan.config.swmm.import_file, db_qkan, QKan.config.project.file)
+            imp = ImportTask(QKan.config.swmm.import_file, db_qkan, QKan.config.project.file, check_cb)
             imp.run()
             del imp
 

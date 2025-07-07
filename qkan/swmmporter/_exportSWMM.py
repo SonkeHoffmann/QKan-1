@@ -2,6 +2,12 @@ import os
 from typing import Dict, List
 
 from qgis.PyQt.QtWidgets import QProgressBar
+from qgis.core import (
+	Qgis,
+	QgsProject,
+	QgsVectorLayer,
+	QgsDataSourceUri,
+)
 from qgis.utils import iface
 
 from qkan import QKan
@@ -17,9 +23,7 @@ progress_bar = None
 # --------------------------------------------------------------------------------------------------
 # Start des eigentlichen Programms
 
-# MOUSE-Haltungstyp: 1 = Kreis, 2 = Profil (CRS), 3 = Rechteck, 4 = Maulprofil, 5 = Eiprofil, 6 = Quadrat, 7 = "Natural Channel"
-
-ref_profile = {"1": "CIRCULAR", "3": "RECT_CLOSED", "5": "EGG"}
+#TODO: Flächenverschneidungen bei export mit vorsehen? (siehe Hystem-Extran Export)
 
 
 class ExportTask:
@@ -265,14 +269,16 @@ class ExportTask:
 
             sql = f"""
                 SELECT
-                  flnam AS name,
-                  regenschreiber AS rain_gage,
-                  schnam AS outlet,
-                  area(geom)/10000 AS area,
-                  pow(area(geom), 0.5)*1.3 AS width,
-                  befgrad AS imperv,
-                  neigung AS neigung
-                  FROM tezg
+                  flaechen.flnam AS name,
+                  flaechen.regenschreiber AS rain_gage,
+                  COALESCE(flaechen.schnam, haltungen.schoben) AS outlet,
+                  area(flaechen.geom)/10000 AS area,
+                  pow(area(flaechen.geom), 0.5)*1.3 AS width,
+                  100 AS imperv,
+                  flaechen.neigung AS neigung,
+                  flaechen.haltnam
+                  FROM flaechen
+				  LEFT Join haltungen WHERE flaechen.haltnam = haltungen.haltnam
                 {auswahl}"""
 
             if not self.db_qkan.sql(sql, "db_qkan: exportSWMM (1)"):
@@ -295,9 +301,81 @@ class ExportTask:
                 # In allen Namen Leerzeichen durch '_' ersetzen
                 name, outlet, rain_gage = ["" if el == 0 else el.replace(" ", "_") for el in (name_t, outlet_t, rain_gage_t)]
 
+                rain_gage = '""' if not rain_gage else rain_gage
+
                 datasc += (
                     f"{name:<16s} {rain_gage:<16s} {outlet:<16s} {area:<8.2f} "
-                    f"{imperv:<8.1f} {width:<8.0f} {neigung:<8.1f} 0                        \n"
+                    f"{imperv:<8.1f} {width:<8.0f} {neigung:<8.1f} {0:<8.1f} {0:<8.1f}                       \n"
+                )
+
+            if self.status == 'append' or self.status == 'update':
+                self.insertfunk("[SUBCATCHMENTS]", datasc)
+
+            if self.status == 'new' or (self.status == 'append' and self.insertfunk("[SUBCATCHMENTS]", datasc) is False):
+
+                text = ("\n[SUBCATCHMENTS]"
+                        "\n;;                                                 Total    Pcnt.             Pcnt.    Curb     Snow"
+                        "\n;;Name           Raingage         Outlet           Area     Imperv   Width    Slope    Length   Pack"
+                        "\n;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- --------"
+                        "\n"
+                        )
+                self.file = open(self.ergfileSwmm, 'a')
+                self.file.write(text)
+
+                self.file.write(datasc)
+
+                self.file.close()
+
+            else:
+                pass
+
+        elif QKan.config.check_export.tezg_hf:
+
+            if len(self.liste_teilgebiete) != 0:
+                lis = "', '".join(self.liste_teilgebiete)
+                auswahl = f" WHERE teilgebiet in ('{lis}')"
+            else:
+                auswahl = ""
+
+            sql = f"""
+                  SELECT
+                  tezg.flnam AS name,
+                  tezg.regenschreiber AS rain_gage,
+                  COALESCE(tezg.schnam, haltungen.schoben) AS outlet,
+                  area(tezg.geom)/10000 AS area,
+                  pow(area(tezg.geom), 0.5)*1.3 AS width,
+                  tezg.befgrad AS imperv,
+                  tezg.neigung AS neigung,
+				  tezg.haltnam
+                  FROM tezg
+				  LEFT Join haltungen WHERE tezg.haltnam = haltungen.haltnam
+                {auswahl}"""
+
+            if not self.db_qkan.sql(sql, "db_qkan: exportSWMM (1)"):
+                return
+
+            datasc = ""  # Datenzeilen [subcatchments]
+
+            for b in self.db_qkan.fetchall():
+                # In allen Feldern None durch NULL ersetzen
+                (
+                    name_t,
+                    rain_gage_t,
+                    outlet_t,
+                    area,
+                    width,
+                    imperv,
+                    neigung,
+                ) = [0 if el is None else el for el in b]
+
+                # In allen Namen Leerzeichen durch '_' ersetzen
+                name, outlet, rain_gage = ["" if el == 0 else el.replace(" ", "_") for el in (name_t, outlet_t, rain_gage_t)]
+
+                rain_gage = '""' if not rain_gage else rain_gage
+
+                datasc += (
+                    f"{name:<16s} {rain_gage:<16s} {outlet:<16s} {area:<8.2f} "
+                    f"{imperv:<8.1f} {width:<8.0f} {neigung:<8.1f} {0:<8.1f} {0:<8.1f}                          \n"
                 )
 
             if self.status == 'append' or self.status == 'update':
@@ -326,6 +404,96 @@ class ExportTask:
 
         if QKan.config.check_export.flaechen:
 
+            if len(self.liste_teilgebiete) != 0:
+                lis = "', '".join(self.liste_teilgebiete)
+                auswahl = f" WHERE tg.teilgebiet in ('{lis}')"
+            else:
+                auswahl = ""
+
+            sql = f"""
+                SELECT
+                    tg.flnam AS name,
+                    tg.regenschreiber AS rain_gage,
+                    tg.schnam AS outlet,
+                    area(tg.geom)/10000. AS area,
+                    pow(area(tg.geom), 0.5)*1.3 AS width,                        -- 1.3: pauschaler Faktor für SWMM
+                    100 AS imperv,
+                    tg.neigung AS neigung,
+                    tg.abflussparameter AS abflussparameter, 
+                    apbef.rauheit_kst AS nImperv, 
+                    apdur.rauheit_kst AS nPerv,
+                    apbef.muldenverlust AS sImperv, 
+                    apdur.muldenverlust AS sPerv,
+                    apbef.pctZero AS pctZero, 
+                    bk.infiltrationsrateende*60 AS maxRate,                     -- mm/min -> mm/h
+                    bk.infiltrationsrateanfang*60 AS minRate,
+                    bk.rueckgangskonstante/24. AS decay,                        -- 1/d -> 1/h 
+                    1/(coalesce(bk.regenerationskonstante, 1./7.)) AS dryTime,   -- 1/d -> d , Standardwert aus SWMM-Testdaten
+                    bk.saettigungswassergehalt AS maxInfil
+                FROM flaechen AS tg
+                LEFT JOIN abflussparameter AS apbef
+                ON tg.abflussparameter = apbef.apnam and (apbef.bodenklasse IS NULL OR apbef.bodenklasse = '')
+                LEFT JOIN abflussparameter AS apdur
+                ON tg.abflussparameter = apdur.apnam and apdur.bodenklasse IS NOT NULL AND apdur.bodenklasse <> ''
+                LEFT JOIN bodenklassen AS bk
+                ON apdur.bodenklasse = bk.bknam
+                {auswahl}"""
+
+            if not self.db_qkan.sql(sql, "db_qkan: exportSWMM (2)"):
+                return
+
+            datasa = ""  # Datenzeilen [subareas]
+
+            for b in self.db_qkan.fetchall():
+                # In allen Feldern None durch NULL ersetzen
+                (
+                    name_t,
+                    rain_gage_t,
+                    outlet_t,
+                    area,
+                    width,
+                    imperv,
+                    neigung,
+                    abflussparameter,
+                    nImperv,
+                    nPerv,
+                    sImperv,
+                    sPerv,
+                    pctZero,
+                    maxRate,
+                    minRate,
+                    decay,
+                    dryTime,
+                    maxInfil,
+                ) = [0 if el is None else el for el in b]
+
+                # In allen Namen Leerzeichen durch '_' ersetzen
+                name = "" if name_t == 0 else name_t.replace(" ", "_")
+
+                datasa += (
+                    f"{name:<16s} {nImperv:<10.3f} {nPerv:<10.2f} {sImperv:<10.2f} {sPerv:<10.1f} "
+                    f"{pctZero:<10.0f} OUTLET    \n"
+                )
+
+            if self.status == 'append' or self.status == 'update':
+                self.insertfunk("[SUBAREAS]", datasa)
+
+            if self.status == 'new' or (self.status == 'append' and self.insertfunk("[SUBAREAS]", datasa) is False):
+
+                text = ("\n[SUBAREAS]"
+                        "\n;;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted"
+                        "\n;;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------"
+                        "\n")
+                self.file = open(self.ergfileSwmm, 'a')
+                self.file.write(text)
+
+                self.file.write(datasa)
+                self.file.close()
+
+            else:
+                pass
+
+        elif QKan.config.check_export.tezg_hf:
             if len(self.liste_teilgebiete) != 0:
                 lis = "', '".join(self.liste_teilgebiete)
                 auswahl = f" WHERE tg.teilgebiet in ('{lis}')"
@@ -416,9 +584,98 @@ class ExportTask:
                 pass
 
 
+
     def infiltration(self):
 
         if QKan.config.check_export.flaechen:
+
+            if len(self.liste_teilgebiete) != 0:
+                lis = "', '".join(self.liste_teilgebiete)
+                auswahl = f" WHERE tg.teilgebiet in ('{lis}')"
+            else:
+                auswahl = ""
+
+            sql = f"""
+                SELECT
+                    tg.flnam AS name,
+                    tg.regenschreiber AS rain_gage,
+                    tg.schnam AS outlet,
+                    area(tg.geom)/10000. AS area,
+                    pow(area(tg.geom), 0.5)*1.3 AS width,                        -- 1.3: pauschaler Faktor für SWMM
+                    100 AS imperv,
+                    tg.neigung AS neigung,
+                    tg.abflussparameter AS abflussparameter, 
+                    apbef.rauheit_kst AS nImperv, 
+                    apdur.rauheit_kst AS nPerv,
+                    apbef.muldenverlust AS sImperv, 
+                    apdur.muldenverlust AS sPerv,
+                    apbef.pctZero AS pctZero, 
+                    bk.infiltrationsrateende*60 AS maxRate,                     -- mm/min -> mm/h
+                    bk.infiltrationsrateanfang*60 AS minRate,
+                    bk.rueckgangskonstante/24. AS decay,                        -- 1/d -> 1/h 
+                    1/(coalesce(bk.regenerationskonstante, 1./7.)) AS dryTime,   -- 1/d -> d , Standardwert aus SWMM-Testdaten
+                    bk.saettigungswassergehalt AS maxInfil
+                FROM flaechen AS tg
+                LEFT JOIN abflussparameter AS apbef
+                ON tg.abflussparameter = apbef.apnam and (apbef.bodenklasse IS NULL OR apbef.bodenklasse = '')
+                LEFT JOIN abflussparameter AS apdur
+                ON tg.abflussparameter = apdur.apnam and apdur.bodenklasse IS NOT NULL AND apdur.bodenklasse <> ''
+                LEFT JOIN bodenklassen AS bk
+                ON apdur.bodenklasse = bk.bknam
+                {auswahl}"""
+
+            if not self.db_qkan.sql(sql, "db_qkan: exportSWMM (3)"):
+                return
+
+            datain = ""  # Datenzeilen [infiltration]
+
+            for b in self.db_qkan.fetchall():
+                # In allen Feldern None durch NULL ersetzen
+                (
+                    name_t,
+                    rain_gage_t,
+                    outlet_t,
+                    area,
+                    width,
+                    imperv,
+                    neigung,
+                    abflussparameter,
+                    nImperv,
+                    nPerv,
+                    sImperv,
+                    sPerv,
+                    pctZero,
+                    maxRate,
+                    minRate,
+                    decay,
+                    dryTime,
+                    maxInfil,
+                ) = [0 if el is None else el for el in b]
+
+                # In allen Namen Leerzeichen durch '_' ersetzen
+                name = "" if name_t == 0 else name_t.replace(" ", "_")
+
+                datain += f"{name:<16s} {maxRate:<10.1f} {minRate:<10.1f} {decay:<10.1f} {dryTime:<10.0f} {maxInfil}\n"
+
+            if self.status == 'append' or self.status == 'update':
+                self.insertfunk("[INFILTRATION]", datain)
+
+            if self.status == 'new' or (self.status == 'append' and self.insertfunk("[INFILTRATION]", datain) is False):
+
+                text = ("\n[INFILTRATION]"
+                        "\n;;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil"
+                        "\n;;-------------- ---------- ---------- ---------- ---------- ----------"
+                        "\n")
+                self.file = open(self.ergfileSwmm, 'a')
+                self.file.write(text)
+
+                self.file.write(datain)
+                self.file.close()
+
+            else:
+                pass
+
+        elif QKan.config.check_export.tezg_hf:
 
             if len(self.liste_teilgebiete) != 0:
                 lis = "', '".join(self.liste_teilgebiete)
@@ -551,6 +808,9 @@ class ExportTask:
                 # In allen Namen Leerzeichen durch '_' ersetzen
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
+                if len(name) > 15:
+                   name=name + " "
+
                 # [JUNCTIONS]
                 dataju += (
                     f"{name:<16s} {invertElevation:<10.3f} {maxDepth:<10.3f} {initDepth:<10.3f} "
@@ -619,6 +879,9 @@ class ExportTask:
 
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
+                if len(name) > 15:
+                   name=name + " "
+
                 dataou += (
                     f"{name:<16s} {invertElevation:<10.3f} FREE                        NO                       \n"
                 )
@@ -684,6 +947,9 @@ class ExportTask:
 
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
+                if len(name) > 15:
+                   name=name + " "
+
                 dataou += (
                     f"{name:<16s} {invertElevation:<8.1f} {maxDepth:<10.3f} {initDepth:<10.3f} FUNCTIONAL 1000      0         0        0        0\n"
                 )
@@ -739,6 +1005,15 @@ class ExportTask:
                 ) = [0 if el is None else el for el in b]
 
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
+
+                if len(name) > 15:
+                   name=name + " "
+
+                if len(schoben) > 16:
+                   schoben=schoben + " "
+
+                if len(schunten) > 16:
+                    schunten=schunten + " "
 
                 datacd += (
                     f"{name:<16s} {schoben:<17s}{schunten:<17s}{laenge:<11.3f}{ks:<10.3f} 0          0          0          0         \n"
@@ -798,6 +1073,15 @@ class ExportTask:
 
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
+                if len(name) > 15:
+                   name=name + " "
+
+                if len(schoben) > 16:
+                   schoben=schoben + " "
+
+                if len(schunten) > 16:
+                    schunten=schunten + " "
+
                 datacd += (
                     f"{name:<16s} {schoben:<17s}{schunten:<17s} *                ON       0        0     \n"
                 )
@@ -856,6 +1140,15 @@ class ExportTask:
 
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
+                if len(name) > 15:
+                   name=name + " "
+
+                if len(schoben) > 16:
+                   schoben=schoben + " "
+
+                if len(schunten) > 16:
+                    schunten=schunten + " "
+
                 datacd += (
                     f"{name:<16s} {schoben:<17s}{schunten:<17s} TRANSVERSE   0          3.33       NO       0        0          YES   \n"
                 )
@@ -878,8 +1171,8 @@ class ExportTask:
             else:
                 pass
 
+
     def xsection(self):
-        #TODO: wehre ergänzen
 
         if QKan.config.check_export.haltungen:
 
@@ -891,7 +1184,7 @@ class ExportTask:
 
             sql = f"""
                 SELECT
-                    haltnam AS name, IIF(breite>20., breite/1000.,breite ) AS breite, IIF(hoehe>20., hoehe/1000.,hoehe) AS hoehe
+                    haltnam AS name, IIF(breite>20., breite/1000.,breite ) AS breite, IIF(hoehe>20., hoehe/1000.,hoehe) AS hoehe, profilnam as profil
                 FROM
                     haltungen
                 WHERE lower(haltungstyp) = 'haltung'{auswahl}
@@ -903,21 +1196,32 @@ class ExportTask:
 
             for b in self.db_qkan.fetchall():
                 # In allen Feldern None durch NULL ersetzen
-                shape = 'Circular'
+                profiltypes = {"Kreisquerschnitt":"CIRCULAR",  "Rechteck offen":"RECTANGULAR",
+                               "Trapez (offen)": "TRAPEZOIDAL" ,
+                               "Rechteck (geschlossen)":"CLOSED RECTANGULAR", "Ei (B:H = 2:3)":"EGG",
+                               "Maul (B:H = 2:1,66)":"HORIZONTAL ELLIPTOCAL",
+                               "Parabel (B:H=2:2)":"VERTICAL ELLIPTICAL",
+                               "Rechteck mit geneigter Sohle (B:H=1:1)":"RECTANGULAR TRIANGULAR",
+                               "Haube (B:H=2:2.5)":"ARCH"}
+
 
                 (
                     name_t,
                     breite,
                     hoehe,
+                    profil,
                 ) = [0 if el is None else el for el in b]
 
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
-                if breite != hoehe:
-                    shape = 'Rectangular'
+
+                if profil in profiltypes:
+                    profilnam = profiltypes[profil]
+                else:
+                    profilnam = 'CIRCULAR'
 
                 dataxs += (
-                    f"{name:<16s} {shape:<13s}{breite:<17.3f}{hoehe:<10.3f} 0          0          1                    \n"
+                    f"{name:<16s} {profilnam:<13s}{breite:<17.3f}{hoehe:<10.3f} 0          0          1                    \n"
                 )
 
 
@@ -1080,6 +1384,9 @@ class ExportTask:
                 # In allen Namen Leerzeichen durch '_' ersetzen
                 name = "" if name_t == 0 else name_t.replace(" ", "_")
 
+                if len(name) > 15:
+                   name=name + " "
+
                 # [COORDINATES]
                 dataco += f"{name:<16s} {xsch:<18.3f} {ysch:<18.3f}\n"
 
@@ -1168,26 +1475,7 @@ class ExportTask:
                 pass
 
     def polygons(self):
-
-        # Koordinaten fehlen die Nachkommerstellen!!!
-
-        # nicht als wkt sondern als geojson in sqlite schreiben
-        # Update
-        # tezg
-        # set
-        # geom = AsText(GeomFromGeoJSON(
-        #     '{
-        #     "type": "Multipolygon",
-        #             "coordinates": [[[[281.9999999999999, 1334], [111, 1100.999999999999],
-        #                               [171.9999999999999, 1062], [231, 1026.999999999999], [306, 990],
-        #                               [370, 958.9999999999999], [408.9999999999999, 946], [444, 935.9999999999999],
-        #                               [492.9999999999999, 924], [532, 915], [569, 907], [609.9999999999999, 897],
-        #                               [654.9999999999999, 897], [683.9999999999999, 1318],
-        #                               [650.9999999999999, 1320.999999999999], [595.9999999999999, 1332],
-        #                               [550.9999999999999, 1346], [495, 1366.999999999999],
-        #                               [454.9999999999999, 1383.999999999999],
-        #                               [409.9999999999999, 1408.999999999999], [385.9999999999999, 1427],
-        #                               [362.9999999999999, 1441.999999999999], [281.9999999999999, 1334]]]]}'))
+        #Bei Multipolygonen wird nur das erste Polygon exportiert
 
         if QKan.config.check_export.flaechen:
 
@@ -1195,9 +1483,70 @@ class ExportTask:
 
             if len(self.liste_teilgebiete) != 0:
                 lis = "', '".join(self.liste_teilgebiete)
-                auswahl = f" WHERE teilgebiet in ('{lis}')"
+                auswahl = f" WHERE teilgebiet in ('{lis}') AND geom is not NULL"
             else:
-                auswahl = ""
+                auswahl = " WHERE geom is not NULL"
+
+            sql = f"""
+                SELECT
+                    flnam, schnam, st_astext(geom)
+                from flaechen{auswahl}"""
+            self.db_qkan.sql(sql)
+
+            for b in self.db_qkan.fetchall():
+                # In allen Feldern None durch NULL ersetzen
+                (
+                    name_t,
+                    schoben,
+                    list,
+                ) = [0 if el is None else el for el in b]
+
+                # In allen Namen Leerzeichen durch '_' ersetzen
+                name = "" if name_t == 0 else name_t.replace(" ", "_")
+
+                list = list.replace('MULTIPOLYGON(((', '')
+                list = list.replace(')))', '')
+                list = list.replace(',', '')
+                before, sep, after = list.partition(')')
+                x = 0
+                liste = before.split()
+
+                for i in liste:
+                    while x + 2 <= len(liste) and x < len(liste) - 2:
+
+                        xsch = float(liste[x])
+                        ysch = float(liste[x + 1])
+                        x += 2
+
+                        dataver += f"{name:<16s} {xsch:<18.3f} {ysch:<18.3f}\n"
+
+            if self.status == 'append' or self.status == 'update':
+                self.insertfunk("[Polygons]", dataver)
+
+            if self.status == 'new' or (self.status == 'append' and self.insertfunk("[Polygons]", dataver) is False):
+                text = ("\n[Polygons]"
+                        "\n;;Subcatchment   X-Coord            Y-Coord"
+                        "\n;;-------------- ------------------ ------------------"
+                        "\n"
+                        )
+                self.file = open(self.ergfileSwmm, 'a')
+                self.file.write(text)
+
+                self.file.write(dataver)
+                self.file.close()
+
+            else:
+                pass
+
+        elif QKan.config.check_export.tezg_hf:
+
+            dataver = ""
+
+            if len(self.liste_teilgebiete) != 0:
+                lis = "', '".join(self.liste_teilgebiete)
+                auswahl = f" WHERE teilgebiet in ('{lis}') AND geom is not NULL"
+            else:
+                auswahl = " WHERE geom is not NULL"
 
             sql = f"""
                 SELECT
@@ -1219,8 +1568,9 @@ class ExportTask:
                 list = list.replace('MULTIPOLYGON(((', '')
                 list = list.replace(')))', '')
                 list = list.replace(',', '')
+                before, sep, after = list.partition(')')
                 x = 0
-                liste = list.split()
+                liste = before.split()
                 for i in liste:
                     while x + 2 <= len(liste) and x < len(liste) - 2:
                         xsch = float(liste[x])

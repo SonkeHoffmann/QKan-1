@@ -27,6 +27,7 @@ PLUGIN_LIST = [
     "dynaporter.DynaPorter",
     "muporter.application.MuPorter",
     "swmmporter.application.SWMMPorter",
+    "swmm_erg.application.SWMMErg",
     "strakatporter.application.StrakatPorter",
     "linkflaechen.application.LinkFl",
     "surfaceTools.application.SurfaceTools",
@@ -265,6 +266,7 @@ class QKan:
 
             safe_add_action(swmm, "Import aus SWMM-Datei (*.INP)")
             safe_add_action(swmm, "Export in SWMM-Datei (*.INP)")
+            safe_add_action(swmm, "Import von SWMM-Ergebnissen (*.RPT)")
 
             safe_add_action(strakat, "Import aus STRAKAT")
             # safe_add_action(laengs, "Längsschnitt-Tool für HE8")
