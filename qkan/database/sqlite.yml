@@ -1196,8 +1196,7 @@ VALUES (
         ELSE GeomFromWKB(:geop, :epsg)
     END,
     CASE WHEN :geom IS NULL
-        THEN CastToMultiPolygon(MakePolygon(
-            MakeCircle(:xsch,:ysch,coalesce(iif(:durchm>200.0,:durchm/1000.0,:durchm), 1.0)/2.0, :epsg)))
+        THEN CastToMultiLineString(MakeCircle(:xsch,:ysch,coalesce(iif(:durchm>200.0,:durchm/1000.0,:durchm), 1.0)/2.0, :epsg))
         ELSE GeomFromWKB(:geom, :epsg)
     END);"
 

@@ -64,7 +64,6 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_qregler: QCheckBox
     cb_hregler: QCheckBox
     cb_grundseitenauslaesse: QCheckBox
-    cb_flaechen: QCheckBox
     cb_rohrprofile: QCheckBox
     cb_abflussparameter: QCheckBox
     cb_bodenklassen: QCheckBox
@@ -72,8 +71,9 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_aussengebiete: QCheckBox
     cb_einzugsgebiete: QCheckBox
 
+    rb_flaechen: QRadioButton
+    rb_tezg_hf: QRadioButton
     cb_tezg: QCheckBox
-    cb_tezg_hf: QCheckBox
 
     rb_update: QRadioButton
     rb_append: QRadioButton
@@ -94,8 +94,6 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         # Attach events
         self.pb_exportdb.clicked.connect(self.select_exportdb)
         self.pb_template.clicked.connect(self.select_template)
-        self.cb_flaechen.clicked.connect(self.check_flaechen)
-        self.cb_tezg_hf.clicked.connect(self.check_tezg_hf)
         self.button_box.helpRequested.connect(self.click_help)
 
         # Aktionen zu Selektionen
@@ -120,8 +118,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.cb_qregler.setChecked(QKan.config.check_export.qregler)
         self.cb_hregler.setChecked(QKan.config.check_export.hregler)
         self.cb_grundseitenauslaesse.setChecked(QKan.config.check_export.grundseitenauslaesse)
-        self.cb_flaechen.setChecked(QKan.config.check_export.flaechen)
-        self.cb_tezg_hf.setChecked(QKan.config.check_export.tezg_hf)
+        self.rb_flaechen.setChecked(QKan.config.check_export.flaechen)
+        self.rb_tezg_hf.setChecked(QKan.config.check_export.tezg_hf)
         self.cb_rohrprofile.setChecked(QKan.config.check_export.rohrprofile)
         self.cb_abflussparameter.setChecked(QKan.config.check_export.abflussparameter)
         self.cb_bodenklassen.setChecked(QKan.config.check_export.bodenklassen)
@@ -242,18 +240,6 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
                 layer.selectionChanged.disconnect()
 
         return True
-
-    def check_flaechen(self) -> None:
-        # noinspection PyArgumentList,PyCallByClass
-        if self.cb_flaechen.isChecked():
-            QKan.config.check_export.tezg_hf = False
-            self.cb_tezg_hf.setChecked(False)
-
-    def check_tezg_hf(self) -> None:
-        # noinspection PyArgumentList,PyCallByClass
-        if self.cb_tezg_hf.isChecked():
-            QKan.config.check_export.flaechen = False
-            self.cb_flaechen.setChecked(False)
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""

@@ -771,7 +771,7 @@ def _insert_data_from_dyna(db_qkan: DBConnection, epsg: int) -> bool:
             simulationsstatus.bezeichnung AS simstatus, 
             'Importiert mit QKan' AS kommentar,
             MakePoint(dyna12.xob, dyna12.yob, :epsg) AS geop,
-            CastToMultiPolygon(MakePolygon(MakeCircle(dyna12.xob, dyna12.yob, 1.0, :epsg))) AS geom
+            CastToMultiLineString(MakeCircle(dyna12.xob, dyna12.yob, 1.0, :epsg)) AS geom
         FROM dyna12
         LEFT JOIN simulationsstatus
         ON dyna12.simstatus_nr = simulationsstatus.kp_nr
@@ -810,7 +810,7 @@ def _insert_data_from_dyna(db_qkan: DBConnection, epsg: int) -> bool:
             simulationsstatus.bezeichnung AS simstatus, 
             'Importiert mit QKan' AS kommentar,
             MakePoint(dyna41.xkoor, dyna41.ykoor, :epsg) AS geop,
-            CastToMultiPolygon(MakePolygon(MakeCircle(dyna41.xkoor, dyna41.ykoor, 1.0, :epsg))) AS geom
+            CastToMultiLineString(MakeCircle(dyna41.xkoor, dyna41.ykoor, 1.0, :epsg)) AS geom
         FROM dyna41
         LEFT JOIN dyna12
         ON dyna41.schnam = dyna12.schunten

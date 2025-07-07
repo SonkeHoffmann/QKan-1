@@ -36,7 +36,7 @@
     <rect>
      <x>20</x>
      <y>470</y>
-     <width>681</width>
+     <width>680</width>
      <height>32</height>
     </rect>
    </property>
@@ -405,7 +405,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen exportieren&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
      <string>aktiviert</string>
@@ -528,33 +528,6 @@
      <string>Speicher</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="cb_flaechen">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>160</y>
-      <width>121</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Tahoma</family>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Flächenobjekte und Daten exportieren&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="statusTip">
-     <string>aktiviert</string>
-    </property>
-    <property name="text">
-     <string>Flächen (RW)</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="cb_haltungen">
     <property name="geometry">
      <rect>
@@ -587,27 +560,6 @@
      <rect>
       <x>10</x>
       <y>340</y>
-      <width>201</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Tahoma</family>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="Line" name="line">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>140</y>
       <width>201</width>
       <height>21</height>
      </rect>
@@ -813,34 +765,6 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QCheckBox" name="cb_tezg_hf">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>180</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Tahoma</family>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aus jeder Haltungsfläche werden zwei Flächendatensätze $Default_Bef und $Default_Unbef erzeugt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="statusTip">
-     <string>aktiviert</string>
-    </property>
-    <property name="text">
-     <string>Haltungsflächen mit
-Befestigungsgraden</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="cb_hregler">
     <property name="geometry">
      <rect>
@@ -1007,6 +931,85 @@ Befestigungsgraden</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="Line" name="line_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>201</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rb_flaechen">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>160</y>
+      <width>161</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Flächenobjekte und Daten exportieren&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>Flächenobjekte und Daten exportieren</string>
+    </property>
+    <property name="text">
+     <string>Verknüpfte Flächen</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rb_tezg_hf">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>180</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aus jeder Haltungsfläche werden je zwei Flächendatensätze &amp;quot;befestigt&amp;quot; und &amp;quot;unbefestigt&amp;quot; erzeugt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>Aus jeder Haltungsfläche werden je zwei Flächendatensätze &quot;befestigt&quot; und &quot;unbefestigt&quot; erzeugt</string>
+    </property>
+    <property name="text">
+     <string>Haltungsflächen mit
+Befestigungsgraden</string>
     </property>
    </widget>
   </widget>

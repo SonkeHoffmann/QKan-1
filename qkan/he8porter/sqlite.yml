@@ -52,11 +52,10 @@ SELECT
     sh.Kommentar AS kommentar, 
     sh.Lastmodified AS createdat,
     SetSRID(sh.Geometry, :epsg) AS geop,
-    CastToMultiPolygon(MakePolygon(MakeCircle(x(sh.Geometry),
+    CastToMultiLineString(MakeCircle(x(sh.Geometry),
                                               y(sh.Geometry),
                                               coalesce(sh.Durchmesser/1000.0, 1.0),
                                               :epsg)
-                       )
     ) AS geom
 FROM he.Schacht AS sh
 LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea 
@@ -85,11 +84,10 @@ SELECT
     sh.Kommentar AS kommentar, 
     sh.Lastmodified AS createdat,
     SetSRID(sh.Geometry, :epsg) AS geop,
-    CastToMultiPolygon(MakePolygon(MakeCircle(x(sh.Geometry),
+    CastToMultiLineString(MakeCircle(x(sh.Geometry),
                                               y(sh.Geometry),
                                               1.0,
                                               :epsg)
-                       )
     ) AS geom
 FROM he.Auslass AS sh
 LEFT JOIN simulationsstatus AS si
@@ -116,11 +114,10 @@ SELECT
     sh.Kommentar AS kommentar, 
     sh.Lastmodified AS createdat,
     SetSRID(sh.Geometry, :epsg) AS geop,
-    CastToMultiPolygon(MakePolygon(MakeCircle(x(sh.Geometry),
+    CastToMultiLineString(MakeCircle(x(sh.Geometry),
                                               y(sh.Geometry),
                                               1.0,
                                               :epsg)
-                       )
     ) AS geom
 FROM he.Speicherschacht AS sh
 LEFT JOIN simulationsstatus AS si
@@ -595,14 +592,12 @@ SELECT
     ag_he.Regenschreiber AS regenschreiber, 
     ag_he.Kommentar AS kommentar, 
     ag_he.LastModified AS createdat,
-    CastToMultiPolygon(
-        MakePolygon(
-            MakeCircle(
+    CastToMultiLineString(MakeCircle(
                 x(ag_he.Geometry),
                 y(ag_he.Geometry),
                 sqrt(ag_he.Gesamtflaeche), 
                 :epsg
-    )   )   ) AS geom
+    )   ) AS geom
 FROM he.Aussengebiet AS ag_he
 LEFT JOIN aussengebiete AS ag_qk
 ON ag_he.Name = ag_qk.gebnam
@@ -659,7 +654,7 @@ INSERT INTO tezg (
 SELECT
     eg_he.Name AS flnam, 
     eg_he.Haltung AS haltnam, 
-    '$Default_Unbef' AS abflussparameter,
+    'unbefestigt' AS abflussparameter,
     eg_he.Kommentar AS kommentar, 
     eg_he.LastModified AS createdat, 
     SetSRID(eg_he.Geometry, :epsg) AS geom
@@ -1942,6 +1937,19 @@ SELECT
 FROM flintersect AS fi
 WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Flaeche))"
 
+he8_check_tezghf_parameters: "
+INSERT INTO abflussparameter (
+    apnam, anfangsabflussbeiwert, endabflussbeiwert, benetzungsverlust, muldenverlust, 
+    benetzung_startwert, mulden_startwert, bodenklasse, kommentar)
+SELECT
+    column1 AS apnam, column2 AS anfangsabflussbeiwert, column3 AS endabflussbeiwert,
+    column4 AS benetzungsverlust, column5 AS muldenverlust, column6 AS benetzung_startwert,
+    column7 AS mulden_startwert, column8 AS bodenklasse, column9 AS kommentar
+FROM (VALUES 
+	('unbefestigt', 0.5, 0.5, 3, 5, 0.0, 0.0, 'LehmLoess', 'QKan-Vorgabe ergänzt für Export Befestigungsgrade'),
+	('befestigt', 1.0, 1.0, 0.3, 0.5, 0.0, 0.0, NULL, 'QKan-Vorgabe ergänzt für Export Befestigungsgrade'))
+WHERE apnam NOT IN (SELECT apnam FROM abflussparameter)"
+
 he8_append_tezghf_all: "
 INSERT INTO he.Flaeche (
     id, 
@@ -1973,8 +1981,8 @@ SELECT
     0.                                                              AS FliesszeitOberflaeche,       /* nicht verwendet */
     0.                                                              AS LaengsteFliesszeitKanal,     /* nicht verwendet */
     CASE WHEN tb.bef = 0
-      THEN '$Default_Bef'
-      ELSE '$Default_Unbef'
+      THEN 'befestigt'
+      ELSE 'unbefestigt'
     END                                                             AS Parametersatz, 
     coalesce(tg.neigkl, 1)                                          AS Neigungsklasse, 
     1                                                               AS IstPolygonalflaeche,
@@ -1987,7 +1995,7 @@ FROM tezg AS tg
 LEFT JOIN he.Flaeche AS fh
 ON fh.Name = tg.flnam
   , (SELECT he_nr FROM flaechentypen WHERE bezeichnung = 'Gebäude') AS ft
-  , (SELECT column1 AS bef FROM (VALUES (0) , (1))) AS tb
+  , (SELECT column1 AS bef FROM (VALUES (0.0) , (1.0))) AS tb
  WHERE fh.Name IS NULL
    AND area(tg.geom)*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) > :mindestflaeche"
 
@@ -2022,8 +2030,8 @@ SELECT
     0.                                                              AS FliesszeitOberflaeche,       /* nicht verwendet */
     0.                                                              AS LaengsteFliesszeitKanal,     /* nicht verwendet */
     CASE WHEN tb.bef = 0
-      THEN '$Default_Bef'
-      ELSE '$Default_Unbef'
+      THEN 'befestigt'
+      ELSE 'unbefestigt'
     END                                                             AS Parametersatz, 
     coalesce(tg.neigkl, 1)                                          AS Neigungsklasse, 
     1                                                               AS IstPolygonalflaeche,
@@ -2038,7 +2046,7 @@ JOIN sel_haltungen  AS sel ON sel.pk = hal.pk
 LEFT JOIN he.Flaeche AS fh
 ON fh.Name = tg.flnam
   , (SELECT he_nr FROM flaechentypen WHERE bezeichnung = 'Gebäude') AS ft
-  , (SELECT column1 AS bef FROM (VALUES (0) , (1))) AS tb
+  , (SELECT column1 AS bef FROM (VALUES (0.0) , (1.0))) AS tb
  WHERE fh.Name IS NULL
    AND area(tg.geom)*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) > :mindestflaeche"
 

@@ -92,13 +92,10 @@ def run(dbcon: DBConnection) -> bool:
                     coalesce(new.simstatus, 'vorhanden'),
                     new.kommentar, coalesce(new.createdat, (datetime('now'))),
                     MakePoint(new.xsch, new.ysch, {dbcon.epsg}),
-                    CastToMultiPolygon(
-                        MakePolygon(
-                            MakeCircle(
+                    CastToMultiLineString(MakeCircle(
                                 new.xsch,
                                 new.ysch,
                                 coalesce(new.durchm/2, 0.5), {dbcon.epsg}
-                            )
                         )
                     )
                 );

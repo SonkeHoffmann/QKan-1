@@ -238,6 +238,23 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
     WHERE p.profilnam IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL) AND h.profilnam IS NOT NULL',
  'Haltungen', 'pk'),
 
+('HYSTEM-EXTRAN', 'Haltung ohne RW-Anschluss ist mit Flächen verknüpft', 'Fehler', 6,
+    'SELECT h.pk AS objid, printf(''Haltung "%s" ohne RW-Anschluss ist mit Flächen verknüpft'', h.haltnam) AS bemerkung 
+    FROM haltungen AS h
+    JOIN linkfl AS l ON l.haltnam = h.haltnam
+    WHERE NOT h.rwanschluss OR h.rwanschluss IS NULL
+    GROUP BY h.pk',
+ 'Haltungen', 'pk'),
+
+('HYSTEM-EXTRAN', 'Verschnittenes Flächenstück hat keine Verknüpfung zu einer Haltung', 'Fehler', 6,
+    '    SELECT fl.pk AS objid, 
+        printf(''Verschnittenes Flächenteilstück %s in Haltungsfläche %s hat keine Verknüpfung zur einer Haltung'', fl.flnam, tg.flnam) AS bemerkung
+    FROM (SELECT pk, flnam, geom FROM flaechen WHERE aufteilen) AS fl
+    LEFT JOIN tezg AS tg     ON St_Intersects(fl.geom, tg.geom) = 1
+    LEFT JOIN linkfl AS lf   ON lf.flnam = fl.flnam
+	WHERE lf.pk IS NULL',
+ 'Einzelflächen', 'pk'),
+
 ('Netzstruktur', 'Schachtnamen mehrfach', 'Fehler', 9,
     'SELECT pk AS objid,
     printf(''Schachtnamen "%s" mehrfach vergeben'', schnam) AS bemerkung

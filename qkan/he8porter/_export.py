@@ -457,9 +457,18 @@ class ExportTask:
         return True
 
     def _tezg(self) -> bool:
-        """Export Haltungsflächen als befestigte und unbefestigte Flächen"""
 
         if QKan.config.check_export.tezg_hf:
+            """Export Haltungsflächen als befestigte und unbefestigte Flächen"""
+
+            # Sicherstellen, dass Abflussparameter für befestigte und unbefestigte Flächen vorhanden sind.
+            sqlnam = "he8_check_tezghf_parameters"
+            if not self.db_qkan.sqlyml(
+                    sqlnam,
+                    "db_qkan: export_to_he8.export_tezg (0)",
+            ):
+                return False
+
             if self.append:
                 # Feststellen der Anzahl Haltungsflaechen in ITWH-Datenbank fuer korrekte Werte von nextid
                 if not self.db_qkan.sqlyml(
@@ -480,14 +489,14 @@ class ExportTask:
 
                 if not self.db_qkan.sqlyml(
                     sqlnam,
-                    "db_qkan: export_to_he8.export_tezg (1)",
+                    "db_qkan: export_to_he8.export_tezg (2)",
                     parameters={'nr0': nr0, 'mindestflaeche': mindestflaeche}
                 ):
                     return False
 
                 if not self.db_qkan.sqlyml(
                     'he8_count_he_flaechen',
-                    "db_qkan: export_to_he8.export_tezg (2)"
+                    "db_qkan: export_to_he8.export_tezg (3)"
                 ):
                     return False
 
@@ -502,11 +511,13 @@ class ExportTask:
                 fortschritt(f"{anzn - anzv} Haltungsflaechen eingefügt", 1.00)
                 self.progress_bar.setValue(100)
         elif QKan.config.check_export.tezg:
+            """Export Haltungsflächen in HE-Tabelle 'GeipEinzugsflaeche'. 
+               Diese haben für Berechnungen in HE8 keine direkte Funktion!"""
             if self.append:
                 # Feststellen der vorkommenden Werte von rowid fuer korrekte Werte von nextid in der ITWH-Datenbank
                 if not self.db_qkan.sqlyml(
                     'he8_count_he_tezg',
-                    "db_qkan: export_to_he8.export_tezg (2)"
+                    "db_qkan: export_to_he8.export_tezg (4)"
                 ):
                     return False
 
@@ -530,8 +541,6 @@ class ExportTask:
                 nr0 = self.nextid
                 id0 = self.nextid - idmin
 
-                mindestflaeche = QKan.config.mindestflaeche
-
                 if QKan.config.selections.selectedObjects:
                     sqlnam = 'he8_append_tezg_sel'
                 else:
@@ -539,7 +548,7 @@ class ExportTask:
 
                 if not self.db_qkan.sqlyml(
                     sqlnam,
-                    "db_qkan: export_to_he8.export_tezg (3)",
+                    "db_qkan: export_to_he8.export_tezg (5)",
                     parameters={'id0': id0}
                 ):
                     return False

@@ -1671,8 +1671,8 @@ class ImportTask(Schadenstexte):
                 THEN printf('Schacht in STRAKAT %s mal vorhanden', count(*))
                 ELSE 'QKan-STRAKAT-Import' END              AS kommentar,
                 Makepoint(stk.rw_gerinne_o, stk.hw_gerinne_o, :epsg)  AS geop,
-                CastToMultiPolygon(MakePolygon(MakeCircle(
-                    stk.rw_gerinne_o, stk.hw_gerinne_o, 1.0, :epsg))) AS geom
+                CastToMultiLineString(MakeCircle(
+                    stk.rw_gerinne_o, stk.hw_gerinne_o, 1.0, :epsg)) AS geom
             FROM t_strakatkanal AS stk
             LEFT JOIN strassen          ON stk.strassennummer = strassen.id
             LEFT JOIN schachtmaterial   ON stk.schachtmaterial = schachtmaterial.id

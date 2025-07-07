@@ -96,7 +96,7 @@ class ImportTask:
               , coalesce(createdat, datetime('now')) 
                                                 AS createdat
               , SetSrid(sm.geometry, :epsg)     AS geop
-              , CastToMultiPolygon(MakePolygon(MakeCircle(x(sm.geometry), y(sm.geometry), sm.diameter, :epsg))) 
+              , CastToMultiLineString(MakeCircle(x(sm.geometry), y(sm.geometry), sm.diameter, :epsg)) 
             FROM mu.msm_Node    AS sm
             LEFT JOIN schaechte AS sq
             ON sm.muid = sq.schnam 

@@ -270,7 +270,7 @@ class ImportTask:
             sql = f"""
                 UPDATE schaechte SET (xsch, ysch, geop ,geom) =
                 (?, ?, MakePoint(?, ?, ?), 
-                     CastToMultiPolygon(MakePolygon(MakeCircle(?, ?, ?, ?))
+                     CastToMultiLineString(MakeCircle(?, ?, ?, ?)
                  ))
                 WHERE schnam = ?
                 """

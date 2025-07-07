@@ -435,13 +435,11 @@ class ImportTask(Schadenstexte):
                 geom.convertToMultiType()
             elif polygonart in ('1', '2', '3', ''):
                 geom = geom.combine(QgsGeometry.fromPolylineXY(ptlis))         # Achtung: combine ist anders bei QgsGeometry
-            # elif polygonart == '1':
-            #     geom = geom.difference(QgsGeometry.fromPolylineXY(ptlis))
             else:
                 logger.error(f'Die Polygonart {polygonart} kann nicht verarbeitet werden!')
                 raise BaseException
 
-        if geom:
+        if geom is not None:
             geom_wkb = geom.asWkb()
             logger.debug(f'geom = {geom.asWkt()}')
         else:
