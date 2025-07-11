@@ -1090,6 +1090,24 @@ INSERT INTO info (
 subject, value)
 VALUES ('version', ?);"
 
+database_create_fotos: "
+CREATE TABLE IF NOT EXISTS fotos (
+    pk INTEGER PRIMARY KEY, 
+                    name TEXT, 
+                    untersuchtag TEXT,
+                    objekt TEXT,
+                    datei TEXT,
+                    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+
+database_create_videos: "
+CREATE TABLE IF NOT EXISTS videos (
+    pk INTEGER PRIMARY KEY, 
+                    name TEXT, 
+                    untersuchtag TEXT,
+                    objekt TEXT,
+                    datei TEXT,
+                    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+
 database_create_symbole: "
 CREATE TABLE IF NOT EXISTS symbole (
     pk INTEGER PRIMARY KEY,

@@ -43,6 +43,8 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     pb_openLogfile: QPushButton
     pb_openOptionsfile: QPushButton
     pb_selectLogeditor: QPushButton
+    pb_selectfotopath: QPushButton
+    pb_selectvideopath: QPushButton
 
     qsw_epsg: QgsProjectionSelectionWidget
 
@@ -59,7 +61,8 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     tf_versatz_anschlusstexte: QLineEdit
     tf_logeditor: QLineEdit
     tf_max_loops: QLineEdit
-    tf_mindestflaeche: QLineEdit
+    tf_fotopath: QLineEdit
+    tf_videopath: QLineEdit
 
     def __init__(self, plugin: "QKanTools", parent: Optional[QWidget] = None):
         super().__init__(plugin, parent)
@@ -77,6 +80,10 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         self.tf_fangradius.textChanged.connect(self.changed_tf_fangradius)
         self.tf_abstand_zustandstexte.textChanged.connect(self.changed_tf_abstand_zustandstexte)
         self.tf_abstand_zustandsbloecke.textChanged.connect(self.changed_tf_abstand_zustandsbloecke)
+
+        self.pb_selectfotopath.clicked.connect(self.fotopath)
+        self.pb_selectvideopath.clicked.connect(self.videopath)
+
 
     def click_reset_fangradius(self) -> None:
         self.tf_fangradius.setText("0.1")
@@ -223,3 +230,23 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             self.lf_warning1.setText("")
             self.lf_warning1.setStyleSheet("color: black; font: bold;")
             self.tf_abstand_zustandsbloecke.setStyleSheet("color: black")
+
+    def fotopath(self):
+        ordner = QFileDialog.getExistingDirectory(
+            self,
+            self.tr("Ordner Pfad"),
+            self.default_dir,
+        )
+        if ordner:
+            self.tf_fotopath.setText(ordner)
+            self.default_dir = os.path.dirname(ordner)
+
+    def videopath(self):
+        ordner = QFileDialog.getExistingDirectory(
+            self,
+            self.tr("Ordner Pfad"),
+            self.default_dir,
+        )
+        if ordner:
+            self.tf_videopath.setText(ordner)
+            self.default_dir = os.path.dirname(ordner)

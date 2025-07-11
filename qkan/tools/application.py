@@ -329,6 +329,9 @@ class QKanTools(QKanPlugin):
             max_loops: int = int(self.dlgop.tf_max_loops.text())
             logeditor: str = self.dlgop.tf_logeditor.text().strip()
 
+            fotopath: str = self.dlgop.tf_fotopath.text().strip()
+            videopath: str = self.dlgop.tf_videopath.text().strip()
+
             if self.dlgop.rb_spatialite.isChecked():
                 datenbanktyp = enums.QKanDBChoice.SPATIALITE
             # elif self.dlgop.rb_postgis.isChecked():
@@ -353,7 +356,10 @@ class QKanTools(QKanPlugin):
             QKan.config.max_loops = max_loops
             QKan.config.mindestflaeche = mindestflaeche
             QKan.config.tools.logeditor = logeditor
+            QKan.config.fotopath = fotopath
+            QKan.config.videopath = videopath
             QKan.config.save()
+
 
     def run_runoffparams(self) -> None:
         """Berechnen und Eintragen der Oberflächenabflussparameter in die Tabelle flaechen"""

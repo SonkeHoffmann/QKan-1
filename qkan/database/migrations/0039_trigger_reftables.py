@@ -197,4 +197,36 @@ def run(dbcon: DBConnection) -> bool:
             )
             return False
 
+    # Neue Tabelle Fotos
+
+    sql = """CREATE TABLE IF NOT EXISTS fotos (
+    pk INTEGER PRIMARY KEY,
+    name TEXT,
+    untersuchtag TEXT,
+    objekt TEXT, 
+    datei TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"""
+
+    if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
+                          f"Neue Tabelle Fotos"):
+        logger.error('Fehler in migration 0039')
+        raise Exception(f"{__name__}")
+
+    # Neue Tabelle Videos
+
+    sql = """CREATE TABLE IF NOT EXISTS videos (
+    pk INTEGER PRIMARY KEY,
+    name TEXT,
+    untersuchtag TEXT,
+    objekt TEXT,
+    datei TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"""
+
+    if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
+                          f"Neue Tabelle Fotos"):
+        logger.error('Fehler in migration 0039')
+        raise Exception(f"{__name__}")
+
+    #TODO: Bestehende Daten aus den untersuchungen in die neuen Tabellen schreiben?
+
     return True

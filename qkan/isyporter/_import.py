@@ -5,8 +5,8 @@ from typing import Dict, Iterator, Tuple, Union
 from lxml import etree
 
 from qgis.PyQt.QtCore import QByteArray
-from qgis.core import QgsGeometry, QgsPoint, QgsPointXY, QgsCircle, QgsMultiPolygon
-
+from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsCircle, QgsMultiPolygon
+from qgis.utils import iface
 from qkan import QKan
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
@@ -85,6 +85,12 @@ class Untersuchdat_schacht(ClassObject):
     ZD: int = None
     ZB: int = None
     ZS: int = None
+
+class Untersuchdat_daten(ClassObject):
+    untersuchsch: str = ""
+    untersuchtag: str = ""
+    datei: str = ""
+    objekt: str = ""
 
 class Haltung(ClassObject):
     haltnam: str = ""
@@ -374,6 +380,10 @@ class ImportTask(Schadenstexte):
                 deckelhoehe = zd
                 xp = xd
                 yp = yd
+            elif _typ == 'GOK':
+                zd = _get_float(x_pkt.findtext("Punkthoehe", None, self.NS))
+                deckelhoehe = zd
+                continue
             else:
                 xa = _get_float(x_pkt.findtext("Rechtswert", None, self.NS))
                 ya = _get_float(x_pkt.findtext("Hochwert", None, self.NS))
@@ -383,11 +393,12 @@ class ImportTask(Schadenstexte):
                 #                f'aber nicht {_typ} haben')
 
             # Alle Punkte sammeln, die mehr als 0.03 auseinander liegen
-            for x, y in plis:
-                if abs((x - xp)**2 + (y - yp)**2) < 0.03 **2:
-                    break
-            else:
-                plis.append([xp, yp])
+            if plis:
+                for x, y in plis:
+                    if abs((x - xp)**2 + (y - yp)**2) < 0.03 **2:
+                        break
+                    else:
+                        plis.append([xp, yp])
 
             # geom wird nur erzeugt, wenn es aus mehreren Punkten besteht, die um mehr als 0.03 verschoben liegen
         if len(plis) > 1:
@@ -516,6 +527,15 @@ class ImportTask(Schadenstexte):
             self._untersuchdat_schaechte()
             self._haltungen_untersucht()
             self._untersuchdat_haltung()
+            self._anschluss_untersucht()
+            self._untersuchdat_anschluss()
+            self._untersuchdat_schaechte_daten()
+
+        if getattr(QKan.config.xml, "import_zustand", True) and not getattr(QKan.config.xml, "import_stamm", True):
+            self._schaechte_untersucht_geom()
+            self._haltungen_untersucht_geom()
+            self._anschluss_untersucht_geom()
+
 
         return True
 
@@ -833,7 +853,7 @@ class ImportTask(Schadenstexte):
                     schnam=schnam,
                     sohlhoehe=sohlhoehe,
                     deckelhoehe=deckelhohe,
-                    durchm=1.0,  # TODO: Not listed in ISYBAU?
+                    durchm=1.0,  # nicht in Isybau 2013 enthalten
                     entwart=x_anlage.findtext("Entwaesserungsart", None, self.NS),
                     strasse=x_anlage.findtext("Lage/Strassenname", None, self.NS),
                     baujahr=baujahr,
@@ -990,17 +1010,25 @@ class ImportTask(Schadenstexte):
 
             if (pdat := self.schachtdaten.get(schacht_untersucht.schnam, {})) == {}:
                 logger.warning(f'Untersuchter Schacht {schacht_untersucht.schnam} fehlt in den Stammdaten')
-                continue
+                params = {'schnam': schacht_untersucht.schnam,
+                          'untersuchtag': schacht_untersucht.untersuchtag,
+                          'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
+                          'strasse': schacht_untersucht.strasse,
+                          'bewertungsart': schacht_untersucht.bewertungsart,
+                          'bewertungstag': schacht_untersucht.bewertungstag,
+                          'datenart': schacht_untersucht.datenart,
+                          'epsg': QKan.config.epsg}
 
-            params = {'schnam': schacht_untersucht.schnam,
-                      'untersuchtag': schacht_untersucht.untersuchtag,
-                      'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
-                      'strasse': schacht_untersucht.strasse,
-                      'bewertungsart': schacht_untersucht.bewertungsart,
-                      'bewertungstag': schacht_untersucht.bewertungstag,
-                      'datenart': schacht_untersucht.datenart,
-                      'epsg': QKan.config.epsg} \
-                     | pdat
+            else:
+                params = {'schnam': schacht_untersucht.schnam,
+                          'untersuchtag': schacht_untersucht.untersuchtag,
+                          'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
+                          'strasse': schacht_untersucht.strasse,
+                          'bewertungsart': schacht_untersucht.bewertungsart,
+                          'bewertungstag': schacht_untersucht.bewertungstag,
+                          'datenart': schacht_untersucht.datenart,
+                          'epsg': QKan.config.epsg} \
+                         | pdat
 
             # logger.debug(f'isyporter.import - insertdata:\ntabnam: schaechte_untersucht\n'
             #              f'params: {params}')
@@ -1153,6 +1181,93 @@ class ImportTask(Schadenstexte):
         #         return None
         #
         self.db_qkan.commit()
+
+    def _untersuchdat_schaechte_daten(self) -> None:
+        #TODO: für Fotos auch ergänzan ab Isybau 2020!
+        def _iter() -> Iterator[Untersuchdat_daten]:
+            x_zustandsdaten = self.xml.findall(
+                "Datenkollektive/Zustandsdatenkollektiv",
+                self.NS,
+            )
+
+            for x_zustandsdat in x_zustandsdaten:
+
+                x_anlagen = x_zustandsdat.findall(
+                    "InspizierteAbwassertechnischeAnlage",
+                    self.NS,
+                )
+
+                logger.debug(f"Anzahl Untersuchungsdaten Schacht: {len(x_anlagen)}")
+
+                for x_anlage in x_anlagen:
+                    untersuchsch = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+                    x_filme = x_anlage.findall(
+                        "Filme/Film"
+                        f"/FilmObjekte/FilmObjekt/[Objektbezeichnung='{untersuchsch}']/../../../..",
+                        self.NS,
+                    )
+                    iface.messageBar().pushMessage("Error",
+                                                   str(x_filme),
+                                                   level=Qgis.Critical)
+                    for x_film in x_filme:
+                        iface.messageBar().pushMessage("Error",
+                                                       str(x_film),
+                                                       level=Qgis.Critical)
+                        for _untersuchdat_schacht in x_film.findall("Film", self.NS):
+
+                            _datei = _untersuchdat_schacht.findtext("Filmname", None, self.NS)
+                            iface.messageBar().pushMessage("Error",
+                                                           str(_datei),
+                                                           level=Qgis.Critical)
+                            #relativer pfad mit einfügen in datei
+                            ordner = _untersuchdat_schacht.findtext("Filmpfad", None, self.NS)
+                            if _datei is not None and self.ordner_bild is not None:
+                                filmdatei = os.path.join(self.ordner_video, _datei)
+                            else:
+                                filmdatei = None
+
+                            iface.messageBar().pushMessage("Error",
+                                                           str(filmdatei),
+                                                           level=Qgis.Critical)
+
+                            untersuchsch = _untersuchdat_schacht.findtext("/FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                            id = _untersuchdat_schacht.findtext("/FilmObjekte/FilmObjekt/Typ", None, self.NS)
+                            if id == '1':
+                                objekt = "Haltung"
+                            elif id == '2':
+                                objekt = "Anschlussleitung"
+                            elif id == '3':
+                                objekt = "Schacht"
+                            elif id == '4':
+                                objekt = "Bauwerk"
+
+
+                            yield Untersuchdat_daten(
+                                untersuchsch=untersuchsch,
+                                untersuchtag=untersuchtag,
+                                datei=filmdatei,
+                                objekt=objekt,
+                            )
+
+        for untersuchdat_daten in _iter():
+
+            params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
+                      'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: Untersuchdat_schacht_daten\n'
+                         f'params: {params}')
+
+            if not self.db_qkan.insertdata(
+                    tabnam="videos",
+                    mute_logger=False,
+                    parameters=params,
+            ):
+                del self.db_qkan
+                return
+
+        self.db_qkan.commit()
+
 
     def _auslaesse(self) -> None:
         def _iter() -> Iterator[Schacht]:
@@ -1648,6 +1763,7 @@ class ImportTask(Schadenstexte):
 
         # 1. Teil: Hier werden die Stammdaten zu den Haltungen in die Datenbank geschrieben
         for haltung_untersucht in _iter():
+
             # Wetter
             wetter = self.db_qkan.get_from_mapper(
                 haltung_untersucht.wetter,
@@ -1661,24 +1777,36 @@ class ImportTask(Schadenstexte):
 
             if (pdat := self.haltungsdaten.get(haltung_untersucht.haltnam, {})) == {}:
                 logger.warning(f'Untersuchte Haltung {haltung_untersucht.haltnam} fehlt in den Stammdaten')
-                continue
+                #continue
+                params = {'haltnam': haltung_untersucht.haltnam,
+                          'untersuchtag': haltung_untersucht.untersuchtag,
+                          'untersucher': haltung_untersucht.untersucher,
+                          'wetter': haltung_untersucht.wetter,
+                          'untersuchrichtung': haltung_untersucht.untersuchrichtung,
+                          'strasse': haltung_untersucht.strasse,
+                          'bewertungsart': haltung_untersucht.bewertungsart,
+                          'bewertungstag': haltung_untersucht.bewertungstag,
+                          'datenart': haltung_untersucht.datenart,
+                          'epsg': QKan.config.epsg, }
 
-            # Länge vorrangig aus Untersuchungsdaten, sonst aus Stammdaten (in pdat)
-            if haltung_untersucht.laenge is not None:
-                pdat['laenge'] = haltung_untersucht.laenge
+
+            else:
+                # Länge vorrangig aus Untersuchungsdaten, sonst aus Stammdaten (in pdat)
+                if haltung_untersucht.laenge is not None:
+                    pdat['laenge'] = haltung_untersucht.laenge
 
 
-            params = {'haltnam': haltung_untersucht.haltnam,
-                      'untersuchtag': haltung_untersucht.untersuchtag,
-                      'untersucher': haltung_untersucht.untersucher,
-                      'wetter': haltung_untersucht.wetter,
-                      'untersuchrichtung': haltung_untersucht.untersuchrichtung,
-                      'strasse': haltung_untersucht.strasse,
-                      'bewertungsart': haltung_untersucht.bewertungsart,
-                      'bewertungstag': haltung_untersucht.bewertungstag,
-                      'datenart': haltung_untersucht.datenart,
-                      'epsg': QKan.config.epsg,}\
-                     | pdat
+                params = {'haltnam': haltung_untersucht.haltnam,
+                          'untersuchtag': haltung_untersucht.untersuchtag,
+                          'untersucher': haltung_untersucht.untersucher,
+                          'wetter': haltung_untersucht.wetter,
+                          'untersuchrichtung': haltung_untersucht.untersuchrichtung,
+                          'strasse': haltung_untersucht.strasse,
+                          'bewertungsart': haltung_untersucht.bewertungsart,
+                          'bewertungstag': haltung_untersucht.bewertungstag,
+                          'datenart': haltung_untersucht.datenart,
+                          'epsg': QKan.config.epsg,}\
+                         | pdat
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen\n'
                          f'params: {params}')
@@ -1882,6 +2010,9 @@ class ImportTask(Schadenstexte):
 
         Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
         #self.db_qkan.setschadenstexte_haltungen()
+
+    def _untersuchdat_haltung_daten(self):
+        pass
 
 
     def _anschlussleitungen(self) -> None:
@@ -2155,16 +2286,22 @@ class ImportTask(Schadenstexte):
 
             if (pdat := self.anschlussdaten.get(anschlussleitung_untersucht.haltnam, {})) == {}:
                 logger.warning(f'Untersuchte Anschlussleitung {anschlussleitung_untersucht.haltnam} fehlt in den Stammdaten')
-                continue
-
-            params = {'haltnam': anschlussleitung_untersucht.haltnam,
-                      'untersuchtag': anschlussleitung_untersucht.untersuchtag,
-                      'untersucher': anschlussleitung_untersucht.untersucher,
-                      'wetter': wetter,
-                      'strasse': anschlussleitung_untersucht.strasse,
-                      'bewertungsart': anschlussleitung_untersucht.bewertungsart,
-                      'bewertungstag': anschlussleitung_untersucht.bewertungstag,}\
-            | pdat
+                params = {'haltnam': anschlussleitung_untersucht.haltnam,
+                          'untersuchtag': anschlussleitung_untersucht.untersuchtag,
+                          'untersucher': anschlussleitung_untersucht.untersucher,
+                          'wetter': wetter,
+                          'strasse': anschlussleitung_untersucht.strasse,
+                          'bewertungsart': anschlussleitung_untersucht.bewertungsart,
+                          'bewertungstag': anschlussleitung_untersucht.bewertungstag, }
+            else:
+                params = {'haltnam': anschlussleitung_untersucht.haltnam,
+                          'untersuchtag': anschlussleitung_untersucht.untersuchtag,
+                          'untersucher': anschlussleitung_untersucht.untersucher,
+                          'wetter': wetter,
+                          'strasse': anschlussleitung_untersucht.strasse,
+                          'bewertungsart': anschlussleitung_untersucht.bewertungsart,
+                          'bewertungstag': anschlussleitung_untersucht.bewertungstag,}\
+                | pdat
 
             if not self.db_qkan.insertdata(
                     tabnam="anschlussleitungen_untersucht",
@@ -2370,6 +2507,44 @@ class ImportTask(Schadenstexte):
                 return None
 
         self.db_qkan.commit()
+
+    def _schaechte_untersucht_geom(self):
+        sql = f"""
+                UPDATE schaechte_untersucht
+        		SET geop = (select schaechte.geop from schaechte where schaechte_untersucht.schnam =schaechte.schnam);
+                						"""
+        data = ()
+        try:
+            self.db_qkan.sql(sql, parameters=data)
+            self.db_qkan.commit()
+        except:
+            pass
+
+    def _haltungen_untersucht_geom(self):
+        sql = f"""
+                UPDATE haltungen_untersucht
+                SET geom = (select haltungen.geom from haltungen where haltungen_untersucht.haltnam =haltungen.haltnam);
+                    """
+        data = ()
+        try:
+            self.db_qkan.sql(sql, parameters=data)
+            self.db_qkan.commit()
+        except:
+            pass
+
+    def _anschluss_untersucht_geom(self):
+        sql = f"""
+                UPDATE anschlussleitungen_untersucht
+        		SET geom = (select anschlussleitungen.geom from anschlussleitungen where anschlussleitungen_untersucht.leitnam =anschlussleitungen.leitnam);
+                						"""
+        data = ()
+        try:
+            self.db_qkan.sql(sql, parameters=data)
+            self.db_qkan.commit()
+        except:
+            pass
+
+
 
     def _wehre(self) -> None:
         # Hier werden die Hydraulikdaten zu den Wehren in die Datenbank geschrieben.

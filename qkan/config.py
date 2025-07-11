@@ -822,6 +822,8 @@ class Config(ClassObject):
     max_loops: int = 1000
     mindestflaeche: float = 0.5
     mit_verschneidung: bool = True
+    fotopath: str = ""
+    videopath: str = ""
     # ---
     adapt: AdaptConfig = AdaptConfig()
     check_export: CheckExport = CheckExport()

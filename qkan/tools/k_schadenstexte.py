@@ -192,8 +192,7 @@ class Schadenstexte:
                   coalesce(laenge, 0) > 0.05 AND
                   uh.station IS NOT NULL AND
                   hu.geom IS NOT NULL AND
-                  abs(uh.station) < 10000 AND
-                  hu.untersuchrichtung IS NOT NULL
+                  abs(uh.station) < 10000 
             GROUP BY hu.haltnam, hu.untersuchtag, round(station, 3), uh.kuerzel
             ORDER BY id, station"""
 
