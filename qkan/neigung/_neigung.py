@@ -1,4 +1,4 @@
-from qgis.utils import iface, spatialite_connect
+from qgis.utils import iface
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
@@ -6,24 +6,16 @@ from qgis import processing
 
 
 import urllib.request
-import zipfile
 import os
 
-from qkan.database.qkan_utils import get_qkanlayer_attributes
-from typing import Dict, List, Optional
 
 from qgis.core import (
-    Qgis,
     QgsProject,
     QgsVectorLayer,
-    QgsDataSourceUri,
-    QgsFeatureRequest,
     QgsExpression,
     QgsExpressionContext,
     QgsExpressionContextUtils,
 )
-
-
 
 logger = get_logger("QKan.selection")
 

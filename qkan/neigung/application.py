@@ -1,29 +1,18 @@
 from qgis.gui import QgisInterface
-from qgis.core import QgsProject
-from PyQt5.QtWidgets import *
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
-from qgis.core import (
-	Qgis,
-	QgsProject,
-	QgsVectorLayer,
-	QgsDataSourceUri,
-)
 
 
 from qkan.utils import get_logger
 from qkan.database.qkan_utils import get_database_QKan
 logger = get_logger("QKan")
 
-from PyQt5.QtWidgets import QTableWidgetItem
-
 from ._neigung import Neigung
 from .application_dialog import NeigungDialog
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
-import os
 
 class Neigungs(QKanPlugin):
     def __init__(self, iface: QgisInterface):
@@ -31,10 +20,9 @@ class Neigungs(QKanPlugin):
 
         self.neigung_dlg = NeigungDialog(default_dir=self.default_dir, tr=self.tr)
 
-
     # noinspection PyPep8Naming
     def initGui(self) -> None:
-        icon_import = ":/plugins/qkan/selection/res/neigung.png"
+        icon_import = ":/plugins/qkan/neigung/res/icon_neigung.png"
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Neigungsklassen ermitteln"),

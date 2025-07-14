@@ -1,29 +1,17 @@
 from qgis.gui import QgisInterface
-from qgis.core import QgsProject
-from PyQt5.QtWidgets import *
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
-from qgis.core import (
-	Qgis,
-	QgsProject,
-	QgsVectorLayer,
-	QgsDataSourceUri,
-)
-
 
 from qkan.utils import get_logger
 from qkan.database.qkan_utils import get_database_QKan
 logger = get_logger("QKan")
-
-from PyQt5.QtWidgets import QTableWidgetItem
 
 from ._selection import Selection
 from .application_dialog import SelectionDialog
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
-import os
 
 class Selections(QKanPlugin):
     def __init__(self, iface: QgisInterface):
@@ -34,7 +22,7 @@ class Selections(QKanPlugin):
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
-        icon_import = ":/plugins/qkan/selection/res/selection.png"
+        icon_import = ":/plugins/qkan/selection/res/icon_selection.png"
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Selektion"),
