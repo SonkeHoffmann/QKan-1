@@ -118,8 +118,8 @@ class IsyPorter(QKanPlugin):
             QKan.config.project.file = self.import_dlg.tf_project.text()
             #QKan.config.xml.richt_choice = self.import_dlg.comboBox.currentText()
             QKan.config.xml.data_choice = self.import_dlg.comboBox_2.currentText()
-            QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text()
-            QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text()
+            QKan.config.fotopath = self.import_dlg.tf_ordnerbild.text()
+            QKan.config.videopath = self.import_dlg.tf_ordnervideo.text()
 
             QKan.config.xml.import_stamm = (
                 self.import_dlg.checkBox.isChecked()
@@ -180,8 +180,8 @@ class IsyPorter(QKanPlugin):
         """
         #QKan.config.xml.richt_choice = self.import_dlg.comboBox.currentText()
         QKan.config.xml.data_choice = self.import_dlg.comboBox_2.currentText()
-        QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text()
-        QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text()
+        QKan.config.fotopath = self.import_dlg.tf_ordnerbild.text()
+        QKan.config.videopath = self.import_dlg.tf_ordnervideo.text()
 
         self.log.info("Creating DB")
         with DBConnection(
@@ -207,8 +207,8 @@ class IsyPorter(QKanPlugin):
                 db_qkan,
                 QKan.config.xml.import_file,
                 QKan.config.xml.data_choice,
-                QKan.config.xml.ordner_bild,
-                QKan.config.xml.ordner_video)
+                QKan.config.fotopath,
+                QKan.config.videopath)
             imp.run()
             del imp
 

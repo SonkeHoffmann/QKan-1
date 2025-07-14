@@ -337,6 +337,8 @@ class DBConnection:
                     "pruefliste",
                     "reflist_zustand",
                     "info",
+                    "fotos",
+                    "videos",
                 ]
 
                 tablis = set(tablisgeom) | \
@@ -1109,6 +1111,24 @@ class DBConnection:
                         parameters[el] = None
 
             sqlnam = 'database_insertdata_untersuchdat_schacht'
+
+        elif tabnam == "videos":
+            parlis = [
+                "name",
+                "untersuchtag",
+                "objekt",
+                "datei",
+                "createdat",
+            ]
+            for el in parlis:
+                if param1.get(el, None) is None:
+                    if isinstance(parameters, tuple):
+                        for ds in parameters:
+                            ds[el] = None
+                    else:
+                        parameters[el] = None
+
+            sqlnam = 'database_insertdata_videos'
 
         elif tabnam == 'tezg':
             parlis = ['flnam', 'regenschreiber', 'schnam', 'befgrad', 'neigung',
