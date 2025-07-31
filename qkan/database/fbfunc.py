@@ -27,7 +27,7 @@ from typing import Any, List, Union
 
 import firebirdsql
 
-from .qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from ..utils import get_logger
 
 logger = get_logger("QKan")

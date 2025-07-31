@@ -235,6 +235,21 @@ class DatabaseConfig(ClassObject):
     authConfigId: str = 'qkan001'
 
 
+class SyncConfig(ClassObject):
+    ext: str = ""
+    check_schaechte: bool = True
+    check_haltungen: bool = True
+    check_haleitungen: bool = True
+    check_flaechen: bool = True
+    check_tezg: bool = True
+    check_linkfl: bool = True
+    check_schaechte_insp: bool = True
+    check_haltungen_insp: bool = True
+    check_haleitungen_insp: bool = True
+    check_showAttrTables: bool = True
+    protfile: str = ""
+
+
 class DynaConfig(ClassObject):
     autonummerierung: bool = False
     bef_choice: enums.BefChoice = enums.BefChoice.FLAECHEN
@@ -830,6 +845,7 @@ class Config(ClassObject):
     check_import: CheckImport = CheckImport()
     selections: SelectionConfig = SelectionConfig()
     database: DatabaseConfig = DatabaseConfig()
+    sync: SyncConfig = SyncConfig()
     dyna: DynaConfig = DynaConfig()
     swmm: SWMMConfig = SWMMConfig()
     he: HEConfig = HEConfig()

@@ -33,7 +33,7 @@ from qgis.core import Qgis, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
 from qkan import QKan
-from qkan.database.qkan_utils import get_qkanlayer_attributes
+from qkan.tools.qkan_utils import get_qkanlayer_attributes
 from qkan.database.sbfunc import SBConnection
 from . import plotter, slider as s
 
@@ -504,7 +504,7 @@ class GanglinienHE8:
         features = list(set(features))
         self.__log.debug("{} (Typ: {}) wurde ausgewählt.".format(features, layer_type))
         self.__iface.messageBar().pushMessage(
-            "Navigation", "Route wird berechnet...", level=Qgis.Info, duration=60
+            "Navigation", "Route wird berechnet...", level=Qgis.MessageLevel.Info, duration=60
         )
 
         route = find_route(self.__spatialite, features, layer_type)

@@ -134,8 +134,6 @@ Mit Hilfe der :ref:`Auswahltabelle<selectionTable>` kann die Bearbeitung
 auf Haltungen mit ausgewählten 
 Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt werden. 
 
-Ausführliche Erläuterung zu diesem Thema: :ref:`Anbindungen von Einzeleinleitern <createlinksw>`
-
 
 .. index:: Flächenanbindungen (Menü)
 .. _linkverbindunghaltungflaeche:
@@ -192,7 +190,7 @@ Mit Hilfe der :ref:`Auswahltabelle<selectionTable>` kann die Bearbeitung auf Fl�
 Haltungen mit ausgewählten Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt 
 werden. 
 
-Ausführliche Erläuterung zu diesem Thema: :ref:`createlinkfl`
+Ausführliche :ref:`Erläuterung<createlinkfl>` zu diesem Thema:
 
 
 .. index:: Berechnung von Oberflächenabflussparametern (Menü)

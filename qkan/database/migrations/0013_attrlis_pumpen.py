@@ -1,5 +1,5 @@
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 
 VERSION = "3.0.1"

@@ -20,7 +20,7 @@ from qgis.core import (
 logger = get_logger("QKan.selection")
 
 
-class Neigung:
+class NeigungTask:
     def __init__(self, base_url, zielordner_dmg, speicherort_dgm, db_qkan: DBConnection, cb, epsg):
         self.db_qkan = db_qkan
         self.base_url = base_url

@@ -34,7 +34,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 from qkan import enums
 from qkan.utils import get_logger
 

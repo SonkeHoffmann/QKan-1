@@ -50,7 +50,7 @@ class FloodanimationTask:
             "", "Flood-Animation wird erstellt. Bitte warten..."
         )
         status_message.layout().addWidget(self.progress_bar)
-        iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
         datenbank_qkan_template = os.path.join(QKan.template_dir, "qkan.sqlite")
         shutil.copyfile(datenbank_qkan_template, self.db_name)
@@ -254,7 +254,7 @@ class FloodanimationTask:
                     db.logger.error(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
                     iface.messageBar().pushMessage("Programmfehler",
                                                    f"Die Styledatei {qmlfile} konnte nicht gelesen werden!",
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
                     return False
 
             if self.velo_choice:
@@ -271,7 +271,7 @@ class FloodanimationTask:
                     db.logger.error(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
                     iface.messageBar().pushMessage("Programmfehler",
                                                    f"Die Styledatei {qmlfile} konnte nicht gelesen werden!",
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
                     return False
 
             canvas = iface.mapCanvas()
@@ -292,7 +292,7 @@ class FloodanimationTask:
                 iface.messageBar().pushMessage("Datenfehler", "Eine Ergebnistabelle enthält keine Zeitschritte. "
                                                               "Möglicherweise wurden bei der Ergebnisausgabe nicht "
                                                               "alle Zeitschrittausgaben aktiviert.",
-                                               level=Qgis.Warning)
+                                               level=Qgis.MessageLevel.Warning)
                 return False
 
             timeController.setTemporalExtents(timerange)
@@ -309,5 +309,5 @@ class FloodanimationTask:
             QgsProject.instance().addMapLayer(rlayer, False)
             QgsProject.instance().layerTreeRoot().insertChildNode(2, QgsLayerTreeLayer(rlayer))
 
-            iface.messageBar().pushMessage("Hinweis", 'Bitte Bedienfeld "Zeitsteuerung aktivieren"', level=Qgis.Info)
+            iface.messageBar().pushMessage("Hinweis", 'Bitte Bedienfeld "Zeitsteuerung aktivieren"', level=Qgis.MessageLevel.Info)
 

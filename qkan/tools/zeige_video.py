@@ -30,7 +30,7 @@ class ShowVideo(QDialog):
             from qkan.tools.videoplayer import Videoplayer
             if self.video_offset == 0:
                 iface.messageBar().pushMessage("Error", "Video offset = 0.00 s, bitte in der Attributtabelle prüfen!",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
             y = QgsProject.instance().readPath("./")
 
             file = self.filmname

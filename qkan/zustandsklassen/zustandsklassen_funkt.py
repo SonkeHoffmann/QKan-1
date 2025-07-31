@@ -4541,7 +4541,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -7553,7 +7553,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -10489,7 +10489,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 
 		for attr1 in db.fetchall():
@@ -14014,7 +14014,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 			untersuchhalt = attr1[0]
@@ -16616,7 +16616,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 			untersuchleitt = attr1[0]
@@ -19143,7 +19143,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Schächte konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -30179,7 +30179,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -30463,7 +30463,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -30747,7 +30747,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 			try:
@@ -31035,7 +31035,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -31300,7 +31300,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 
@@ -31565,7 +31565,7 @@ class Zustandsklassen_funkt:
 		except:
 			iface.messageBar().pushMessage("Error",
 										   "Die Klassifizierung der Haltungen/Leitungen konnte nicht ermittelt werden",
-										   level=Qgis.Critical)
+										   level=Qgis.MessageLevel.Critical)
 
 		for attr1 in db.fetchall():
 

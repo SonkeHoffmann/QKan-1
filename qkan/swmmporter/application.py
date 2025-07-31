@@ -26,7 +26,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, get_default_dir
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 
@@ -183,7 +183,7 @@ class SWMMPorter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler beim Import",
                     "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return
             else:
@@ -234,7 +234,7 @@ class SWMMPorter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im SWMM-Import",
                     f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
             check_cb = {}

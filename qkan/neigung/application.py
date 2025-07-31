@@ -1,30 +1,30 @@
 from qgis.gui import QgisInterface
-from qkan import QKan
+from qkan import QKan, get_default_dir
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
 
-
 from qkan.utils import get_logger
-from qkan.database.qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 logger = get_logger("QKan")
-
-from ._neigung import Neigung
-from .application_dialog import NeigungDialog
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 
-class Neigungs(QKanPlugin):
+from ._neigung import NeigungTask
+from .application_dialog import NeigungDialog
+
+class Neigung(QKanPlugin):
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
+        default_dir = get_default_dir()
 
-        self.neigung_dlg = NeigungDialog(default_dir=self.default_dir, tr=self.tr)
+        self.neigung_dlg = NeigungDialog(default_dir=default_dir, tr=self.tr)
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
-        icon_import = ":/plugins/qkan/neigung/res/icon_neigung.png"
+        icon_neigung = ":/plugins/qkan/neigung/res/icon_neigung.png"
         QKan.instance.add_action(
-            icon_import,
+            icon_neigung,
             text=self.tr("Neigungsklassen ermitteln"),
             callback=self.run,
             parent=self.iface.mainWindow(),
@@ -59,7 +59,7 @@ class Neigungs(QKanPlugin):
                 check_cb['cb1'] = self.neigung_dlg.radioButton.isChecked()
                 check_cb['cb2'] = self.neigung_dlg.radioButton_2.isChecked()
 
-                imp = Neigung(self.neigung_dlg.lineEdit_3.text(), self.neigung_dlg.lineEdit.text(), self.neigung_dlg.lineEdit_2.text(),
+                imp = NeigungTask(self.neigung_dlg.lineEdit_3.text(), self.neigung_dlg.lineEdit.text(), self.neigung_dlg.lineEdit_2.text(),
                     db_qkan, check_cb, self.neigung_dlg.lineEdit_4.text()
                     )
                 imp.run()

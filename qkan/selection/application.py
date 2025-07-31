@@ -4,7 +4,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
 
 from qkan.utils import get_logger
-from qkan.database.qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 logger = get_logger("QKan")
 
 from ._selection import Selection
@@ -13,7 +13,7 @@ from .application_dialog import SelectionDialog
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 
-class Selections(QKanPlugin):
+class Selection(QKanPlugin):
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
 

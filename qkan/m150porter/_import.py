@@ -504,7 +504,7 @@ class ImportTask(Schadenstexte):
             "", "Import aus M150 läuft. Bitte warten..."
         )
         status_message.layout().addWidget(self.progress_bar)
-        iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
         self._reftables()                                   ;self.progress_bar.setValue(5)
         self._init_mappers()

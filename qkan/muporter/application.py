@@ -9,7 +9,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, get_default_dir
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung, get_database_QKan
+from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 
@@ -237,7 +237,7 @@ class MuPorter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler beim Import",
                     "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return
             else:
@@ -259,7 +259,7 @@ class MuPorter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im Mike+-Import",
                     f"QKan-Datenbank {QKan.config.mu.database} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
 

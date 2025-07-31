@@ -1,31 +1,17 @@
 import os
-from typing import TYPE_CHECKING, Optional
-from typing import Callable, Optional
-import webbrowser
-from qgis.gui import QgisInterface
+from typing import Callable, Optional, TYPE_CHECKING
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
-    QCheckBox,
-    QDialogButtonBox,
     QFileDialog,
-    QGroupBox,
     QLineEdit,
     QPushButton,
     QWidget,
-    QTextBrowser,
     QDialog,
-    QButtonGroup,
     QRadioButton,
 )
 
-
-
 if TYPE_CHECKING:
     from qkan.tools.application import QKanTools
-
-NEIGUNG_CLASS, _ = uic.loadUiType(
-    os.path.join(os.path.dirname(__file__), ".", "res", "neigung.ui")
-)
 
 class _Dialog(QDialog):
     def __init__(
@@ -37,9 +23,13 @@ class _Dialog(QDialog):
         # noinspection PyArgumentList
         super().__init__(parent)
         self.setupUi(self)
-        self.default_dir = str(default_dir)
+        self.default_dir = default_dir
         self.tr = tr
 
+
+NEIGUNG_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "res", "neigung.ui")
+)
 
 class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
     #button_box: QDialogButtonBox

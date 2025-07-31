@@ -20,7 +20,7 @@ from qgis.core import Qgis, QgsMessageLog
 from qgis.gui import QgisInterface
 
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import checknames, fehlermeldung
+from qkan.tools.qkan_utils import checknames, fehlermeldung
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.createunbeffl.k_unbef")
@@ -60,7 +60,7 @@ def create_unpaved_areas(
         "Info", "Erzeugung von unbefestigten Flächen " "in Arbeit. Bitte warten."
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # status_message.setText("Erzeugung von unbefestigten Flächen ist in Arbeit.")
     progress_bar.setValue(1)
@@ -215,12 +215,12 @@ def create_unpaved_areas(
 
     iface.mainWindow().statusBar().clearMessage()
     iface.messageBar().pushMessage(
-        "Information", "Restflächen sind erstellt!", level=Qgis.Info
+        "Information", "Restflächen sind erstellt!", level=Qgis.MessageLevel.Info
     )
     # noinspection PyArgumentList
-    QgsMessageLog.logMessage(message="\nRestflächen sind erstellt!", level=Qgis.Info)
+    QgsMessageLog.logMessage(message="\nRestflächen sind erstellt!", level=Qgis.MessageLevel.Info)
 
     progress_bar.setValue(100)
     status_message.setText("Erzeugung von unbefestigten Flächen abgeschlossen.")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
     return True

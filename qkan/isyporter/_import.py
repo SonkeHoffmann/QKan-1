@@ -10,7 +10,7 @@ from qgis.utils import iface
 from qkan import QKan
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 from qkan.tools.k_schadenstexte import Schadenstexte
 
@@ -1209,17 +1209,17 @@ class ImportTask(Schadenstexte):
                     )
                     iface.messageBar().pushMessage("Error",
                                                    str(x_filme),
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
                     for x_film in x_filme:
                         iface.messageBar().pushMessage("Error",
                                                        str(x_film),
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                         for _untersuchdat_schacht in x_film.findall("Film", self.NS):
 
                             _datei = _untersuchdat_schacht.findtext("Filmname", None, self.NS)
                             iface.messageBar().pushMessage("Error",
                                                            str(_datei),
-                                                           level=Qgis.Critical)
+                                                           level=Qgis.MessageLevel.Critical)
                             #relativer pfad mit einfügen in datei
                             ordner = _untersuchdat_schacht.findtext("Filmpfad", None, self.NS)
                             if _datei is not None and self.ordner_bild is not None:
@@ -1229,7 +1229,7 @@ class ImportTask(Schadenstexte):
 
                             iface.messageBar().pushMessage("Error",
                                                            str(filmdatei),
-                                                           level=Qgis.Critical)
+                                                           level=Qgis.MessageLevel.Critical)
 
                             untersuchsch = _untersuchdat_schacht.findtext("/FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
                             id = _untersuchdat_schacht.findtext("/FilmObjekte/FilmObjekt/Typ", None, self.NS)

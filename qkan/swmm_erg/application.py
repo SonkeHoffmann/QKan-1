@@ -1,21 +1,15 @@
-
-from pathlib import Path
-
-from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
-from qgis.utils import pluginDirectory
 
 from qkan import QKan, get_default_dir
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 from qkan.plugin import QKanPlugin
-from qkan.tools.k_qgsadapt import qgsadapt
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 from ._SWMM_erg import ImportTask
 from .application_dialog import ImportDialog
-from ..utils import get_logger
+from ..utils import get_logger, QkanAbortError
 
 logger = get_logger("QKan.importswmm")
 
@@ -67,12 +61,7 @@ class SWMMErg(QKanPlugin):
             QKan.config.save()
 
             if not self.import_dlg.tf_import.text():
-                fehlermeldung("Fehler beim Import", "Es wurde keine Datei ausgewählt!")
-                self.iface.messageBar().pushMessage(
-                    "Fehler beim Import",
-                    "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.Critical,
-                )
+                logger.error_user("Es wurde keine Ergebnisdatei ausgewählt!")
                 return
             else:
 
@@ -94,10 +83,10 @@ class SWMMErg(QKanPlugin):
         get_database_QKan()
         database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
         if not database_qkan:
-            logger.error(
+            logger.error_code(
                 "selection.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
             )
-            return
+            raise QkanAbortError
 
         with DBConnection(
                 dbname=database_qkan, epsg=epsg

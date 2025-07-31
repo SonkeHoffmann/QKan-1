@@ -17,14 +17,14 @@ from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.utils import spatialite_connect, pluginDirectory
 
 from qkan import QKan, enums
-from .qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 import yaml
 
 __author__ = "Joerg Hoettges"
 __date__ = "November 2024"
 __copyright__ = "(C) 2016-2024, Joerg Hoettges"
 
-from qkan.utils import get_logger, QkanAbortError
+from qkan.utils import get_logger, QkanAbortError, QkanDbError
 
 logger = get_logger("QKan.dbfunc")
 
@@ -130,7 +130,8 @@ class DBConnection:
         self._disconnect()
 
     def loadmodule(self, module) -> None:
-        """Loads module specific sqls"""
+        """Lädt Modul spezifische SQL-Statements. Kann beliebig oft aufgerufen werden, da
+        geprüft wird, ob ein Modul schon geladen wurde"""
 
         self.module = module
         # Bei Wechsel des Datenbanktyps QKan.sqls zurücksetzen
@@ -146,8 +147,14 @@ class DBConnection:
                 sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgres.yml')
             else:
                 logger.error_code(f'{self.__class__.__name__}: Datenbanktyp {QKan.dbtype} nicht zulässig!')
-            with open(sqlfilename) as fr:
-                QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+
+            try:
+                with open(sqlfilename) as fr:
+                    QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+            except:
+                logger.error_code(f'{self.__class__.__name__}: '
+                                  f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden')
+                raise QkanAbortError
 
         # set sqls for active module
         self.sqls |= QKan.sqls[module]
@@ -240,7 +247,7 @@ class DBConnection:
                 QKan.instance.iface.messageBar().pushMessage(
                     "Information",
                     "SpatiaLite-Datenbank wird erstellt. Bitte warten...",
-                    level=Qgis.Info,
+                    level=Qgis.MessageLevel.Info,
                 )
 
                 datenbank_qkan_template = os.path.join(QKan.template_dir, "qkan.sqlite")
@@ -253,7 +260,7 @@ class DBConnection:
                     QKan.instance.iface.messageBar().pushMessage(
                         "Information",
                         "SpatiaLite-Datenbank ist erstellt!",
-                        level=Qgis.Info,
+                        level=Qgis.MessageLevel.Info,
                     )
                 except BaseException as err:
                     logger.debug(f"Datenbank ist nicht vorhanden: {self.dbname}")
@@ -644,14 +651,21 @@ class DBConnection:
         else:
             self.sqltext = self.sql_txt
 
-        erg = self.sql(
-            sql=self.sqltext,
-            stmt_category=stmt_category,
-            parameters=parameters,
-            many=many,
-            mute_logger=mute_logger,
-            ignore=ignore
-        )
+        try:
+            erg = self.sql(
+                sql=self.sqltext,
+                stmt_category=stmt_category,
+                parameters=parameters,
+                many=many,
+                mute_logger=mute_logger,
+                ignore=ignore
+            )
+        except:
+            logger.error_code(
+                f'{self.__class__.__name__}: \n'
+                f'SQL-Name: {sqlnam}'
+            )
+            raise QkanDbError
         return erg
 
     def sql(self,
@@ -686,7 +700,7 @@ class DBConnection:
                     raise ValueError(f"{err}:\nTyp von parameters: {type(parameters)}")
                 except BaseException as err:
                     logger.error(f"{err}:\n {sql=}\n{parameters=}")
-                    raise ValueError(f"{err}:\n {sql=}\n{parameters=}")
+                    raise QkanDbError(f"{err}:\n {sql=}\n{parameters=}")
 
             if mute_logger:
                 return True

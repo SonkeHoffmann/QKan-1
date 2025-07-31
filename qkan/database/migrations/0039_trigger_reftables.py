@@ -1,6 +1,6 @@
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
-from qkan.database.qkan_utils import loadlayer
+from qkan.tools.qkan_utils import loadlayer
 from qgis.utils import pluginDirectory
 from qkan import QKan, enums
 import os

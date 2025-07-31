@@ -3,22 +3,16 @@ from typing import Callable, List, Optional
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
-    QCheckBox,
     QDialog,
     QFileDialog,
     QLineEdit,
-    QListWidget,
-    QListWidgetItem,
     QPushButton,
-    QRadioButton,
     QWidget,
     QDialogButtonBox,
 )
-from qgis.core import QgsCoordinateReferenceSystem
 from qgis.gui import QgsProjectionSelectionWidget
 
 from qkan import QKan, list_selected_items
-from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.swmm_erg.application_dialog")

@@ -6,7 +6,7 @@
 # flaechen.abflusstyp
 from typing import Dict, Optional
 
-from .qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 
 
 def abflusstypen(simprog: str) -> Optional[Dict[str, int]]:

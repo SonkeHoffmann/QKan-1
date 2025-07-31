@@ -60,7 +60,7 @@ class FloodTools(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler:",
                     "Es wurde kein Verzeichnis ausgewählt!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
             else:

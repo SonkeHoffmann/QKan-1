@@ -4,7 +4,7 @@ from datetime import datetime
 from qkan.utils import get_logger
 from math import pi, floor, ceil
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import round_up, formf
+from qkan.tools.qkan_utils import round_up, formf
 import time
 
 from qgis.core import (
@@ -7253,7 +7253,7 @@ class Subkans_funkt:
             sl = attr[28]
             # iface.messageBar().pushMessage("Error",
             #                                str(sl),
-            #                                level=Qgis.Critical)
+            #                                level=Qgis.MessageLevel.Critical)
             sg=0
             kg=0
             stg=float(attr[30])

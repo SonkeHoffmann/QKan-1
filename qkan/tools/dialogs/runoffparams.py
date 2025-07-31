@@ -14,7 +14,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qkan import list_selected_items
-from qkan.database.qkan_utils import sqlconditions
+from qkan.tools.qkan_utils import sqlconditions
 
 from . import QKanDBDialog, logger
 

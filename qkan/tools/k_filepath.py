@@ -1,14 +1,9 @@
 import os
 
-from qgis.utils import spatialite_connect
-
 from qkan.utils import get_logger
 
 from qgis.core import (
     Qgis,
-    QgsProject,
-    QgsVectorLayer,
-    QgsDataSourceUri,
 )
 from qgis.utils import iface, spatialite_connect
 
@@ -124,7 +119,7 @@ def setfilepath(
 
             iface.messageBar().pushMessage("Error",
                                            "Name: " + str(bild_nam),
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
 
             for root, dirs, files in os.walk(fotopath_2):
                 for file in files:

@@ -19,7 +19,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import eval_node_types, fehlermeldung, fzahl
+from qkan.tools.qkan_utils import eval_node_types, fehlermeldung, fzahl
 from qkan.tools.k_qgsadapt import qgsadapt
 from qkan.utils import get_logger
 
@@ -250,11 +250,11 @@ def import_kanaldaten(
 
     QKan.instance.iface.mainWindow().statusBar().clearMessage()
     QKan.instance.iface.messageBar().pushMessage(
-        "Information", "Datenimport ist fertig!", level=Qgis.Info
+        "Information", "Datenimport ist fertig!", level=Qgis.MessageLevel.Info
     )
     # noinspection PyArgumentList
     QgsMessageLog.logMessage(
-        message="\nFertig: Datenimport erfolgreich!", level=Qgis.Info
+        message="\nFertig: Datenimport erfolgreich!", level=Qgis.MessageLevel.Info
     )
 
     return True

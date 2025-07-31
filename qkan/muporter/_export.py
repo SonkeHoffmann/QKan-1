@@ -5,7 +5,7 @@ from qgis.core import Qgis
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import checknames, fehlermeldung, fortschritt, meldung
+from qkan.tools.qkan_utils import checknames, fehlermeldung, fortschritt, meldung
 from qkan.linkflaechen.updatelinks import updatelinkfl
 from qkan.utils import get_logger
 
@@ -39,7 +39,7 @@ class ExportTask:
             "", "Export in Arbeit. Bitte warten..."
         )
         status_message.layout().addWidget(self.progress_bar)
-        iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
         # Export
         result = all(
@@ -69,7 +69,7 @@ class ExportTask:
         # fortschritt("Ende...", 1)
         # self.progress_bar.setValue(100)
         # status_message.setText("Datenexport abgeschlossen.")
-        # status_message.setLevel(Qgis.Success)
+        # status_message.setLevel(Qgis.MessageLevel.Success)
 
     def _schaechte(self) -> bool:
         """Export Schächte"""

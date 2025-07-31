@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/plugins/qkan/sync" >
+        <file>res/icon_adjust.png</file>
+        <file>res/icon_compare.png</file>
+    </qresource>
+</RCC>

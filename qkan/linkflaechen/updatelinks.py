@@ -25,7 +25,7 @@ __date__ = "February 2018"
 __copyright__ = "(C) 2018, Joerg Hoettges"
 
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import check_flaechenbilanz, checknames, fortschritt
+from qkan.tools.qkan_utils import check_flaechenbilanz, checknames, fortschritt
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.linkflaechen.updatelinks")
@@ -67,7 +67,7 @@ def updatelinkfl(
     # status_message = iface.messageBar().createMessage("",
     # "Bereinigung Flächenverknüpfungen in Arbeit. Bitte warten.")
     # status_message.layout().addWidget(progress_bar)
-    # iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    # iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # progress_bar.setValue(1)
 
@@ -189,7 +189,7 @@ def updatelinksw(
     # status_message = iface.messageBar().createMessage("",
     # "Bereinigung Einzeleinleiter-Verknüpfungen in Arbeit. Bitte warten.")
     # status_message.layout().addWidget(progress_bar)
-    # iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    # iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # progress_bar.setValue(1)
 
@@ -274,7 +274,7 @@ def updatelinksw(
     fortschritt("Ende...", 1)
     # progress_bar.setValue(100)
     # status_message.setText("Bereinigung Einzeleinleiter-Verknüpfungen abgeschlossen.")
-    # status_message.setLevel(Qgis.Success)
+    # status_message.setLevel(Qgis.MessageLevel.Success)
 
     return True
 
@@ -363,6 +363,6 @@ def updatelinkageb(
     fortschritt("Ende...", 1)
     # progress_bar.setValue(100)
     # status_message.setText("Bereinigung Aussengebiete-Verknüpfungen abgeschlossen.")
-    # status_message.setLevel(Qgis.Success)
+    # status_message.setLevel(Qgis.MessageLevel.Success)
 
     return True

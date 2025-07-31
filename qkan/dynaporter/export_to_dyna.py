@@ -12,7 +12,7 @@ from qgis.gui import QgisInterface
 
 from qkan import enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung, formf, fortschritt, meldung
+from qkan.tools.qkan_utils import fehlermeldung, formf, fortschritt, meldung
 from qkan.linkflaechen.updatelinks import updatelinkfl, updatelinksw
 from qkan.utils import get_logger, QkanAbortError
 
@@ -688,7 +688,7 @@ def export_kanaldaten(
         "", "Export in Arbeit. Bitte warten."
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # Aktualisierung der Verknüpfungen
     if not updatelinkfl(db_qkan, fangradius):
@@ -1275,5 +1275,5 @@ def export_kanaldaten(
     fortschritt("Ende...", 1)
     progress_bar.setValue(100)
     status_message.setText("Datenexport abgeschlossen.")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
     return True

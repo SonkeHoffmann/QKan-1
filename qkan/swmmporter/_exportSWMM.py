@@ -12,7 +12,7 @@ from qgis.utils import iface
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.exportswmm")
@@ -167,7 +167,7 @@ class ExportTask:
         #    "", "Export in Arbeit. Bitte warten..."
         #)
         #status_message.layout().addWidget(progress_bar)
-        #iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        #iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
 
         # Verbindung zur Spatialite-Datenbank mit den Kanaldaten

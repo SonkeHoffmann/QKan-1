@@ -6,7 +6,7 @@ from fnmatch import fnmatch
 from qkan import QKan
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.core import Qgis
 from qgis.utils import iface
@@ -333,7 +333,7 @@ class ImportTask:
             "", "Import aus M145 läuft. Bitte warten..."
         )
         status_message.layout().addWidget(self.progress_bar)
-        iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
         self._reftables()                                   ;self.progress_bar.setValue(5)
         self._init_mappers()
@@ -1375,7 +1375,7 @@ class ImportTask:
 
                 iface.messageBar().pushMessage("Error",
                                                str(i),
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
 
                 #coord = i.find('d:{http://www.opengis.net/gml/3.2}pos')
 
@@ -1388,7 +1388,7 @@ class ImportTask:
                 if coord is not None:
                     iface.messageBar().pushMessage("Error",
                                                    str(coord),
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
 
                     l = list(coord.text.split(" "))
                     xschob = float(l[0])
@@ -1403,7 +1403,7 @@ class ImportTask:
 
         iface.messageBar().pushMessage("Error",
                                        str(list),
-                                       level=Qgis.Critical)
+                                       level=Qgis.MessageLevel.Critical)
 
         for line in list:
             #line_tokens = line.split(',')

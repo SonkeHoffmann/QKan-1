@@ -25,7 +25,7 @@ __copyright__ = "(C) 2020, Joerg Hoettges"
 from qgis.core import QgsProject
 
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.tools.k_dbAdapt")

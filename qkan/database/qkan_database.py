@@ -34,7 +34,7 @@ from qgis.core import Qgis, QgsProject
 from qgis.utils import spatialite_connect, pluginDirectory
 
 from qkan import QKan
-from .qkan_utils import fehlermeldung, fortschritt, meldung
+from qkan.tools.qkan_utils import fehlermeldung, fortschritt, meldung
 from ..utils import get_logger
 
 logger = get_logger("QKan")
@@ -1808,7 +1808,7 @@ def test() -> None:
     cursl.execute(sql)
 
     iface.messageBar().pushMessage(
-        "Information", "SpatiaLite-Datenbank ist erstellt!", level=Qgis.Info
+        "Information", "SpatiaLite-Datenbank ist erstellt!", level=Qgis.MessageLevel.Info
     )
 
     createdbtables(consl, cursl, version="1.0.0")

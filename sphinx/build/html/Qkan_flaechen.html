@@ -23,7 +23,7 @@
     <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
     <link rel="search" title="Suche" href="search.html" />
     <link rel="next" title="Daten" href="QKan_Daten.html" />
-    <link rel="prev" title="FAQ" href="QKan_faq.html" /> 
+    <link rel="prev" title="Datenaustausch" href="QKan_Datenaustausch.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,6 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Funktionen</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="QKan_Datenaustausch.html">Datenaustausch</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Arbeiten mit Flächen</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#verarbeitung-von-befestigten-und-unbefestigten-flachen">Verarbeitung von befestigten und unbefestigten Flächen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#grundprinzip">Grundprinzip</a></li>
@@ -74,6 +75,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#verbindungslinien-bearbeiten">Verbindungslinien bearbeiten</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#erzeugung-von-anbindungen-zwischen-einzeleinleitern-und-haltungen">Erzeugung von Anbindungen zwischen Einzeleinleitern und Haltungen</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
@@ -170,7 +172,7 @@ eines oder mehrere ausgewählte Teilgebiete beschränkt werden kann.</p>
 <h3>Erstellung eines Teilgebietes<a class="headerlink" href="#erstellung-eines-teilgebietes" title="Link to this heading"></a></h3>
 <p>Ein Teilgebiet kann leicht aus <a class="reference internal" href="#linkhaltungsflaechen"><span class="std std-ref">Haltungsflächen</span></a> erzeugt werden. Dazu müssen alle Haltungsflächen auf dem
 gleichnamigen Layer ausgewählt werden, welche ein Teilgebiet ergeben sollen und über <span class="guilabel">Bearbeiten</span> → <span class="guilabel">Objekte kopieren</span>
-kopiert werden. Anschließend können diese auf dem Layer „Teilgebiete“ eingefügt werden, wenn dieser sich im <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungsmodus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a>
+kopiert werden. Anschließend können diese auf dem Layer „Teilgebiete“ eingefügt werden, wenn dieser sich im <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungs_modus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a>
 <span class="guilabel">Bearbeitungsmodus</span> befindet. Als erstes müssen nun die eingefügten Flächen mit <a class="reference internal" href="_images/Tool_layeraenderungen_speichern.png"><img alt="Tool_layeraenderungen_speichern" src="_images/Tool_layeraenderungen_speichern.png" style="width: 1.25em;" /></a>
 <span class="guilabel">Layeränderungen speichern</span> gespeichert werden, damit sie im Folgenden mit <a class="reference internal" href="_images/Tool_objekte_verschmelzen.png"><img alt="Tool_objekte_verschmelzen" src="_images/Tool_objekte_verschmelzen.png" style="width: 1.25em;" /></a>
 <span class="guilabel">Gewählte Objekte verschmelzen</span> zusammen gefasst werden können. In der Attribut-Tabelle kann das Teilgebiet in der Spalte
@@ -202,26 +204,13 @@ Die nachfolgend erläuterten Schritte dienen der Datenvorbereitung.</p>
 </div></blockquote>
 <section id="markierung-von-transporthaltungen">
 <span id="linktransporthaltungen"></span><h3>Markierung von Transporthaltungen<a class="headerlink" href="#markierung-von-transporthaltungen" title="Link to this heading"></a></h3>
-<p>Die Markierung erfolgt hier indirekt über die Zuordnung einer entsprechenden Entwässerungsart: In der
-entsprechenden Referenztabelle, die in der Layerkontrolle in der Gruppe „Referenztabellen“ zu finden ist,
-sind eigene Datensätze für Transporthaltungen enthalten, die in der Spalte „ohne RW-Zufluss“ den Wert 1 haben sollen
-bzw. das Häkchen gesetzt sein soll. Für betreffenden Haltungen muss nun eine dieser Entwässerungsarten gesetzt werden.
-Dazu sollen alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist. Das sind zum einen
-Transporthaltungen aber auch kurze Verbindungs-Haltungen in Kreuzungsbereichen oder ähnlichem, denen im Folgenden
-keine Flächen zugeordnet werden sollen (siehe Bild unten).</p>
-<p>Sind alle Flächen ausgewählt, kann mit <span class="guilabel">F6</span> die Attributtabelle geöffnet werden und der
-<a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungsmodus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a> <span class="guilabel">Bearbeitungsmodus</span> eingeschalten werden. Es empfiehlt sich, nur die
-ausgewählten Datensätze anzeigen zu lassen. Dazu kann unten links in der Schaltfläche
-<span class="guilabel">Alle gewählten Objekte anzeigen</span> ausgewählt werden (roter Kasten links, siehe Bild unten).</p>
-<p>Um Tippfehler beim nächsten Schritt zu vermeiden, sollte zunächst einen Datensatz in der Formularansicht bearbeitet
-werden. Dazu dient die zweiten Schaltfläche rechts unten (roter Kasten rechts, siehe Bild unten).</p>
-<img alt="_images/liste_gewaehlte_haltungen.png" src="_images/liste_gewaehlte_haltungen.png" />
-<p>Nun wird als Entwässerungssystem eine der nicht angeschlossenen Arten, z. B. „MW nicht angeschlossen“ gewählt.
-Anschließend kann wieder in die Listen-Ansicht gewechselt werden.
-Mit einem Rechtsklick auf die geänderte Zelle kann der Zellinhalt kopiert werden.
-Dann kann in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte <span class="guilabel">Entwässerungssystem</span>
-gewählt werden. In das Formelfenster wird der kopierte Zellinhalt <strong>mit Anführungsstrichen</strong> eingefügt und mit
-<span class="guilabel">Gewählte aktualisieren</span> werden alle ausgewählten Haltungen entsprechend angepasst.</p>
+<p>Diese Markierung geschieht über das Attribut „hat RW-Anschlüsse“ der Haltungsdaten.
+Hierfür muss der Layer „Haltungen“ ausgewählt und im <span class="guilabel">Bearbeitungsmodus</span> <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungs_modus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a> sein.
+Es sollten nun alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist (z.B. Haltungen die „nur“ zum Auslauf führen; kurze Haltungen in Kreuzungsbereichen etc.).
+Anschließend können die gewählten Haltungen in der Attributtabelle über den Filter <span class="guilabel">Alle gewählten Objekte anzeigen</span> (siehe Bild unten) angezeigt werden.
+Der Status „hat RW-Anschlüsse“ muss nun für diese Haltungen von 1 (True) auf 0 (False) geändert werden. Dazu muss in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte
+<span class="guilabel">hat RW-Anschlüsse</span> gewählt werden. Im Formelfenster wird 0 eingetragen und mit <span class="guilabel">Gewählte aktualisieren</span> werden alle ausgewählten Haltungen entsprechend
+angepasst.</p>
 <img alt="_images/liste_gewaehlte_aktualisieren.png" src="_images/liste_gewaehlte_aktualisieren.png" />
 <p>Nun können die Änderungen gespeichert, der Bearbeitungsmodus ausgeschalten und die Auswahl aufgehoben werden.</p>
 </section>
@@ -291,7 +280,7 @@ erstellen</span>. Die Zuordnung sollte anschließend visuell überprüft werden.
 <section id="verbindungslinien-bearbeiten">
 <h3>Verbindungslinien bearbeiten<a class="headerlink" href="#verbindungslinien-bearbeiten" title="Link to this heading"></a></h3>
 <p>Gibt es unerwünschte Zuordnungen von Flächen zu Haltungen können diese leicht manuell gelöscht oder verschoben werden. Ist der Layer, auf
-dem die Verbindungslinien liegen im <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungsmodus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a> <span class="guilabel">Bearbeitungsmodus</span>, kann das <a class="reference internal" href="_images/Tool_stuetzpunkt_werkzeug.png"><img alt="Tool_stuetzpunktwerkzeug" src="_images/Tool_stuetzpunkt_werkzeug.png" style="width: 1.25em;" /></a>
+dem die Verbindungslinien liegen im <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungs_modus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a> <span class="guilabel">Bearbeitungsmodus</span>, kann das <a class="reference internal" href="_images/Tool_stuetzpunkt_werkzeug.png"><img alt="Tool_stuetzpunktwerkzeug" src="_images/Tool_stuetzpunkt_werkzeug.png" style="width: 1.25em;" /></a>
 <span class="guilabel">Stützpunktwerkzeug</span> ausgewählt werden. Damit die Bearbeitung funktioniert ist es wichtig, dass das
 <a class="reference internal" href="_images/Tool_topologisches_editieren.png"><img alt="Tool_topologisches_editieren" src="_images/Tool_topologisches_editieren.png" style="width: 1.25em;" /></a> <span class="guilabel">topoligisches editieren Werkzeug</span> deaktiviert ist. Um eine Stützstelle zu ändern, muss nach
 Aktivierung des <a class="reference internal" href="_images/Tool_stuetzpunkt_werkzeug.png"><img alt="Tool_stuetzpunktwerkzeug" src="_images/Tool_stuetzpunkt_werkzeug.png" style="width: 1.25em;" /></a> <span class="guilabel">Stützpunktwerkzeug</span> die zu bearbeitende Verbindungslinien mit Rechtsklick fixiert
@@ -301,13 +290,19 @@ sollte. Nach Klick auf die Haltung sollte die geänderte Verbindungslinie auf de
 durch einen erneuten Rechtsklick auf die gewählt Linie aufgehoben werden.</p>
 </section>
 </section>
+<section id="erzeugung-von-anbindungen-zwischen-einzeleinleitern-und-haltungen">
+<h2>Erzeugung von Anbindungen zwischen Einzeleinleitern und Haltungen<a class="headerlink" href="#erzeugung-von-anbindungen-zwischen-einzeleinleitern-und-haltungen" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>(Dieses Kapitel muss noch erstellt werden)</p>
+</div></blockquote>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="QKan_faq.html" class="btn btn-neutral float-left" title="FAQ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="QKan_Datenaustausch.html" class="btn btn-neutral float-left" title="Datenaustausch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
         <a href="QKan_Daten.html" class="btn btn-neutral float-right" title="Daten" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

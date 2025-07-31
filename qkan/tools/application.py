@@ -13,7 +13,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums, list_selected_items
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import (
+from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_database_QKan,
     get_editable_layers,
@@ -252,7 +252,7 @@ class QKanTools(QKanPlugin):
             self.iface.messageBar().pushMessage(
             "Information",
             "Projektdatei ist angepasst und muss neu geladen werden!",
-            level=Qgis.Info,
+            level=Qgis.MessageLevel.Info,
             )
 
             # Importiertes Projekt laden

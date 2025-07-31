@@ -8,7 +8,7 @@ from qgis.gui import QgsProjectionSelectionWidget
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.tools.k_qgsadapt import qgsadapt
 from qkan.utils import get_logger
 from . import QKanDBDialog, QKanProjectDialog

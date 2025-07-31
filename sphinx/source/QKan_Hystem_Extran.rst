@@ -59,8 +59,6 @@ Tabelle zur Auswahl der zu importierenden Daten
 Mit Hilfe der :ref:`Auswahltabelle<selectionTable>` kann der Import auf bestimmte Datentabellen des Kanalnetzes, bestimmte Flächen 
 oder Referenztabellen beschränkt werden.
 
-Ausführliche Erläuterung zu diesem Thema: :ref:`Import aus HYSTEM-EXTRAN <datenaustimporthe>`
-
 
 .. index:: Export nach HYSTEM-EXTRAN (Menü)
 

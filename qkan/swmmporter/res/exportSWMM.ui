@@ -629,7 +629,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QCheckBox" name="cb_selectedTgbs">
+  <widget class="QCheckBox" name="cb_teilgebiete">
    <property name="geometry">
     <rect>
      <x>30</x>

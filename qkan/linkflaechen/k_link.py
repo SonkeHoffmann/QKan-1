@@ -19,7 +19,7 @@ from qgis.gui import QgisInterface
 
 from qkan import enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import check_flaechenbilanz, checknames, fehlermeldung
+from qkan.tools.qkan_utils import check_flaechenbilanz, checknames, fehlermeldung
 from qkan.linkflaechen.updatelinks import updatelinkfl, updatelinksw
 from qkan.utils import get_logger
 
@@ -90,7 +90,7 @@ def createlinkfl(
         "Verknüpfungen zwischen Flächen und Haltungen werden hergestellt. Bitte warten...",
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # MakeValid auf Tabellen "flaechen" und "tezg".
     if flaechen_bereinigen:
@@ -395,14 +395,14 @@ def createlinkfl(
 
     progress_bar.setValue(100)
     status_message.setText("Fertig!")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
 
     # Karte aktualisieren
     iface.mapCanvas().refreshAllLayers()
 
     # iface.mainWindow().statusBar().clearMessage()
-    # iface.messageBar().pushMessage("Information", "Verknüpfungen sind erstellt!", level=Qgis.Info)
-    QgsMessageLog.logMessage(message="\nVerknüpfungen sind erstellt!", level=Qgis.Info)
+    # iface.messageBar().pushMessage("Information", "Verknüpfungen sind erstellt!", level=Qgis.MessageLevel.Info)
+    QgsMessageLog.logMessage(message="\nVerknüpfungen sind erstellt!", level=Qgis.MessageLevel.Info)
 
     return True
 
@@ -447,7 +447,7 @@ def createlinksw(
         "Verknüpfungen zwischen Einleitpunkten und Haltungen werden hergestellt. Bitte warten...",
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # Aktualisierung des logischen Cache
 
@@ -556,15 +556,15 @@ def createlinksw(
 
     progress_bar.setValue(100)
     status_message.setText("Fertig!")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
 
     # Karte aktualisieren
     iface.mapCanvas().refreshAllLayers()
 
     # iface.mainWindow().statusBar().clearMessage()
-    # iface.messageBar().pushMessage("Information", "Verknüpfungen sind erstellt!", level=Qgis.Info)
+    # iface.messageBar().pushMessage("Information", "Verknüpfungen sind erstellt!", level=Qgis.MessageLevel.Info)
     # noinspection PyArgumentList
-    QgsMessageLog.logMessage(message="\nVerknüpfungen sind erstellt!", level=Qgis.Info)
+    QgsMessageLog.logMessage(message="\nVerknüpfungen sind erstellt!", level=Qgis.MessageLevel.Info)
 
     return True
 
@@ -608,7 +608,7 @@ def assigntgeb(
         "", "Teilgebiete werden zugeordnet. Bitte warten..."
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     logger.debug("\nbetroffene Tabellen (1):\n{}\n".format(str(tablist)))
     logger.debug("\nbetroffene Teilgebiete (2):\n{}\n".format(str(liste_teilgebiete)))
@@ -709,16 +709,16 @@ def assigntgeb(
 
     progress_bar.setValue(100)
     status_message.setText("Fertig!")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
 
     # Karte aktualisieren
     iface.mapCanvas().refreshAllLayers()
 
     # iface.mainWindow().statusBar().clearMessage()
-    # iface.messageBar().pushMessage("Information", "Zuordnung von Haltungen und Flächen ist fertig!", level=Qgis.Info)
+    # iface.messageBar().pushMessage("Information", "Zuordnung von Haltungen und Flächen ist fertig!", level=Qgis.MessageLevel.Info)
     # noinspection PyArgumentList
     QgsMessageLog.logMessage(
-        message="\nZuordnung von Haltungen und Flächen ist fertig!", level=Qgis.Info
+        message="\nZuordnung von Haltungen und Flächen ist fertig!", level=Qgis.MessageLevel.Info
     )
 
     return True
@@ -745,7 +745,7 @@ def reload_group(iface: QgisInterface, db_qkan: DBConnection, gruppenname: str) 
         "Teilgebiete werden aus der gewählten Gruppe wiederhergestellt. Bitte warten...",
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     tablist = [
         "haltungen",
@@ -780,7 +780,7 @@ def reload_group(iface: QgisInterface, db_qkan: DBConnection, gruppenname: str) 
 
     progress_bar.setValue(100)
     status_message.setText("Fertig!")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
 
     return True
 
@@ -807,7 +807,7 @@ def store_group(
         "Teilgebiete werden in der angegebenen Gruppe gespeichert. Bitte warten...",
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     tablist = [
         "haltungen",
@@ -857,6 +857,6 @@ def store_group(
 
     progress_bar.setValue(100)
     status_message.setText("Fertig!")
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
 
     return True

@@ -15,8 +15,8 @@ from qgis.utils import iface, spatialite_connect
 import gc
 
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import ffloat
-from qkan.database.qkan_utils import get_qkanlayer_attributes
+from qkan.tools.qkan_utils import ffloat
+from qkan.tools.qkan_utils import get_qkanlayer_attributes
 from .dijkstra import find_route
 from ..utils import get_logger
 
@@ -88,8 +88,8 @@ class LaengsTask:
             self.canv_2.flush_events()
             self.fig_2.clear()
             gc.collect()
-            #iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.Critical)
-            #iface.messageBar().pushMessage("Fehler", 'gestoppt und gelöscht', level=Qgis.Critical)
+            #iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.MessageLevel.Critical)
+            #iface.messageBar().pushMessage("Fehler", 'gestoppt und gelöscht', level=Qgis.MessageLevel.Critical)
 
     # def stop_slider(self):
     #     try:
@@ -156,7 +156,7 @@ class LaengsTask:
         liste2=[]
 
         if table not in ['schaechte', 'haltungen']:
-            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
             return
 
         if table == 'schaechte':
@@ -182,7 +182,7 @@ class LaengsTask:
         logger.debug(f'LaengsTask.zeichnen() - Ergebnis von find_route(liste):\n{liste=}\n{liste2=}\n{route=}')
 
         # if route is None:
-        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (2)', level=Qgis.Critical)
+        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (2)', level=Qgis.MessageLevel.Critical)
         #     return 'nicht erstellt'
 
         # route = (['2747.1J55', '2747.1J56', '2747.1J57'], ['M2747.1J55', 'M2747.1J56'])
@@ -358,7 +358,7 @@ class LaengsTask:
         #wenn alle höhen null sind dann fehlermeldung an nutzer!
 
         if all(num == 0 for num in x_deckel) and len(x_deckel) > 0 and all(num == 0 for num in x_sohle) and len(x_sohle) > 0:
-            iface.messageBar().pushMessage("Fehler", 'Es sind keine Höhenangaben vorhanden!', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Es sind keine Höhenangaben vorhanden!', level=Qgis.MessageLevel.Critical)
 
 
 
@@ -375,7 +375,7 @@ class LaengsTask:
                     except:
                         iface.messageBar().pushMessage("Error",
                                                        "Daten konnten nicht ausgelesen werden",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                     wasserstaende = self.db_erg_curs.fetchall()
 
                     for wasserstandoben, wasserstandunten in wasserstaende:
@@ -398,7 +398,7 @@ class LaengsTask:
                     except:
                         iface.messageBar().pushMessage("Error",
                                                        "Daten konnten nicht ausgelesen werden",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                     wasserstaende = self.db_erg_curs.fetchall()
 
                     for wasserstand in wasserstaende:
@@ -571,7 +571,7 @@ class LaengsTask:
                          ha='center')
 
         if all(num == 0 for num in y_liste) and len(y_liste) > 0:
-            iface.messageBar().pushMessage("Fehler", 'Es sind keine maximalen Wasserstände vorhanden!', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Es sind keine maximalen Wasserstände vorhanden!', level=Qgis.MessageLevel.Critical)
         else:
             if len(y_liste) > 0 and table == 'schaechte':
                 new_plot.plot(x_deckel_neu, y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
@@ -747,7 +747,7 @@ class LaengsTask:
         liste2 = []
 
         if table not in ['schaechte', 'haltungen']:
-            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
             return
 
         if table == 'schaechte':
@@ -770,7 +770,7 @@ class LaengsTask:
         logger.debug(f'LaengsTask.cad() - Ergebnis von find_route(liste):\n{liste=}\n{liste2=}\n{route=}')
 
         # if route is None:
-        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (3)', level=Qgis.Critical)
+        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (3)', level=Qgis.MessageLevel.Critical)
         #     return
 
         if table == 'schaechte':
@@ -927,7 +927,7 @@ class LaengsTask:
         y_liste = []
 
         if all(num == 0 for num in x_deckel) and len(x_deckel) > 0 and all(num == 0 for num in x_sohle) and len(x_sohle) > 0:
-            iface.messageBar().pushMessage("Fehler", 'Es sind keine Höhenangaben vorhanden!', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Es sind keine Höhenangaben vorhanden!', level=Qgis.MessageLevel.Critical)
 
         x = [i for i in y_deckel if i != 0]
         x2 = [i for i in y_sohle if i != 0]
@@ -1001,7 +1001,7 @@ class LaengsTask:
                     except:
                         iface.messageBar().pushMessage("Error",
                                                        "Daten konnten nicht ausgelesen werden",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                     wasserstaende = self.db_erg_curs.fetchall()
 
                     for wasserstandoben, wasserstandunten in wasserstaende:
@@ -1023,7 +1023,7 @@ class LaengsTask:
                     except:
                         iface.messageBar().pushMessage("Error",
                                                        "Daten konnten nicht ausgelesen werden",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                     wasserstaende = self.db_erg_curs.fetchall()
 
                     for wasserstand in wasserstaende:
@@ -1215,8 +1215,8 @@ class LaengsTask:
             z_deckel_neu = z_deckel[::2]
             z_deckel_neu.append(z_deckel[-1])
 
-            # iface.messageBar().pushMessage("Fehler", str(z_sohle), level=Qgis.Critical)
-            # iface.messageBar().pushMessage("Fehler", str(z_sohle_neu), level=Qgis.Critical)
+            # iface.messageBar().pushMessage("Fehler", str(z_sohle), level=Qgis.MessageLevel.Critical)
+            # iface.messageBar().pushMessage("Fehler", str(z_sohle_neu), level=Qgis.MessageLevel.Critical)
 
             for i, j, x, y in zip(x_deckel_neu, name_neu, z_deckel_neu, z_sohle_neu):
                 linien = "LINIE"
@@ -1236,8 +1236,8 @@ class LaengsTask:
                 doc.SendCommand(text_sohlhoehe_s)
 
             x = 0
-            # iface.messageBar().pushMessage("Fehler", str(x_deckel), level=Qgis.Critical)
-            # iface.messageBar().pushMessage("Fehler", str(z_sohle_h), level=Qgis.Critical)
+            # iface.messageBar().pushMessage("Fehler", str(x_deckel), level=Qgis.MessageLevel.Critical)
+            # iface.messageBar().pushMessage("Fehler", str(z_sohle_h), level=Qgis.MessageLevel.Critical)
 
             for i, j in zip(x_deckel, z_sohle_h):
                 # so verschieben, dass die TExte passend stehen
@@ -1299,7 +1299,7 @@ class LaengsTask:
         liste = []
 
         if table not in ['schaechte', 'haltungen']:
-            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
             return
 
         if table == 'schaechte':
@@ -1337,7 +1337,7 @@ class LaengsTask:
                 except:
                     iface.messageBar().pushMessage("Error",
                                                    "Daten konnten nicht ausgelesen werden",
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
 
                 res = self.db_erg_curs.fetchall()
                 for zeitpunkt_t, zufluss, wasserstand, durchfluss, wassertiefe in res:
@@ -1353,7 +1353,7 @@ class LaengsTask:
                     except BaseException as err:
                         iface.messageBar().pushMessage("Error",
                                                        f"Konvertierung vom Zeitpunkt fehlgeschlagen (2)\n{err=}\n{zeitpunkt_t}",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                         logger.error(f"Konvertierung vom Zeitpunkt fehlgeschlagen (2)\n{err=}\n{zeitpunkt_t}")
                     if schaechte.get(zeitpunkt) is None:
                         schaechte[zeitpunkt] = {}
@@ -1371,7 +1371,7 @@ class LaengsTask:
                 except:
                     iface.messageBar().pushMessage("Error",
                                                    "Daten konnten nicht ausgelesen werden",
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
 
                 res = self.db_erg_curs.fetchall()
                 for zeitpunkt_t, auslastung, durchfluss, geschwindigkeit, wassertiefe in res:
@@ -1387,7 +1387,7 @@ class LaengsTask:
                     except BaseException as err:
                         iface.messageBar().pushMessage("Error",
                                                        f"Konvertierung vom Zeitpunkt fehlgeschlagen (3)\n{err=}\n{zeitpunkt_t}",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                         logger.error(f"Konvertierung vom Zeitpunkt fehlgeschlagen (3)\n{err=}\n{zeitpunkt_t}")
                     if haltungen.get(zeitpunkt) is None:
                         haltungen[zeitpunkt] = {}
@@ -1571,7 +1571,7 @@ class LaengsTask:
         liste2=[]
 
         if table not in ['schaechte', 'haltungen']:
-            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
             return
 
         if table == 'schaechte':
@@ -1594,7 +1594,7 @@ class LaengsTask:
         logger.debug(f'LaengsTask.laengs() - Ergebnis von find_route(liste):\n{liste=}\n{liste2=}\n{route=}')
 
         # if route is None:
-        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (4)', level=Qgis.Critical)
+        #     iface.messageBar().pushMessage("Fehler", 'Es wurden keine Elemente ausgewählt (4)', level=Qgis.MessageLevel.Critical)
         #     return 'nicht erstellt'
 
         if table == 'schaechte':
@@ -1785,7 +1785,7 @@ class LaengsTask:
                 except:
                     iface.messageBar().pushMessage("Error",
                                                    "Daten konnten nicht ausgelesen werden",
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
 
                 wasserstaende = self.db_erg_curs.fetchall()
 
@@ -1802,7 +1802,7 @@ class LaengsTask:
                     except BaseException as err:
                         iface.messageBar().pushMessage("Error",
                                                         f"Konvertierung vom Zeitpunkt fehlgeschlagen (4)\n{err=}\n{zeitpunkt_t}",
-                                                        level=Qgis.Critical)
+                                                        level=Qgis.MessageLevel.Critical)
                         logger.error(f"Konvertierung vom Zeitpunkt fehlgeschlagen (4)\n{err=}\n{zeitpunkt_t}")
                     if haltungen.get(zeitpunkt) is None:
                         haltungen[zeitpunkt] = {}
@@ -1859,7 +1859,7 @@ class LaengsTask:
 
             # iface.messageBar().pushMessage("Error",
             #                                str(len(x_liste)),
-            #                                level=Qgis.Critical)
+            #                                level=Qgis.MessageLevel.Critical)
 
 
 
@@ -1940,7 +1940,7 @@ class LaengsTask:
                 except:
                     iface.messageBar().pushMessage("Error",
                                                    "Daten konnten nicht ausgelesen werden",
-                                                   level=Qgis.Critical)
+                                                   level=Qgis.MessageLevel.Critical)
                 wasserstaende = self.db_erg_curs.fetchall()
 
                 for wasserstand, zeitpunkt_t in wasserstaende:
@@ -1956,7 +1956,7 @@ class LaengsTask:
                     except BaseException as err:
                         iface.messageBar().pushMessage("Error",
                                                        f"Konvertierung vom Zeitpunkt fehlgeschlagen (5)\n{err=}\n{zeitpunkt_t}",
-                                                       level=Qgis.Critical)
+                                                       level=Qgis.MessageLevel.Critical)
                         logger.error(f"Konvertierung vom Zeitpunkt fehlgeschlagen (5)\n{err=}\n{zeitpunkt_t}")
                     if schaechte.get(zeitpunkt) is None:
                         schaechte[zeitpunkt] = {}
@@ -2071,7 +2071,7 @@ class LaengsTask:
                 pass
         figure.tight_layout(pad=1.08)
 
-        # iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.Critical)
+        # iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.MessageLevel.Critical)
 
         self.canv_2.flush_events()
         self.pushButton_4.setDefault(True)

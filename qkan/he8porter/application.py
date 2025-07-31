@@ -8,7 +8,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums, get_default_dir
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import eval_node_types, fehlermeldung
+from qkan.tools.qkan_utils import eval_node_types, fehlermeldung
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 
@@ -233,7 +233,7 @@ class He8Porter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler beim Import",
                     "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return
             else:
@@ -284,7 +284,7 @@ class He8Porter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im HE8-Import",
                     f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
 
@@ -379,3 +379,4 @@ class He8Porter(QKanPlugin):
             self.log.debug(f"""QKan-Modul Aufruf importResults()""")
 
             ResultsTask().run()
+

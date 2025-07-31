@@ -35,7 +35,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import (
+from qkan.tools.qkan_utils import (
     eval_node_types,
     fehlermeldung,
     list_qkan_layers,
@@ -435,7 +435,7 @@ def layersadapt(
     # iface.messageBar().pushMessage(
     #     "Information",
     #     "Projektdatei wurde auf die neue Version angepasst",
-    #     level=Qgis.Info,
+    #     level=Qgis.MessageLevel.Info,
     # )
 
     return

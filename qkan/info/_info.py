@@ -67,7 +67,7 @@ class Info:
 
         # iface.messageBar().pushMessage("Error",
         #                                str(self.combo),
-        #                                level=Qgis.Critical)
+        #                                level=Qgis.MessageLevel.Critical)
 
         #variable für schatten
         self.shadow = True

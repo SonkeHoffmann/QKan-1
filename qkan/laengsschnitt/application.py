@@ -7,7 +7,7 @@ from qgis.gui import QgisInterface
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung, get_database_QKan
+from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan
 from qkan.plugin import QKanPlugin
 
 # noinspection PyUnresolvedReferences
@@ -210,7 +210,7 @@ class Laengsschnitt(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im Längsschnitt",
                     f"QKan-Datenbank {self.database_qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
 
                 # Run

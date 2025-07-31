@@ -18,7 +18,7 @@ Eine Videoanleitung zur Vorbereitung des Projektes ist |video_vorbereitung| zu f
 
    <a href="https://fh-aachen.sciebo.de/s/gCEqM9ZDOgmyf6s" target="_blank">hier</a>
 
-Falls QKan noch nicht auf dem Rechner installiert ist, ist `hier <QKan_plugins_fuer_QGIS>`_ eine Anleitung zur Installation des QKan Plugins zu finden. 
+Falls QKan noch nicht auf dem Rechner installiert ist, ist :ref:`hier<QKan_plugins_fuer_QGIS>` eine Anleitung zur Installation des QKan Plugins zu finden. 
 
 
 Anlegen einer neuen QKan-Datenbank
@@ -247,10 +247,10 @@ Eine Videoanleitung zur Erzeugung von unbefestigten Flächen ist |video_unbef_fl
 
    <a href="https://fh-aachen.sciebo.de/s/DPMnlKBMS9jjqTC" target="_blank">hier</a>
 
+
 Bevor die unbefestigten Flächen erzeugt werden können, ist es wichtig, zu prüfen, ob die Attributtabellen der Flächenobjekte 
 („Haltungsflächen“ und „Flächen“) vollständig ausgefüllt sind. Das bedeutet, die Spalten „Name“, „Teilgebiet“, „Regenschreiber“ und 
-„Abflussparameter“ müssen vollständig ausgefüllt sein. Wenn keine Flächen vorhanden sind oder die Tabellen unvollständig sind, 
-ist `hier <Import_gebaeudedaten>`_ eine Beschreibung des Vorgehens.  
+„Abflussparameter“ müssen vollständig ausgefüllt sein.
 
 Eine Verschmelzung der kleinen Flächen ist nicht mehr notwendig, da eine hohe Anzahl an Flächenschwerpunkten für die Programme heute kein Problem mehr darstellen.
 
@@ -303,6 +303,9 @@ Der Status "hat RW-Anschlüsse" muss nun für diese Haltungen von 1 (True) auf 0
 angepasst. 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_aktualisieren.png 
+     :name: Gewählte Datensätze aktualisierten
+
+Abbildung: Gewählte Datensätze aktualisierten
 
 Nun können die Änderungen gespeichert, der Bearbeitungsmodus ausgeschalten und die Auswahl aufgehoben werden. 
 
@@ -338,7 +341,11 @@ Flächen mit Haltungen verknüpfen
 --------------------------------
 
 Nachdem die Flächen vorbereitet wurden, können diese nun mit den Haltungsflächen verknüpft werden, zu denen sie entwässern.
-.. Eine Videoanleitung zur Verknüpfung der Flächen mit Haltungen ist `hier <LINK>`_ zu finden. 
+Eine Videoanleitung zur Verknüpfung der Flächen mit Haltungen ist |video_anbindung_fl| zu finden. 
+
+.. |video_anbindung_fl| raw:: html
+
+   <a href="https://fh-aachen.sciebo.de/s/Z0a5sIPUd0EWrTD" target="_blank">hier</a>
 
 Die Verknüpfung geschieht über das Tool |Tool_Verknuepfungslinie| :guilabel:`Erzeuge Verknüpfungslinien von Flächen zu Haltungen`.
 In der Regel werden bei den Filteroptionen, in dem nun geöffneten Fenster, nur die Haltungen spezifiziert.
@@ -400,7 +407,7 @@ da sonst alle Haltungen, die an dieser Stelle verknüpft sind mitausgewählt wer
 
 Export nach HYSTEM-EXTRAN
 -------------------------
-.. Eine Videoanleitung zum Export nach HYSTEM-EXTRAN ist `hier <LINK>`_ zu finden.
+.. Eine Videoanleitung zum Export nach HYSTEM-EXTRAN ist :ref:`hier<LINK>` zu finden.
 
 Anpassung des Datumsformates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

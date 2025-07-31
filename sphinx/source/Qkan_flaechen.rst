@@ -84,7 +84,7 @@ Erstellung eines Teilgebietes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Ein Teilgebiet kann leicht aus :ref:`Haltungsflächen <linkhaltungsflaechen>` erzeugt werden. Dazu müssen alle Haltungsflächen auf dem 
 gleichnamigen Layer ausgewählt werden, welche ein Teilgebiet ergeben sollen und über :guilabel:`Bearbeiten` → :guilabel:`Objekte kopieren` 
-kopiert werden. Anschließend können diese auf dem Layer "Teilgebiete" eingefügt werden, wenn dieser sich im |Tool_bearbeitungsmodus| 
+kopiert werden. Anschließend können diese auf dem Layer "Teilgebiete" eingefügt werden, wenn dieser sich im |Tool_bearbeitungs_modus| 
 :guilabel:`Bearbeitungsmodus` befindet. Als erstes müssen nun die eingefügten Flächen mit |Tool_layeraenderungen_speichern| 
 :guilabel:`Layeränderungen speichern` gespeichert werden, damit sie im Folgenden mit |Tool_objekte_verschmelzen| 
 :guilabel:`Gewählte Objekte verschmelzen` zusammen gefasst werden können. In der Attribut-Tabelle kann das Teilgebiet in der Spalte 
@@ -140,7 +140,7 @@ Die nachfolgend erläuterten Schritte dienen der Datenvorbereitung.
 Markierung von Transporthaltungen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Diese Markierung geschieht über das Attribut "hat RW-Anschlüsse" der Haltungsdaten. 
-Hierfür muss der Layer "Haltungen" ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungsmodus| sein. 
+Hierfür muss der Layer "Haltungen" ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungs_modus| sein. 
 Es sollten nun alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist (z.B. Haltungen die "nur" zum Auslauf führen; kurze Haltungen in Kreuzungsbereichen etc.). 
 Anschließend können die gewählten Haltungen in der Attributtabelle über den Filter :guilabel:`Alle gewählten Objekte anzeigen` (siehe Bild unten) angezeigt werden. 
 Der Status "hat RW-Anschlüsse" muss nun für diese Haltungen von 1 (True) auf 0 (False) geändert werden. Dazu muss in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte 
@@ -252,7 +252,7 @@ erstellen`. Die Zuordnung sollte anschließend visuell überprüft werden.
 Verbindungslinien bearbeiten
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Gibt es unerwünschte Zuordnungen von Flächen zu Haltungen können diese leicht manuell gelöscht oder verschoben werden. Ist der Layer, auf 
-dem die Verbindungslinien liegen im |Tool_bearbeitungsmodus| :guilabel:`Bearbeitungsmodus`, kann das |Tool_stuetzpunktwerkzeug| 
+dem die Verbindungslinien liegen im |Tool_bearbeitungs_modus| :guilabel:`Bearbeitungsmodus`, kann das |Tool_stuetzpunktwerkzeug| 
 :guilabel:`Stützpunktwerkzeug` ausgewählt werden. Damit die Bearbeitung funktioniert ist es wichtig, dass das 
 |Tool_topologisches_editieren| :guilabel:`topoligisches editieren Werkzeug` deaktiviert ist. Um eine Stützstelle zu ändern, muss nach 
 Aktivierung des |Tool_stuetzpunktwerkzeug| :guilabel:`Stützpunktwerkzeug` die zu bearbeitende Verbindungslinien mit Rechtsklick fixiert 
@@ -261,12 +261,17 @@ Stützstelle mit Linksklick ausgewählt wird. Als nächstes wird die Haltung aus
 sollte. Nach Klick auf die Haltung sollte die geänderte Verbindungslinie auf dem Plan erscheinen. Die Auswahl der Verbindungslinie kann 
 durch einen erneuten Rechtsklick auf die gewählt Linie aufgehoben werden.
 
+.. |Tool_bearbeitungs_modus| image:: ./QKan_Bilder/Tool_bearbeitungsmodus.png
+                             :width: 1.25 em
+
 .. |Tool_stuetzpunktwerkzeug| image:: ./QKan_Bilder/Tool_stuetzpunkt_werkzeug.png
                              :width: 1.25 em
+
 .. |Tool_topologisches_editieren| image:: ./QKan_Bilder/Tool_topologisches_editieren.png
                              :width: 1.25 em
-..
-    Erzeugung von Anbindungen zwischen Einzeleinleitern und Haltungen
-    -----------------------------------------------------------------
+
+
+Erzeugung von Anbindungen zwischen Einzeleinleitern und Haltungen
+-----------------------------------------------------------------
 
     (Dieses Kapitel muss noch erstellt werden)

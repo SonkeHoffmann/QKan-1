@@ -12,7 +12,7 @@ from qgis.utils import iface
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fortschritt
+from qkan.tools.qkan_utils import fortschritt
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.xml.export")
@@ -778,7 +778,7 @@ class ExportTask:
             "", "Export in Arbeit. Bitte warten..."
         )
         status_message.layout().addWidget(progress_bar)
-        iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
         # region Create XML structure
         self.root = Element("DATA", {"xmlns": "",}
@@ -803,4 +803,4 @@ class ExportTask:
         fortschritt("Ende...", 1)
         progress_bar.setValue(100)
         status_message.setText("Datenexport abgeschlossen.")
-        status_message.setLevel(Qgis.Success)
+        status_message.setLevel(Qgis.MessageLevel.Success)

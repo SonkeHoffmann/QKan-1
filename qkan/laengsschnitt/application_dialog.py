@@ -18,7 +18,7 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import Qgis
 from qgis.utils import iface
 
-from qkan.database.qkan_utils import get_qkanlayer_attributes
+from qkan.tools.qkan_utils import get_qkanlayer_attributes
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.laengs.application_dialog")
@@ -123,7 +123,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         dbname, table, geom, sql = get_qkanlayer_attributes(x)
 
         if table not in ['schaechte', 'haltungen']:
-            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+            iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
             return
 
         if table == 'schaechte':

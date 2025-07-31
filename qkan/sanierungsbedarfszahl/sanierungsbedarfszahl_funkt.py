@@ -193,7 +193,7 @@ class SanierungsbedarfszahlFunkt:
             curs.execute(sql, data)
         except:
             iface.messageBar().pushMessage("Error", "Die Schadenslänge konnte nicht ermittelt werden",
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
 
         x = curs.fetchall()
         liste = []
@@ -234,7 +234,7 @@ class SanierungsbedarfszahlFunkt:
                                 db.commit()
                             except:
                                 iface.messageBar().pushMessage("Error", "Die Schadenslänge der Haltungen/Leitungen konnte nicht ermittelt werden",
-                                                               level=Qgis.Critical)
+                                                               level=Qgis.MessageLevel.Critical)
                     test += 1
 
     def schadenslaenge_schacht(self):
@@ -288,7 +288,7 @@ class SanierungsbedarfszahlFunkt:
             curs.execute(sql, data)
         except:
             iface.messageBar().pushMessage("Error", "Die Schadenslänge der Schächte konnte nicht ermittelt werden",
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
         x = curs.fetchall()
         liste = []
         for attr in x:
@@ -329,7 +329,7 @@ class SanierungsbedarfszahlFunkt:
                             except:
                                 iface.messageBar().pushMessage("Error",
                                                                "Die Schadenslänge konnte nicht ermittelt werden",
-                                                               level=Qgis.Critical)
+                                                               level=Qgis.MessageLevel.Critical)
                     test += 1
 
 
@@ -467,7 +467,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             iface.messageBar().pushMessage("Error",
                                            "Die Sanierungsbedarfszahl der Haltungen/Leitungen konnte nicht ermittelt werden",
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
 
 
         x = curs.fetchall()
@@ -864,7 +864,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             iface.messageBar().pushMessage("Error",
                                            "Die Sanierungsbedarfszahl der Schächte konnte nicht ermittelt werden",
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
 
         x = curs.fetchall()
         liste = []
@@ -1276,7 +1276,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             iface.messageBar().pushMessage("Error",
                                            "Die Systemzahl der Haltungen/Leitungen konnte nicht ermittelt werden",
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
 
         x = curs.fetchall()
         liste = []
@@ -1517,7 +1517,7 @@ class SanierungsbedarfszahlFunkt:
         syl = 1/l*sum(list_okl)
 
         iface.messageBar().pushMessage("Info", "Die Systemzahl der Haltungen/Leitungen beträgt {}".format(syl),
-                                       level=Qgis.Info)
+                                       level=Qgis.MessageLevel.Info)
 
         sql = """SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');"""
         data = (crs,)
@@ -1646,7 +1646,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             iface.messageBar().pushMessage("Error",
                                            "Die Systemzahl der Schächte konnte nicht ermittelt werden",
-                                           level=Qgis.Critical)
+                                           level=Qgis.MessageLevel.Critical)
 
         x = curs.fetchall()
         liste = []
@@ -1873,7 +1873,7 @@ class SanierungsbedarfszahlFunkt:
         else:
             syl = 1 / l * sum(list_okl)
 
-        iface.messageBar().pushMessage("Info", "Die Systemzahl der Schächte beträgt {}".format(syl), level=Qgis.Info)
+        iface.messageBar().pushMessage("Info", "Die Systemzahl der Schächte beträgt {}".format(syl), level=Qgis.MessageLevel.Info)
 
         sql = """SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');"""
         data = (crs,)
@@ -2235,7 +2235,7 @@ class SanierungsbedarfszahlFunkt:
             except:
                 iface.messageBar().pushMessage("Error",
                                                "Die Excel Tabelle der Haltungen konnte nicht erstellt werden",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
                 return
 
 
@@ -2261,7 +2261,7 @@ class SanierungsbedarfszahlFunkt:
             except:
                 iface.messageBar().pushMessage("Error",
                                                "Die Excel Tabelle der Haltungen konnte nicht erstellt werden",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
                 return
 
             for table_name in dft['untersuchhal']:
@@ -2428,7 +2428,7 @@ class SanierungsbedarfszahlFunkt:
             except:
                 iface.messageBar().pushMessage("Error",
                                                "Die Excel Tabelle der Leitungen konnte nicht erstellt werden",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
                 return
 
             dft.to_excel(writer, sheet_name="Leitungen", index=False)
@@ -2453,7 +2453,7 @@ class SanierungsbedarfszahlFunkt:
             except:
                 iface.messageBar().pushMessage("Error",
                                                "Die Excel Tabelle der Leitungen konnte nicht erstellt werden",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
                 return
 
             for table_name in dft['untersuchhal']:
@@ -2599,7 +2599,7 @@ class SanierungsbedarfszahlFunkt:
             except:
                 iface.messageBar().pushMessage("Error",
                                                "Die Excel Tabelle der Schächte konnte nicht erstellt werden",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
                 return
 
             dft.to_excel(writer, sheet_name="Schächte", index=False)
@@ -2623,7 +2623,7 @@ class SanierungsbedarfszahlFunkt:
             except:
                 iface.messageBar().pushMessage("Error",
                                                "Die Excel Tabelle der Schächte konnte nicht erstellt werden",
-                                               level=Qgis.Critical)
+                                               level=Qgis.MessageLevel.Critical)
                 return
 
             for table_name in dft['untersuchsch']:

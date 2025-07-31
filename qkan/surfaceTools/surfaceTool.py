@@ -9,7 +9,7 @@ from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.core import Qgis
 
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.surfaceTools.surface_tools")
@@ -117,7 +117,7 @@ class SurfaceTask:
             "Haltungsflächen werden an die angeschlossenen Haltungen angepasst. Bitte warten...",
         )
         status_message.layout().addWidget(progress_bar)
-        self.iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+        self.iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
         # progress_bar.reset()
         progress_bar.setValue(0)
 
@@ -393,4 +393,4 @@ class SurfaceTask:
 
         progress_bar.setValue(100)
         status_message.setText("Fertig!")
-        status_message.setLevel(Qgis.Success)
+        status_message.setLevel(Qgis.MessageLevel.Success)

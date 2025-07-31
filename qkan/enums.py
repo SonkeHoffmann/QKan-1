@@ -91,6 +91,8 @@ class LAYERBEZ(enum.Enum):
     PRUEFABFRAGEN           = "Prüfabfragen"
     UEBERSTAUSCHAECHTE      = "Überstau Schächte"
 
+    QKAN_GROUP              = "QKan"
+
     #Referenztabellen
     ENTWAESSERUNGSARTEN     = "Entwässerungsarten"
     PROFILE                 = "Profile"
@@ -106,16 +108,28 @@ class LAYERBEZ(enum.Enum):
     SYMBOLKATALOG           = "Symbolkatalog"
     FLAECHENTYPEN           = "Flächentypen"
 
-
     #Ergebnislayer
-    ZK_EINZELSCHAEDEN_HA_LEITUNGEN = "Ergebnis_ZK_Einzelschäden_HA_Leitungen"
-    ZK_ZUSTAND_HA_LEITUNGEN_GESAMT = "Ergebnis_ZK_HA_Leitungen"
-    ZK_EINZELSCHAEDEN_SCHAECHTE = "Ergebnis_ZK_Einzelschäden_Schächte"
-    ZK_ZUSTAND_SCHAECHTE_GESAMT = "Ergebnis_ZK_Schächte"
-    ZK_EINZELSCHAEDEN_HALTUNGEN = "Ergebnis_ZK_Einzelschäden_Haltungen"
-    ZK_ZUSTAND_HALTUNGEN_GESAMT = "Ergebnis_ZK_Haltungen"
-    SK_EINZELSCHAEDEN_HALTUNGEN = "Bewertung_Substanz_Einzelschäden_Haltungen"
-    SK_ZUSTAND_HALTUNGEN_GESAMT = "Bewertung_Substanz_Haltungen"
+    ZK_EINZELSCHAEDEN_HA_LEITUNGEN  = "Ergebnis_ZK_Einzelschäden_HA_Leitungen"
+    ZK_ZUSTAND_HA_LEITUNGEN_GESAMT  = "Ergebnis_ZK_HA_Leitungen"
+    ZK_EINZELSCHAEDEN_SCHAECHTE     = "Ergebnis_ZK_Einzelschäden_Schächte"
+    ZK_ZUSTAND_SCHAECHTE_GESAMT     = "Ergebnis_ZK_Schächte"
+    ZK_EINZELSCHAEDEN_HALTUNGEN     = "Ergebnis_ZK_Einzelschäden_Haltungen"
+    ZK_ZUSTAND_HALTUNGEN_GESAMT     = "Ergebnis_ZK_Haltungen"
+    SK_EINZELSCHAEDEN_HALTUNGEN     = "Bewertung_Substanz_Einzelschäden_Haltungen"
+    SK_ZUSTAND_HALTUNGEN_GESAMT     = "Bewertung_Substanz_Haltungen"
 
     # Anwendungsbezogene Layer
     STRAKAT_SYMBOLE = "STRAKAT-Symbole"
+
+    # Synchronisation
+    SYNC_SCHAECHTE_COMPARE          = "Synchronisation Schächte"
+    SYNC_SCHAECHTE_EXT              = "Schächte extern"
+    SYNC_HALTUNGEN_COMPARE          = "Synchronisation Haltungen"
+    SYNC_HALTUNGEN_EXT              = "Haltungen extern"
+    SYNC_ANSCHLUSSLEITUNGEN_COMPARE = "Synchronisation HA-Leitungen"
+    SYNC_ANSCHLUSSLEITUNGEN_EXT     = "HA-Leitungen extern"
+
+    SYNC_GROUP_SYNCHRONISATION      = "Synchronisation"
+    SYNC_GROUP_SCHAECHTE            = "Vergleich Schächte"
+    SYNC_GROUP_HALTUNGEN            = "Vergleich Haltungen"
+    SYNC_GROUP_ANSCHLUSSLEITUNGEN   = "Vergleich HA-Leitungen"

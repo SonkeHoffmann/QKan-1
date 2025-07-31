@@ -21,7 +21,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, list_selected_items
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.mu.application_dialog")

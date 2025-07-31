@@ -7,7 +7,7 @@ from qgis.core import QgsApplication, QgsProject, QgsMessageLog, QgsGeometry
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import (
+from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_qkanlayer_attributes,
 )
@@ -64,14 +64,14 @@ class ReadData:  # type: ignore
             self.iface.messageBar().pushMessage(
                 "Bedienerfehler",
                 "Kein Layer zum Einfügen der Daten ausgewählt",
-                level=Qgis.Critical,
+                level=Qgis.MessageLevel.Critical,
             )
             return
         elif layer.isEditable():
             self.iface.messageBar().pushMessage(
                 "Bedienerfehler",
                 'Der gewählte Layer darf nicht im Bearbeitungsstatus "editierbar" sein',
-                level=Qgis.Critical,
+                level=Qgis.MessageLevel.Critical,
             )
             return
 
@@ -163,7 +163,7 @@ class ReadData:  # type: ignore
             QgsMessageLog.logMessage(
                 f'In die Tabelle "{self.table_name}" kann QKan (noch) nicht einfügen.',
                 "QKan Clipboard",
-                level=Qgis.Info,
+                level=Qgis.MessageLevel.Info,
                 notifyUser=True,
             )
             self.iface.openMessageLog()
@@ -242,12 +242,12 @@ class ReadData:  # type: ignore
             self.iface.messageBar().pushMessage(
                 "Fehler in kopierten Daten",
                 f"Notwendige Spalte fehlt: {column}",
-                level=Qgis.Warning,
+                level=Qgis.MessageLevel.Warning,
             )
             QgsMessageLog.logMessage(
                 f"In den kopierten Daten fehlt folgende notwendig Spalte: {column}",
                 "QKan Clipboard",
-                level=Qgis.Info,
+                level=Qgis.MessageLevel.Info,
                 notifyUser=True,
             )
             # vorab auch Info über erkannte Spalten
@@ -260,7 +260,7 @@ class ReadData:  # type: ignore
             QgsMessageLog.logMessage(
                 f"\nFolgende Spalten konnten erkannt werden: {meldung}",
                 "QKan",
-                level=Qgis.Info,
+                level=Qgis.MessageLevel.Info,
                 notifyUser=True,
             )
             self.iface.openMessageLog()
@@ -321,7 +321,7 @@ class ReadData:  # type: ignore
         self.iface.messageBar().pushMessage(
             "Info",
             f"Folgende Spalten konnten erkannt werden: {meldung}",
-            level=Qgis.Info,
+            level=Qgis.MessageLevel.Info,
         )
 
         # decision: datacheck only or start paste procedure
@@ -329,7 +329,7 @@ class ReadData:  # type: ignore
             QgsMessageLog.logMessage(
                 f"\nFolgende Spalten konnten erkannt werden: {meldung}",
                 "QKan",
-                level=Qgis.Info,
+                level=Qgis.MessageLevel.Info,
                 notifyUser=True,
             )
             self.iface.openMessageLog()
@@ -355,7 +355,7 @@ class ReadData:  # type: ignore
         self.iface.messageBar().pushMessage(
             "Info",
             f'Daten in Layer "{self.layer_name}" (Datenbanktabelle "{tabnam_db}") eingefügt.',
-            level=Qgis.Info,
+            level=Qgis.MessageLevel.Info,
         )
 
     def _parsed_dataset(

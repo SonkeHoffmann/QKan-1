@@ -14,7 +14,7 @@ from qgis.PyQt.QtWidgets import (
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung, get_database_QKan
+from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan
 from qkan.tools.dialogs import QKanDialog
 from .k_unbef import create_unpaved_areas
 from ..utils import get_logger

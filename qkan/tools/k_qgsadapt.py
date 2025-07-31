@@ -32,7 +32,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import (
+from qkan.tools.qkan_utils import (
     fehlermeldung,
     list_qkan_layers,
     get_qkanlayer_attributes,

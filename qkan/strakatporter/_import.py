@@ -148,7 +148,7 @@ class ImportTask(Schadenstexte):
             "", "Import aus STRAKAT läuft. Bitte warten..."
         )
         self.status_message.layout().addWidget(self.progress_bar)
-        self.iface.messageBar().pushWidget(self.status_message, Qgis.Info, 60)
+        self.iface.messageBar().pushWidget(self.status_message, Qgis.MessageLevel.Info, 60)
         self.progress_bar.setValue(0)
         logger.debug("progress_bar initialisiert")
 

@@ -18,7 +18,7 @@ from qgis.gui import QgsProjectionSelectionWidget
 
 from qkan import QKan, enums, list_selected_items
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import (
+from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_database_QKan,
     get_editable_layers,
@@ -201,7 +201,7 @@ class ExportDialog(QKanDBDialog, EXPORT_CLASS):  # type: ignore
             self.iface.messageBar().pushMessage(
                 "Bedienerfehler: ",
                 'Die zu verarbeitenden Layer dürfen nicht im Status "bearbeitbar" sein. Abbruch!',
-                level=Qgis.Critical,
+                level=Qgis.MessageLevel.Critical,
             )
             return
 

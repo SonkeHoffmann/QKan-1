@@ -5,7 +5,7 @@ from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung, get_database_QKan, eval_node_types
+from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan, eval_node_types
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 
@@ -144,7 +144,7 @@ class M150Porter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler beim Import",
                     "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return
             else:
@@ -193,7 +193,7 @@ class M150Porter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im XML-Import",
                     f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
 

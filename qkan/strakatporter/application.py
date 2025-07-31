@@ -7,7 +7,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums, get_default_dir
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import eval_node_types, loadlayer, fehlermeldung
+from qkan.tools.qkan_utils import eval_node_types, loadlayer
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 from qkan.utils import get_logger
@@ -121,7 +121,7 @@ class StrakatPorter(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im STRAKAT-Import",
                     f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
 

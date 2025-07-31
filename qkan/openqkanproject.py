@@ -5,7 +5,7 @@ from qgis.utils import iface, pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 from qkan.tools.application import QKanTools
 from qkan.tools.k_layersadapt import layersadapt
 from qkan.utils import get_logger
@@ -27,7 +27,7 @@ def initQKanProject():
         )
         iface.openMessageLog()
 
-        iface.messageBar().pushMessage("QKan ist nicht aktiviert!", level=Qgis.Warning)
+        iface.messageBar().pushMessage("QKan ist nicht aktiviert!", level=Qgis.MessageLevel.Warning)
         return
 
     try:
@@ -49,9 +49,9 @@ def initQKanProject():
         msg = "Diese Projektdatei wurde mit dem Programm QKan (Prof. Höttges, FH Aachen) erstellt."
         QgsMessageLog.logMessage(
             message=msg,
-            level=Qgis.Info,
+            level=Qgis.MessageLevel.Info,
         )
-        QKan.instance.messageBar().pushMessage("Information", msg, level=Qgis.Info)
+        QKan.instance.messageBar().pushMessage("Information", msg, level=Qgis.MessageLevel.Info)
 
     # Anpassen der Formularpfade
     projectTemplate = os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs")

@@ -1,22 +1,19 @@
 Sanierungsbedarfszahl
-====
-
-Sanierungsbedarfszahl
----------------------
+=====================
 
 Um dieses Plugin zu nutzen sollte vorher eine Zustandsklassifizierung mit Hilfe des Plugins Zustandsklassen vorgenommen werden. Des Weiteren müssen weitere Angaben in QGIS ergänzt 
 werden. Diese sind unter anderem Informationen über das Baujahr, die hydraulische Leistungsfähigkeit und die Bodenart.
 Nachdem alle Angaben ergänzt wurden, kann das Plugin gestartet werden in dem in der Menüleiste in QGIS die Schaltfläche „Erweiterungen" geklickt wird.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Sanierungsklassen/sanierung1.png
+.. |Zustandsklassifizierung1| image:: ./QKan_Bilder/Sanierungsklassen/sanierung1.png
                              :width: 1.25 em
 							 
 
 Daraufhin öffnet sich das in der folgenden Abbildung gezeigte Eingabefenster.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Sanierungsklassen/sanierung2.png
+.. |Zustandsklassifizierung2| image:: ./QKan_Bilder/Sanierungsklassen/sanierung2.png
                              :width: 1.25 em
 							 
 
@@ -39,14 +36,14 @@ hinzugefügt.
 
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Sanierungsklassen/sanierung3.png
+.. |Zustandsklassifizierung3| image:: ./QKan_Bilder/Sanierungsklassen/sanierung3.png
                              :width: 1.25 em
 							 
 
 Bei der Ermittlung der Systemzahl nach ISYBAU werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Sanierungsklassen/sanierung4.png
+.. |Zustandsklassifizierung4| image:: ./QKan_Bilder/Sanierungsklassen/sanierung4.png
                              :width: 1.25 em
 							 
 
@@ -58,7 +55,7 @@ ausgewählt, erscheint ein Menü mit den im Projekt hinterlegten Layouts. Wird e
 vorgenommen werden.
 
 .. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung| image:: ./QKan_Bilder/Sanierungsklassen/sanierung5.png
+.. |Zustandsklassifizierung5| image:: ./QKan_Bilder/Sanierungsklassen/sanierung5.png
                              :width: 1.25 em
 
 
@@ -69,6 +66,4 @@ Speicherort für die Excel Tabellen gewählt werden.
 Im Vorhinein muss dafür einmalig das Python Modul XIsxWriter installiert werden, dafür müssen die folgenden Schritte durchgeführt werden. Zuerst muss das Programm „OSGe04W shell" 
 geöffnet werden. Danach müssen die Befehle „cd C:\" und „python -m Pip install XIsxWriter" dort eingegeben werden. Dadurch wird das Modul XIsxWriter installiert und mit dem Plugin 
 Sanierungsbedarfszahl kann eine Excel Tabelle ausgegeben werden. 
-
-
 

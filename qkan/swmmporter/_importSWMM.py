@@ -14,7 +14,7 @@ from qkan.utils import get_logger
 logger = get_logger("QKan.importswmm")
 
 # Hilfsfunktionen, werden wenn Sie in QKan integriert sind importiert
-# from qkan.database.qkan_utils import eval_node_types, fehlermeldung, fzahl
+# from qkan.tools.qkan_utils import eval_node_types, fehlermeldung, fzahl
 
 
 def fzahl(text: str, n: float = 0.0, default: float = 0.0) -> float:
@@ -360,7 +360,7 @@ class ImportTask:
                         coords = ", ".join([f"{x} {y}" for x, y in zip(xlis, ylis)])
 
                         #iface.messageBar().pushMessage("Error", str(coords),
-                        #                               level=Qgis.Critical)
+                        #                               level=Qgis.MessageLevel.Critical)
 
 
                         sql = "UPDATE tezg SET geom = GeomFromText('MULTIPOLYGON((("+str(coords)+")))',?) WHERE flnam = ? "
@@ -410,7 +410,7 @@ class ImportTask:
                         coords = ", ".join([f"{x} {y}" for x, y in zip(xlis, ylis)])
 
                         # iface.messageBar().pushMessage("Error", str(coords),
-                        #                               level=Qgis.Critical)
+                        #                               level=Qgis.MessageLevel.Critical)
 
                         sql = "UPDATE flaechen SET geom = GeomFromText('MULTIPOLYGON(((" + str(
                             coords) + ")))',?) WHERE flnam = ? "

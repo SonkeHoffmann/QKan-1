@@ -1,7 +1,7 @@
 import math
 import os
 import warnings
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 from xml.etree.ElementTree import ElementTree
 
 from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry, QgsDataSourceUri
@@ -9,10 +9,10 @@ from qgis.utils import iface, pluginDirectory
 from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
 from math import ceil
 from qkan import QKan, enums
-from ..utils import get_logger
+from ..utils import get_logger, QkanError
 
 if TYPE_CHECKING:
-    from .dbfunc import DBConnection
+    from ..database.dbfunc import DBConnection
 
 # Anbindung an Logging-System (Initialisierung in __init__)
 logger = get_logger("QKan.database.qkan_utils")
@@ -25,9 +25,9 @@ def meldung(title: str, text: str) -> None:
     logger.info("{:s} {:s}".format(title, text))
     # noinspection PyArgumentList
     QgsMessageLog.logMessage(
-        message="{:s} {:s}".format(title, text), tag="QKan", level=Qgis.Info
+        message="{:s} {:s}".format(title, text), tag="QKan", level=Qgis.MessageLevel.Info
     )
-    # QKan.instance.iface.messageBar().pushMessage(title, text, level=Qgis.Info)
+    # QKan.instance.iface.messageBar().pushMessage(title, text, level=Qgis.MessageLevel.Info)
 
 
 def warnung(title: str, text: str, duration: int = -1) -> None:
@@ -36,11 +36,11 @@ def warnung(title: str, text: str, duration: int = -1) -> None:
     logger.warning("{:s} {:s}".format(title, text))
     # noinspection PyArgumentList
     QgsMessageLog.logMessage(
-        message="{:s} {:s}".format(title, text), tag="QKan", level=Qgis.Warning
+        message="{:s} {:s}".format(title, text), tag="QKan", level=Qgis.MessageLevel.Warning
     )
     # QKan.instance.iface.openMessageLog()
     # QKan.instance.iface.messageBar().pushMessage(
-    #     title, text, duration=duration, level=Qgis.Warning
+    #     title, text, duration=duration, level=Qgis.MessageLevel.Warning
     # )
 
 
@@ -50,7 +50,7 @@ def fortschritt(text: str, prozent: float = 0) -> None:
     QgsMessageLog.logMessage(
         message="{:s} ({:.0f}%)".format(text, prozent * 100),
         tag="QKan",
-        level=Qgis.Info,
+        level=Qgis.MessageLevel.Info,
     )
 
 
@@ -60,9 +60,9 @@ def fehlermeldung(title: str, text: str = "") -> None:
     logger.error("{:s} {:s}".format(title, text))
     # noinspection PyArgumentList
     QgsMessageLog.logMessage(
-        message="{:s} {:s}".format(title, text), tag="QKan", level=Qgis.Critical
+        message="{:s} {:s}".format(title, text), tag="QKan", level=Qgis.MessageLevel.Critical
     )
-    # QKan.instance.iface.messageBar().pushMessage(title, text, level=Qgis.Critical)
+    # QKan.instance.iface.messageBar().pushMessage(title, text, level=Qgis.MessageLevel.Critical)
 
 
 # Allgemeine Funktionen
@@ -260,7 +260,8 @@ def get_database_QKan(silent: bool = False) -> None:
         if len(layerobjects) > 0:
             break
     else:
-        logger.error_user("Fehler: Es wurde noch kein QKan-Projekt geladen")
+        logger.warning("Fehler: Es wurde noch kein QKan-Projekt geladen")
+        raise QkanError()
 
     layer = layerobjects[0]
     # only once for loaded project
@@ -638,7 +639,16 @@ def read_qml(qmlfiles: dict[str, str]):
                     l.loadNamedStyle(style_file)
                     l.triggerRepaint()
 
-def loadlayer(layerbez, table, geom_column, qmlfile, uifile, group, gpos) -> bool:
+def loadlayer(
+        layerbez,
+        table,
+        geom_column,
+        qmlfile,
+        uifile,
+        group: Union[List, str],
+        gpos=0,
+        ext_qkan_db: str = None
+) -> bool:
     """Lädt einen Layer aus einer qml-Datei in eine bestimmte Gruppe an eine bestimmte Position
     :layerbez:              Bezeichnung des Layers
     :type layerbez:         String
@@ -661,11 +671,24 @@ def loadlayer(layerbez, table, geom_column, qmlfile, uifile, group, gpos) -> boo
     :gpos:                  Index der Position innerhalb der Gruppe
     :type gpos:             int
 
+    :ext_qkan_db:           andere als die Standard-QKan-DB
+    :type ext_qkan_db:      str
+
     :returns:               bool
     """
 
+    exclusive_groups = [
+        enums.LAYERBEZ.SYNC_GROUP_SYNCHRONISATION.value,
+        enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
+        enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
+        enums.LAYERBEZ.SYNC_GROUP_ANSCHLUSSLEITUNGEN.value,
+    ]
+
     uri = QgsDataSourceUri()
-    uri.setDatabase(QKan.config.database.qkan)
+    if ext_qkan_db is None:
+        uri.setDatabase(QKan.config.database.qkan)
+    else:
+        uri.setDatabase(ext_qkan_db)
     schema = ''
     uri.setDataSource(schema, table, geom_column)
     layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
@@ -693,9 +716,29 @@ def loadlayer(layerbez, table, geom_column, qmlfile, uifile, group, gpos) -> boo
     QgsProject.instance().addMapLayer(layer, False)
 
     layersRoot = QgsProject.instance().layerTreeRoot()
-    actGroup = layersRoot.findGroup(group)
-    if actGroup is None:
-        actGroup = layersRoot.addGroup(group)
-    actGroup.insertLayer(gpos, layer)
+    if isinstance(group, str):
+        logger.debug(f"Einfache Gruppe: {group}")
+        actGroup = layersRoot.findGroup(group)
+        if actGroup is None:
+            actGroup = layersRoot.addGroup(group)
+            actGroup.insertLayer(gpos, layer)
+    elif isinstance(group, List):
+        logger.debug((f"Verkettete Gruppe..."))
+        actGroup = layersRoot           # Start ist root
+        for subgroup in group:
+            logger.debug(f"Haupt- oder Untergruppe: {subgroup}")
+            newGroup = layersRoot.findGroup(subgroup)
+            if newGroup is None:
+                actGroup = actGroup.addGroup(subgroup)
+                if subgroup in exclusive_groups:
+                    # Gruppe zeigt Elemente exklusiv an
+                    actGroup.setIsMutuallyExclusive(True)
+                actGroup.setExpanded(False)
+            else:
+                actGroup = newGroup
+        actGroup.insertLayer(gpos, layer)
+    else:
+        logger.error_code(f"Fehler in der Bezeichnung beim Anlegen des Layers"
+                          f" oder der Layerliste {group=}")
 
     return True

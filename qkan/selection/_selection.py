@@ -4,7 +4,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
 
 from qkan.laengsschnitt.dijkstra import Netz, find_route
-from qkan.database.qkan_utils import get_qkanlayer_attributes
+from qkan.tools.qkan_utils import get_qkanlayer_attributes
 from typing import Dict, List, Optional
 
 from qgis.core import (
@@ -598,7 +598,7 @@ class Selection:
             liste2 = []
 
             if table not in ['schaechte', 'haltungen']:
-                iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+                iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
                 return
 
             if table == 'schaechte':
@@ -700,7 +700,7 @@ class Selection:
             liste2 = []
 
             if table not in ['schaechte', 'haltungen']:
-                iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.Critical)
+                iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
                 return
 
             if table == 'schaechte':

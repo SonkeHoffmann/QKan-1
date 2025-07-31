@@ -3,7 +3,7 @@ from qgis.gui import QgisInterface
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.plugin import QKanPlugin
 
 # noinspection PyUnresolvedReferences
@@ -55,7 +55,7 @@ class Substanzklasse(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler beim Import",
                     "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return
             else:
@@ -114,7 +114,7 @@ class Substanzklasse(QKanPlugin):
                 self.iface.messageBar().pushMessage(
                     "Fehler im XML-Import",
                     f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.Critical,
+                    level=Qgis.MessageLevel.Critical,
                 )
                 return False
 

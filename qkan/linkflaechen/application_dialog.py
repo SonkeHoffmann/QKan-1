@@ -537,7 +537,7 @@ class ManagegroupsDialog(QDialog, FORM_CLASS_managegroups):  # type: ignore
 
 
         self.plugin.iface.messageBar().pushMessage(
-            "Fertig!", "Teilgebiete wurden geladen!", level=Qgis.Info
+            "Fertig!", "Teilgebiete wurden geladen!", level=Qgis.MessageLevel.Info
         )
 
     def click_store_group(self) -> None:
@@ -557,7 +557,7 @@ class ManagegroupsDialog(QDialog, FORM_CLASS_managegroups):  # type: ignore
 
             self.show_groups()
             self.plugin.iface.messageBar().pushMessage(
-                "Fertig!", "Teilgebiete wurden gespeichert", level=Qgis.Info
+                "Fertig!", "Teilgebiete wurden gespeichert", level=Qgis.MessageLevel.Info
             )
 
     def click_lw_groups(self) -> None:

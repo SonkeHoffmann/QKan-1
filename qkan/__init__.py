@@ -41,9 +41,10 @@ PLUGIN_LIST = [
     "laengsschnitt.application.Laengsschnitt",
     "floodTools.application.FloodTools",
     "tools.application.QKanTools",
+    "selection.application.Selection",
+    "neigung.application.Neigung",
+    "sync.application.Synchronisation",
     "info.application.Infos",
-    "selection.application.Selections",
-    "neigung.application.Neigungs",
 ]
 
 
@@ -212,6 +213,7 @@ class QKan:
             allgemein = self.menu.addMenu("Allgemein")
             verwaltung = self.menu.addMenu("Verwaltung")
             daten = self.menu.addMenu("Daten")
+            sync = self.menu.addMenu("Synchronisation")
             hyex = self.menu.addMenu("Hystem-Extran")
             xml = self.menu.addMenu("XML")
             dyna = self.menu.addMenu("DYNA")
@@ -275,7 +277,10 @@ class QKan:
             safe_add_action(zustand, "Zustandsklassen ermitteln")
             safe_add_action(zustand, "Sanierungsbedarfszahl ermitteln")
             safe_add_action(substanz, "Substanzklassen ermitteln")
-            #
+
+            safe_add_action(sync, "Vergleich mit einem anderen QKan-Projekt")
+            safe_add_action(sync, "Synchronisation mit einem anderen QKan-Projekt")
+
             safe_add_action(flood2D, "Überflutungsanimation")
 
             safe_add_action(info, "Über QKan")

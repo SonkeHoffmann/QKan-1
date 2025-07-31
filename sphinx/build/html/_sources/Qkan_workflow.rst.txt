@@ -18,7 +18,7 @@ Eine Videoanleitung zur Vorbereitung des Projektes ist |video_vorbereitung| zu f
 
    <a href="https://fh-aachen.sciebo.de/s/gCEqM9ZDOgmyf6s" target="_blank">hier</a>
 
-Falls QKan noch nicht auf dem Rechner installiert ist, ist `hier <QKan_plugins_fuer_QGIS>`_ eine Anleitung zur Installation des QKan Plugins zu finden. 
+Falls QKan noch nicht auf dem Rechner installiert ist, ist :ref:`hier<QKan_plugins_fuer_QGIS>` eine Anleitung zur Installation des QKan Plugins zu finden. 
 
 
 Anlegen einer neuen QKan-Datenbank
@@ -247,10 +247,10 @@ Eine Videoanleitung zur Erzeugung von unbefestigten Flächen ist |video_unbef_fl
 
    <a href="https://fh-aachen.sciebo.de/s/DPMnlKBMS9jjqTC" target="_blank">hier</a>
 
+
 Bevor die unbefestigten Flächen erzeugt werden können, ist es wichtig, zu prüfen, ob die Attributtabellen der Flächenobjekte 
 („Haltungsflächen“ und „Flächen“) vollständig ausgefüllt sind. Das bedeutet, die Spalten „Name“, „Teilgebiet“, „Regenschreiber“ und 
-„Abflussparameter“ müssen vollständig ausgefüllt sein. Wenn keine Flächen vorhanden sind oder die Tabellen unvollständig sind, 
-ist `hier <Import_gebaeudedaten>`_ eine Beschreibung des Vorgehens.  
+„Abflussparameter“ müssen vollständig ausgefüllt sein.
 
 Eine Verschmelzung der kleinen Flächen ist nicht mehr notwendig, da eine hohe Anzahl an Flächenschwerpunkten für die Programme heute kein Problem mehr darstellen.
 
@@ -294,28 +294,18 @@ Die Aufteilung der Flächen geschieht erst beim Export in das Simulationsprogram
 
 Bevor die automatische Flächenzuordnung jedoch durchgeführt werden kann, müssen die Daten noch entsprechend vorbereitet werden. 
 Dafür sollten als erstes die Haltungen markiert werden, an welche kein Regenwasser angeschlossen ist, da sie bei der automatischen Flächenzuordnung ignoriert werden sollen. 
-Diese Markierung geschieht über das Attribut "Entwässerungssysteme" der Haltungsdaten. 
-Hierfür muss der Layer Haltungen → Haltungen ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungsmodus| sein. 
+Diese Markierung geschieht über das Attribut "hat RW-Anschlüsse" der Haltungsdaten. 
+Hierfür muss der Layer "Haltungen" ausgewählt und im :guilabel:`Bearbeitungsmodus` |Tool_bearbeitungsmodus| sein. 
 Es sollten nun alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist (z.B. Haltungen die "nur" zum Auslauf führen; kurze Haltungen in Kreuzungsbereichen etc.). 
 Anschließend können die gewählten Haltungen in der Attributtabelle über den Filter :guilabel:`Alle gewählten Objekte anzeigen` (siehe Bild unten) angezeigt werden. 
-Das Entwässerungssystem muss nun für diese Haltungen von "Mischwasser" auf "MW nicht angeschlossen" geändert werden.
-Dafür sollte von der Listen-Ansicht auf die Formular-Ansicht gewechselt werden (Schaltfäche rechts unten, siehe Bild unten). 
-
-.. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_haltungen.png 
-
-Hierbei sollte darauf geachtet werden, dass eine der gewählten Haltungen ausgewählt ist (und nicht die erste Haltung der Liste). 
-Dies kann sichergestellt werden, indem man über den Pfeil links unten, einen Schritt nach vorne geht (siehe Bild unten). 
-Der Haltungsname oben im Formular sollte nun mit einem Eintrag aus der Liste (links, grau hinterlegt) übereinstimmen.
-Anschließend kann das :guilabel:`Entwässerungssystem` über die Drop-Down-Liste von "Mischwasser" zu "MW nicht angeschlossen" geändert werden. 
-
-.. image:: ./QKan_Bilder/Flaechen_vorbereiten/formular_haltung.png 
-
-Nun kann wieder in die Listen-Ansicht gewechselt werden. 
-Mit einem Rechtsklick auf die geänderte Zelle kann der Zellinhalt kopiert werden. 
-Anschließend kann in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte :guilabel:`Entwässerungssystem` gewählt werden. 
-In das Formelfenster wird der kopierte Zellinhalt **mit Anführungsstrichen** eingefügt und mit :guilabel:`Gewählte aktualisieren` werden alle ausgewählten Haltungen entsprechend angepasst. 
+Der Status "hat RW-Anschlüsse" muss nun für diese Haltungen von 1 (True) auf 0 (False) geändert werden. Dazu muss in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte 
+:guilabel:`hat RW-Anschlüsse` gewählt werden. Im Formelfenster wird 0 eingetragen und mit :guilabel:`Gewählte aktualisieren` werden alle ausgewählten Haltungen entsprechend 
+angepasst. 
 
 .. image:: ./QKan_Bilder/Flaechen_vorbereiten/liste_gewaehlte_aktualisieren.png 
+     :name: Gewählte Datensätze aktualisierten
+
+Abbildung: Gewählte Datensätze aktualisierten
 
 Nun können die Änderungen gespeichert, der Bearbeitungsmodus ausgeschalten und die Auswahl aufgehoben werden. 
 
@@ -351,7 +341,11 @@ Flächen mit Haltungen verknüpfen
 --------------------------------
 
 Nachdem die Flächen vorbereitet wurden, können diese nun mit den Haltungsflächen verknüpft werden, zu denen sie entwässern.
-.. Eine Videoanleitung zur Verknüpfung der Flächen mit Haltungen ist `hier <LINK>`_ zu finden. 
+Eine Videoanleitung zur Verknüpfung der Flächen mit Haltungen ist |video_anbindung_fl| zu finden. 
+
+.. |video_anbindung_fl| raw:: html
+
+   <a href="https://fh-aachen.sciebo.de/s/Z0a5sIPUd0EWrTD" target="_blank">hier</a>
 
 Die Verknüpfung geschieht über das Tool |Tool_Verknuepfungslinie| :guilabel:`Erzeuge Verknüpfungslinien von Flächen zu Haltungen`.
 In der Regel werden bei den Filteroptionen, in dem nun geöffneten Fenster, nur die Haltungen spezifiziert.
@@ -413,7 +407,7 @@ da sonst alle Haltungen, die an dieser Stelle verknüpft sind mitausgewählt wer
 
 Export nach HYSTEM-EXTRAN
 -------------------------
-.. Eine Videoanleitung zum Export nach HYSTEM-EXTRAN ist `hier <LINK>`_ zu finden.
+.. Eine Videoanleitung zum Export nach HYSTEM-EXTRAN ist :ref:`hier<LINK>` zu finden.
 
 Anpassung des Datumsformates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

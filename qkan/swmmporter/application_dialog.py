@@ -20,7 +20,7 @@ from qgis.gui import QgsProjectionSelectionWidget
 
 from qkan import QKan, list_selected_items
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.swmm.application_dialog")
@@ -83,7 +83,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.button_box.helpRequested.connect(self.click_help)
 
         # Aktionen zu lw_teilgebiete: QListWidget
-        self.cb_selectedTgbs.stateChanged.connect(self.click_selection)
+        self.cb_teilgebiete.stateChanged.connect(self.click_selection)
         #self.lw_teilgebiete.itemClicked.connect(self.count_selection)      # ist schon in click_lw_teilgebiete enthalten
         self.lw_teilgebiete.itemClicked.connect(self.click_lw_teilgebiete)
 
@@ -137,7 +137,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         """Reagiert auf Checkbox zur Aktivierung der Auswahl"""
 
         # Checkbox hat den Status nach dem Klick
-        if self.cb_selectedTgbs.isChecked():
+        if self.cb_teilgebiete.isChecked():
             # Nix tun ...
             logger.debug("\nChecked = True")
         else:
@@ -154,7 +154,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     def click_lw_teilgebiete(self) -> None:
         """Reaktion auf Klick in Tabelle"""
 
-        self.cb_selectedTgbs.setChecked(True)
+        self.cb_teilgebiete.setChecked(True)
         self.count_selection()
 
     def count_selection(self) -> bool:

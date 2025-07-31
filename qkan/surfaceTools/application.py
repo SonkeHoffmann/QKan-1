@@ -21,7 +21,7 @@
 from qgis.gui import QgisInterface
 
 from qkan import QKan, get_default_dir, list_selected_items
-from qkan.database.qkan_utils import get_database_QKan
+from qkan.tools.qkan_utils import get_database_QKan
 from qkan.plugin import QKanPlugin
 
 from .application_dialog import SurfaceToolDialog, VoronoiDialog
@@ -59,6 +59,7 @@ class SurfaceTools(QKanPlugin):
 
     def unload(self) -> None:
         self.surface_dlg.close()
+        self.voronoi_dlg.close()
 
     def run_cut(self) -> None:
         # database_qkan, _ = get_database_QKan()

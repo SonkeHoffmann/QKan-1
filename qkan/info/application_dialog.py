@@ -15,7 +15,7 @@ from qgis.PyQt.QtWidgets import (
     QTableWidget,
     QComboBox
 )
-from qkan.database.qkan_utils import (
+from qkan.tools.qkan_utils import (
     get_database_QKan,
 )
 

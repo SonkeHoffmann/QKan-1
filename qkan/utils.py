@@ -25,21 +25,21 @@ class QkanDbError(QkanError):
     """Raised when a database error occurs"""
 
 
-def _translate_level(level: int) -> int:
+def _translate_level(level: int) -> Qgis.MessageLevel:
     """Translate logging level to Qgis logging level."""
     return {
-        logging.CRITICAL: Qgis.Critical,
-        logging.ERROR: Qgis.Critical,
-        logging.WARNING: Qgis.Warning,
-        logging.INFO: Qgis.Info,
-        logging.DEBUG: Qgis.Info,
-        logging.NOTSET: Qgis.NoLevel,
+        logging.CRITICAL: Qgis.MessageLevel.Critical,
+        logging.ERROR: Qgis.MessageLevel.Critical,
+        logging.WARNING: Qgis.MessageLevel.Warning,
+        logging.INFO: Qgis.MessageLevel.Info,
+        logging.DEBUG: Qgis.MessageLevel.Info,
+        logging.NOTSET: Qgis.MessageLevel.NoLevel,
         # custom levels
-        LOG_NOTICE: Qgis.Info,
-        LOG_ERROR_CODE: Qgis.Critical,
-        LOG_ERROR_DATA: Qgis.Critical,
-        LOG_ERROR_USER: Qgis.Critical,
-    }.get(level, Qgis.NoLevel)
+        LOG_NOTICE: Qgis.MessageLevel.Info,
+        LOG_ERROR_CODE: Qgis.MessageLevel.Critical,
+        LOG_ERROR_DATA: Qgis.MessageLevel.Critical,
+        LOG_ERROR_USER: Qgis.MessageLevel.Critical,
+    }.get(level, Qgis.MessageLevel.NoLevel)
 
 
 class QgisPanelLogger(StreamHandler):
@@ -63,7 +63,12 @@ class QgisPanelLogger(StreamHandler):
 
         if record.levelno >= logging.WARNING:
             self.iface.openMessageLog()
-
+            self.iface.messageBar().pushMessage(
+                "QKan",
+                msg,
+                level=_translate_level(record.levelno),
+                duration = 5
+            )
 
 class QKanLogger(logging.Logger):
     def notice(self, msg: str, *args: Any, **kwargs: Any):
@@ -89,7 +94,7 @@ class QKanLoggingManager(logging.Manager):
 
 
 def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
-    """Set up our custom logger & logging manager"""
+    """Set up our custom logger & logging manager. Called once in QKan._init()"""
 
     # remove handlers if a prior instance of our logger exists
     logging_instance = logging.getLogger("QKan")

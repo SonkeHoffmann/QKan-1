@@ -27,7 +27,7 @@ from typing import Any, List, Union
 
 from qgis.utils import spatialite_connect
 
-from .qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung
 from ..utils import get_logger
 
 logger = get_logger("QKan")

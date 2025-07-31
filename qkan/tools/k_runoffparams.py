@@ -30,7 +30,7 @@ from qgis.core import Qgis, QgsMessageLog
 from qkan import QKan, enums
 from qkan.config import ToolsConfig
 from qkan.database.dbfunc import DBConnection
-from qkan.database.qkan_utils import sqlconditions
+from qkan.tools.qkan_utils import sqlconditions
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.tools.k_runoffparams")
@@ -77,7 +77,7 @@ def setRunoffparams(
         "Info", "Oberflächenabflussparameter werden berechnet... Bitte warten."
     )
     status_message.layout().addWidget(progress_bar)
-    iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+    iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
     # status_message.setText("Erzeugung von unbefestigten Flächen ist in Arbeit.")
     progress_bar.setValue(1)
@@ -329,11 +329,11 @@ def setRunoffparams(
     # noinspection PyArgumentList
     QgsMessageLog.logMessage(
         message="\nOberflächenabflussparameter sind berechnet und eingetragen!",
-        level=Qgis.Info,
+        level=Qgis.MessageLevel.Info,
     )
 
     progress_bar.setValue(100)
     status_message.setText(
         "Oberflächenabflussparameter sind berechnet und eingetragen!"
     )
-    status_message.setLevel(Qgis.Success)
+    status_message.setLevel(Qgis.MessageLevel.Success)
