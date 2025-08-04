@@ -129,7 +129,11 @@ class LinkFl(QKanPlugin):
         """Run method that performs all the real work"""
 
         # Check, ob die relevanten Layer nicht editable sind.
-        if len({"flaechen", "haltungen", "linkfl"} & get_editable_layers()) > 0:
+        if len({
+                   enums.LAYERBEZ.EINZELFLAECHEN.value,
+                   enums.LAYERBEZ.HALTUNGEN.value,
+                   enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                } & get_editable_layers()) > 0:
             self.iface.messageBar().pushMessage(
                 "Bedienerfehler: ",
                 'Die zu verarbeitenden Layer dürfen nicht im Status "bearbeitbar" sein. Abbruch!',
@@ -381,7 +385,11 @@ class LinkFl(QKanPlugin):
         """
 
         # Check, ob die relevanten Layer nicht editable sind.
-        if len({"einleit", "haltungen", "linksw"} & get_editable_layers()) > 0:
+        if len({
+                   enums.LAYERBEZ.DIREKTEINLEITUNGEN.value,
+                   enums.LAYERBEZ.HALTUNGEN.value,
+                   enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value,
+               } & get_editable_layers()) > 0:
             logger.error_user(
                 "Bedienerfehler: "
                 'Die zu verarbeitenden Layer dürfen nicht im Status "bearbeitbar" sein. Abbruch!'
@@ -551,7 +559,14 @@ class LinkFl(QKanPlugin):
         # Check, ob die relevanten Layer nicht editable sind.
         if (
                 len(
-                    {"flaechen", "haltungen", "linkfl", "linksw", "tezg", "einleit"}
+                    {
+                        enums.LAYERBEZ.EINZELFLAECHEN.value,
+                        enums.LAYERBEZ.HALTUNGEN.value,
+                        enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                        enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value,
+                        enums.LAYERBEZ.HALTUNGSFLAECHEN.value,
+                        enums.LAYERBEZ.DIREKTEINLEITUNGEN.value,
+                    }
                     & get_editable_layers()
                 )
                 > 0
@@ -704,14 +719,14 @@ class LinkFl(QKanPlugin):
         if (
                 len(
                     {
-                        "flaechen",
-                        "haltungen",
-                        "schaechte",
-                        "linksw",
-                        "einleit",
-                        "linkfl",
-                        "teilgebiete",
-                        "tezg",
+                        enums.LAYERBEZ.EINZELFLAECHEN.value,
+                        enums.LAYERBEZ.HALTUNGEN.value,
+                        enums.LAYERBEZ.SCHAECHTE.value,
+                        enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value,
+                        enums.LAYERBEZ.DIREKTEINLEITUNGEN.value,
+                        enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                        enums.LAYERBEZ.TEILGEBIETE.value,
+                        enums.LAYERBEZ.HALTUNGSFLAECHEN.value,
                     }
                     & get_editable_layers()
                 )
@@ -749,7 +764,15 @@ class LinkFl(QKanPlugin):
         # Check, ob die relevanten Layer nicht editable sind.
         if (
                 len(
-                    {"flaechen", "haltungen", "linkfl", "linksw", "tezg", "einleit"}
+                    {
+                        enums.LAYERBEZ.EINZELFLAECHEN.value,
+                        enums.LAYERBEZ.HALTUNGEN.value,
+                        enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                        enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value,
+                        enums.LAYERBEZ.HALTUNGSFLAECHEN.value,
+                        enums.LAYERBEZ.DIREKTEINLEITUNGEN.value,
+                        "flaechen", "haltungen", "linkfl", "linksw", "tezg", "einleit"
+                    }
                     & get_editable_layers()
                 )
                 > 0

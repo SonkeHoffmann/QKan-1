@@ -1,8 +1,6 @@
-from typing import Callable, List, Optional
+import os.path
 
-from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
-from qgis.utils import pluginDirectory
 
 from qkan import QKan, get_default_dir
 from qkan.plugin import QKanPlugin
@@ -14,7 +12,7 @@ from .application_dialog import CompareDialog, AdjustDialog
 # noinspection PyUnresolvedReferences
 from . import resources
 
-from qkan.utils import get_logger
+from qkan.tools.qkan_utils import get_logger, get_editable_layers
 
 logger = get_logger("QKan.sync.application")
 
@@ -63,13 +61,25 @@ class Synchronisation(QKanPlugin):
             return
 
         self.compare_dlg.show()
+        if len(layers := get_editable_layers()) > 0:
+            _ = ', '.join(layers)
+            logger.warning("Anwenderfehler: Es dürfen keine Layer bearbeitbar sein\n"
+                              f"Betroffene Layer: {_}")
 
         if self.compare_dlg.exec_():
             self.compare_dlg._save_compare_config()
 
-            if self.compare_dlg.tf_extdb.text() == "":
+            if QKan.config.sync.ext == "":
+                logger.error_user("Anwenderfehler: Es wurde keine externe Datenbank gewählt!")
+                return
 
-                logger.error_user("QKan-Fehlermeldung - Fehler beim Import", "Es wurde kein Verzeichnis ausgewählt!")
+            elif os.path.abspath(QKan.config.sync.ext) == os.path.abspath(QKan.config.database.qkan):
+                logger.error_user("Anwenderfehler: Die externe Datenbank ist identisch mit der aktuellen.")
+                return
+            elif len(layers := get_editable_layers()) > 0:
+                _ = ', '.join(layers)
+                logger.error_user("Anwenderfehler: Es dürfen keine Layer bearbeitbar sein\n"
+                                  f"Betroffene Layer: {_}")
                 return
 
             self.tgbs_selected = self.compare_dlg.cb_teilgebiete.isChecked()
@@ -93,13 +103,27 @@ class Synchronisation(QKanPlugin):
         self.adjust_dlg._load_adjust_config()
 
         self.adjust_dlg.show()
+        if len(layers := get_editable_layers()) > 0:
+            _ = ', '.join(layers)
+            logger.warning("Anwenderfehler: Es dürfen keine Layer bearbeitbar sein\n"
+                              f"Betroffene Layer: {_}")
 
         if self.adjust_dlg.exec_():
             self.adjust_dlg._save_adjust_config()
 
             if QKan.config.sync.ext == "":
+                logger.error_user("Anwenderfehler: Es wurde keine externe Datenbank gewählt!")
+                return
 
-                logger.error_user("QKan-Fehlermeldung - Fehler beim Import", "Es wurde kein Verzeichnis ausgewählt!")
+            elif os.path.abspath(QKan.config.sync.ext) == os.path.abspath(QKan.config.database.qkan):
+                logger.error_user("Anwenderfehler: Die externe Datenbank ist identisch"
+                                  " mit der aktuellen.")
+                return
+
+            elif len(layers := get_editable_layers()) > 0:
+                _ = ', '.join(layers)
+                logger.error_user("Anwenderfehler: Es dürfen keine Layer bearbeitbar sein\n"
+                                  f"Betroffene Layer: {_}")
                 return
 
             self._run_adjust()

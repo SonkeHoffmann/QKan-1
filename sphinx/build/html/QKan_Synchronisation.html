@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Erstellung von QKan-Plugins &mdash; QKan 3.3.1 Dokumentation</title>
+  <title>Synchronisation von QKan-Projekten &mdash; QKan 3.3.1 Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=8209df7b" />
 
@@ -84,9 +84,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Erstellung von QKan-Plugins</li>
+      <li class="breadcrumb-item active">Synchronisation von QKan-Projekten</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/QKan_Plugins.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+            <a href="_sources/QKan_Synchronisation.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
       </li>
   </ul>
   <hr/>
@@ -94,65 +94,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="erstellung-von-qkan-plugins">
-<h1>Erstellung von QKan-Plugins<a class="headerlink" href="#erstellung-von-qkan-plugins" title="Link to this heading"></a></h1>
-<p>Grundsätzlich entspricht die Erstellung von QKan-Plugins in weiten Teilen der für QGIS empfohlenen Vorgehensweise.
-Wenn das Plugin als Bestandteil von QKan fungieren soll, sind lediglich einige kleinere Anpassungen und Ergänzungen notwendig.
-An dieser Stelle wird der Einfachheit halber der gesamte Workflow erläutert.</p>
-<section id="vorbereitung-des-moduls">
-<h2>Vorbereitung des Moduls<a class="headerlink" href="#vorbereitung-des-moduls" title="Link to this heading"></a></h2>
-<p>Am einfachsten ist es, den Vorlage-Ordner „template“ in das QKan-Module-Verzeichnis .plugins/qkan zu kopieren und diesen dann entsprechend dem
-gewünschten Modulnamen umzubenennen, wie z. B. das bereits existierende Modul „he8porter“.</p>
-</section>
-<section id="erzeugen-von-modul-icons">
-<h2>Erzeugen von Modul-Icons<a class="headerlink" href="#erzeugen-von-modul-icons" title="Link to this heading"></a></h2>
-<p>Ein Modul benötigt mindestens ein Icon, kann aber auch mehrere verwenden. Diese sollten im Dateityp <cite>*</cite>.png in der Größe von 32 x 32 oder
-64 x 64 Pixeln vorliegen, wobei beinahe beliebige Pixelgrößen verarbeitet werden.
-Alle Icons eines Moduls müssen mit dem Programm „pyrcc5.exe“ in die Python-Datei resources.py umgewandelt werden. Dazu muss der Pfad zu
-den Icons in der Datei resource.qrc als relatvier Pfad bezogen auf das Modulverzeichnis eingetragen sein. Da für die Umwandlung
-einige Voreinstellungen (hierfür ist das Ausführen der Datei „o4w_env.bat“ empfehlenswert) notwendig sind, empfiehlt sich die
-Verwendung der durch das ISCE erstellten Batch-Datei „make resource.bat“.</p>
-</section>
-<section id="anpassungen-in-den-moduldateien-py">
-<h2>Anpassungen in den Moduldateien (<cite>*</cite>.py)<a class="headerlink" href="#anpassungen-in-den-moduldateien-py" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>Folgende Bezeichnungen müssen angepasst werden:</dt><dd><ul class="simple">
-<li><p>„template“ durch den gewählten Modulnamen</p></li>
-<li><p>Icon-Bezeichnungen. Bei mehreren Icons müssen auch mehrere Aufrufe von QKan.instance.add_action() erfolgen</p></li>
-<li><p>In der Methode unload(self) müssen alle Dialoge wieder geschlossen werden</p></li>
-</ul>
-</dd>
-</dl>
-<section id="help-schaltflache-anbinden">
-<h3>Help-Schaltfläche anbinden<a class="headerlink" href="#help-schaltflache-anbinden" title="Link to this heading"></a></h3>
-<p>Die Schaltfläche im Formular ruft die Methode application_dialog.click_help() auf. Hier muss der Link auf die Dokumentation
-angepasst werden. Natürlich muss auch in der Dokumentation der Link, der hinter dem #-Zeichen steht (z. B. <strong>name_des_links</strong>),
-vorhanden sein. Meistens steht in der entsprechenden <cite>*</cite>.rst-Datei über der entsprechenden Überschrift ein
-Eintrag „.. _name_des_links:“, wobei das führende Unterstrichzeichen nicht zum Namen des Links gehört.</p>
-</section>
-<section id="allgemein-verfugbare-funktionen">
-<h3>Allgemein verfügbare Funktionen<a class="headerlink" href="#allgemein-verfugbare-funktionen" title="Link to this heading"></a></h3>
-<p>Im Modul <em>application</em> wird eine Klasse mit einem Namen ähnlich dem Modulnamen definiert, die folgende Aufgaben erfüllt:</p>
+  <section id="synchronisation-von-qkan-projekten">
+<h1>Synchronisation von QKan-Projekten<a class="headerlink" href="#synchronisation-von-qkan-projekten" title="Link to this heading"></a></h1>
+<p>Es gibt in der Praxis mehrere Fälle, in denen ein Vergleich zwischen zwei QKan-Projekten sinnvoll ist:</p>
 <ul class="simple">
-<li><p>Einbindung des Moduls in die Menüleiste von QKan</p></li>
-<li><p>Öffnen des Formulars</p></li>
-<li><p>Speichern der im Formular vorgenommenen Einträge</p></li>
-<li><p>Aufruf des Modulcodes</p></li>
+<li><p>Ein Teilgebiet wurde zur Bearbeitung herausgegeben und die Änderungen sollen übernommen werden</p></li>
+<li><p>Im Rahmen einer TV-Untersuchung wurde ein QKan-Projekt erstellt, dessen Daten in QKan-Bestandsprojekt über</p></li>
+<li><p>Es existieren zwei Versionen eines QKan-Projektes, aus denen wieder eine Version erstellt werden soll</p></li>
 </ul>
-<p>Dabei stehen über die geerbte Klasse „QKanPlugin“ folgende Funktionen zur Verfügung:</p>
-<ul class="simple">
-<li><p>self.default_dir: Standardverzeichnis des QKan-Projektes</p></li>
-<li><p>self.iface: iface-Modul von QGIS. Beim Debuggen wird es durch ein internes Modul ersetzt, damit die
-iface-Methodenaufrufe nicht ins Leere laufen</p></li>
-<li><p>self.log: Mit diesem Modul können Fehlermeldungen erzeugt werden, die je nach Aufruf in der internen
-Protokolldatei, im Meldungsfenster und/oder in der QGIS-Meldungsleiste erscheinen. Aktuell stehen zur Verfügung:
-- self.log.error_user(‚Anwenderfehler…‘)
-- self.log.error_code(‚Interner Programmierfehler‘)
-- self.log.error_data(‚Datenfehler‘)
-- self.log.notice(‚Information für den Anwender…‘)</p></li>
-</ul>
-</section>
-</section>
 </section>
 
 

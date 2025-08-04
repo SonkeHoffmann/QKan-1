@@ -281,29 +281,30 @@ def get_database_QKan(silent: bool = False) -> None:
 
 
 def get_editable_layers() -> Set[str]:
-    """Liste der Tabellen, für die in der Layerliste der Status editable aktiviert ist.
+    """Liste der aktuell editierbaren Layer.
     Dient dazu, sicherzustellen, dass keine Datenbankoperationen auf editierbare
-    Layer zugreifen."""
+    Layer zugreifen.
+
+    :returns:   Set mit allen editierbaren Layern.
+    """
 
     elayers = set([])  # Zuerst leere Liste anlegen
 
     layers = [x.layer() for x in iface.layerTreeCanvasBridge().rootGroup().findLayers()]
-    # logger.debug(u'Layerliste erstellt')
-    if len(layers) > 0:
-        # über Layer iterieren
-        for lay in layers:
-            lyattr = {}
+    # über Layer iterieren
+    for lay in layers:
+        lyattr = {}
 
-            # Attributstring für Layer splitten
-            for le in lay.source().split(" "):
-                if "=" in le:
-                    key, value = le.split("=", 1)
-                    lyattr[key] = value.strip('"').strip("'")
+        # Attributstring für Layer splitten
+        for le in lay.source().split(" "):
+            if "=" in le:
+                key, value = le.split("=", 1)
+                lyattr[key] = value.strip('"').strip("'")
 
-            # Falls Abschnitte 'table' und 'dbname' existieren, handelt es sich um einen Datenbank-Layer
-            if "table" in lyattr and "dbname" in lyattr:
-                if lay.isEditable():
-                    elayers.add(lyattr["table"])
+        # Falls Abschnitte 'table' und 'dbname' existieren, handelt es sich um einen Datenbank-Layer
+        if "table" in lyattr and "dbname" in lyattr:
+            if lay.isEditable():
+                elayers.add(lay.name())
     return elayers
 
 

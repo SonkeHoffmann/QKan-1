@@ -34,7 +34,7 @@ CREATE TABLE haltungen (
     ks REAL DEFAULT 1.5,                            /* abs. Rauheit (Prandtl-Colebrook) */
     haltungstyp TEXT DEFAULT 'Haltung',             /* join haltungstypen.bezeichnung */
     simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
-    rwanschluss INTEGER DEFAULT 0,                  /* soll bei TEZG-Erstellung berücksichtigt werden */
+    rwanschluss INTEGER DEFAULT 1,                  /* soll bei TEZG-Erstellung berücksichtigt werden */
     druckdicht INTEGER DEFAULT 0,                   /* Druckleitung */
     xschob REAL,
     yschob REAL,

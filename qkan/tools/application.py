@@ -365,7 +365,9 @@ class QKanTools(QKanPlugin):
         """Berechnen und Eintragen der Oberflächenabflussparameter in die Tabelle flaechen"""
 
         # Check, ob die relevanten Layer nicht editable sind.
-        if len({"flaechen"} & get_editable_layers()) > 0:
+        if len({
+                   enums.LAYERBEZ.EINZELFLAECHEN.value,
+               } & get_editable_layers()) > 0:
             warnung(
                 "Bedienerfehler: ",
                 'Die zu verarbeitenden Layer dürfen nicht im Status "bearbeitbar" sein. Abbruch!',

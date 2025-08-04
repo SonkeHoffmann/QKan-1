@@ -65,7 +65,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#erzeugung-von-haltungsflachen">Erzeugung von Haltungsflächen</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#markierung-von-transporthaltungen">Markierung von Transporthaltungen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#markierung-der-haltungen-fur-die-flachenerzeugung">Markierung der Haltungen für die Flächenerzeugung</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#markierung-groszer-aufzuteilender-flachen">Markierung großer aufzuteilender Flächen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#teilen-der-betroffenen-haltungsflachen">Teilen der betroffenen Haltungsflächen</a></li>
 </ul>
@@ -192,32 +192,31 @@ Heute werden die Haltungsflächen nur noch für zwei Aufgaben benötigt:</p>
 <li><p><strong>Geometrische Aufteilung von Flächen</strong>, die so groß sind, dass sie mehreren Haltungen zugeordnet werden müssen.</p></li>
 </ol>
 </div></blockquote>
-<p>Nach wie vor gilt die Anforderung, dass die Haltungsflächen das gesamte Einzugsgebiet geschlossen abdecken müssen.
-Da in der heutigen Zeit in der Regel die Grundstücksflächen als Open Data zur  Verfügung stehen, bietet es sich an,
-diese als Ersatz für die früher mühsam erstellten Haltungsflächen einzusetzen.
-Die nachfolgend erläuterten Schritte dienen der Datenvorbereitung.</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>Die sogenannten Transporthaltungen werden so markiert, dass sie nicht berücksichtigt werden. Es handelt sich dabei um die Haltungen, die nicht an eine Regenentwässerung angeschlossen sind und somit bei der Flächenzuordnung nicht berücksichtigt werden sollen.</p></li>
-<li><p>Markieren der aufzuteilenden Flächen. Da die Funktion nur diese Flächen bearbeiten muss, spart QKan erheblich Zeit im Vergleich mit einer Bearbeitung aller Flächen.</p></li>
-</ol>
-</div></blockquote>
-<section id="markierung-von-transporthaltungen">
-<span id="linktransporthaltungen"></span><h3>Markierung von Transporthaltungen<a class="headerlink" href="#markierung-von-transporthaltungen" title="Link to this heading"></a></h3>
+<p>Nach wie vor gilt für den Export aus QKan in eine Simulationsprogramm die Anforderung, dass die Haltungsflächen das gesamte Einzugsgebiet geschlossen abdecken müssen.
+QKan bietet mit dem der automatischen Erzeugung von Haltungslfächen die Möglichkeit, bezogen auf Teilgebiete automatisiwert Haltungsflächen zu erzeugen. Dabei
+werden bereits vorhandene Haltungsflächen berücksichtigt (und nicht geändert).
+Da in der heutigen Zeit in der Regel die Grundstücksflächen als Open Data zur Verfügung stehen, bietet es sich an,
+diese als Ersatz für die früher mühsam erstellten Haltungsflächen einzusetzen, und nur dort automatisch Haltungsflächen zu erzeugen, wo diese nicht geeignet sind. Dies ist z. B.
+bei Straßenflächen der Fall, weil sich diese über viele Haltungen erstrecken und deshalb wieter aufgeteilt werden müssten. Damit in diesen Bereichen eine automatische Aufteilung
+erfolgt, müssen diese Flächen im Layer <em>Haltungsflächen</em> gelöscht werden.</p>
+<p>Die nachfolgend erläuterten Schritte dienen der Datenvorbereitung.</p>
+<section id="markierung-der-haltungen-fur-die-flachenerzeugung">
+<span id="linktransporthaltungen"></span><h3>Markierung der Haltungen für die Flächenerzeugung<a class="headerlink" href="#markierung-der-haltungen-fur-die-flachenerzeugung" title="Link to this heading"></a></h3>
 <p>Diese Markierung geschieht über das Attribut „hat RW-Anschlüsse“ der Haltungsdaten.
-Hierfür muss der Layer „Haltungen“ ausgewählt und im <span class="guilabel">Bearbeitungsmodus</span> <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungs_modus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a> sein.
-Es sollten nun alle Haltungen ausgewählt werden, an die kein Regenwasser angeschlossen ist (z.B. Haltungen die „nur“ zum Auslauf führen; kurze Haltungen in Kreuzungsbereichen etc.).
-Anschließend können die gewählten Haltungen in der Attributtabelle über den Filter <span class="guilabel">Alle gewählten Objekte anzeigen</span> (siehe Bild unten) angezeigt werden.
-Der Status „hat RW-Anschlüsse“ muss nun für diese Haltungen von 1 (True) auf 0 (False) geändert werden. Dazu muss in der Drop-Down-Liste der Quick Field Calculation Bar die Spalte
-<span class="guilabel">hat RW-Anschlüsse</span> gewählt werden. Im Formelfenster wird 0 eingetragen und mit <span class="guilabel">Gewählte aktualisieren</span> werden alle ausgewählten Haltungen entsprechend
+Hierfür muss zuerst der Layer „Haltungen“ in der Layerkontrolle ausgewählt und der <span class="guilabel">Bearbeitungsmodus</span> <a class="reference internal" href="_images/Tool_bearbeitungsmodus.png"><img alt="Tool_bearbeitungs_modus" src="_images/Tool_bearbeitungsmodus.png" style="width: 1.25em;" /></a> aktiviert
+sein. Nun können die Markierungen bearbeitet werden. Soll eine größere Anzahl Haltungen
+in einem Arbeitsschritt bearbeitet werden, können diese zunächst ausgewählt werden und anschließend mit Hilfe der Bearbeitungsleiste gesetzt (1) oder gelöscht (0) werden (siehe Bild unten). Dazu muss in der
+Drop-Down-Liste im ersten Feld die Spalte
+<span class="guilabel">hat RW-Anschlüsse</span> gewählt werden. Im Formelfenster wird <em>0</em> oder <em>1</em> eingetragen und mit <span class="guilabel">Gewählte
+aktualisieren</span> werden alle ausgewählten Haltungen entsprechend
 angepasst.</p>
 <img alt="_images/liste_gewaehlte_aktualisieren.png" src="_images/liste_gewaehlte_aktualisieren.png" />
 <p>Nun können die Änderungen gespeichert, der Bearbeitungsmodus ausgeschalten und die Auswahl aufgehoben werden.</p>
 </section>
 <section id="markierung-groszer-aufzuteilender-flachen">
 <span id="linkflaechenaufteilung"></span><h3>Markierung großer aufzuteilender Flächen<a class="headerlink" href="#markierung-groszer-aufzuteilender-flachen" title="Link to this heading"></a></h3>
-<p>Die Flächen, die markiert werden sollten, sind in der Regel alle Straßenflächen, große unbefestigte Flächen
-und besonders große Gebäude. Wenn der Layer „Flächen“ in der gleichnamigen Gruppe aktiviert wurde, können
+<p>Im Layer <em>Einzelflächen</em> müssen die Flächen, die beim Export in ein Simulationsprogramm mit den gemäß dem vorherigen
+Kapitel erstellten Haltungsflächen verschnitten werden sollen, im Feld „aufteilen“ markiert werden. sollten, Beispiele für solche Flächen sind Straßenflächen, große unbefestigte Flächen und besonders große Gebäude. Wenn der Layer „Flächen“ in der gleichnamigen Gruppe aktiviert wurde, können
 die betroffenen Flächen mit der <a class="reference internal" href="_images/Tool_auswahlmodus.png"><img alt="Tool_auswahlfunktion" src="_images/Tool_auswahlmodus.png" style="width: 1.25em;" /></a> Auswahlfunktion selektiert werden. Auch hier gilt:
 falls es sich um sehr viele Flächen handelt, können die Bearbeitungsschritte jeweils für eine Teilauswahl
 wiederholt durchgeführt werden.</p>

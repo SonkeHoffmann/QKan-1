@@ -193,7 +193,13 @@ class ExportDialog(QKanDBDialog, EXPORT_CLASS):  # type: ignore
         # Check, ob die relevanten Layer nicht editable sind.
         if (
             len(
-                {"flaechen", "haltungen", "linkfl", "tezg", "schaechte"}
+                {
+                    enums.LAYERBEZ.EINZELFLAECHEN.value,
+                    enums.LAYERBEZ.HALTUNGEN.value,
+                    enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                    enums.LAYERBEZ.HALTUNGSFLAECHEN.value,
+                    enums.LAYERBEZ.SCHAECHTE.value,
+                }
                 & get_editable_layers()
             )
             > 0

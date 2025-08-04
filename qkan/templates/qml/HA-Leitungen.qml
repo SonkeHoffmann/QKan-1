@@ -440,33 +440,33 @@
   </fieldConfiguration>
   <aliases>
     <alias field="pk" index="0" name=""/>
-    <alias field="leitnam" index="1" name=""/>
-    <alias field="schoben" index="2" name="Schacht oben"/>
-    <alias field="schunten" index="3" name="Schacht unten"/>
-    <alias field="hoehe" index="4" name=""/>
-    <alias field="breite" index="5" name=""/>
-    <alias field="laenge" index="6" name=""/>
-    <alias field="aussendurchmesser" index="7" name=""/>
-    <alias field="sohleoben" index="8" name=""/>
-    <alias field="sohleunten" index="9" name=""/>
-    <alias field="baujahr" index="10" name=""/>
-    <alias field="haltnam" index="11" name=""/>
-    <alias field="teilgebiet" index="12" name=""/>
-    <alias field="strasse" index="13" name=""/>
-    <alias field="profilnam" index="14" name=""/>
-    <alias field="entwart" index="15" name=""/>
-    <alias field="material" index="16" name=""/>
-    <alias field="profilauskleidung" index="17" name=""/>
-    <alias field="innenmaterial" index="18" name=""/>
-    <alias field="ks" index="19" name=""/>
-    <alias field="anschlusstyp" index="20" name=""/>
-    <alias field="simstatus" index="21" name=""/>
-    <alias field="xschob" index="22" name=""/>
-    <alias field="yschob" index="23" name=""/>
-    <alias field="xschun" index="24" name=""/>
-    <alias field="yschun" index="25" name=""/>
-    <alias field="kommentar" index="26" name=""/>
-    <alias field="createdat" index="27" name=""/>
+    <alias field="leitnam" index="1" name="Bezeichnung"/>
+    <alias field="schoben" index="2" name="Anfangsschacht"/>
+    <alias field="schunten" index="3" name="Endschacht"/>
+    <alias field="hoehe" index="4" name="Profilhöhe"/>
+    <alias field="breite" index="5" name="Profilbreite"/>
+    <alias field="laenge" index="6" name="Haltungslänge"/>
+    <alias field="aussendurchmesser" index="7" name="Außendurchmesser"/>
+    <alias field="sohleoben" index="8" name="Sohlhöhe Anfang"/>
+    <alias field="sohleunten" index="9" name="Sohlhöhe Ende"/>
+    <alias field="baujahr" index="10" name="Baujahr"/>
+    <alias field="haltnam" index="11" name="Anschluss an Haltung"/>
+    <alias field="teilgebiet" index="12" name="Teilgebiet"/>
+    <alias field="strasse" index="13" name="Straße"/>
+    <alias field="profilnam" index="14" name="Profilbezeichnung"/>
+    <alias field="entwart" index="15" name="Entwässerungssystem"/>
+    <alias field="material" index="16" name="Material"/>
+    <alias field="profilauskleidung" index="17" name="Profilauskleidung"/>
+    <alias field="innenmaterial" index="18" name="Innenmaterial"/>
+    <alias field="ks" index="19" name="Rauheitsbeiwert"/>
+    <alias field="anschlusstyp" index="20" name="Anschlusstyp"/>
+    <alias field="simstatus" index="21" name="Planungsstatus"/>
+    <alias field="xschob" index="22" name="x Anfang"/>
+    <alias field="yschob" index="23" name="y Anfang"/>
+    <alias field="xschun" index="24" name="x Ende"/>
+    <alias field="yschun" index="25" name="Y Ende"/>
+    <alias field="kommentar" index="26" name="Kommentar"/>
+    <alias field="createdat" index="27" name="erstellt"/>
   </aliases>
   <defaults>
     <default expression="" applyOnUpdate="0" field="pk"/>
