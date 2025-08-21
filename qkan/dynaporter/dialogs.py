@@ -417,21 +417,25 @@ class ExportDialog(QKanDBDialog, EXPORT_CLASS):  # type: ignore
                 )"""
                 )
                 try:
-                    export_kanaldaten(
-                        self.iface,
-                        dynafile,
-                        template_dyna,
-                        db_qkan,
-                        dynabef_choice,
-                        dynaprof_choice,
-                        liste_teilgebiete,
-                        profile_ergaenzen,
-                        autonummerierung_dyna,
-                        mit_verschneidung,
-                        fangradius,
-                        mindestflaeche,
-                        max_loops,
-                    )
+                    # the previous connection might be stale when this point is 
+                    # reached (actually it should always be stale), causing this
+                    # function to fail. creating a new connection fixes this
+                    with DBConnection(dbname=database_qkan) as db_qkan:
+                        export_kanaldaten(
+                            self.iface,
+                            dynafile,
+                            template_dyna,
+                            db_qkan,
+                            dynabef_choice,
+                            dynaprof_choice,
+                            liste_teilgebiete,
+                            profile_ergaenzen,
+                            autonummerierung_dyna,
+                            mit_verschneidung,
+                            fangradius,
+                            mindestflaeche,
+                            max_loops,
+                        )
                 except QkanAbortError as e:
                     logger.error("Fehler beim Export der Kanaldaten: %s", e)
 
