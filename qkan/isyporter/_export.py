@@ -46,13 +46,16 @@ def SubElementText(parent: Element, name: str, text: Union[str, int]) -> Element
 
 # noinspection SqlNoDataSourceInspection, SqlResolve
 class ExportTask:
-    def __init__(self, db_qkan: DBConnection, export_file: str, vorlage: str):
+    def __init__(self, db_qkan: DBConnection, export_file: str, vorlage: str, auswahl_zustand:str, selection):
         self.db_qkan = db_qkan
         self.export_file = export_file
         self.vorlage = vorlage
+        self.auswahl_zustand = auswahl_zustand
+        self.selection = selection
 
         # XML base
         self.stamm: Optional[Element] = None
+        self.zustand: Optional[Element] = None
         self.hydraulik_objekte: Optional[Element] = None
 
         if self.vorlage != "":
@@ -71,7 +74,7 @@ class ExportTask:
                 or not self.stamm
             ):
                 return
-            sql = """
+            sql = f"""
             SELECT
                 haltnam,
                 schoben,
@@ -83,7 +86,7 @@ class ExportTask:
                 laenge,
                 simstatus,
                 kommentar
-            FROM haltungen WHERE haltungstyp = 'Wehr'
+            FROM haltungen WHERE haltungstyp = 'Wehr' {self.abfrage_h_where}
             """
 
             if not self.db_qkan.sql(sql, "db_qkan: export_wehre"):
@@ -92,31 +95,44 @@ class ExportTask:
             fortschritt("Export Wehre...", 0.5)
 
             for attr in self.db_qkan.fetchall():
+                (
+                    haltnam,
+                    schoben,
+                    schunten,
+                    sohleoben,
+                    sohleunten,
+                    hoehe,
+                    breite,
+                    laenge,
+                    simstatus_nr,
+                    kommentar,
+                ) = attr
+
                 obj = SubElement(self.hydraulik_objekte, "Hydraulikobjekt")
                 _create_children_text(
-                    obj, {"HydObjektTyp": None, "Objektbezeichnung": attr[0]}
+                    obj, {"HydObjektTyp": None, "Objektbezeichnung": haltnam}
                 )
 
                 _create_children_text(
                     SubElement(obj, "Wehr"),
                     {
-                        "SchachtZulauf": attr[1],                               # schoben
-                        "SchachtAblauf": attr[2],                               # schunten
-                        "Schwellenhoehe": attr[4],                              # sohleoben
-                        "Kammerhoehe": attr[5],                                 # hoehe
-                        "LaengeWehrschwelle": attr[7],                          # laenge
+                        "SchachtZulauf": schoben,                               # schoben
+                        "SchachtAblauf": schunten,                               # schunten
+                        "Schwellenhoehe": sohleunten,                              # sohleoben
+                        "Kammerhoehe": hoehe,                                 # hoehe
+                        "LaengeWehrschwelle": laenge,                          # laenge
                     },
                 )
 
                 abw = SubElement(self.stamm, "AbwassertechnischeAnlage")
-                SubElementText(abw, "Objektbezeichnung", attr[0])               # haltnam
+                SubElementText(abw, "Objektbezeichnung", haltnam)               # haltnam
                 SubElementText(abw, "Objektart", "1")
-                SubElementText(abw, "Status", attr[8])                          # simstatus
+                SubElementText(abw, "Status", simstatus_nr)                          # simstatus
                 _create_children_text(
                     SubElement(
                         SubElement(SubElement(abw, "Knoten"), "Bauwerk"), "Wehr_Ueberlauf"
                     ),
-                    {"LaengeWehrschwelle": attr[7]},                            # laenge
+                    {"LaengeWehrschwelle": laenge},                            # laenge
                 )
 
             fortschritt("Wehre eingefügt", 0.10)
@@ -132,15 +148,15 @@ class ExportTask:
             ):
                 return
 
-            sql = """
+            sql = f"""
             SELECT
                 haltnam,
                 sohleoben,
-                schunten,
                 schoben,
+                schunten,
                 simstatus,
                 kommentar
-            FROM haltungen WHERE haltungstyp = 'Pumpe'
+            FROM haltungen WHERE haltungstyp = 'Pumpe' {self.abfrage_h_where}
             """
 
             if not self.db_qkan.sql(sql, "db_qkan: export_pumpen"):
@@ -149,15 +165,24 @@ class ExportTask:
             fortschritt("Export Pumpen...", 0.15)
 
             for attr in self.db_qkan.fetchall():
+                (
+                    haltnam,
+                    sohleoben,
+                    schoben,
+                    schunten,
+                    simstatus_nr,
+                    kommentar,
+                ) = attr
+
                 obj = SubElement(self.hydraulik_objekte, "Hydraulikobjekt")
-                SubElementText(obj, "Objektbezeichnung", attr[0])
+                SubElementText(obj, "Objektbezeichnung", haltnam)
                 _create_children_text(
                     SubElement(obj, "Pumpe"),
                     {
                         "HydObjektTyp": None,
-                        "Sohlhoehe": attr[1],
-                        "SchachtAblauf": attr[2],
-                        "SchachtZulauf": attr[3],
+                        "Sohlhoehe": sohleoben,
+                        "SchachtAblauf": schunten,
+                        "SchachtZulauf": schoben,
                     },
                 )
 
@@ -165,9 +190,9 @@ class ExportTask:
                 _create_children_text(
                     abw,
                     {
-                        "Objektbezeichnung": attr[0],
+                        "Objektbezeichnung": haltnam,
                         "Objektart": str(1),
-                        "Status": attr[4],
+                        "Status": simstatus_nr,
                     },
                 )
                 SubElement(SubElement(abw, "Knoten"), "Bauwerk")
@@ -184,7 +209,7 @@ class ExportTask:
             ):
                 return
 
-            sql = """
+            sql = f"""
             SELECT
                 schaechte.schnam,
                 schaechte.deckelhoehe,
@@ -195,7 +220,6 @@ class ExportTask:
                 schaechte.kommentar,
                 schaechte.simstatus,
                 ea.isybau,
-                schaechte.entwart,
                 schaechte.strasse,
                 schaechte.knotentyp,
                 schaechte.baujahr,
@@ -203,7 +227,7 @@ class ExportTask:
             FROM schaechte
             LEFT JOIN Entwaesserungsarten AS ea
             ON schaechte.entwart = ea.bezeichnung
-            WHERE schaechte.schachttyp = 'Auslass'
+            WHERE schaechte.schachttyp = 'Auslass' {self.abfrage_s_and}
             """
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_auslaesse"):
@@ -211,24 +235,41 @@ class ExportTask:
 
             fortschritt("Export Auslässe...", 0.25)
             for attr in self.db_qkan.fetchall():
+
+                (
+                    schnam,
+                    deckelhoehe,
+                    sohlhoehe,
+                    durchm,
+                    xsch,
+                    ysch,
+                    kommentar,
+                    simstatus_nr,
+                    entwart_nr,
+                    strasse_nam,
+                    kntoentyp,
+                    baujahr,
+                    material,
+                ) = attr
+
                 abw = SubElement(self.stamm, "AbwassertechnischeAnlage")
                 _create_children_text(
                     abw,
                     {
-                        "Objektbezeichnung": attr[0],
+                        "Objektbezeichnung": schnam,
                         "Objektart": str(2),
-                        "Status": attr[7],
-                        "baujahr": attr[12],
-                        "Entwaesserungsart": attr[8],
-                        "Kommentar": attr[6],
+                        "Status": simstatus_nr,
+                        "baujahr": baujahr,
+                        "Entwaesserungsart": entwart_nr,
+                        "Kommentar": kommentar,
                     },
                 )
                 knoten = SubElement(abw, "Knoten")
-                SubElementText(knoten, "KnotenTyp", 0)  # TODO: Is None sometimes
+                SubElementText(knoten, "KnotenTyp", 0)
                 schacht = SubElement(knoten, "Schacht")
                 strasse = SubElement(abw, "Lage")
-                SubElementText(strasse, "Strassenname", attr[10])
-                SubElementText(schacht, "Schachttiefe", attr[1]-attr[2])
+                SubElementText(strasse, "Strassenname", strasse_nam)
+                SubElementText(schacht, "Schachttiefe", deckelhoehe-sohlhoehe)
                 _create_children(
                     SubElement(knoten, "Bauwerk"), ["Bauwerktyp", "Auslaufbauwerk"]
                 )
@@ -250,23 +291,23 @@ class ExportTask:
                     SubElement(geom_knoten, "Punkt"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Punkthoehe": attr[1],
-                        "Rechtswert": attr[7],
-                        "Hochwert": attr[8],
+                        "Punkthoehe": sohlhoehe,
+                        "Rechtswert": xsch,
+                        "Hochwert": ysch,
                     },
                 )
                 _create_children_text(
                     SubElement(geom_knoten, "Punkt"),
-                    {"PunktattributAbwasser": "GOK", "Punkthoehe": attr[2]},
+                    {"PunktattributAbwasser": "GOK", "Punkthoehe": deckelhoehe},
                 )
-                #TODO: prüfen ob GOK oder HP
+
                 _create_children_text(
                     SubElement(geom_knoten, "Punkt"),
                     {
                         "PunktattributAbwasser": "SMP",
-                        "Punkthoehe": attr[2],
-                        "Rechtswert": attr[4],
-                        "Hochwert": attr[5],
+                        "Punkthoehe": sohlhoehe,
+                        "Rechtswert": xsch,
+                        "Hochwert": ysch,
                     },
                 )
             fortschritt("Auslässe eingefügt", 0.3)
@@ -276,7 +317,7 @@ class ExportTask:
             tree = ET.parse(self.vorlage)
             root = tree.getroot()
 
-            sql = """
+            sql = f"""
                         SELECT
                             schaechte.schnam,
                             schaechte.deckelhoehe,
@@ -286,7 +327,6 @@ class ExportTask:
                             y(schaechte.geop) AS ysch,
                             schaechte.kommentar,
                             schaechte.simstatus,
-                            ea.isybau,
                             schaechte.entwart,
                             schaechte.strasse,
                             schaechte.knotentyp,
@@ -295,7 +335,7 @@ class ExportTask:
                         FROM schaechte
                         LEFT JOIN Entwaesserungsarten AS ea
                         ON schaechte.entwart = ea.bezeichnung
-                        WHERE schaechte.schachttyp = 'Auslass'
+                        WHERE schaechte.schachttyp = 'Auslass' {self.abfrage_s_and}
                         """
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_auslaesse"):
@@ -303,8 +343,25 @@ class ExportTask:
 
             fortschritt("Export Auslässe...", 0.25)
             for attr in self.db_qkan.fetchall():
+
+                (
+                    schnam,
+                    deckelhoehe,
+                    sohlhoehe,
+                    durchm,
+                    xsch,
+                    ysch,
+                    kommentar,
+                    simstatus_nr,
+                    entwart_nr,
+                    strasse_nam,
+                    kntoentyp,
+                    baujahr,
+                    material,
+                ) = attr
+
                 blocks = root.find(
-                    f"d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektbezeichnung={attr[0]}/"
+                    f"d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektbezeichnung={schnam}/"
                     "d:Knoten/d:Bauwerk/d:Auslaufbauwerk/../../..", self.NS,)
 
                 if blocks is None:
@@ -317,20 +374,20 @@ class ExportTask:
                     _create_children_text(
                         new_item,
                         {
-                            "Objektbezeichnung": attr[0],
+                            "Objektbezeichnung": schnam,
                             "Objektart": str(2),
-                            "Status": attr[7],
-                            "Baujahr": attr[12],
-                            "Entwaesserungsart": attr[8],
-                            "Kommentar": attr[6],
+                            "Status": simstatus_nr,
+                            "Baujahr": baujahr,
+                            "Entwaesserungsart": entwart_nr,
+                            "Kommentar": kommentar,
                         },
                     )
                     knoten = SubElement(new_item, "Knoten")
-                    SubElementText(knoten, "KnotenTyp", 0)  # TODO: Is None sometimes
+                    SubElementText(knoten, "KnotenTyp", 0)
                     schacht = SubElement(knoten, "Schacht")
                     strasse = SubElement(new_item, "Lage")
-                    SubElementText(strasse, "Strassenname", attr[10])
-                    SubElementText(schacht, "Schachttiefe", attr[1] - attr[2])
+                    SubElementText(strasse, "Strassenname", strasse_nam)
+                    SubElementText(schacht, "Schachttiefe", deckelhoehe - sohlhoehe)
                     _create_children(
                         SubElement(knoten, "Bauwerk"), ["Bauwerktyp", "Auslaufbauwerk"]
                     )
@@ -351,23 +408,23 @@ class ExportTask:
                         SubElement(geom_knoten, "Punkt"),
                         {
                             "PunktattributAbwasser": "DMP",
-                            "Punkthoehe": attr[1],
-                            "Rechtswert": attr[7],
-                            "Hochwert": attr[8],
+                            "Punkthoehe": deckelhoehe,
+                            "Rechtswert": xsch,
+                            "Hochwert": ysch,
                         },
                     )
                     _create_children_text(
                         SubElement(geom_knoten, "Punkt"),
-                        {"PunktattributAbwasser": "GOK", "Punkthoehe": attr[2]},
+                        {"PunktattributAbwasser": "GOK", "Punkthoehe": deckelhoehe},
                     )
-                    # TODO: prüfen ob GOK oder HP
+
                     _create_children_text(
                         SubElement(geom_knoten, "Punkt"),
                         {
                             "PunktattributAbwasser": "SMP",
-                            "Punkthoehe": attr[2],
-                            "Rechtswert": attr[4],
-                            "Hochwert": attr[5],
+                            "Punkthoehe": sohlhoehe,
+                            "Rechtswert": xsch,
+                            "Hochwert": ysch,
                         },
                     )
                 fortschritt("Auslässe eingefügt", 0.3)
@@ -388,7 +445,7 @@ class ExportTask:
             ):
                 return
 
-            sql = """
+            sql = f"""
             SELECT
                 schaechte.schnam,
                 schaechte.deckelhoehe,
@@ -396,7 +453,6 @@ class ExportTask:
                 schaechte.durchm,
                 schaechte.druckdicht,
                 ea.isybau,
-                schaechte.entwart,
                 schaechte.strasse,
                 schaechte.knotentyp,
                 schaechte.kommentar,
@@ -407,36 +463,54 @@ class ExportTask:
             FROM schaechte
             LEFT JOIN Entwaesserungsarten AS ea
             ON schaechte.entwart = ea.bezeichnung
-            WHERE schaechte.schachttyp = 'Schacht'
-        """
+            WHERE schaechte.schachttyp = 'Schacht' {self.abfrage_s_and}
+            """
             if not self.db_qkan.sql(sql, "db_qkan: export_schaechte"):
                 return
 
             fortschritt("Export Schächte...", 0.35)
             for attr in self.db_qkan.fetchall():
+
+                (
+                    schnam,
+                    deckelhoehe,
+                    sohlhoehe,
+                    durchm,
+                    druckdicht,
+                    entwart_nr,
+                    strasse_nam,
+                    kntoentyp,
+                    kommentar,
+                    simstatus_nr,
+                    xsch,
+                    ysch,
+                    baujahr,
+                ) = attr
+
                 abw = SubElement(self.stamm, "AbwassertechnischeAnlage")
                 _create_children_text(
                     abw,
                     {
-                        "Objektbezeichnung": attr[0],
+                        "Objektbezeichnung": schnam,
                         "Objektart": str(2),
-                        "Status": attr[10],
-                        "Baujahr": attr[13],
-                        "Entwaesserungsart": attr[5],
-                        "Kommentar": attr[9],
+                        "Status": simstatus_nr,
+                        "Baujahr": baujahr,
+                        "Entwaesserungsart": entwart_nr,
+                        "Kommentar": kommentar,
                     },
                 )
 
                 knoten = SubElement(abw, "Knoten")
                 SubElementText(knoten, "KnotenTyp", 0)
                 schacht = SubElement(knoten, "Schacht")
-                SubElementText(schacht, "Schachttiefe", attr[1] - attr[2])
+                if deckelhoehe is not None and deckelhoehe>0:
+                    SubElementText(schacht, "Schachttiefe", deckelhoehe - sohlhoehe)
                 _create_children(
                     SubElement(knoten, "Schacht"), ["Schachttiefe", "AnzahlAnschluesse"]
                 )
                 # geom_knoten = SubElement(
                 #    SubElement(SubElement(abw, "Geometrie"), "Geometriedaten"), "Knoten"
-                # )
+                #
                 geo = SubElement(abw, "Geometrie")
                 x = QgsProject.instance().crs().authid()
                 x.replace('EPSG:', '')
@@ -451,9 +525,9 @@ class ExportTask:
                     SubElement(geom_knoten, "Punkt"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Punkthoehe": attr[1],
-                        "Rechtswert": attr[7],
-                        "Hochwert": attr[8],
+                        "Punkthoehe": deckelhoehe,
+                        "Rechtswert": xsch,
+                        "Hochwert": ysch,
                     },
                 )
 
@@ -461,13 +535,14 @@ class ExportTask:
                 #    SubElement(geom_knoten, "Punkt"),
                 #    {"PunktattributAbwasser": "HP", "Punkthoehe": attr[2]},
                 #)
+
                 _create_children_text(
                     SubElement(geom_knoten, "Punkt"),
                     {
                         "PunktattributAbwasser": "SMP",
-                        "Punkthoehe": attr[2],
-                        "Rechtswert": attr[11],
-                        "Hochwert": attr[12],
+                        "Punkthoehe": sohlhoehe,
+                        "Rechtswert": xsch,
+                        "Hochwert": ysch,
                     },
                 )
 
@@ -478,7 +553,7 @@ class ExportTask:
             tree = ET.parse(self.vorlage)
             root = tree.getroot()
 
-            sql = """
+            sql = f"""
                         SELECT
                             schaechte.schnam,
                             schaechte.deckelhoehe,
@@ -497,7 +572,7 @@ class ExportTask:
                         FROM schaechte
                         LEFT JOIN Entwaesserungsarten AS ea
                         ON schaechte.entwart = ea.bezeichnung
-                        WHERE schaechte.schachttyp = 'Schacht'
+                        WHERE schaechte.schachttyp = 'Schacht' {self.abfrage_s_and}
                     """
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_schaechte"):
@@ -505,8 +580,25 @@ class ExportTask:
 
             fortschritt("Export Schacht...", 0.25)
             for attr in self.db_qkan.fetchall():
+
+                (
+                    schnam,
+                    deckelhoehe,
+                    sohlhoehe,
+                    durchm,
+                    xsch,
+                    ysch,
+                    kommentar,
+                    simstatus_nr,
+                    entwart_nr,
+                    strasse_nam,
+                    kntoentyp,
+                    baujahr,
+                    material,
+                ) = attr
+
                 blocks = root.find(
-                    f".//d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektbezeichnung={attr[0]}]/[d:Objektart='2']", self.NS, )
+                    f".//d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektbezeichnung={schnam}]/[d:Objektart='2']", self.NS, )
 
                 if blocks is None:
                     # Daten ergänzen
@@ -518,20 +610,20 @@ class ExportTask:
                     _create_children_text(
                         new_item,
                         {
-                            "Objektbezeichnung": attr[0],
+                            "Objektbezeichnung": schnam,
                             "Objektart": str(2),
-                            "Status": attr[7],
-                            "Baujahr": attr[12],
-                            "Entwaesserungsart": attr[8],
-                            "Kommentar": attr[6],
+                            "Status": simstatus_nr,
+                            "Baujahr": baujahr,
+                            "Entwaesserungsart": entwart_nr,
+                            "Kommentar": kommentar,
                         },
                     )
                     knoten = SubElement(new_item, "Knoten")
-                    SubElementText(knoten, "KnotenTyp", 0)  # TODO: Is None sometimes
+                    SubElementText(knoten, "KnotenTyp", 0)
                     schacht = SubElement(knoten, "Schacht")
                     strasse = SubElement(new_item, "Lage")
-                    SubElementText(strasse, "Strassenname", attr[10])
-                    SubElementText(schacht, "Schachttiefe", round(attr[1] - attr[2],2))
+                    SubElementText(strasse, "Strassenname", strasse_nam)
+                    SubElementText(schacht, "Schachttiefe", round(deckelhoehe - sohlhoehe,2))
                     _create_children(
                         SubElement(knoten, "Schacht"), ["Schachttiefe", "AnzahlAnschluesse"]
                     )
@@ -552,23 +644,23 @@ class ExportTask:
                         SubElement(geom_knoten, "Punkt"),
                         {
                             "PunktattributAbwasser": "DMP",
-                            "Punkthoehe": attr[1],
-                            "Rechtswert": attr[7],
-                            "Hochwert": attr[8],
+                            "Punkthoehe": deckelhoehe,
+                            "Rechtswert": xsch,
+                            "Hochwert": ysch,
                         },
                     )
                     _create_children_text(
                         SubElement(geom_knoten, "Punkt"),
-                        {"PunktattributAbwasser": "GOK", "Punkthoehe": attr[2]},
+                        {"PunktattributAbwasser": "GOK", "Punkthoehe": deckelhoehe},
                     )
-                    # TODO: prüfen ob GOK oder HP
+
                     _create_children_text(
                         SubElement(geom_knoten, "Punkt"),
                         {
                             "PunktattributAbwasser": "SMP",
-                            "Punkthoehe": attr[2],
-                            "Rechtswert": attr[4],
-                            "Hochwert": attr[5],
+                            "Punkthoehe": sohlhoehe,
+                            "Rechtswert": xsch,
+                            "Hochwert": ysch,
                         },
                     )
                 fortschritt("Schaechte eingefügt", 0.3)
@@ -588,14 +680,13 @@ class ExportTask:
             ):
                 return
 
-            sql = """
+            sql = f"""
             SELECT
                 schaechte.schnam,
                 schaechte.deckelhoehe,
                 schaechte.sohlhoehe,
                 schaechte.durchm,
                 ea.isybau,
-                schaechte.entwart,
                 schaechte.strasse,
                 x(schaechte.geop) AS xsch,
                 y(schaechte.geop) AS ysch,
@@ -606,7 +697,7 @@ class ExportTask:
             FROM schaechte
             left join Entwaesserungsarten AS ea
             ON schaechte.entwart = ea.bezeichnung
-            WHERE schaechte.schachttyp = 'Speicher'
+            WHERE schaechte.schachttyp = 'Speicher' {self.abfrage_s_and}
             """
 
             if not self.db_qkan.sql(sql, "db_qkan: export_speicher"):
@@ -614,21 +705,37 @@ class ExportTask:
 
             fortschritt("Export Speicherschächte...", 0.45)
             for attr in self.db_qkan.fetchall():
+
+                (
+                    schnam,
+                    deckelhoehe,
+                    sohlhoehe,
+                    durchm,
+                    entwart_nr,
+                    strasse_nam,
+                    xsch,
+                    ysch,
+                    kommentar,
+                    simstatus_nr,
+                    kntoentyp,
+                    baujahr,
+                ) = attr
+
                 abw = SubElement(self.stamm, "AbwassertechnischeAnlage")
                 _create_children_text(
                     abw,
                     {
-                        "Objektbezeichnung": attr[0],
+                        "Objektbezeichnung": schnam,
                         "Objektart": str(2),
-                        "Status": attr[10],
-                        "Baujahr": attr[12],
-                        "Entwaesserungsart": attr[4],
-                        "Kommentar": attr[9],
+                        "Status": simstatus_nr,
+                        "Baujahr": baujahr,
+                        "Entwaesserungsart": entwart_nr,
+                        "Kommentar": kommentar,
                     },
                 )
 
                 knoten = SubElement(abw, "Knoten")
-                SubElementText(knoten, "KnotenTyp",0)  # TODO: Is None sometimes
+                SubElementText(knoten, "KnotenTyp",0)
                 bauwerk = SubElement(knoten, "Bauwerk")
                 SubElement(bauwerk, "Bauwerkstyp")
                 _create_children(
@@ -652,18 +759,18 @@ class ExportTask:
                     SubElement(geom_knoten, "Punkt"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Punkthoehe": attr[1],
-                        "Rechtswert": attr[7],
-                        "Hochwert": attr[8],
+                        "Punkthoehe": deckelhoehe,
+                        "Rechtswert": xsch,
+                        "Hochwert": ysch,
                     },
                 )
                 _create_children_text(
                     SubElement(geom_knoten, "Punkt"),
                     {
                         "PunktattributAbwasser": "SMP",
-                        "Punkthoehe": attr[2],
-                        "Rechtswert": attr[7],
-                        "Hochwert": attr[8],
+                        "Punkthoehe": sohlhoehe,
+                        "Rechtswert": xsch,
+                        "Hochwert": ysch,
                     },
                 )
             fortschritt("Speicher eingefügt", 0.5)
@@ -674,7 +781,7 @@ class ExportTask:
             tree = ET.parse(self.vorlage)
             root = tree.getroot()
 
-            sql = """
+            sql = f"""
                         SELECT
                             schaechte.schnam,
                             schaechte.deckelhoehe,
@@ -693,7 +800,7 @@ class ExportTask:
                         FROM schaechte
                         LEFT JOIN Entwaesserungsarten AS ea
                         ON schaechte.entwart = ea.bezeichnung
-                        WHERE schaechte.schachttyp = 'Speicher'
+                        WHERE schaechte.schachttyp = 'Speicher' {self.abfrage_s_and}
                     """
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_schaechte"):
@@ -701,8 +808,24 @@ class ExportTask:
 
             fortschritt("Export Speicher...", 0.25)
             for attr in self.db_qkan.fetchall():
+
+                (
+                    schnam,
+                    deckelhoehe,
+                    sohlhoehe,
+                    durchm,
+                    entwart_nr,
+                    strasse_nam,
+                    xsch,
+                    ysch,
+                    kommentar,
+                    simstatus_nr,
+                    kntoentyp,
+                    baujahr,
+                ) = attr
+
                 blocks = root.find(
-                    f".//d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektbezeichnung={attr[0]}/[d:Objektart='2']", self.NS, )
+                    f".//d:Datenkollektive/d:Stammdatenkollektiv/d:AbwassertechnischeAnlage/[d:Objektbezeichnung={schnam}/[d:Objektart='2']", self.NS, )
 
                 if blocks is None:
                     # Daten ergänzen
@@ -714,16 +837,16 @@ class ExportTask:
                     _create_children_text(
                         new_item,
                         {
-                            "Objektbezeichnung": attr[0],
+                            "Objektbezeichnung": schnam,
                             "Objektart": str(2),
-                            "Status": attr[7],
-                            "Baujahr": attr[12],
-                            "Entwaesserungsart": attr[8],
-                            "Kommentar": attr[6],
+                            "Status": simstatus_nr,
+                            "Baujahr": baujahr,
+                            "Entwaesserungsart": entwart_nr,
+                            "Kommentar": kommentar,
                         },
                     )
                     knoten = SubElement(new_item, "Knoten")
-                    SubElementText(knoten, "KnotenTyp", 0)  # TODO: Is None sometimes
+                    SubElementText(knoten, "KnotenTyp", 0)
                     bauwerk = SubElement(knoten, "Bauwerk")
                     SubElement(bauwerk, "Bauwerkstyp")
                     _create_children(
@@ -746,23 +869,23 @@ class ExportTask:
                         SubElement(geom_knoten, "Punkt"),
                         {
                             "PunktattributAbwasser": "DMP",
-                            "Punkthoehe": attr[1],
-                            "Rechtswert": attr[7],
-                            "Hochwert": attr[8],
+                            "Punkthoehe": deckelhoehe,
+                            "Rechtswert": xsch,
+                            "Hochwert": ysch,
                         },
                     )
                     _create_children_text(
                         SubElement(geom_knoten, "Punkt"),
-                        {"PunktattributAbwasser": "GOK", "Punkthoehe": attr[2]},
+                        {"PunktattributAbwasser": "GOK", "Punkthoehe": deckelhoehe},
                     )
-                    # TODO: prüfen ob GOK oder HP
+
                     _create_children_text(
                         SubElement(geom_knoten, "Punkt"),
                         {
                             "PunktattributAbwasser": "SMP",
-                            "Punkthoehe": attr[2],
-                            "Rechtswert": attr[4],
-                            "Hochwert": attr[5],
+                            "Punkthoehe": sohlhoehe,
+                            "Rechtswert": xsch,
+                            "Hochwert": ysch,
                         },
                     )
                 fortschritt("Speicher eingefügt", 0.3)
@@ -784,7 +907,7 @@ class ExportTask:
             ):
                 return
 
-            sql = """
+            sql = f"""
             SELECT
                 haltungen.haltnam,
                 haltungen.schoben,
@@ -798,7 +921,6 @@ class ExportTask:
                 haltungen.strasse,
                 haltungen.material,
                 ea.isybau,
-                haltungen.entwart,
                 haltungen.ks,
                 haltungen.simstatus,
                 haltungen.kommentar,
@@ -812,7 +934,7 @@ class ExportTask:
                 haltungen.innenmaterial
             FROM haltungen
             LEFT JOIN Entwaesserungsarten AS ea 
-            ON haltungen.entwart = ea.bezeichnung
+            ON haltungen.entwart = ea.bezeichnung {self.abfrage_h_where}
             """
 
             if not self.db_qkan.sql(sql, "db_qkan: export_haltungen"):
@@ -821,30 +943,48 @@ class ExportTask:
             fortschritt("Export Haltungen...", 0.55)
 
             for attr in self.db_qkan.fetchall():
+                (
+                    haltnam,
+                    schoben,
+                    schunten,
+                    hoehe,
+                    breite,
+                    laenge,
+                    sohleoben,
+                    sohleunten,
+                    profilnam_nr,
+                    strasse_nam,
+                    material,
+                    entwart_nr,
+                    ks,
+                    simstatus_nr,
+                    kommentar,
+                    xschob,
+                    yschob,
+                    xschun,
+                    yschun,
+                    baujahr,
+                    aussendurchmesser,
+                    profilauskleidung,
+                    innenmaterial,
+                ) = attr
+
                 obj = SubElement(self.hydraulik_objekte, "HydraulikObjekt")
                 _create_children(obj, ["HydObjektTyp", "Objektbezeichnung"])
                 _create_children_text(
                     SubElement(obj, "Haltung"),
-                    {"Objektbezeichnung": attr[0], "Berechnungslaenge": attr[5],"Rauigkeitsansatz": 1, "RauigkeitsbeiwertKb": attr[13]},
+                    {"Objektbezeichnung": haltnam, "Berechnungslaenge": laenge,"Rauigkeitsansatz": 1, "RauigkeitsbeiwertKb": ks},
                 )
 
                 abw = SubElement(self.stamm, "AbwassertechnischeAnlage")
                 _create_children_text(
                     abw,
                     {
-                        "Objektbezeichnung": attr[0],
+                        "Objektbezeichnung": haltnam,
                         "Objektart": str(1),
-                        "Status": attr[14],
-                        "Baujahr": attr[18],
-                        "Entwaesserungsart": attr[11],
-                    },
-                )
-
-                strasse = SubElement(abw, "Lage")
-                _create_children_text(
-                    strasse,
-                    {
-                        "Strassenname": attr[9],
+                        "Status": simstatus_nr,
+                        "Baujahr": baujahr,
+                        "Entwaesserungsart": entwart_nr,
                     },
                 )
 
@@ -853,14 +993,14 @@ class ExportTask:
                     kante,
                     {
                         "KantenTyp": 0,
-                        "KnotenZulauf": attr[1],
+                        "KnotenZulauf": schoben,
                         "KnotenZulaufTyp": 0,
-                        "KnotenAblauf": attr[2],
+                        "KnotenAblauf": schunten,
                         "KnotenAblaufTyp": 0,
-                        "Material": attr[10],
-                        "SohlhoeheZulauf": attr[6],
-                        "SohlhoeheAblauf": attr[7],
-                        "Laenge": attr[5],
+                        "SohlhoeheZulauf": sohleoben,
+                        "SohlhoeheAblauf": sohleunten,
+                        "Laenge": laenge,
+                        "Material": material,
                     },
                 )
 
@@ -869,16 +1009,24 @@ class ExportTask:
                     {
                         "ProfilID": None,
                         "SonderprofilVorhanden": None,
-                        "Profilart": attr[8],
-                        "Profilbreite": (attr[4]),
-                        "Profilhoehe": (attr[3]),
-                        "Aussendurchmesser": attr[19],
-                        "Auskleidung": attr[20],
-                        "MaterialAuskleidung": attr[21],
+                        "Profilart": profilnam_nr,
+                        "Profilbreite": breite,
+                        "Profilhoehe": hoehe,
+                        "Aussendurchmesser": aussendurchmesser,
+                        "Auskleidung": profilauskleidung,
+                        "MaterialAuskleidung": innenmaterial,
                     },
                 )
 
-                SubElementText(SubElement(kante, "Haltung"), "DMPLaenge", attr[5])
+                SubElementText(SubElement(kante, "Haltung"), "DMPLaenge", laenge)
+
+                strasse = SubElement(abw, "Lage")
+                _create_children_text(
+                    strasse,
+                    {
+                        "Strassenname": strasse_nam,
+                    },
+                )
 
                 geom = SubElement(abw, "Geometrie")
                 x = QgsProject.instance().crs().authid()
@@ -894,20 +1042,24 @@ class ExportTask:
                 kante = SubElement(
                     SubElement(SubElement(geom, "Geometriedaten"), "Kanten"), "Kante"
                 )
+
+
                 _create_children_text(
                     SubElement(kante, "Start"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Rechtswert": attr[16],
-                        "Hochwert": attr[17],
+                        "Rechtswert": xschob,
+                        "Hochwert": yschob,
+                        "Punkthoehe": sohleoben,
                     },
                 )
                 _create_children_text(
                     SubElement(kante, "Ende"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Rechtswert": attr[18],
-                        "Hochwert": attr[19],
+                        "Rechtswert": xschun,
+                        "Hochwert": yschun,
+                        "Punkthoehe":sohleunten,
                     },
                 )
 
@@ -924,8 +1076,18 @@ class ExportTask:
             ):
                 return
 
-            sql = """
-                    SELECT
+            if self.abfrage_h_where:
+                sql = f"""
+                        WITH anschluss_haltung as( SELECT 
+                        a.pk AS anschluss_id, 
+                         haltungen.pk AS haltung_id
+                        FROM anschlussleitungen a
+                        JOIN haltungen 
+                        ON ST_Intersects(a.geom, haltungen.geom)
+                         {self.abfrage_h_where}
+                        )
+                        
+                        SELECT
                         anschlussleitungen.leitnam,
                         anschlussleitungen.schoben,
                         anschlussleitungen.schunten,
@@ -934,12 +1096,9 @@ class ExportTask:
                         anschlussleitungen.laenge,
                         anschlussleitungen.sohleoben,
                         anschlussleitungen.sohleunten,
-                        anschlussleitungen.deckeloben,
-                        anschlussleitungen.deckelunten,
                         anschlussleitungen.profilnam,
                         anschlussleitungen.material,
                         ea.isybau,
-                        anschlussleitungen.entwart,
                         anschlussleitungen.ks,
                         anschlussleitungen.simstatus,
                         anschlussleitungen.kommentar,
@@ -950,29 +1109,82 @@ class ExportTask:
                     FROM anschlussleitungen
                     LEFT JOIN Entwaesserungsarten AS ea 
                     ON anschlussleitungen.entwart = ea.bezeichnung
-                    """
+                    INNER JOIN anschluss_haltung  ah
+                    ON anschlussleitungen.pk =ah.anschluss_id
+                        """
 
-            if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
-                return
+                if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
+                    return
+
+
+            else:
+                sql = f"""
+                        SELECT
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.schoben,
+                            anschlussleitungen.schunten,
+                            anschlussleitungen.hoehe,
+                            anschlussleitungen.breite,
+                            anschlussleitungen.laenge,
+                            anschlussleitungen.sohleoben,
+                            anschlussleitungen.sohleunten,
+                            anschlussleitungen.profilnam,
+                            anschlussleitungen.material,
+                            ea.isybau,
+                            anschlussleitungen.ks,
+                            anschlussleitungen.simstatus,
+                            anschlussleitungen.kommentar,
+                            x(PointN(anschlussleitungen.geom, 1)) AS xschob,
+                            y(PointN(anschlussleitungen.geom, 1)) AS yschob,
+                            x(PointN(anschlussleitungen.geom, -1)) AS xschun,
+                            y(PointN(anschlussleitungen.geom, -1)) AS yschun
+                        FROM anschlussleitungen
+                        LEFT JOIN Entwaesserungsarten AS ea 
+                        ON anschlussleitungen.entwart = ea.bezeichnung 
+                        """
+
+                if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
+                    return
 
             fortschritt("Export Anschlussleitungen...", 0.65)
 
             for attr in self.db_qkan.fetchall():
+                (
+                    leitnam,
+                    schoben,
+                    schunten,
+                    hoehe,
+                    breite,
+                    laenge,
+                    sohleoben,
+                    sohleunten,
+                    profilnam_nr,
+                    material,
+                    entwart_nr,
+                    ks,
+                    simstatus_nr,
+                    kommentar,
+                    xschob,
+                    yschob,
+                    xschun,
+                    yschun,
+                ) = attr
+
                 obj = SubElement(self.hydraulik_objekte, "HydraulikObjekt")
                 _create_children(obj, ["HydObjektTyp", "Objektbezeichnung"])
                 _create_children_text(
                     SubElement(obj, "Leitung"),
-                    {"Objektbezeichnung": attr[0], "Berechnungslaenge": attr[5], "Rauigkeitsansatz": 1,  "RauigkeitsbeiwertKb": attr[14]},
+                    {"Objektbezeichnung": leitnam, "Berechnungslaenge": laenge, "Rauigkeitsansatz": 1,  "RauigkeitsbeiwertKb": ks},
                 )
 
                 abw = SubElement(self.stamm, "AbwassertechnischeAnlage")
                 _create_children_text(
                     abw,
                     {
-                        "Objektbezeichnung": attr[0],
+                        "Objektbezeichnung": leitnam,
                         "Objektart": str(1),
-                        "Entwaesserungsart": attr[12],
-                        "Status": attr[15],
+                        "Entwaesserungsart": entwart_nr,
+                        "Status": simstatus_nr,
                     },
                 )
 
@@ -981,14 +1193,14 @@ class ExportTask:
                     kante,
                     {
                         "KantenTyp": 1,
-                        "KnotenZulauf": attr[1],
+                        "KnotenZulauf": schoben,
                         "KnotenZulaufTyp": 0,
-                        "KnotenAblauf": attr[2],
+                        "KnotenAblauf": schunten,
                         "KnotenAblaufTyp": 0,
-                        "Material": attr[11],
-                        "SohlhoeheZulauf": attr[6],
-                        "SohlhoeheAblauf": attr[7],
-                        "Laenge": attr[5],
+                        "Material": material,
+                        "SohlhoeheZulauf": sohleoben,
+                        "SohlhoeheAblauf": sohleunten,
+                        "Laenge": laenge,
                     },
                 )
 
@@ -997,13 +1209,13 @@ class ExportTask:
                     {
                         "ProfilID": None,
                         "SonderprofilVorhanden": None,
-                        "Profilart": attr[10],
-                        "Profilbreite": (attr[4]),
-                        "Profilhoehe": (attr[3]),
+                        "Profilart": profilnam_nr,
+                        "Profilbreite": breite,
+                        "Profilhoehe": hoehe,
                     },
                 )
 
-                SubElementText(SubElement(kante, "Leitung"), "DMPLaenge", attr[5])
+                SubElementText(SubElement(kante, "Leitung"), "DMPLaenge", laenge)
 
                 geom = SubElement(abw, "Geometrie")
                 x = QgsProject.instance().crs().authid()
@@ -1022,20 +1234,1037 @@ class ExportTask:
                     SubElement(kante, "Start"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Rechtswert": attr[17],
-                        "Hochwert": attr[18],
+                        "Rechtswert": xschob,
+                        "Hochwert":yschob,
                     },
                 )
                 _create_children_text(
                     SubElement(kante, "Ende"),
                     {
                         "PunktattributAbwasser": "DMP",
-                        "Rechtswert": attr[19],
-                        "Hochwert": attr[20],
+                        "Rechtswert": xschun,
+                        "Hochwert": yschun,
                     },
                 )
 
             fortschritt("Leitung eingefügt", 0.7)
+
+    def _export_zustandsdaten_haltungen(self):
+        if self.vorlage == "":
+
+            if (
+                    not getattr(QKan.config.check_export, "export_zustandsdaten", True)
+                    # or not self.hydraulik_objekte
+                    or not self.zustand
+            ):
+                return
+
+            #Haltungen
+
+            last_pk = None
+
+
+            if self.auswahl_zustand == "Stammdaten":
+
+                sql = f"""
+                 SELECT
+                    haltungen_untersucht.pk,
+                    haltungen_untersucht.haltnam,
+                    haltungen_untersucht.bezugspunkt,
+                    haltungen_untersucht.schoben,
+                    haltungen_untersucht.schunten,
+                    haltungen_untersucht.hoehe,
+                    haltungen_untersucht.breite,
+                    haltungen_untersucht.laenge,
+                    haltungen_untersucht.baujahr,
+                    haltungen_untersucht.untersuchtag,
+                    haltungen_untersucht.untersucher,
+                    haltungen_untersucht.untersuchrichtung,
+                    haltungen_untersucht.wetter,
+                    haltungen_untersucht.bewertungsart,
+                    haltungen_untersucht.bewertungstag,
+                    haltungen_untersucht.strasse,
+                    haltungen_untersucht.datenart,
+                    haltungen_untersucht.auftragsbezeichnung,
+                    haltungen_untersucht.max_ZD,
+                    haltungen_untersucht.max_ZB,
+                    haltungen_untersucht.max_ZS,
+                    x(PointN(haltungen_untersucht.geom, 1)) AS xschob,
+                    y(PointN(haltungen_untersucht.geom, 1)) AS yschob,
+                    x(PointN(haltungen_untersucht.geom, -1)) AS xschun,
+                    y(PointN(haltungen_untersucht.geom, -1)) AS yschun,
+                    haltungen_untersucht.kommentar,
+                    untersuchdat_haltung.station,
+                    untersuchdat_haltung.timecode,
+                    untersuchdat_haltung.kuerzel,
+                    untersuchdat_haltung.charakt1,
+                    untersuchdat_haltung.charakt2,
+                    untersuchdat_haltung.quantnr1,
+                    untersuchdat_haltung.quantnr2,
+                    untersuchdat_haltung.streckenschaden,
+                    untersuchdat_haltung.streckenschaden_lfdnr,
+                    untersuchdat_haltung.pos_von,
+                    untersuchdat_haltung.pos_bis,
+                    untersuchdat_haltung.foto_dateiname,
+                    untersuchdat_haltung.ZD,
+                    untersuchdat_haltung.ZB,
+                    untersuchdat_haltung.ZS,
+                    haltungen.profilnam,
+                    haltungen.material,
+                    haltungen.entwart
+                    FROM haltungen_untersucht
+                    JOIN untersuchdat_haltung 
+                    JOIN haltungen where haltungen_untersucht.haltnam = untersuchdat_haltung.untersuchhal and haltungen_untersucht.haltnam = haltungen.haltnam
+                    {self.abfrage_h_and}
+                    """
+
+                if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                    return
+
+            elif self.auswahl_zustand == "Bewertet (Zustandsklassifizierung)":
+
+                sql = f"""
+                 SELECT
+                    haltungen_untersucht_bewertet.pk,
+                    haltungen_untersucht_bewertet.haltnam,
+                    haltungen_untersucht_bewertet.bezugspunkt,
+                    haltungen_untersucht_bewertet.schoben,
+                    haltungen_untersucht_bewertet.schunten,
+                    haltungen_untersucht_bewertet.hoehe,
+                    haltungen_untersucht_bewertet.breite,
+                    haltungen_untersucht_bewertet.laenge,
+                    haltungen_untersucht_bewertet.baujahr,
+                    haltungen_untersucht_bewertet.untersuchtag,
+                    haltungen_untersucht_bewertet.untersucher,
+                    haltungen_untersucht_bewertet.untersuchrichtung,
+                    haltungen_untersucht_bewertet.wetter,
+                    haltungen_untersucht_bewertet.bewertungsart,
+                    haltungen_untersucht_bewertet.bewertungstag,
+                    haltungen_untersucht_bewertet.strasse,
+                    haltungen_untersucht_bewertet.datenart,
+                    haltungen_untersucht_bewertet.auftragsbezeichnung,
+                    haltungen_untersucht_bewertet.max_ZD,
+                    haltungen_untersucht_bewertet.max_ZB,
+                    haltungen_untersucht_bewertet.max_ZS,
+                    x(PointN(haltungen_untersucht_bewertet.geom, 1)) AS xschob,
+                    y(PointN(haltungen_untersucht_bewertet.geom, 1)) AS yschob,
+                    x(PointN(haltungen_untersucht_bewertet.geom, -1)) AS xschun,
+                    y(PointN(haltungen_untersucht_bewertet.geom, -1)) AS yschun,
+                    haltungen_untersucht_bewertet.kommentar,
+                    untersuchdat_haltung_bewertet.station,
+                    untersuchdat_haltung_bewertet.timecode,
+                    untersuchdat_haltung_bewertet.kuerzel,
+                    untersuchdat_haltung_bewertet.charakt1,
+                    untersuchdat_haltung_bewertet.charakt2,
+                    untersuchdat_haltung_bewertet.quantnr1,
+                    untersuchdat_haltung_bewertet.quantnr2,
+                    untersuchdat_haltung_bewertet.streckenschaden,
+                    untersuchdat_haltung_bewertet.streckenschaden_lfdnr,
+                    untersuchdat_haltung_bewertet.pos_von,
+                    untersuchdat_haltung_bewertet.pos_bis,
+                    untersuchdat_haltung_bewertet.foto_dateiname,
+                    untersuchdat_haltung_bewertet.ZD,
+                    untersuchdat_haltung_bewertet.ZB,
+                    untersuchdat_haltung_bewertet.ZS,
+                    haltungen.profilnam,
+                    haltungen.material,
+                    haltungen.entwart
+                    FROM haltungen_untersucht_bewertet
+                    JOIN untersuchdat_haltung_bewertet 
+                    JOIN haltungen where haltungen_untersucht_bewertet.haltnam = untersuchdat_haltung_bewertet.untersuchhal and haltungen_untersucht_bewertet.haltnam = haltungen.haltnam
+                    {self.abfrage_h_and}
+                    """
+
+                if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                    return
+
+            elif self.auswahl_zustand == "Bewertet (Substanzklassifizierung)":
+
+                sql = f"""
+                 SELECT
+                    haltungen_untersucht_substanz.pk,
+                    haltungen_untersucht_substanz.haltnam,
+                    haltungen_untersucht_substanz.bezugspunkt,
+                    haltungen_untersucht_substanz.schoben,
+                    haltungen_untersucht_substanz.schunten,
+                    haltungen_untersucht_substanz.hoehe,
+                    haltungen_untersucht_substanz.breite,
+                    haltungen_untersucht_substanz.laenge,
+                    haltungen_untersucht_substanz.baujahr,
+                    haltungen_untersucht_substanz.untersuchtag,
+                    haltungen_untersucht_substanz.untersucher,
+                    haltungen_untersucht_substanz.untersuchrichtung,
+                    haltungen_untersucht_substanz.wetter,
+                    haltungen_untersucht_substanz.bewertungsart,
+                    haltungen_untersucht_substanz.bewertungstag,
+                    haltungen_untersucht_substanz.strasse,
+                    haltungen_untersucht_substanz.datenart,
+                    haltungen_untersucht_substanz.auftragsbezeichnung,
+                    haltungen_untersucht_substanz.max_ZD,
+                    haltungen_untersucht_substanz.max_ZB,
+                    haltungen_untersucht_substanz.max_ZS,
+                    x(PointN(haltungen_untersucht_substanz.geom, 1)) AS xschob,
+                    y(PointN(haltungen_untersucht_substanz.geom, 1)) AS yschob,
+                    x(PointN(haltungen_untersucht_substanz.geom, -1)) AS xschun,
+                    y(PointN(haltungen_untersucht_substanz.geom, -1)) AS yschun,
+                    haltungen_untersucht_substanz.kommentar,
+                    untersuchdat_haltung_substanz.station,
+                    untersuchdat_haltung_substanz.timecode,
+                    untersuchdat_haltung_substanz.kuerzel,
+                    untersuchdat_haltung_substanz.charakt1,
+                    untersuchdat_haltung_substanz.charakt2,
+                    untersuchdat_haltung_substanz.quantnr1,
+                    untersuchdat_haltung_substanz.quantnr2,
+                    untersuchdat_haltung_substanz.streckenschaden,
+                    untersuchdat_haltung_substanz.streckenschaden_lfdnr,
+                    untersuchdat_haltung_substanz.pos_von,
+                    untersuchdat_haltung_substanz.pos_bis,
+                    untersuchdat_haltung_substanz.foto_dateiname,
+                    untersuchdat_haltung_substanz.ZD,
+                    untersuchdat_haltung_substanz.ZB,
+                    untersuchdat_haltung_substanz.ZS,
+                    haltungen.profilnam,
+                    haltungen.material,
+                    haltungen.entwart
+                    FROM haltungen_untersucht_substanz
+                    JOIN untersuchdat_haltung_substanz 
+                    JOIN haltungen where haltungen_untersucht_substanz.haltnam = untersuchdat_haltung_substanz.untersuchhal and haltungen_untersucht_substanz.haltnam = haltungen.haltnam
+                    {self.abfrage_h_and}
+                    """
+
+                if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                    return
+
+            #fortschritt("Export Zustandsdaten...", 0.55)
+
+            for attr in self.db_qkan.fetchall():
+
+                (
+                    pk,
+                    haltnam,
+                    bezugspunkt,
+                    schoben,
+                    schunten,
+                    hoehe,
+                    breite,
+                    laenge,
+                    baujahr,
+                    untersuchtag,
+                    untersucher,
+                    untersuchrichtung,
+                    wetter_nr,
+                    bewertungsart,
+                    bewertungstag,
+                    strasse_nam,
+                    datenart,
+                    auftragsbezeichnung,
+                    max_ZD,
+                    max_ZB,
+                    max_ZS,
+                    xschob,
+                    yschob,
+                    xschun,
+                    yschun,
+                    kommentar,
+                    station,
+                    timekode,
+                    kuerzel,
+                    charakt1,
+                    charakt2,
+                    quantnr1,
+                    quantnr2,
+                    streckenschaden,
+                    streckenschadenlfdnr,
+                    posvon,
+                    posbis,
+                    foto,
+                    zd,
+                    zb,
+                    zs,
+                    profilnam_nr,
+                    material,
+                    entwart_nr,
+                ) = attr
+
+                if pk != last_pk:
+                    insp = SubElement(self.zustand, "InspizierteAbwassertechnischeAnlage")
+                    _create_children_text(
+                        insp,
+                        {
+                            "Objektbezeichnung": haltnam,
+                            "Anlagentyp": str(1),
+                        },
+                    )
+
+                    strasse = SubElement(insp, "Lage")
+                    _create_children_text(
+                        strasse,
+                        {
+                            "Strassenname": strasse_nam,
+                        },
+                    )
+
+                    opt = SubElement(insp, "OptischeInspektion")
+                    _create_children_text(
+                        opt,
+                        {
+                            "Inspektionsdatum": untersuchtag,
+                            "NameUntersucher": untersucher,
+                            "Wetter": wetter_nr,
+                        },
+                    )
+
+                    rohr = SubElement(opt, "Rohrleitung")
+                    _create_children_text(
+                        rohr,
+                        {
+                            "Inspektionsrichtung": untersuchrichtung,
+                            "Bezugspunktlage": bezugspunkt,
+                            "Inspektionslaenge": laenge,
+                        },
+                    )
+
+                    rgrund = SubElement(rohr, "RGrunddaten")
+                    _create_children_text(
+                        rgrund,
+                        {
+                            "KnotenZulauf": 0,
+                            "KnotenZulauftyp": schoben,
+                            "KnotenAblauf": 0,
+                            "KnotenAblauftyp": schunten,
+                            "Profilhoehe": hoehe,
+                            "Profilbreite": breite,
+                            "Profilart": profilnam_nr,
+                            "Material": material,
+                            "Kanalart": entwart_nr,
+                        },
+                    )
+                    inspdat = SubElement(opt, "Inspektionsdaten")
+
+                    last_pk = pk
+
+
+                rzu = SubElement(inspdat, "RZustand")
+                _create_children_text(
+                    rzu,
+                    {
+                        "Station": station,
+                        "Timecode": timekode,
+                        "InspektionsKode": kuerzel,
+                        "Charakterisierung1": charakt1,
+                        "Charakterisierung2": charakt2,
+                        "Quantifizierung1Numerisch": quantnr1,
+                        "Quantifizierung2Numerisch": quantnr2,
+                        "Streckenschaden": streckenschaden,
+                        "StreckenschadenLfdNr": streckenschadenlfdnr,
+                        "PositionVon": posvon,
+                        "PositionBis": posbis,
+                        "Fotodatei": foto,
+                    },
+                )
+                kl = SubElement(rzu, "Klassifizierung")
+                _create_children_text(
+                    kl,
+                    {
+                        "Dichtheit": zd,
+                        "Standsicherheit": zs,
+                        "Betriebssicherheit": zb,
+                    },
+                )
+
+    def _export_zustandsdaten_anschlussleitungen(self):
+        if self.vorlage == "":
+
+            if (
+                    not getattr(QKan.config.check_export, "export_zustandsdaten", True)
+                    # or not self.hydraulik_objekte
+                    or not self.zustand
+            ):
+                return
+
+            # Haltungen
+
+            last_pk = None
+            if self.auswahl_zustand == "Stammdaten":
+
+                if self.abfrage_h_where:
+                    sql = f"""
+                            WITH anschluss_haltung as( SELECT 
+                                    a.leitnam AS leitnam, 
+                                    haltungen.pk AS haltung_id
+                                FROM anschlussleitungen a
+                                JOIN haltungen 
+                                ON ST_Intersects(a.geom, haltungen.geom)
+                                {self.abfrage_h_where}
+                                )
+                                
+                                SELECT
+                            anschlussleitungen_untersucht.pk,
+                            anschlussleitungen_untersucht.leitnam,
+                            anschlussleitungen_untersucht.bezugspunkt,
+                            anschlussleitungen_untersucht.schoben,
+                            anschlussleitungen_untersucht.schunten,
+                            anschlussleitungen_untersucht.hoehe,
+                            anschlussleitungen_untersucht.breite,
+                            anschlussleitungen_untersucht.laenge,
+                            anschlussleitungen_untersucht.baujahr,
+                            anschlussleitungen_untersucht.untersuchtag,
+                            anschlussleitungen_untersucht.untersucher,
+                            anschlussleitungen_untersucht.untersuchrichtung,
+                            anschlussleitungen_untersucht.wetter,
+                            anschlussleitungen_untersucht.bewertungsart,
+                            anschlussleitungen_untersucht.bewertungstag,
+                            anschlussleitungen_untersucht.strasse,
+                            anschlussleitungen_untersucht.datenart,
+                            anschlussleitungen_untersucht.auftragsbezeichnung,
+                            anschlussleitungen_untersucht.max_ZD,
+                            anschlussleitungen_untersucht.max_ZB,
+                            anschlussleitungen_untersucht.max_ZS,
+                            x(PointN(anschlussleitungen_untersucht.geom, 1)) AS xschob,
+                            y(PointN(anschlussleitungen_untersucht.geom, 1)) AS yschob,
+                            x(PointN(anschlussleitungen_untersucht.geom, -1)) AS xschun,
+                            y(PointN(anschlussleitungen_untersucht.geom, -1)) AS yschun,
+                            anschlussleitungen_untersucht.kommentar,
+                            untersuchdat_anschlussleitung.station,
+                            untersuchdat_anschlussleitung.timecode,
+                            untersuchdat_anschlussleitung.kuerzel,
+                            untersuchdat_anschlussleitung.charakt1,
+                            untersuchdat_anschlussleitung.charakt2,
+                            untersuchdat_anschlussleitung.quantnr1,
+                            untersuchdat_anschlussleitung.quantnr2,
+                            untersuchdat_anschlussleitung.streckenschaden,
+                            untersuchdat_anschlussleitung.streckenschaden_lfdnr,
+                            untersuchdat_anschlussleitung.pos_von,
+                            untersuchdat_anschlussleitung.pos_bis,
+                            untersuchdat_anschlussleitung.foto_dateiname,
+                            untersuchdat_anschlussleitung.ZD,
+                            untersuchdat_anschlussleitung.ZB,
+                            untersuchdat_anschlussleitung.ZS,
+                            anschlussleitungen.profilnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.entwart
+                            FROM anschlussleitungen_untersucht
+                            JOIN untersuchdat_anschlussleitung  ON anschlussleitungen_untersucht.leitnam = untersuchdat_anschlussleitung.untersuchleit
+                            JOIN anschlussleitungen ON anschlussleitungen_untersucht.leitnam = anschlussleitungen.leitnam
+                            LEFT JOIN Entwaesserungsarten ea
+                            ON anschlussleitungen.entwart = ea.bezeichnung
+                            INNER JOIN anschluss_haltung ah
+                            ON anschlussleitungen.leitnam = ah.leitnam;
+                                """
+
+                    if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
+                        return
+
+                else:
+
+                    sql = f"""
+                     SELECT
+                        anschlussleitungen_untersucht.pk,
+                        anschlussleitungen_untersucht.leitnam,
+                        anschlussleitungen_untersucht.bezugspunkt,
+                        anschlussleitungen_untersucht.schoben,
+                        anschlussleitungen_untersucht.schunten,
+                        anschlussleitungen_untersucht.hoehe,
+                        anschlussleitungen_untersucht.breite,
+                        anschlussleitungen_untersucht.laenge,
+                        anschlussleitungen_untersucht.baujahr,
+                        anschlussleitungen_untersucht.untersuchtag,
+                        anschlussleitungen_untersucht.untersucher,
+                        anschlussleitungen_untersucht.untersuchrichtung,
+                        anschlussleitungen_untersucht.wetter,
+                        anschlussleitungen_untersucht.bewertungsart,
+                        anschlussleitungen_untersucht.bewertungstag,
+                        anschlussleitungen_untersucht.strasse,
+                        anschlussleitungen_untersucht.datenart,
+                        anschlussleitungen_untersucht.auftragsbezeichnung,
+                        anschlussleitungen_untersucht.max_ZD,
+                        anschlussleitungen_untersucht.max_ZB,
+                        anschlussleitungen_untersucht.max_ZS,
+                        x(PointN(anschlussleitungen_untersucht.geom, 1)) AS xschob,
+                        y(PointN(anschlussleitungen_untersucht.geom, 1)) AS yschob,
+                        x(PointN(anschlussleitungen_untersucht.geom, -1)) AS xschun,
+                        y(PointN(anschlussleitungen_untersucht.geom, -1)) AS yschun,
+                        anschlussleitungen_untersucht.kommentar,
+                        untersuchdat_anschlussleitung.station,
+                        untersuchdat_anschlussleitung.timecode,
+                        untersuchdat_anschlussleitung.kuerzel,
+                        untersuchdat_anschlussleitung.charakt1,
+                        untersuchdat_anschlussleitung.charakt2,
+                        untersuchdat_anschlussleitung.quantnr1,
+                        untersuchdat_anschlussleitung.quantnr2,
+                        untersuchdat_anschlussleitung.streckenschaden,
+                        untersuchdat_anschlussleitung.streckenschaden_lfdnr,
+                        untersuchdat_anschlussleitung.pos_von,
+                        untersuchdat_anschlussleitung.pos_bis,
+                        untersuchdat_anschlussleitung.foto_dateiname,
+                        untersuchdat_anschlussleitung.ZD,
+                        untersuchdat_anschlussleitung.ZB,
+                        untersuchdat_anschlussleitung.ZS,
+                        anschlussleitungen.profilnam,
+                        anschlussleitungen.material,
+                        anschlussleitungen.entwart
+                        FROM anschlussleitungen_untersucht
+                        JOIN untersuchdat_anschlussleitung 
+                        JOIN anschlussleitungen where anschlussleitungen_untersucht.leitnam = untersuchdat_anschlussleitung.untersuchleit and anschlussleitungen_untersucht.leitnam = anschlussleitungen.leitnam
+                        """
+
+                    if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                        return
+
+            elif self.auswahl_zustand == "Bewertet (Zustandsklassifizierung)":
+
+                if self.abfrage_h_where:
+                    sql = f"""
+                            WITH anschluss_haltung as( SELECT 
+                                    a.leitnam AS leitnam, 
+                                    haltungen.pk AS haltung_id
+                                FROM anschlussleitungen a
+                                JOIN haltungen 
+                                ON ST_Intersects(a.geom, haltungen.geom)
+                                {self.abfrage_h_where}
+                                )
+
+                                SELECT
+                            anschlussleitungen_untersucht_bewertet.pk,
+                            anschlussleitungen_untersucht_bewertet.leitnam,
+                            anschlussleitungen_untersucht_bewertet.bezugspunkt,
+                            anschlussleitungen_untersucht_bewertet.schoben,
+                            anschlussleitungen_untersucht_bewertet.schunten,
+                            anschlussleitungen_untersucht_bewertet.hoehe,
+                            anschlussleitungen_untersucht_bewertet.breite,
+                            anschlussleitungen_untersucht_bewertet.laenge,
+                            anschlussleitungen_untersucht_bewertet.baujahr,
+                            anschlussleitungen_untersucht_bewertet.untersuchtag,
+                            anschlussleitungen_untersucht_bewertet.untersucher,
+                            anschlussleitungen_untersucht_bewertet.untersuchrichtung,
+                            anschlussleitungen_untersucht_bewertet.wetter,
+                            anschlussleitungen_untersucht_bewertet.bewertungsart,
+                            anschlussleitungen_untersucht_bewertet.bewertungstag,
+                            anschlussleitungen_untersucht_bewertet.strasse,
+                            anschlussleitungen_untersucht_bewertet.datenart,
+                            anschlussleitungen_untersucht_bewertet.auftragsbezeichnung,
+                            anschlussleitungen_untersucht_bewertet.max_ZD,
+                            anschlussleitungen_untersucht_bewertet.max_ZB,
+                            anschlussleitungen_untersucht_bewertet.max_ZS,
+                            x(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS xschob,
+                            y(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS yschob,
+                            x(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS xschun,
+                            y(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS yschun,
+                            anschlussleitungen_untersucht_bewertet.kommentar,
+                            untersuchdat_anschlussleitung_bewertet.station,
+                            untersuchdat_anschlussleitung_bewertet.timecode,
+                            untersuchdat_anschlussleitung_bewertet.kuerzel,
+                            untersuchdat_anschlussleitung_bewertet.charakt1,
+                            untersuchdat_anschlussleitung_bewertet.charakt2,
+                            untersuchdat_anschlussleitung_bewertet.quantnr1,
+                            untersuchdat_anschlussleitung_bewertet.quantnr2,
+                            untersuchdat_anschlussleitung_bewertet.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertet.streckenschaden_lfdnr,
+                            untersuchdat_anschlussleitung_bewertet.pos_von,
+                            untersuchdat_anschlussleitung_bewertet.pos_bis,
+                            untersuchdat_anschlussleitung_bewertet.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertet.ZD,
+                            untersuchdat_anschlussleitung_bewertet.ZB,
+                            untersuchdat_anschlussleitung_bewertet.ZS,
+                            anschlussleitungen.profilnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.entwart
+                            FROM anschlussleitungen_untersucht
+                            JOIN untersuchdat_anschlussleitung_bewertet  ON anschlussleitungen_untersucht_bewertet.leitnam = untersuchdat_anschlussleitung_bewertet.untersuchleit
+                            JOIN anschlussleitungen ON anschlussleitungen_untersucht_bewertet.leitnam = anschlussleitungen.leitnam
+                            LEFT JOIN Entwaesserungsarten ea
+                            ON anschlussleitungen.entwart = ea.bezeichnung
+                            INNER JOIN anschluss_haltung ah
+                            ON anschlussleitungen.leitnam = ah.leitnam;
+                                """
+
+                    if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
+                        return
+
+                else:
+
+                    sql = f"""
+                     SELECT
+                        anschlussleitungen_untersucht_bewertet.pk,
+                        anschlussleitungen_untersucht_bewertet.leitnam,
+                        anschlussleitungen_untersucht_bewertet.bezugspunkt,
+                        anschlussleitungen_untersucht_bewertet.schoben,
+                        anschlussleitungen_untersucht_bewertet.schunten,
+                        anschlussleitungen_untersucht_bewertet.hoehe,
+                        anschlussleitungen_untersucht_bewertet.breite,
+                        anschlussleitungen_untersucht_bewertet.laenge,
+                        anschlussleitungen_untersucht_bewertet.baujahr,
+                        anschlussleitungen_untersucht_bewertet.untersuchtag,
+                        anschlussleitungen_untersucht_bewertet.untersucher,
+                        anschlussleitungen_untersucht_bewertet.untersuchrichtung,
+                        anschlussleitungen_untersucht_bewertet.wetter,
+                        anschlussleitungen_untersucht_bewertet.bewertungsart,
+                        anschlussleitungen_untersucht_bewertet.bewertungstag,
+                        anschlussleitungen_untersucht_bewertet.strasse,
+                        anschlussleitungen_untersucht_bewertet.datenart,
+                        anschlussleitungen_untersucht_bewertet.auftragsbezeichnung,
+                        anschlussleitungen_untersucht_bewertet.max_ZD,
+                        anschlussleitungen_untersucht_bewertet.max_ZB,
+                        anschlussleitungen_untersucht_bewertet.max_ZS,
+                        x(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS xschob,
+                        y(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS yschob,
+                        x(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS xschun,
+                        y(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS yschun,
+                        anschlussleitungen_untersucht_bewertet.kommentar,
+                        untersuchdat_anschlussleitung_bewertet.station,
+                        untersuchdat_anschlussleitung_bewertet.timecode,
+                        untersuchdat_anschlussleitung_bewertet.kuerzel,
+                        untersuchdat_anschlussleitung_bewertet.charakt1,
+                        untersuchdat_anschlussleitung_bewertet.charakt2,
+                        untersuchdat_anschlussleitung_bewertet.quantnr1,
+                        untersuchdat_anschlussleitung_bewertet.quantnr2,
+                        untersuchdat_anschlussleitung_bewertet.streckenschaden,
+                        untersuchdat_anschlussleitung_bewertet.streckenschaden_lfdnr,
+                        untersuchdat_anschlussleitung_bewertet.pos_von,
+                        untersuchdat_anschlussleitung_bewertet.pos_bis,
+                        untersuchdat_anschlussleitung_bewertet.foto_dateiname,
+                        untersuchdat_anschlussleitung_bewertet.ZD,
+                        untersuchdat_anschlussleitung_bewertet.ZB,
+                        untersuchdat_anschlussleitung_bewertet.ZS,
+                        anschlussleitungen.profilnam,
+                        anschlussleitungen.material,
+                        anschlussleitungen.entwart
+                        FROM anschlussleitungen_untersucht_bewertet
+                        JOIN untersuchdat_anschlussleitung_bewertet 
+                        JOIN anschlussleitungen where anschlussleitungen_untersucht_bewertet.leitnam = untersuchdat_anschlussleitung_bewertet.untersuchleit and anschlussleitungen_untersucht_bewertet.leitnam = anschlussleitungen.leitnam
+
+                        """
+
+                    if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                        return
+
+            # fortschritt("Export Zustandsdaten...", 0.55)
+
+            for attr in self.db_qkan.fetchall():
+
+                (
+                    pk,
+                    haltnam,
+                    bezugspunkt,
+                    schoben,
+                    schunten,
+                    hoehe,
+                    breite,
+                    laenge,
+                    baujahr,
+                    untersuchtag,
+                    untersucher,
+                    untersuchrichtung,
+                    wetter_nr,
+                    bewertungsart,
+                    bewertungstag,
+                    strasse_nam,
+                    datenart,
+                    auftragsbezeichnung,
+                    max_ZD,
+                    max_ZB,
+                    max_ZS,
+                    xschob,
+                    yschob,
+                    xschun,
+                    yschun,
+                    kommentar,
+                    station,
+                    timekode,
+                    kuerzel,
+                    charakt1,
+                    charakt2,
+                    quantnr1,
+                    quantnr2,
+                    streckenschaden,
+                    streckenschadenlfdnr,
+                    posvon,
+                    posbis,
+                    foto,
+                    zd,
+                    zs,
+                    zb,
+                    profilnam_nr,
+                    material,
+                    entwart_nr,
+                ) = attr
+
+                if pk != last_pk:
+                    insp = SubElement(self.zustand, "InspizierteAbwassertechnischeAnlage")
+                    _create_children_text(
+                        insp,
+                        {
+                            "Objektbezeichnung": haltnam,
+                            "Anlagentyp": str(2),
+                        },
+                    )
+
+                    strasse = SubElement(insp, "Lage")
+                    _create_children_text(
+                        strasse,
+                        {
+                            "Strassenname": strasse_nam,
+                        },
+                    )
+
+                    opt = SubElement(insp, "OptischeInspektion")
+                    _create_children_text(
+                        opt,
+                        {
+                            "Inspektionsdatum": untersuchtag,
+                            "NameUntersucher": untersucher,
+                            "Wetter": wetter_nr,
+                        },
+                    )
+
+                    rohr = SubElement(opt, "Rohrleitung")
+                    _create_children_text(
+                        rohr,
+                        {
+                            "Inspektionsrichtung": untersuchrichtung,
+                            "Bezugspunktlage": bezugspunkt,
+                            "Inspektionslaenge": laenge,
+                        },
+                    )
+
+                    rgrund = SubElement(rohr, "RGrunddaten")
+                    _create_children_text(
+                        rgrund,
+                        {
+                            "KnotenZulauf": 0,
+                            "KnotenZulauftyp": schoben,
+                            "KnotenAblauf": 0,
+                            "KnotenAblauftyp": schunten,
+                            "Profilhoehe": hoehe,
+                            "Profilbreite": breite,
+                            "Profilart": profilnam_nr,
+                            "Material": material,
+                            "Kanalart": entwart_nr,
+                        },
+                    )
+                    inspdat = SubElement(opt, "Inspektionsdaten")
+
+                    last_pk = pk
+
+                rzu = SubElement(inspdat, "RZustand")
+                _create_children_text(
+                    rzu,
+                    {
+                        "Station": station,
+                        "Timecode": timekode,
+                        "InspektionsKode": kuerzel,
+                        "Charakterisierung1": charakt1,
+                        "Charakterisierung2": charakt2,
+                        "Quantifizierung1Numerisch": quantnr1,
+                        "Quantifizierung2Numerisch": quantnr2,
+                        "Streckenschaden": streckenschaden,
+                        "StreckenschadenLfdNr": streckenschadenlfdnr,
+                        "PositionVon": posvon,
+                        "PositionBis": posbis,
+                        "Fotodatei": foto,
+                    },
+                )
+                kl = SubElement(rzu, "Klassifizierung")
+
+                _create_children_text(
+                    kl,
+                    {
+                        "Dichtheit": zd,
+                        "Standsicherheit": zs,
+                        "Betriebssicherheit": zb,
+                    },
+                )
+
+    def _export_zustandsdaten_schaechte(self):
+        if self.vorlage == "":
+
+            if (
+                    not getattr(QKan.config.check_export, "export_zustandsdaten", True)
+                    # or not self.hydraulik_objekte
+                    or not self.zustand
+            ):
+                return
+
+            # Haltungen
+
+            last_pk = None
+
+            if self.auswahl_zustand == "Stammdaten":
+
+                sql = f"""
+                    SELECT
+                    schaechte_untersucht.pk,
+                    schaechte_untersucht.schnam,
+                    schaechte_untersucht.bezugspunkt,
+                    schaechte_untersucht.baujahr,
+                    schaechte_untersucht.untersuchtag,
+                    schaechte_untersucht.untersucher,
+                    schaechte_untersucht.wetter,
+                    schaechte_untersucht.bewertungsart,
+                    schaechte_untersucht.bewertungstag,
+                    schaechte_untersucht.strasse,
+                    schaechte_untersucht.datenart,
+                    schaechte_untersucht.auftragsbezeichnung,
+                    schaechte_untersucht.max_ZD,
+                    schaechte_untersucht.max_ZB,
+                    schaechte_untersucht.max_ZS,
+                    x(PointN(schaechte_untersucht.geop, 1)) AS x,
+                    y(PointN(schaechte_untersucht.geop, 1)) AS y,
+                    schaechte_untersucht.kommentar,
+                    untersuchdat_schacht.vertikale_lage,
+                    untersuchdat_schacht.timecode,
+                    untersuchdat_schacht.kuerzel,
+                    untersuchdat_schacht.charakt1,
+                    untersuchdat_schacht.charakt2,
+                    untersuchdat_schacht.quantnr1,
+                    untersuchdat_schacht.quantnr2,
+                    untersuchdat_schacht.streckenschaden,
+                    untersuchdat_schacht.streckenschaden_lfdnr,
+                    untersuchdat_schacht.pos_von,
+                    untersuchdat_schacht.pos_bis,
+                    untersuchdat_schacht.foto_dateiname,
+                    untersuchdat_schacht.ZD,
+                    untersuchdat_schacht.ZB,
+                    untersuchdat_schacht.ZS,
+                    schaechte.material,
+                    schaechte.entwart
+                    FROM schaechte_untersucht
+                    JOIN untersuchdat_schacht 
+                    JOIN schaechte where schaechte_untersucht.schnam = untersuchdat_schacht.untersuchsch and schaechte_untersucht.schnam = schaechte.schnam
+                 {self.abfrage_s_and}
+                 """
+
+                if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                    return
+
+            elif self.auswahl_zustand == "Bewertet (Zustandsklassifizierung)":
+
+                sql = f"""
+                    SELECT
+                    schaechte_untersucht_bewertet.pk,
+                    schaechte_untersucht_bewertet.schnam,
+                    schaechte_untersucht_bewertet.bezugspunkt,
+                    schaechte_untersucht_bewertet.baujahr,
+                    schaechte_untersucht_bewertet.untersuchtag,
+                    schaechte_untersucht_bewertet.untersucher,
+                    schaechte_untersucht_bewertet.wetter,
+                    schaechte_untersucht_bewertet.bewertungsart,
+                    schaechte_untersucht_bewertet.bewertungstag,
+                    schaechte_untersucht_bewertet.strasse,
+                    schaechte_untersucht_bewertet.datenart,
+                    schaechte_untersucht_bewertet.auftragsbezeichnung,
+                    schaechte_untersucht_bewertet.max_ZD,
+                    schaechte_untersucht_bewertet.max_ZB,
+                    schaechte_untersucht_bewertet.max_ZS,
+                    x(PointN(schaechte_untersucht_bewertet.geop, 1)) AS x,
+                    y(PointN(schaechte_untersucht_bewertet.geop, 1)) AS y,
+                    schaechte_untersucht_bewertet.kommentar,
+                    untersuchdat_schacht_bewertet.vertikale_lage,
+                    untersuchdat_schacht_bewertet.timecode,
+                    untersuchdat_schacht_bewertet.kuerzel,
+                    untersuchdat_schacht_bewertet.charakt1,
+                    untersuchdat_schacht_bewertet.charakt2,
+                    untersuchdat_schacht_bewertet.quantnr1,
+                    untersuchdat_schacht_bewertet.quantnr2,
+                    untersuchdat_schacht_bewertet.streckenschaden,
+                    untersuchdat_schacht_bewertet.streckenschaden_lfdnr,
+                    untersuchdat_schacht_bewertet.pos_von,
+                    untersuchdat_schacht_bewertet.pos_bis,
+                    untersuchdat_schacht_bewertet.foto_dateiname,
+                    untersuchdat_schacht_bewertet.ZD,
+                    untersuchdat_schacht_bewertet.ZB,
+                    untersuchdat_schacht_bewertet.ZS,
+                    schaechte.material,
+                    schaechte.entwart
+                    FROM schaechte_untersucht_bewertet
+                    JOIN untersuchdat_schacht_bewertet 
+                    JOIN schaechte where schaechte_untersucht_bewertet.schnam = untersuchdat_schacht_bewertet.untersuchsch and schaechte_untersucht_bewertet.schnam = schaechte.schnam
+                 {self.abfrage_s_and}
+                 """
+
+                if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                    return
+
+            # fortschritt("Export Zustandsdaten...", 0.55)
+
+            for attr in self.db_qkan.fetchall():
+
+                (
+                    pk,
+                    schnam,
+                    bezugspunkt,
+                    baujahr,
+                    untersuchtag,
+                    untersucher,
+                    wetter_nr,
+                    bewertungsart,
+                    bewertungstag,
+                    strasse_nam,
+                    datenart,
+                    auftragsbezeichnung,
+                    max_ZD,
+                    max_ZB,
+                    max_ZS,
+                    xschob,
+                    yschob,
+                    xschun,
+                    yschun,
+                    kommentar,
+                    vertikale_lage,
+                    timekode,
+                    kuerzel,
+                    charakt1,
+                    charakt2,
+                    quantnr1,
+                    quantnr2,
+                    streckenschaden,
+                    streckenschadenlfdnr,
+                    posvon,
+                    posbis,
+                    foto,
+                    zd,
+                    zs,
+                    zb,
+                    material,
+                    entwart_nr,
+                ) = attr
+
+                if pk != last_pk:
+                    insp = SubElement(self.zustand, "InspizierteAbwassertechnischeAnlage")
+                    _create_children_text(
+                        insp,
+                        {
+                            "Objektbezeichnung": schnam,
+                            "Anlagentyp": str(3),
+                        },
+                    )
+
+                    strasse = SubElement(insp, "Lage")
+                    _create_children_text(
+                        strasse,
+                        {
+                            "Strassenname": strasse_nam,
+                        },
+                    )
+
+                    opt = SubElement(insp, "OptischeInspektion")
+                    _create_children_text(
+                        opt,
+                        {
+                            "Inspektionsdatum": untersuchtag,
+                            "NameUntersucher": untersucher,
+                            "Wetter": wetter_nr,
+                        },
+                    )
+
+                    knoten = SubElement(opt, "Knoten")
+                    _create_children_text(
+                        knoten,
+                        {
+                            "BezugspunktVertikal": bezugspunkt,
+                        },
+                    )
+
+                    rgrund = SubElement(knoten, "KGrunddaten")
+                    # _create_children_text(
+                    #     rgrund,
+                    #     {
+                    #         "Material": material,
+                    #         "Kanalart": entwart_nr,
+                    #     },
+                    # )
+                    inspdat = SubElement(opt, "Inspektionsdaten")
+
+                    last_pk = pk
+
+                rzu = SubElement(inspdat, "RZustand")
+                _create_children_text(
+                    rzu,
+                    {
+                        "VertikaleLage": vertikale_lage,
+                        "Timecode": timekode,
+                        "InspektionsKode": kuerzel,
+                        "Charakterisierung1": charakt1,
+                        "Charakterisierung2": charakt2,
+                        "Quantifizierung1Numerisch": quantnr1,
+                        "Quantifizierung2Numerisch": quantnr2,
+                        "Streckenschaden": streckenschaden,
+                        "StreckenschadenLfdNr": streckenschadenlfdnr,
+                        "PositionVon": posvon,
+                        "PositionBis": posbis,
+                        "Fotodatei": foto,
+                    },
+                )
+                kl = SubElement(rzu, "Klassifizierung")
+
+                _create_children_text(
+                    kl,
+                    {
+                        "Dichtheit": zd,
+                        "Standsicherheit": zs,
+                        "Betriebssicherheit": zb,
+                    },
+                )
+
+    def _export_zustandsdaten_filme(self):
+        if self.vorlage == "":
+
+            if (
+                    not getattr(QKan.config.check_export, "export_zustandsdaten", True)
+                    # or not self.hydraulik_objekte
+                    or not self.zustand
+            ):
+                return
+
+            last_pk = None
+
+            #TODO: jenachdem um was für ein objekt es sich handelt müssen unterschiedliche joins durchgeführt werden für inspektionsrichtung usw.
+
+            sql = """
+                    select name,
+                    untersuchtag,
+                    objekt,
+                    datei
+                    from videos
+             """
+
+            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                return
+
+            # fortschritt("Export Zustandsdaten...", 0.55)
+            filme = SubElement(self.zustand, "Filme")
+
+            for attr in self.db_qkan.fetchall():
+
+                (
+                    name,
+                    untersuchtag,
+                    objekt,
+                    datei,
+                ) = attr
+
+                film = SubElement(self.zustand, "Film")
+
+
+                _create_children_text(
+                    film,
+                    {
+                        "Filmname": datei,
+                        "Auftragskennung": "",
+                    },
+                )
+
+                objekte = SubElement(film, "FilmObjekte")
+                objekt = SubElement(objekte, "FilmObjekt")
+                _create_children_text(
+                    objekt,
+                    {
+                        "Objektbezeichnung": name,
+                        "Typ": "",
+                        "Inspektionsrichtung":"",
+                    },
+                )
+
 
     def run(self) -> None:
         """
@@ -1071,13 +2300,12 @@ class ExportTask:
             _create_children_text(
                 daten_kollektive,
                 {
-                    "Datenstatus": "2",
                     "Erstellungsdatum": str(date.today()),
                     "Kommentar": "Created with QKan's XML export module",
                 },
             )
             kennungen = SubElement(SubElement(daten_kollektive, "Kennungen"), "Kollektiv")
-            #je ein Kollektiv für Stammdaten und Zustandsdaten, die Kennung muss dort auftauchen
+
             _create_children_text(
                 kennungen,
                 {
@@ -1086,8 +2314,22 @@ class ExportTask:
                 },
             )
 
+            #TODO: aufträge ergänzen zur Vollständigkeit bei stammdaten und zustandsdaten
+            #wenn nur zahl in auftragsbezeichnung, dann auftragskennung sonst als auftragsbezeichnung
+
             self.stamm = SubElement(daten_kollektive, "Stammdatenkollektiv")
             _create_children_text(self.stamm, {"Kennung": "STA01", "Beschreibung": "Stammdaten",},)
+
+            if QKan.config.check_export.zustandsdaten:
+                _create_children_text(
+                    kennungen,
+                    {
+                        "Kennung": "ZUS01",
+                        "Kollektivart": "2",
+                    },
+                )
+                self.zustand = SubElement(daten_kollektive, "Zustandsdatenkollektiv")
+                _create_children_text(self.zustand, {"Kennung": "ZUS01", "Beschreibung": "Zustandsdaten", }, )
 
             hydro_kollektiv = SubElement(daten_kollektive, "Hydraulikdatenkollektiv")
             _create_children_text(
@@ -1115,11 +2357,65 @@ class ExportTask:
         if QKan.config.check_export.anschlussleitungen:
             self._export_anschlussleitungen()
 
+        if QKan.config.check_export.zustandsdaten:
+            self._export_zustandsdaten_haltungen()
+            self._export_zustandsdaten_schaechte()
+            self._export_zustandsdaten_anschlussleitungen()
+
+
         if self.vorlage == "":
 
             Path(self.export_file).write_text(
                 minidom.parseString(tostring(root)).toprettyxml(indent="  ")
             )
+
+        if self.selection:
+            select_s = []
+            select_h = []
+
+            sql = f"""
+                                SELECT
+                                pk
+                                from sel_schaechte
+                             """
+
+            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                return
+
+
+            for attr in self.db_qkan.fetchall():
+                select_s.append(attr[0])
+
+            sql = f"""
+                                            SELECT
+                                            pk
+                                            from sel_haltungen
+                                         """
+
+            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                return
+
+            for attr in self.db_qkan.fetchall():
+                select_h.append(attr[0])
+
+            select_s_t = tuple(select_s)
+
+            select_h_t = tuple(select_h)
+
+
+            self.abfrage_s_and = f"AND schaechte.pk in {select_s_t}"
+
+            self.abfrage_s_where = f"WHERE schaechte.pk in {select_s_t}"
+
+            self.abfrage_h_and = f"AND haltungen.pk in {select_h_t}"
+
+            self.abfrage_h_where = f"WHERE haltungen.pk in {select_h_t}"
+
+        else:
+            self.abfrage_s_and = ""
+            self.abfrage_s_where = ""
+            self.abfrage_h_and = ""
+            self.abfrage_h_where = ""
 
         # Close connection
         del self.db_qkan

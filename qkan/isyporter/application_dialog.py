@@ -11,6 +11,7 @@ from qgis.PyQt.QtWidgets import (
     QLineEdit,
     QPushButton,
     QWidget,
+    QComboBox,
 )
 
 from qkan import QKan
@@ -49,6 +50,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_export_pumpen: QCheckBox
     cb_export_wehre: QCheckBox
     cb_export_anschlussleitungen: QCheckBox
+    cb_export_zustandsdaten: QCheckBox
+    comboBox: QComboBox
 
     def __init__(
         self,
@@ -86,6 +89,9 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         )
         self.cb_export_wehre.setChecked(
             getattr(QKan.config.check_export, "export_wehre", True)
+        )
+        self.cb_export_zustandsdaten.setChecked(
+            getattr(QKan.config.check_export, "export_zustandsdaten", True)
         )
 
     def select_export(self) -> None:

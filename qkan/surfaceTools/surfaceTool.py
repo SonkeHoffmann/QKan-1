@@ -17,7 +17,7 @@ logger = get_logger("QKan.surfaceTools.surface_tools")
 
 class SurfaceTask:
     def __init__(
-        self, iface, database_qkan: str, epsg: int = 25832, dbtyp: str = "SpatiaLite"
+        self, iface, database_qkan: str, epsg: int, dbtyp: str = "SpatiaLite"
     ):
         self.iface = iface
         self.database_qkan = database_qkan

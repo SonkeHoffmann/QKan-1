@@ -7,7 +7,7 @@ from lxml import etree
 from qgis.PyQt.QtCore import QByteArray
 from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsCircle, QgsMultiPolygon
 from qgis.utils import iface
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
 from qkan.database.qkan_utils import fehlermeldung
@@ -30,6 +30,7 @@ class Schacht(ClassObject):
     strasse: str = ""
     knotentyp: str = ""
     schachttyp: str = ""
+    auslasstyp: str = ""
     material: str = ""
     simstatus: str = ""
     kommentar: str = ""
@@ -52,6 +53,7 @@ class Schacht_untersucht(ClassObject):
     wetter: str = ""
     bewertungsart: str = ""
     bewertungstag: str = ""
+    auftragsbezeichnung: str = ""
     datenart: str = ""
     max_ZD: int = None
     max_ZB: int = None
@@ -289,7 +291,7 @@ class ImportTask(Schadenstexte):
         # nr (str) => description
         self.mapper_entwart: Dict[str, str] = {}
         self.mapper_material: Dict[str, str] = {}
-        #self.mapper_pump: Dict[str, str] = {}
+        self.mapper_pump: Dict[str, str] = {}
         self.mapper_profile: Dict[str, str] = {}
         #self.mapper_outlet: Dict[str, str] = {}
         self.mapper_simstatus: Dict[str, str] = {}
@@ -312,6 +314,8 @@ class ImportTask(Schadenstexte):
         # tree = etree.parse(xml_file)
         # x = tree.xpath('namespace-uri(.)')
         self.NS = {"": "http://www.ofd-hannover.la/Identifikation"}
+
+        #TODO: prüfen ob Namespace doch eingelesen werden muss, wenn ja aber mit ElementTree arbeiten
 
     def _consume_smp_block(self,
             _block: ElementTree.Element,
@@ -466,7 +470,7 @@ class ImportTask(Schadenstexte):
 
             :rtpye:             bytes
         """
-        if not x_geodaten:
+        if x_geodaten is None:
             return None
         gplis = []
         for x_kante in x_geodaten.findall("Kanten/Kante", self.NS):
@@ -530,6 +534,8 @@ class ImportTask(Schadenstexte):
             self._anschluss_untersucht()
             self._untersuchdat_anschluss()
             self._untersuchdat_schaechte_daten()
+            self._untersuchdat_haltung_daten()
+            self._untersuchdat_anschlussleitung_daten()
 
         if getattr(QKan.config.xml, "import_zustand", True) and not getattr(QKan.config.xml, "import_stamm", True):
             self._schaechte_untersucht_geom()
@@ -632,12 +638,12 @@ class ImportTask(Schadenstexte):
         params = []
         data = [  # kurz    he    mu    kp  m150  m145   isy
             ('in Betrieb', 'B', 1, 1, 0, 'B', '1', '0', 'QKan-Standard'),
-            ('außer Betrieb', 'AB', 4, None, 3, 'B', '1', '20', 'QKan-Standard'),
-            ('geplant', 'P', 2, None, 1, 'P', None, '10', 'QKan-Standard'),
-            ('stillgelegt', 'N', None, None, 4, 'N', None, '21', 'QKan-Standard'),
-            ('verdämmert', 'V', 5, None, None, 'V', None, None, 'QKan-Standard'),
-            ('fiktiv', 'F', 3, None, 2, None, None, '99', 'QKan-Standard'),
-            ('rückgebaut', 'P', None, None, 6, None, None, '22', 'QKan-Standard'),
+            ('außer Betrieb', 'AB', 4, None, 3, 'B', '1', '3', 'QKan-Standard'),
+            ('geplant', 'P', 2, None, 1, 'P', None, '1', 'QKan-Standard'),
+            ('stillgelegt', 'N', None, None, 4, 'N', None, '3', 'QKan-Standard'),
+            ('verdämmert', 'V', 5, None, None, 'V', None, '4', 'QKan-Standard'),
+            ('fiktiv', 'F', 3, None, 2, None, None, '2', 'QKan-Standard'),
+            ('rückgebaut', 'P', None, None, 6, None, None, '6', 'QKan-Standard'),
         ]
 
         for bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, m150, m145, isybau, kommentar in data:
@@ -762,6 +768,59 @@ class ImportTask(Schadenstexte):
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste Wetter", params, many=True):
             return False
 
+        # Referenztabelle Pumpe
+
+        params = []
+        data = [  # bezeichnung isy he
+            ('Offline', 1, 1),
+            ('Online Schaltstufen', 2, 2),
+            ('Online Kennlinie', 3, 3),
+            ('Online Wasserstandsdifferenz', 4, 4),
+            ('Ideal', 5, 5),
+        ]
+
+        for bezeichnung, he_nr, isybau in data:
+            params.append(
+                {
+                    'bezeichnung': bezeichnung,
+                    'he_nr': he_nr,
+                    'isybau': isybau,
+                }
+            )
+
+        sql = """INSERT INTO pumpentypen (bezeichnung,he_nr, isybau)
+                                    SELECT
+                                        :bezeichnung, :he_nr,
+                                        :isybau
+                                    WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM pumpentypen)"""
+        if not self.db_qkan.sql(sql, "Isybau Import Referenzliste pumpentypen", params, many=True):
+            return False
+
+        params = []
+        data = [  # bezeichnung kuerzel isy m150 m145
+            ('in Fließrichtung', 'in', 'O', 'I', 'I'),
+            ('gegen Fließrichtung', 'gegen', 'U', 'G', 'G'),
+        ]
+
+        for bezeichnung, kuerzel, isybau, m150, m145 in data:
+            params.append(
+                {
+                    'bezeichnung': bezeichnung,
+                    'kuerzel': kuerzel,
+                    'isybau': isybau,
+                    'm150': m150,
+                    'm145': m145,
+                }
+            )
+
+        sql = """INSERT INTO untersuchrichtung (bezeichnung, kuerzel, isybau, m150, m145)
+                                            SELECT
+                                                :bezeichnung, :kuerzel,
+                                                :isybau, :m150, :m145
+                                            WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM untersuchrichtung)"""
+        if not self.db_qkan.sql(sql, "Isybau Import Referenzliste untersuchrichtung", params, many=True):
+            return False
+
     def _init_mappers(self) -> None:
         # Entwässerungsarten
         sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \
@@ -775,9 +834,9 @@ class ImportTask(Schadenstexte):
         subject = "xml_import profile"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_profile)
 
-        # sql = "SELECT he_nr, bezeichnung FROM pumpentypen"
-        # subject = "xml_import pumpentypen"
-        # self.db_qkan.consume_mapper(sql, subject, self.mapper_pump)
+        sql = "SELECT isybau, bezeichnung FROM pumpentypen"
+        subject = "xml_import pumpentypen"
+        self.db_qkan.consume_mapper(sql, subject, self.mapper_pump)
 
         sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \
               "FROM material WHERE isybau IS NOT NULL GROUP BY isybau"
@@ -843,7 +902,7 @@ class ImportTask(Schadenstexte):
 
                 if x_hydraulik is not None:
                     druckdicht = _get_int(x_hydraulik.findtext(
-                        "HydraulikObjekt/[Objektbezeichnung='{schnam}']/Schacht/DruckdichterDeckel",
+                        f"HydraulikObjekt/[Objektbezeichnung='{schnam}']/Schacht/DruckdichterDeckel",
                         None,
                         self.NS), 0)
                 else:
@@ -978,6 +1037,7 @@ class ImportTask(Schadenstexte):
                             untersuchtag = _schacht.findtext("Inspektionsdatum", None, self.NS)
                             untersucher = _schacht.findtext("NameUntersucher", None, self.NS)
                             wetter = _schacht.findtext("Wetter", None, self.NS)
+                            auftragsbezeichnung = _schacht.findtext("Auftragskennung", None, self.NS)
 
                             for _schachtz in _schacht.findall("Knoten/Bewertung", self.NS):
                                 bewertungsart = _schachtz.findtext("Bewertungsverfahren", None, self.NS)
@@ -992,6 +1052,7 @@ class ImportTask(Schadenstexte):
                             bewertungsart=bewertungsart,
                             bewertungstag=bewertungstag,
                             datenart=datenart,
+                            auftragsbezeichnung=auftragsbezeichnung,
                         )
 
         for schacht_untersucht in _iter():
@@ -1008,27 +1069,29 @@ class ImportTask(Schadenstexte):
 
             # Datensatz einfügen
 
-            if (pdat := self.schachtdaten.get(schacht_untersucht.schnam, {})) == {}:
-                logger.warning(f'Untersuchter Schacht {schacht_untersucht.schnam} fehlt in den Stammdaten')
+            if pdat := self.schachtdaten.get(schacht_untersucht.schnam, {}):
                 params = {'schnam': schacht_untersucht.schnam,
                           'untersuchtag': schacht_untersucht.untersuchtag,
                           'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
-                          'strasse': schacht_untersucht.strasse,
-                          'bewertungsart': schacht_untersucht.bewertungsart,
-                          'bewertungstag': schacht_untersucht.bewertungstag,
-                          'datenart': schacht_untersucht.datenart,
-                          'epsg': QKan.config.epsg}
-
-            else:
-                params = {'schnam': schacht_untersucht.schnam,
-                          'untersuchtag': schacht_untersucht.untersuchtag,
-                          'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
+                          'auftragsbezeichnung': schacht_untersucht.auftragsbezeichnung,
                           'strasse': schacht_untersucht.strasse,
                           'bewertungsart': schacht_untersucht.bewertungsart,
                           'bewertungstag': schacht_untersucht.bewertungstag,
                           'datenart': schacht_untersucht.datenart,
                           'epsg': QKan.config.epsg} \
                          | pdat
+
+            else:
+                logger.warning(f'Untersuchter Schacht {schacht_untersucht.schnam} fehlt in den Stammdaten')
+                params = {'schnam': schacht_untersucht.schnam,
+                          'untersuchtag': schacht_untersucht.untersuchtag,
+                          'untersucher': schacht_untersucht.untersucher, 'wetter': wetter,
+                          'auftragsbezeichnung': schacht_untersucht.auftragsbezeichnung,
+                          'strasse': schacht_untersucht.strasse,
+                          'bewertungsart': schacht_untersucht.bewertungsart,
+                          'bewertungstag': schacht_untersucht.bewertungstag,
+                          'datenart': schacht_untersucht.datenart,
+                          'epsg': QKan.config.epsg}
 
             # logger.debug(f'isyporter.import - insertdata:\ntabnam: schaechte_untersucht\n'
             #              f'params: {params}')
@@ -1071,9 +1134,11 @@ class ImportTask(Schadenstexte):
                         "[Streckenschaden='B']/VertikaleLage",
                         None, self.NS))
 
+                    kennung = _get_int(x_anlage.findtext("OptischeInspektion/Auftragskennung", None, self.NS))
+
                     for _untersuchdat_schacht in x_anlage.findall("OptischeInspektion/Knoten/Inspektionsdaten/KZustand", self.NS):
 
-                        id = _get_int(_untersuchdat_schacht.findtext("Index", None, self.NS))
+                        #id = _get_int(_untersuchdat_schacht.findtext("Index", None, self.NS))
                         videozaehler = _get_int(_untersuchdat_schacht.findtext("Videozaehler", None, self.NS))
                         timecode = _untersuchdat_schacht.findtext("Timecode", None, self.NS)
                         kuerzel = _untersuchdat_schacht.findtext("InspektionsKode", None, self.NS)
@@ -1098,51 +1163,49 @@ class ImportTask(Schadenstexte):
                         ZS = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Betriebssicherheit/SKSvAuto", None, self.NS))
                         ZB = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Standsicherheit/SKBvAuto", None, self.NS))
 
-                        x_filme = self.xml.findall(
-                            "Datenkollektive/Zustandsdatenkollektiv/Filme"
-                            f"/FilmObjekte/FilmObjekt/[Objektbezeichnung='{untersuchsch}']/../..",
-                            self.NS,
+                        # x_filme = self.xml.findall(
+                        #     "Datenkollektive/Zustandsdatenkollektiv/Filme"
+                        #     f"/FilmObjekte/FilmObjekt/[Objektbezeichnung='{untersuchsch}']/../..",
+                        #     self.NS,
+                        # )
+                        # logger.debug(f"Anzahl Filme in Untersuchdat_schacht zu Schacht {untersuchsch}: {len(x_filme)}")
+                        #
+                        # for x_film in x_filme:
+                        #     for _untersuchdat_schacht in x_film.findall("Film", self.NS):
+                        #
+                        #         _datei = _untersuchdat_schacht.findtext("Filmname", None, self.NS)
+                        #         if _datei is not None and self.ordner_bild is not None:
+                        #             film_dateiname = os.path.join(self.ordner_video, _datei)
+                        #         else:
+                        #             film_dateiname = None
+
+                        yield Untersuchdat_schacht(
+                        untersuchsch = untersuchsch,
+                        untersuchtag = untersuchtag,
+                        videozaehler = videozaehler,
+                        timecode = timecode,
+                        kuerzel = kuerzel,
+                        charakt1 = charakt1,
+                        charakt2 = charakt2,
+                        quantnr1 = quantnr1,
+                        quantnr2 = quantnr2,
+                        streckenschaden = streckenschaden,
+                        streckenschaden_lfdnr = streckenschaden_lfdnr,
+                        pos_von = pos_von,
+                        pos_bis = pos_bis,
+                        vertikale_lage = vertikale_lage,
+                        inspektionslaenge = inspektionslaenge,
+                        bereich = bereich,
+                        foto_dateiname = foto_dateiname,
+                        ordner_bild = ordner_bild,
+                        ZD=ZD,
+                        ZS=ZS,
+                        ZB=ZB,
                         )
-                        logger.debug(f"Anzahl Filme in Untersuchdat_schacht zu Schacht {untersuchsch}: {len(x_filme)}")
-
-                        for x_film in x_filme:
-                            for _untersuchdat_schacht in x_film.findall("Film", self.NS):
-
-                                _datei = _untersuchdat_schacht.findtext("Filmname", None, self.NS)
-                                if _datei is not None and self.ordner_bild is not None:
-                                    film_dateiname = os.path.join(self.ordner_video, _datei)
-                                else:
-                                    film_dateiname = None
-
-                                yield Untersuchdat_schacht(
-                                untersuchsch = untersuchsch,
-                                id = id,
-                                untersuchtag = untersuchtag,
-                                videozaehler = videozaehler,
-                                timecode = timecode,
-                                kuerzel = kuerzel,
-                                charakt1 = charakt1,
-                                charakt2 = charakt2,
-                                quantnr1 = quantnr1,
-                                quantnr2 = quantnr2,
-                                streckenschaden = streckenschaden,
-                                streckenschaden_lfdnr = streckenschaden_lfdnr,
-                                pos_von = pos_von,
-                                pos_bis = pos_bis,
-                                vertikale_lage = vertikale_lage,
-                                inspektionslaenge = inspektionslaenge,
-                                bereich = bereich,
-                                foto_dateiname = foto_dateiname,
-                                ordner_bild = ordner_bild,
-                                film_dateiname=film_dateiname,
-                                ZD=ZD,
-                                ZS=ZS,
-                                ZB=ZB,
-                                )
 
         for untersuchdat_schacht in _iter():
 
-            params = {'untersuchsch': untersuchdat_schacht.untersuchsch, 'id': untersuchdat_schacht.id,
+            params = {'untersuchsch': untersuchdat_schacht.untersuchsch,
                       'untersuchtag': untersuchdat_schacht.untersuchtag,
                       'videozaehler': untersuchdat_schacht.videozaehler, 'timecode': untersuchdat_schacht.timecode,
                       'kuerzel': untersuchdat_schacht.kuerzel, 'charakt1': untersuchdat_schacht.charakt1,
@@ -1180,10 +1243,10 @@ class ImportTask(Schadenstexte):
         #     ):
         #         return None
         #
-        self.db_qkan.commit()
+        Schadenstexte.setschadenstexte_schaechte(self.db_qkan)
 
     def _untersuchdat_schaechte_daten(self) -> None:
-        #TODO: für Fotos auch ergänzan ab Isybau 2020!
+        # TODO: für Fotos auch ergänzan ab Isybau 2020!
         def _iter() -> Iterator[Untersuchdat_daten]:
             x_zustandsdaten = self.xml.findall(
                 "Datenkollektive/Zustandsdatenkollektiv",
@@ -1193,59 +1256,56 @@ class ImportTask(Schadenstexte):
             for x_zustandsdat in x_zustandsdaten:
 
                 x_anlagen = x_zustandsdat.findall(
-                    "InspizierteAbwassertechnischeAnlage",
+                    "InspizierteAbwassertechnischeAnlage/[Anlagentyp='3']/"
+                    "OptischeInspektion/Rohrleitung/Inspektionsdaten/RZustand/../../../..",
                     self.NS,
                 )
 
-                logger.debug(f"Anzahl Untersuchungsdaten Schacht: {len(x_anlagen)}")
+                logger.debug(f"Anzahl Untersuchungsdaten Haltung: {len(x_anlagen)}")
+
+                liste = {}
 
                 for x_anlage in x_anlagen:
                     untersuchsch = x_anlage.findtext("Objektbezeichnung", None, self.NS)
-                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
-                    x_filme = x_anlage.findall(
-                        "Filme/Film"
-                        f"/FilmObjekte/FilmObjekt/[Objektbezeichnung='{untersuchsch}']/../../../..",
-                        self.NS,
-                    )
-                    iface.messageBar().pushMessage("Error",
-                                                   str(x_filme),
-                                                   level=Qgis.Critical)
-                    for x_film in x_filme:
-                        iface.messageBar().pushMessage("Error",
-                                                       str(x_film),
-                                                       level=Qgis.Critical)
-                        for _untersuchdat_schacht in x_film.findall("Film", self.NS):
 
-                            _datei = _untersuchdat_schacht.findtext("Filmname", None, self.NS)
-                            iface.messageBar().pushMessage("Error",
-                                                           str(_datei),
-                                                           level=Qgis.Critical)
-                            #relativer pfad mit einfügen in datei
-                            ordner = _untersuchdat_schacht.findtext("Filmpfad", None, self.NS)
+                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+
+                    id = _get_int(x_anlage.findtext("OptischeInspektion/Auftragskennung", None, self.NS))
+
+                    liste[untersuchsch] = [untersuchtag, id]
+
+
+                filme = x_zustandsdat.findall("Filme/Film", self.NS, )
+
+                for film in filme:
+                    bezeichnungen = film.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                    x = _get_int(film.findtext("Auftragskennung", None, self.NS))
+                    if bezeichnungen in liste and x == liste[bezeichnungen][1]:
+
+                        typ = film.findtext("FilmObjekte/FilmObjekt/Typ", None, self.NS)
+                        if typ == '1':
+                            objekt = "Haltung"
+                        elif typ == '2':
+                            objekt = "Anschlussleitung"
+                        elif typ == '3':
+                            objekt = "Schacht"
+                        elif typ == '4':
+                            objekt = "Bauwerk"
+
+                        if typ == "2":
+
+                            _datei = film.findtext("Filmname", None, self.NS)
+
+                            # relativer pfad mit einfügen in datei
+                            ordner = film.findtext("Filmpfad", None, self.NS)
                             if _datei is not None and self.ordner_bild is not None:
                                 filmdatei = os.path.join(self.ordner_video, _datei)
                             else:
                                 filmdatei = None
 
-                            iface.messageBar().pushMessage("Error",
-                                                           str(filmdatei),
-                                                           level=Qgis.Critical)
-
-                            untersuchsch = _untersuchdat_schacht.findtext("/FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
-                            id = _untersuchdat_schacht.findtext("/FilmObjekte/FilmObjekt/Typ", None, self.NS)
-                            if id == '1':
-                                objekt = "Haltung"
-                            elif id == '2':
-                                objekt = "Anschlussleitung"
-                            elif id == '3':
-                                objekt = "Schacht"
-                            elif id == '4':
-                                objekt = "Bauwerk"
-
-
                             yield Untersuchdat_daten(
-                                untersuchsch=untersuchsch,
-                                untersuchtag=untersuchtag,
+                                untersuchsch=bezeichnungen,
+                                untersuchtag=liste[bezeichnungen][0],
                                 datei=filmdatei,
                                 objekt=objekt,
                             )
@@ -1255,7 +1315,7 @@ class ImportTask(Schadenstexte):
             params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
                       'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
 
-            logger.debug(f'isyporter.import - insertdata:\ntabnam: Untersuchdat_schacht_daten\n'
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
                          f'params: {params}')
 
             if not self.db_qkan.insertdata(
@@ -1270,6 +1330,36 @@ class ImportTask(Schadenstexte):
 
 
     def _auslaesse(self) -> None:
+        def _iter1() -> Iterator[Schacht]:
+            """Hydraulikdaten zu Schacht einlesen und in self.hydraulikdaten einfügen"""
+
+            x_hydrauliken = self.xml.findall("Datenkollektive/Hydraulikdatenkollektiv/Rechennetz/"
+                                          "HydraulikObjekte/HydraulikObjekt/FreierAuslass",
+                                           self.NS)
+            logger.debug(f"Anzahl HydraulikObjekte_Schaechte: {len(x_hydrauliken)}")
+
+            for x_hydraulik in x_hydrauliken:
+                schnam = x_hydraulik.findtext("../Objektbezeichung", None, self.NS)
+
+                _auslasstyp = x_hydraulik.findtext("Freier Auslass Typ", None, self.NS)
+
+
+                _randbedingung = x_hydraulik.findtext("Randbedingung", None, self.NS)
+
+                if _auslasstyp == "1" and _randbedingung == "0" :
+                    auslasstyp = "freier Auslass"
+
+                elif _randbedingung == "1":
+                    auslasstyp = "konstant"
+
+                elif _randbedingung == "2":
+                    auslasstyp = "Tiede"
+
+                yield Schacht(
+                    schanm=schnam,
+                    auslasstyp=auslasstyp,
+                )
+
         def _iter() -> Iterator[Schacht]:
             # .//Auslaufbauwerk/../../.. nimmt AbwassertechnischeAnlage
             x_anlagen = self.xml.findall(
@@ -1305,6 +1395,11 @@ class ImportTask(Schadenstexte):
                     simstatus=x_anlage.findtext("Status", None, self.NS),
                     kommentar=x_anlage.findtext("Kommentar", None, self.NS),
                 )
+
+        for hydraulik in _iter1():
+            self.hydraulikdaten[hydraulik.schnam] = {
+                'auslasstyp':    hydraulik.auslasstyp,
+            }
 
         for auslass in _iter():
             # Entwässerungsarten
@@ -1368,10 +1463,17 @@ class ImportTask(Schadenstexte):
             # ):
             #     return None
 
+            if (pdat := self.hydraulikdaten.get(auslass.schnam, {})) == {}:
+                logger.info(f'Haltung {auslass.schnam} fehlt in den Hydraulikdaten')
+                pdat = {
+                    'auslastyp':    None,
+                }
+
             params = {'schnam': auslass.schnam, 'xsch': auslass.xsch, 'ysch': auslass.ysch,
                       'sohlhoehe': auslass.sohlhoehe, 'deckelhoehe': auslass.deckelhoehe, 'baujahr': auslass.baujahr,
                       'durchm': auslass.durchm, 'entwart': entwart, 'strasse': auslass.strasse, 'simstatus': simstatus,
-                      'kommentar': auslass.kommentar, 'material': auslass.material, 'schachttyp': 'Auslass', 'epsg': QKan.config.epsg}
+                      'kommentar': auslass.kommentar, 'material': auslass.material, 'schachttyp': 'Auslass', 'epsg': QKan.config.epsg}\
+                     | pdat
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: schaechte\n'
                          f'params: {params}')
@@ -1552,14 +1654,14 @@ class ImportTask(Schadenstexte):
                     material = x_kante.findtext("Material", None, self.NS)
 
                     x_profil = x_kante.find("Profil", self.NS)
-                    if x_profil:
+                    if x_profil is not None:
                         aussendurchmesser = _get_float(x_profil.findtext("Aussendurchmesser", None, self.NS))
                         profilnam = x_profil.findtext("Profilart", None, self.NS)
                         hoehe = _get_float(x_profil.findtext("Profilhoehe", None, self.NS))
                         breite = _get_float(x_profil.findtext("Profilbreite", None, self.NS))
 
                     x_haltung = x_kante.find("Haltung", self.NS)
-                    if x_haltung:
+                    if x_haltung is not None:
                         profilauskleidung = x_haltung.findtext("Auskleidung", None, self.NS)
                         innenmaterial = x_haltung.findtext("MaterialAuskleidung", None, self.NS)
 
@@ -1715,7 +1817,7 @@ class ImportTask(Schadenstexte):
                 "Datenkollektive/Zustandsdatenkollektiv/InspizierteAbwassertechnischeAnlage/[Anlagentyp='1']",
                 self.NS,
             )
-            logger.debug(f"Anzahl Haltungen: {len(x_anlagen)}")
+            logger.debug(f"Anzahl Haltungen_unteruscht: {len(x_anlagen)}")
 
             untersuchtag = ""
             untersucher = ""
@@ -1730,23 +1832,30 @@ class ImportTask(Schadenstexte):
                 haltnam = x_anlage.findtext("Objektbezeichnung", None, self.NS)
                 strasse = x_anlage.findtext("Lage/Strassenname", None, self.NS)
 
-                for _haltung in x_anlage.findall("OptischeInspektion", self.NS):
-                    untersuchtag = _haltung.findtext("Inspektionsdatum", None, self.NS)
-                    untersucher = _haltung.findtext("NameUntersucher", None, self.NS)
-                    wetter = _haltung.findtext("Wetter", None, self.NS)
-                    inspektionslaenge = _get_float(_haltung.findtext("Rohrleitung/Inspektionslaenge", None, self.NS))
-                    _ = _haltung.findtext("Rohrleitung/Inspektionsrichtung", None, self.NS)
-                    if _ == "O":
-                        untersuchrichtung = "in Fließrichtung"
-                    elif _ == "U":
-                        untersuchrichtung = "gegen Fließrichtung"
-                    else:
-                        logger.warning(f"Haltung untersucht: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
-                        untersuchrichtung = None
+                untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+                untersucher = x_anlage.findtext("OptischeInspektion/NameUntersucher", None, self.NS)
+                wetter = x_anlage.findtext("OptischeInspektion/Wetter", None, self.NS)
+                auftragsbezeichnung = x_anlage.findtext("OptischeInspektion/Auftragskennung", None, self.NS)
 
-                    for _haltungz in _haltung.findall("Rohrleitung/Bewertung", self.NS):
-                        bewertungsart = _haltungz.findtext("Bewertungsverfahren", None, self.NS)
-                        bewertungstag = _haltungz.findtext("Bewertungsdatum", None, self.NS)
+                inspektionslaenge = _get_float(x_anlage.findtext("OptischeInspektion/Rohrleitung/Inspektionslaenge", None, self.NS))
+                _ = x_anlage.findtext("OptischeInspektion/Rohrleitung/Inspektionsrichtung", None, self.NS)
+                if _ == "O":
+                    untersuchrichtung = "in Fließrichtung"
+                elif _ == "U":
+                    untersuchrichtung = "gegen Fließrichtung"
+                else:
+                    logger.warning(f"Haltung untersucht: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
+                    untersuchrichtung = None
+
+                _val = x_anlage.findtext("OptischeInspektion/Rohrleitung/BezugspunktLage", None, self.NS)
+                if _val == '2' or not _val:
+                    bezugspunkt = enums.UntersuchBezugpunkt.ROHRANFANG.value
+                else:
+                    bezugspunkt = enums.UntersuchBezugpunkt.GERINNEMITTELPUNKT.value
+
+                for _haltungz in x_anlage.findall("OptischeInspektion/Rohrleitung/Bewertung", self.NS):
+                    bewertungsart = _haltungz.findtext("OptischeInspektion/Bewertungsverfahren", None, self.NS)
+                    bewertungstag = _haltungz.findtext("OptischeInspektion/Bewertungsdatum", None, self.NS)
 
                 yield Haltung_untersucht(
                     haltnam=haltnam,
@@ -1759,6 +1868,8 @@ class ImportTask(Schadenstexte):
                     bewertungsart=bewertungsart,
                     bewertungstag=bewertungstag,
                     datenart=datenart,
+                    bezugspunkt=bezugspunkt,
+                    auftragsbezeichnung=auftragsbezeichnung,
                 )
 
         # 1. Teil: Hier werden die Stammdaten zu den Haltungen in die Datenbank geschrieben
@@ -1775,40 +1886,43 @@ class ImportTask(Schadenstexte):
                 'bemerkung',
             )
 
-            if (pdat := self.haltungsdaten.get(haltung_untersucht.haltnam, {})) == {}:
+            if (pdat := self.haltungsdaten.get(haltung_untersucht.haltnam, {})):
+
+                pdat['laenge'] = haltung_untersucht.laenge
+
+
+                params = {'haltnam': haltung_untersucht.haltnam,
+                          'untersuchtag': haltung_untersucht.untersuchtag,
+                          'untersucher': haltung_untersucht.untersucher,
+                          'wetter': haltung_untersucht.wetter,
+                          'auftragsbezeichnung': haltung_untersucht.auftragsbezeichnung,
+                          'untersuchrichtung': haltung_untersucht.untersuchrichtung,
+                          'strasse': haltung_untersucht.strasse,
+                          'bewertungsart': haltung_untersucht.bewertungsart,
+                          'bewertungstag': haltung_untersucht.bewertungstag,
+                          'datenart': haltung_untersucht.datenart,
+                          'bezugspunkt': haltung_untersucht.bezugspunkt,
+                          'epsg': QKan.config.epsg,}\
+                         | pdat
+
+            else:
                 logger.warning(f'Untersuchte Haltung {haltung_untersucht.haltnam} fehlt in den Stammdaten')
                 #continue
                 params = {'haltnam': haltung_untersucht.haltnam,
                           'untersuchtag': haltung_untersucht.untersuchtag,
                           'untersucher': haltung_untersucht.untersucher,
                           'wetter': haltung_untersucht.wetter,
+                          'auftragsbezeichnung': haltung_untersucht.auftragsbezeichnung,
                           'untersuchrichtung': haltung_untersucht.untersuchrichtung,
                           'strasse': haltung_untersucht.strasse,
                           'bewertungsart': haltung_untersucht.bewertungsart,
                           'bewertungstag': haltung_untersucht.bewertungstag,
                           'datenart': haltung_untersucht.datenart,
+                          'bezugspunkt': haltung_untersucht.bezugspunkt,
                           'epsg': QKan.config.epsg, }
 
 
-            else:
-                # Länge vorrangig aus Untersuchungsdaten, sonst aus Stammdaten (in pdat)
-                if haltung_untersucht.laenge is not None:
-                    pdat['laenge'] = haltung_untersucht.laenge
-
-
-                params = {'haltnam': haltung_untersucht.haltnam,
-                          'untersuchtag': haltung_untersucht.untersuchtag,
-                          'untersucher': haltung_untersucht.untersucher,
-                          'wetter': haltung_untersucht.wetter,
-                          'untersuchrichtung': haltung_untersucht.untersuchrichtung,
-                          'strasse': haltung_untersucht.strasse,
-                          'bewertungsart': haltung_untersucht.bewertungsart,
-                          'bewertungstag': haltung_untersucht.bewertungstag,
-                          'datenart': haltung_untersucht.datenart,
-                          'epsg': QKan.config.epsg,}\
-                         | pdat
-
-            logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen\n'
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: haltungen_untersucht\n'
                          f'params: {params}')
 
             if not self.db_qkan.insertdata(
@@ -1838,7 +1952,6 @@ class ImportTask(Schadenstexte):
             untersuchrichtung = ""
             schoben = ""
             schunten = ""
-            id = 0
             inspektionslaenge = 0.0
             videozaehler = 0
             station = 0.0
@@ -1861,6 +1974,8 @@ class ImportTask(Schadenstexte):
                 untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
                 for _untersuchdat_haltung in x_anlage.findall("OptischeInspektion/Rohrleitung", self.NS):
 
+                    #id = _get_int(_untersuchdat_haltung.findtext("../Auftragskennung", None, self.NS))
+
                     _ = _untersuchdat_haltung.findtext("Inspektionsrichtung", None, self.NS)
                     if _ == "O":
                         untersuchrichtung = "in Fließrichtung"
@@ -1880,7 +1995,6 @@ class ImportTask(Schadenstexte):
 
                     for _untersuchdat in _untersuchdat_haltung.findall("Inspektionsdaten/RZustand", self.NS):
 
-                        id = _get_int(_untersuchdat.findtext("Index", None, self.NS))
                         videozaehler = _get_int(_untersuchdat.findtext("Videozaehler", None, self.NS))
                         station = _get_float(_untersuchdat.findtext("Station", None, self.NS))
                         timecode = _untersuchdat.findtext("Timecode", None, self.NS)
@@ -1910,7 +2024,6 @@ class ImportTask(Schadenstexte):
                         untersuchrichtung=untersuchrichtung,
                         schoben=schoben,
                         schunten=schunten,
-                        id=id,
                         untersuchtag=untersuchtag,
                         inspektionslaenge=inspektionslaenge,
                         videozaehler=videozaehler,
@@ -1935,39 +2048,39 @@ class ImportTask(Schadenstexte):
 
             )
 
-        def _iter2() -> Iterator[Untersuchdat_haltung]:
-                x_filme = self.xml.findall(
-                    "Datenkollektive/Zustandsdatenkollektiv/Filme/Film/Filmname/../..",
-                    self.NS,
-                )
-                logger.debug(f"Anzahl Untersuchdat_haltung: {len(x_filme)}")
-
-                film_dateiname = ""
-                for x_film in x_filme:
-                    for _untersuchdat_haltung in x_film.findall("Film/FilmObjekte/..", self.NS):
-
-                        name = _untersuchdat_haltung.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
-
-                        _datei = _untersuchdat_haltung.findtext("Filmname", None, self.NS)
-                        if _datei is not None and self.ordner_bild is not None:
-                            film_dateiname = os.path.join(self.ordner_video, _datei)
-                        else:
-                            film_dateiname = None
-
-                        # bandnr = _get_int(_untersuchdat_haltung.findtext("Videoablagereferenz", None, self.NS))
-
-                        yield Untersuchdat_haltung(
-                            untersuchhal=name,
-                            film_dateiname=film_dateiname,
-                            # bandnr=bandnr
-                        )
+        # def _iter2() -> Iterator[Untersuchdat_haltung]:
+        #         x_filme = self.xml.findall(
+        #             "Datenkollektive/Zustandsdatenkollektiv/Filme/Film/Filmname/../..",
+        #             self.NS,
+        #         )
+        #         logger.debug(f"Anzahl Untersuchdat_haltung: {len(x_filme)}")
+        #
+        #         film_dateiname = ""
+        #         for x_film in x_filme:
+        #             for _untersuchdat_haltung in x_film.findall("Film/FilmObjekte/..", self.NS):
+        #
+        #                 name = _untersuchdat_haltung.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+        #
+        #                 _datei = _untersuchdat_haltung.findtext("Filmname", None, self.NS)
+        #                 if _datei is not None and self.ordner_bild is not None:
+        #                     film_dateiname = os.path.join(self.ordner_video, _datei)
+        #                 else:
+        #                     film_dateiname = None
+        #
+        #                 # bandnr = _get_int(_untersuchdat_haltung.findtext("Videoablagereferenz", None, self.NS))
+        #
+        #                 yield Untersuchdat_haltung(
+        #                     untersuchhal=name,
+        #                     film_dateiname=film_dateiname,
+        #                     # bandnr=bandnr
+        #                 )
 
         for untersuchdat_haltung in _iter():
 
             params = {'untersuchhal': untersuchdat_haltung.untersuchhal,
                       'untersuchrichtung': untersuchdat_haltung.untersuchrichtung,
                       'schoben': untersuchdat_haltung.schoben, 'schunten': untersuchdat_haltung.schunten,
-                      'id': untersuchdat_haltung.id, 'untersuchtag': untersuchdat_haltung.untersuchtag,
+                       'untersuchtag': untersuchdat_haltung.untersuchtag,
                       'videozaehler': untersuchdat_haltung.videozaehler,
                       'inspektionslaenge': untersuchdat_haltung.inspektionslaenge,
                       'station': untersuchdat_haltung.station,
@@ -1996,23 +2109,104 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.commit()
 
-        for untersuchdat_haltung in _iter2():
-
-            if not self.db_qkan.sql(
-                "UPDATE untersuchdat_haltung SET film_dateiname=?" 
-                " WHERE  untersuchhal= ?",
-                "xml_import untersuchhal [2a]",
-                parameters=[untersuchdat_haltung.film_dateiname,untersuchdat_haltung.untersuchhal],
-            ):
-                return None
-
-        self.db_qkan.commit()
+        # for untersuchdat_haltung in _iter2():
+        #
+        #     if not self.db_qkan.sql(
+        #         "UPDATE untersuchdat_haltung SET film_dateiname=?"
+        #         " WHERE  untersuchhal= ?",
+        #         "xml_import untersuchhal [2a]",
+        #         parameters=[untersuchdat_haltung.film_dateiname,untersuchdat_haltung.untersuchhal],
+        #     ):
+        #         return None
+        #
+        # self.db_qkan.commit()
 
         Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
-        #self.db_qkan.setschadenstexte_haltungen()
 
     def _untersuchdat_haltung_daten(self):
-        pass
+        # TODO: für Fotos auch ergänzan ab Isybau 2020!
+        def _iter() -> Iterator[Untersuchdat_daten]:
+            x_zustandsdaten = self.xml.findall(
+                "Datenkollektive/Zustandsdatenkollektiv",
+                self.NS,
+            )
+
+            for x_zustandsdat in x_zustandsdaten:
+
+                x_anlagen = x_zustandsdat.findall(
+                    "InspizierteAbwassertechnischeAnlage/[Anlagentyp='1']/"
+                "OptischeInspektion/Rohrleitung/Inspektionsdaten/RZustand/../../../..",
+                    self.NS,
+                )
+
+                logger.debug(f"Anzahl Untersuchungsdaten Haltung: {len(x_anlagen)}")
+
+                liste = {}
+
+                for x_anlage in x_anlagen:
+                    untersuchsch = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+
+                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+
+                    #id = _get_int(x_anlage.findtext("OptischeInspektion/Auftragskennung", None, self.NS))
+
+                    liste[untersuchsch] = [untersuchtag, id]
+
+
+                filme = x_zustandsdat.findall("Filme/Film", self.NS,)
+
+                for film in filme:
+                    bezeichnungen = film.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                    x = _get_int(film.findtext("Auftragskennung", None, self.NS))
+                    #if bezeichnungen in liste and x == liste[bezeichnungen][1]:
+                    if bezeichnungen in liste:
+
+                        typ = film.findtext("FilmObjekte/FilmObjekt/Typ", None, self.NS)
+                        if typ == '1':
+                            objekt = "Haltung"
+                        elif typ == '2':
+                            objekt = "Anschlussleitung"
+                        elif typ == '3':
+                            objekt = "Schacht"
+                        elif typ == '4':
+                            objekt = "Bauwerk"
+
+                        if typ == "1":
+
+                            _datei = film.findtext("Filmname", None, self.NS)
+
+                            # relativer pfad mit einfügen in datei
+                            ordner = film.findtext("Filmpfad", None, self.NS)
+                            if _datei is not None and self.ordner_bild is not None:
+                                filmdatei = os.path.join(self.ordner_video, _datei)
+                            else:
+                                filmdatei = None
+
+
+                            yield Untersuchdat_daten(
+                                untersuchsch=bezeichnungen,
+                                untersuchtag=liste[bezeichnungen][0],
+                                datei=filmdatei,
+                                objekt=objekt,
+                            )
+
+        for untersuchdat_daten in _iter():
+
+            params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
+                      'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
+                         f'params: {params}')
+
+            if not self.db_qkan.insertdata(
+                    tabnam="videos",
+                    mute_logger=False,
+                    parameters=params,
+            ):
+                del self.db_qkan
+                return
+
+        self.db_qkan.commit()
 
 
     def _anschlussleitungen(self) -> None:
@@ -2201,7 +2395,6 @@ class ImportTask(Schadenstexte):
 
             params = {'leitnam': anschlussleitung.leitnam,
                       'schoben': anschlussleitung.schoben, 'schunten': anschlussleitung.schunten,
-                      'haltnam': anschlussleitung.haltnam,
                       'hoehe': anschlussleitung.hoehe, 'breite': anschlussleitung.breite,
                       'laenge': anschlussleitung.laenge, 'material': material, 'baujahr': anschlussleitung.baujahr,
                       'sohleoben': anschlussleitung.sohleoben, 'sohleunten': anschlussleitung.sohleunten,
@@ -2241,6 +2434,7 @@ class ImportTask(Schadenstexte):
             bewertungsart = None
             bewertungstag = ""
             datenart = self.datenart
+            laenge = None
 
             for x_anlage in x_anlagen:
                 found_leitung = x_anlage.findtext("Kante/Leitung", None, self.NS)
@@ -2250,11 +2444,21 @@ class ImportTask(Schadenstexte):
 
                     for _haltung in x_anlage.findall("OptischeInspektion", self.NS):
 
+                        _val = _haltung.findtext("Rohrleitung/BezugspunktLage", None, self.NS)
+                        if _val == '2' or not _val:
+                            bezugspunkt = enums.UntersuchBezugpunkt.ROHRANFANG.value
+                        else:
+                            bezugspunkt = enums.UntersuchBezugpunkt.GERINNEMITTELPUNKT.value
+
+                        laenge = _get_float(x_anlage.findtext("Rohrleitung/Inspektionslaenge",None, self.NS))
+
                         untersuchtag = _haltung.findtext("Inspektionsdatum", None, self.NS)
 
                         untersucher = _haltung.findtext("NameUntersucher", None, self.NS)
 
                         wetter = _haltung.findtext("Wetter", None, self.NS)
+
+                        auftragsbezeichnung = _haltung.findtext("Auftragskennung", None, self.NS)
 
                         for _haltungz in _haltung.findall("Rohrleitung/Bewertung", self.NS):
                             bewertungsart = _haltungz.findtext("Bewertungsverfahren", None, self.NS)
@@ -2266,10 +2470,14 @@ class ImportTask(Schadenstexte):
                         untersuchtag=untersuchtag,
                         untersucher=untersucher,
                         wetter=wetter,
+                        auftragsbezeichnung=auftragsbezeichnung,
                         strasse=strasse,
                         bewertungsart=bewertungsart,
                         bewertungstag=bewertungstag,
                         datenart=datenart,
+                        laenge=laenge,
+                        bezugspunkt=bezugspunkt
+
                     )
 
         for anschlussleitung_untersucht in _iter():
@@ -2284,24 +2492,32 @@ class ImportTask(Schadenstexte):
                 'bemerkung',
             )
 
-            if (pdat := self.anschlussdaten.get(anschlussleitung_untersucht.haltnam, {})) == {}:
-                logger.warning(f'Untersuchte Anschlussleitung {anschlussleitung_untersucht.haltnam} fehlt in den Stammdaten')
-                params = {'haltnam': anschlussleitung_untersucht.haltnam,
+            if pdat := self.anschlussdaten.get(anschlussleitung_untersucht.haltnam, {}):
+                params = {'leitnam': anschlussleitung_untersucht.haltnam,
                           'untersuchtag': anschlussleitung_untersucht.untersuchtag,
                           'untersucher': anschlussleitung_untersucht.untersucher,
                           'wetter': wetter,
+                          'auftragsbezeichnung': anschlussleitung_untersucht.auftragsbezeichnung,
                           'strasse': anschlussleitung_untersucht.strasse,
                           'bewertungsart': anschlussleitung_untersucht.bewertungsart,
-                          'bewertungstag': anschlussleitung_untersucht.bewertungstag, }
+                          'laenge': anschlussleitung_untersucht.laenge,
+                          'bezugspunkt': anschlussleitung_untersucht.bezugspunkt,
+                          'bewertungstag': anschlussleitung_untersucht.bewertungstag, } \
+                         | pdat
+
             else:
-                params = {'haltnam': anschlussleitung_untersucht.haltnam,
+                logger.warning(
+                    f'Untersuchte Anschlussleitung {anschlussleitung_untersucht.haltnam} fehlt in den Stammdaten')
+                params = {'leitnam': anschlussleitung_untersucht.haltnam,
                           'untersuchtag': anschlussleitung_untersucht.untersuchtag,
                           'untersucher': anschlussleitung_untersucht.untersucher,
                           'wetter': wetter,
+                          'auftragsbezeichnung': anschlussleitung_untersucht.auftragsbezeichnung,
                           'strasse': anschlussleitung_untersucht.strasse,
                           'bewertungsart': anschlussleitung_untersucht.bewertungsart,
-                          'bewertungstag': anschlussleitung_untersucht.bewertungstag,}\
-                | pdat
+                          'laenge': anschlussleitung_untersucht.laenge,
+                          'bezugspunkt': anschlussleitung_untersucht.bezugspunkt,
+                          'bewertungstag': anschlussleitung_untersucht.bewertungstag, }
 
             if not self.db_qkan.insertdata(
                     tabnam="anschlussleitungen_untersucht",
@@ -2330,7 +2546,6 @@ class ImportTask(Schadenstexte):
             untersuchrichtung = ""
             schoben = ""
             schunten = ""
-            id = 0
             inspektionslaenge = 0.0
             videozaehler = 0
             station = 0.0
@@ -2347,125 +2562,123 @@ class ImportTask(Schadenstexte):
             film_dateiname = ""
 
             for x_anlage in x_anlagen:
-                found_leitung = x_anlage.findtext("Kante/Leitung", None, self.NS)
-                if found_leitung != '':
 
-                    name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
-                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+                name = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+                untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
 
-                    for _untersuchdat_haltung in x_anlage.findall("OptischeInspektion/Rohrleitung", self.NS):
+                for _untersuchdat_haltung in x_anlage.findall("OptischeInspektion/Rohrleitung", self.NS):
 
-                        _ = _untersuchdat_haltung.findtext("Inspektionsrichtung", None, self.NS)
-                        if _ == "O":
-                            untersuchrichtung = "in Fließrichtung"
-                        elif _ == "U":
-                            untersuchrichtung = "gegen Fließrichtung"
-                        else:
-                            logger.warning(f"Untersuchungsdaten Anschluss: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
-                            untersuchrichtung = None
+                    #id = _get_int(_untersuchdat_haltung.findtext("../Auftragskennung", None, self.NS))
 
-                        inspektionslaenge = _get_float(
-                            _untersuchdat_haltung.findtext("Inspektionslaenge", None, self.NS))
-                        if inspektionslaenge == 0.0:
-                            inspektionslaenge = _get_float(_untersuchdat_haltung.findtext(
-                                "Inspektionsdaten/RZustand[InspektionsKode='BCE'][Charakterisierung1='XP']/Station",
-                                None, self.NS))
-
-                        schoben = _untersuchdat_haltung.findtext("RGrunddaten/KnotenZulauf", None, self.NS)
-                        schunten = _untersuchdat_haltung.findtext("RGrunddaten/KnotenAblauf", None, self.NS)
-
-                        for _untersuchdat in _untersuchdat_haltung.findall("Inspektionsdaten/RZustand", self.NS):
-                            id = _get_int(_untersuchdat.findtext("Index", None, self.NS))
-                            videozaehler = _get_int(_untersuchdat.findtext("Videozaehler", None, self.NS))
-                            station = _get_float(_untersuchdat.findtext("Station", None, self.NS))
-                            timecode = _untersuchdat.findtext("Timecode", None, self.NS)
-                            kuerzel = _untersuchdat.findtext("InspektionsKode", None, self.NS)
-                            charakt1 = _untersuchdat.findtext("Charakterisierung1", None, self.NS)
-                            charakt2 = _untersuchdat.findtext("Charakterisierung2", None, self.NS)
-                            quantnr1 = _get_float(_untersuchdat.findtext("Quantifizierung1Numerisch", None, self.NS))
-                            quantnr2 = _get_float(_untersuchdat.findtext("Quantifizierung2Numerisch", None, self.NS))
-                            streckenschaden = _untersuchdat.findtext("Streckenschaden", None, self.NS)
-                            streckenschaden_lfdnr = _get_int(
-                                _untersuchdat.findtext("StreckenschadenLfdNr", None, self.NS))
-                            pos_von = _get_int(_untersuchdat.findtext("PositionVon", None, self.NS))
-                            pos_bis = _get_int(_untersuchdat.findtext("PositionBis", None, self.NS))
-
-                            _datei = _untersuchdat.findtext("Fotodatei", None, self.NS)
-                            if _datei is not None and self.ordner_bild is not None:
-                                foto_dateiname = os.path.join(self.ordner_bild, _datei)
-                            else:
-                                foto_dateiname = None
-
-                            ZD = _get_int(
-                                _untersuchdat.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
-                            ZS = _get_int(
-                                _untersuchdat.findtext("Klassifizierung/Standsicherheit/SKSvAuto", None, self.NS))
-                            ZB = _get_int(
-                                _untersuchdat.findtext("Klassifizierung/Betriebssicherheit/SKBvAuto", None, self.NS))
-
-                            yield Untersuchdat_anschlussleitung(
-                                untersuchhal=name,
-                                untersuchrichtung=untersuchrichtung,
-                                schoben=schoben,
-                                schunten=schunten,
-                                id=id,
-                                untersuchtag=untersuchtag,
-                                inspektionslaenge=inspektionslaenge,
-                                videozaehler=videozaehler,
-                                station=station,
-                                timecode=timecode,
-                                kuerzel=kuerzel,
-                                charakt1=charakt1,
-                                charakt2=charakt2,
-                                quantnr1=quantnr1,
-                                quantnr2=quantnr2,
-                                streckenschaden=streckenschaden,
-                                streckenschaden_lfdnr=streckenschaden_lfdnr,
-                                pos_von=pos_von,
-                                pos_bis=pos_bis,
-                                foto_dateiname=foto_dateiname,
-                                film_dateiname=film_dateiname,
-                                ordner_bild=ordner_bild,
-                                ordner_video=ordner_video,
-                                ZD=ZD,
-                                ZS=ZS,
-                                ZB=ZB,
-
-                            )
-
-        def _iter2() -> Iterator[Untersuchdat_anschlussleitung]:
-            x_filme = self.xml.findall(
-                "Datenkollektive/Zustandsdatenkollektiv/Filme/Film/Filmname/../..",
-                self.NS,
-            )
-            logger.debug(f"Anzahl Untersuchdat_haltung: {len(x_filme)}")
-
-            film_dateiname = ""
-            for x_film in x_filme:
-                for _untersuchdat_haltung in x_film.findall("Film/FilmObjekte/..", self.NS):
-                    name = _untersuchdat_haltung.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None,
-                                                          self.NS)
-
-                    _datei = _untersuchdat_haltung.findtext("Filmname", None, self.NS)
-                    if _datei is not None and self.ordner_video is not None:
-                        film_dateiname = os.path.join(self.ordner_video, _datei)
+                    _ = _untersuchdat_haltung.findtext("Inspektionsrichtung", None, self.NS)
+                    if _ == "O":
+                        untersuchrichtung = "in Fließrichtung"
+                    elif _ == "U":
+                        untersuchrichtung = "gegen Fließrichtung"
                     else:
-                        film_dateiname = None
+                        logger.warning(f"Untersuchungsdaten Anschluss: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
+                        untersuchrichtung = None
 
-                    # bandnr = _get_int(_untersuchdat_haltung.findtext("Videoablagereferenz", None, self.NS))
+                    inspektionslaenge = _get_float(
+                        _untersuchdat_haltung.findtext("Inspektionslaenge", None, self.NS))
+                    if inspektionslaenge == 0.0:
+                        inspektionslaenge = _get_float(_untersuchdat_haltung.findtext(
+                            "Inspektionsdaten/RZustand[InspektionsKode='BCE'][Charakterisierung1='XP']/Station",
+                            None, self.NS))
 
-                    yield Untersuchdat_anschlussleitung(
-                        untersuchhal=name,
-                        film_dateiname=film_dateiname,
-                        # bandnr=bandnr
-                    )
+                    schoben = _untersuchdat_haltung.findtext("RGrunddaten/KnotenZulauf", None, self.NS)
+                    schunten = _untersuchdat_haltung.findtext("RGrunddaten/KnotenAblauf", None, self.NS)
+
+                    for _untersuchdat in _untersuchdat_haltung.findall("Inspektionsdaten/RZustand", self.NS):
+                        videozaehler = _get_int(_untersuchdat.findtext("Videozaehler", None, self.NS))
+                        station = _get_float(_untersuchdat.findtext("Station", None, self.NS))
+                        timecode = _untersuchdat.findtext("Timecode", None, self.NS)
+                        kuerzel = _untersuchdat.findtext("InspektionsKode", None, self.NS)
+                        charakt1 = _untersuchdat.findtext("Charakterisierung1", None, self.NS)
+                        charakt2 = _untersuchdat.findtext("Charakterisierung2", None, self.NS)
+                        quantnr1 = _get_float(_untersuchdat.findtext("Quantifizierung1Numerisch", None, self.NS))
+                        quantnr2 = _get_float(_untersuchdat.findtext("Quantifizierung2Numerisch", None, self.NS))
+                        streckenschaden = _untersuchdat.findtext("Streckenschaden", None, self.NS)
+                        streckenschaden_lfdnr = _get_int(
+                            _untersuchdat.findtext("StreckenschadenLfdNr", None, self.NS))
+                        pos_von = _get_int(_untersuchdat.findtext("PositionVon", None, self.NS))
+                        pos_bis = _get_int(_untersuchdat.findtext("PositionBis", None, self.NS))
+
+                        _datei = _untersuchdat.findtext("Fotodatei", None, self.NS)
+                        if _datei is not None and self.ordner_bild is not None:
+                            foto_dateiname = os.path.join(self.ordner_bild, _datei)
+                        else:
+                            foto_dateiname = None
+
+                        ZD = _get_int(
+                            _untersuchdat.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
+                        ZS = _get_int(
+                            _untersuchdat.findtext("Klassifizierung/Standsicherheit/SKSvAuto", None, self.NS))
+                        ZB = _get_int(
+                            _untersuchdat.findtext("Klassifizierung/Betriebssicherheit/SKBvAuto", None, self.NS))
+
+                        yield Untersuchdat_anschlussleitung(
+                            untersuchhal=name,
+                            untersuchrichtung=untersuchrichtung,
+                            schoben=schoben,
+                            schunten=schunten,
+                            untersuchtag=untersuchtag,
+                            inspektionslaenge=inspektionslaenge,
+                            videozaehler=videozaehler,
+                            station=station,
+                            timecode=timecode,
+                            kuerzel=kuerzel,
+                            charakt1=charakt1,
+                            charakt2=charakt2,
+                            quantnr1=quantnr1,
+                            quantnr2=quantnr2,
+                            streckenschaden=streckenschaden,
+                            streckenschaden_lfdnr=streckenschaden_lfdnr,
+                            pos_von=pos_von,
+                            pos_bis=pos_bis,
+                            foto_dateiname=foto_dateiname,
+                            film_dateiname=film_dateiname,
+                            ordner_bild=ordner_bild,
+                            ordner_video=ordner_video,
+                            ZD=ZD,
+                            ZS=ZS,
+                            ZB=ZB,
+
+                        )
+
+        # def _iter2() -> Iterator[Untersuchdat_anschlussleitung]:
+        #     x_filme = self.xml.findall(
+        #         "Datenkollektive/Zustandsdatenkollektiv/Filme/Film/Filmname/../..",
+        #         self.NS,
+        #     )
+        #     logger.debug(f"Anzahl Untersuchdat_haltung: {len(x_filme)}")
+        #
+        #     film_dateiname = ""
+        #     for x_film in x_filme:
+        #         for _untersuchdat_haltung in x_film.findall("Film/FilmObjekte/..", self.NS):
+        #             name = _untersuchdat_haltung.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None,
+        #                                                   self.NS)
+        #
+        #             _datei = _untersuchdat_haltung.findtext("Filmname", None, self.NS)
+        #             if _datei is not None and self.ordner_video is not None:
+        #                 film_dateiname = os.path.join(self.ordner_video, _datei)
+        #             else:
+        #                 film_dateiname = None
+        #
+        #             # bandnr = _get_int(_untersuchdat_haltung.findtext("Videoablagereferenz", None, self.NS))
+        #
+        #             yield Untersuchdat_anschlussleitung(
+        #                 untersuchhal=name,
+        #                 film_dateiname=film_dateiname,
+        #                 # bandnr=bandnr
+        #             )
 
         for untersuchdat_anschlussleitung in _iter():
 
             params = {'untersuchleit': untersuchdat_anschlussleitung.untersuchhal,
                       'untersuchrichtung': untersuchdat_anschlussleitung.untersuchrichtung,
                       'schoben': untersuchdat_anschlussleitung.schoben, 'schunten': untersuchdat_anschlussleitung.schunten,
-                      'id': untersuchdat_anschlussleitung.id, 'untersuchtag': untersuchdat_anschlussleitung.untersuchtag,
+                       'untersuchtag': untersuchdat_anschlussleitung.untersuchtag,
                       'videozaehler': untersuchdat_anschlussleitung.videozaehler,
                       'inspektionslaenge': untersuchdat_anschlussleitung.inspektionslaenge,
                       'station': untersuchdat_anschlussleitung.station,
@@ -2493,18 +2706,102 @@ class ImportTask(Schadenstexte):
                 return
 
         self.db_qkan.commit()
+        Schadenstexte.setschadenstexte_anschlussleitungen(self.db_qkan)
 
         # geometrieobjekt erzeugen
 
-        for untersuchdat_anschlussleitung in _iter2():
-            if not self.db_qkan.sql(
-                    "UPDATE untersuchdat_anschlussleitung SET film_dateiname=?"
-                    " WHERE  untersuchhal= ?",
-                    "xml_import untersuchhal [2a]",
-                    parameters=[untersuchdat_anschlussleitung.film_dateiname,
-                                untersuchdat_anschlussleitung.untersuchhal],
+        # for untersuchdat_anschlussleitung in _iter2():
+        #     if not self.db_qkan.sql(
+        #             "UPDATE untersuchdat_anschlussleitung SET film_dateiname=?"
+        #             " WHERE  untersuchleit= ?",
+        #             "xml_import untersuchleit [2a]",
+        #             parameters=[untersuchdat_anschlussleitung.film_dateiname,
+        #                         untersuchdat_anschlussleitung.untersuchhal],
+        #     ):
+        #         return None
+        #
+        # self.db_qkan.commit()
+
+    def _untersuchdat_anschlussleitung_daten(self):
+        # TODO: für Fotos auch ergänzan ab Isybau 2020!
+        def _iter() -> Iterator[Untersuchdat_daten]:
+            x_zustandsdaten = self.xml.findall(
+                "Datenkollektive/Zustandsdatenkollektiv",
+                self.NS,
+            )
+
+            for x_zustandsdat in x_zustandsdaten:
+
+                x_anlagen = x_zustandsdat.findall(
+                    "InspizierteAbwassertechnischeAnlage/[Anlagentyp='2']/"
+                    "OptischeInspektion/Rohrleitung/Inspektionsdaten/RZustand/../../../..",
+                    self.NS,
+                )
+
+                logger.debug(f"Anzahl Untersuchungsdaten Haltung: {len(x_anlagen)}")
+
+                liste = {}
+
+                for x_anlage in x_anlagen:
+                    untersuchsch = x_anlage.findtext("Objektbezeichnung", None, self.NS)
+
+                    untersuchtag = x_anlage.findtext("OptischeInspektion/Inspektionsdatum", None, self.NS)
+
+                    id = _get_int(x_anlage.findtext("OptischeInspektion/Auftragskennung", None, self.NS))
+
+                    liste[untersuchsch] = [untersuchtag, id]
+
+                filme = x_zustandsdat.findall("Filme/Film", self.NS, )
+
+                for film in filme:
+                    bezeichnungen = film.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                    x = _get_int(film.findtext("Auftragskennung", None, self.NS))
+                    if bezeichnungen in liste and x == liste[bezeichnungen][1]:
+                        if bezeichnungen in liste:
+
+                            typ = film.findtext("FilmObjekte/FilmObjekt/Typ", None, self.NS)
+                            if typ == '1':
+                                objekt = "Haltung"
+                            elif typ == '2':
+                                objekt = "Anschlussleitung"
+                            elif typ == '3':
+                                objekt = "Schacht"
+                            elif typ == '4':
+                                objekt = "Bauwerk"
+
+                            if typ == "2":
+
+                                _datei = film.findtext("Filmname", None, self.NS)
+
+                                # relativer pfad mit einfügen in datei
+                                ordner = film.findtext("Filmpfad", None, self.NS)
+                                if _datei is not None and self.ordner_bild is not None:
+                                    filmdatei = os.path.join(self.ordner_video, _datei)
+                                else:
+                                    filmdatei = None
+
+                                yield Untersuchdat_daten(
+                                    untersuchsch=bezeichnungen,
+                                    untersuchtag=liste[bezeichnungen][0],
+                                    datei=filmdatei,
+                                    objekt=objekt,
+                                )
+
+        for untersuchdat_daten in _iter():
+
+            params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
+                      'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
+                         f'params: {params}')
+
+            if not self.db_qkan.insertdata(
+                    tabnam="videos",
+                    mute_logger=False,
+                    parameters=params,
             ):
-                return None
+                del self.db_qkan
+                return
 
         self.db_qkan.commit()
 
@@ -2535,8 +2832,8 @@ class ImportTask(Schadenstexte):
     def _anschluss_untersucht_geom(self):
         sql = f"""
                 UPDATE anschlussleitungen_untersucht
-        		SET geom = (select anschlussleitungen.geom from anschlussleitungen where anschlussleitungen_untersucht.leitnam =anschlussleitungen.leitnam);
-                						"""
+                SET geom = (select anschlussleitungen.geom from anschlussleitungen where anschlussleitungen_untersucht.leitnam =anschlussleitungen.leitnam);
+                """
         data = ()
         try:
             self.db_qkan.sql(sql, parameters=data)
@@ -2554,7 +2851,7 @@ class ImportTask(Schadenstexte):
         def _iter() -> Iterator[Wehr]:
             x_hydobjekte = self.xml.findall(
                 "Datenkollektive/Hydraulikdatenkollektiv/Rechennetz/"
-                "HydraulikObjekte/HydraulikObjekt/Wehr/..",
+                "HydraulikObjekte/HydraulikObjekt/WehrUeberlauf/..",
                 self.NS,
             )
             logger.debug(f"Anzahl HydraulikObjekte_Wehre: {len(x_hydobjekte)}")
@@ -2562,24 +2859,23 @@ class ImportTask(Schadenstexte):
             schoben, schunten, wehrtyp = ("",) * 3
             schwellenhoehe, kammerhoehe, laenge, uebeiwert = (0.0,) * 4
             for x_hydobjekt in x_hydobjekte:
-                # TODO: Does <HydraulikObjekt> even contain multiple <Wehr>?
-                for _wehr in x_hydobjekt.findall("Wehr", self.NS):
-                    schoben = _wehr.findtext("SchachtZulauf", None, self.NS)
-                    schunten = _wehr.findtext("SchachtAblauf", None, self.NS)
-                    wehrtyp = _wehr.findtext("WehrTyp", None, self.NS)
+                _wehr = x_hydobjekt.find("WehrUeberlauf", self.NS)
+                schoben = _wehr.findtext("SchachtZulauf", None, self.NS)
+                schunten = _wehr.findtext("SchachtAblauf", None, self.NS)
+                wehrtyp = _wehr.findtext("WehrTyp", None, self.NS)
 
-                    schwellenhoehe = _get_float(
-                        _wehr.findtext("Schwellenhoehe", None, self.NS)
-                    )
-                    laenge = _get_float(
-                        _wehr.findtext("LaengeWehrschwelle", None, self.NS)
-                    )
-                    kammerhoehe = _get_float(_wehr.findtext("Kammerhoehe", None, self.NS))
+                schwellenhoehe = _get_float(
+                    _wehr.findtext("Schwellenhoehe", None, self.NS)
+                )
+                laenge = _get_float(
+                    _wehr.findtext("LaengeWehrschwelle", None, self.NS)
+                )
+                kammerhoehe = _get_float(_wehr.findtext("Kammerhoehe", None, self.NS))
 
-                    # Überfallbeiwert der Wehr Kante (abhängig von Form der Kante)
-                    uebeiwert = _get_float(
-                        _wehr.findtext("Ueberfallbeiwert", None, self.NS)
-                    )
+                # Überfallbeiwert der Wehr Kante (abhängig von Form der Kante)
+                uebeiwert = _get_float(
+                    _wehr.findtext("Ueberfallbeiwert", None, self.NS)
+                )
 
                 yield Wehr(
                     wnam=x_hydobjekt.findtext("Objektbezeichnung", None, self.NS),
@@ -2644,16 +2940,14 @@ class ImportTask(Schadenstexte):
             _pumpentyp = 0
             volanf, volges, sohle = (0.0,) * 3
             for x_hydobjekt in x_hydobjekte:
-                # TODO: Does <HydraulikObjekt> even contain multiple <Pumpe>?
-                # `_pumpe = x_hydobjekt.find("Pumpe", self.NS)` should be used if it does not
-                for _pumpe in x_hydobjekt.findall("Pumpe", self.NS):
-                    _pumpentyp = _get_int(_pumpe.findtext("PumpenTyp", None, self.NS))
-                    schoben = _pumpe.findtext("SchachtZulauf", None, self.NS)
-                    schunten = _pumpe.findtext("SchachtAblauf", None, self.NS)
-                    steuersch = _pumpe.findtext("Steuerschacht", None, self.NS)
-                    sohle = _get_float(_pumpe.findtext("Sohlhoehe", None, self.NS))
-                    volanf = _get_float(_pumpe.findtext("Anfangsvolumen", None, self.NS))
-                    volges = _get_float(_pumpe.findtext("Gesamtvolumen", None, self.NS))
+                _pumpe = x_hydobjekt.find("Pumpe", self.NS)
+                _pumpentyp = _get_int(_pumpe.findtext("PumpenTyp", None, self.NS))
+                schoben = _pumpe.findtext("SchachtZulauf", None, self.NS)
+                schunten = _pumpe.findtext("SchachtAblauf", None, self.NS)
+                steuersch = _pumpe.findtext("Steuerschacht", None, self.NS)
+                sohle = _get_float(_pumpe.findtext("Sohlhoehe", None, self.NS))
+                volanf = _get_float(_pumpe.findtext("Anfangsvolumen", None, self.NS))
+                volges = _get_float(_pumpe.findtext("Gesamtvolumen", None, self.NS))
 
                 yield Pumpe(
                     pnam=x_hydobjekt.findtext("Objektbezeichnung", None, self.NS),
@@ -2681,9 +2975,8 @@ class ImportTask(Schadenstexte):
                 ):
                     break
 
-
             params = {'haltnam': pumpe.pnam, 'schoben': pumpe.schoben, 'schunten': pumpe.schunten,
-                     'sohleunten': pumpe.sohle,
+                     'sohleunten': pumpe.sohle, 'pumpentyp': pumpentyp,
                      'haltungtyp': 'Pumpe',  # dient dazu, das Verbindungselement als Pumpe zu klassifizieren
                      'simstatus': pumpe.simstatus, 'kommentar': pumpe.kommentar, 'epsg': QKan.config.epsg}
             # if not self.db_qkan.sql(sql, "xml_import Pumpen [2]", params):
@@ -2724,3 +3017,5 @@ class ImportTask(Schadenstexte):
                 return None
 
         self.db_qkan.commit()
+
+

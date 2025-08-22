@@ -1030,17 +1030,18 @@ database_create_pumpentypen: "
 CREATE TABLE pumpentypen (
     pk INTEGER PRIMARY KEY, 
     bezeichnung TEXT, 
-    he_nr INTEGER)"
+    he_nr INTEGER,
+    isybau INTEGER)"
 
 database_insert_pumpentypen: "
 INSERT INTO pumpentypen (
-bezeichnung, he_nr)
+bezeichnung, he_nr, isybau)
 VALUES
-    ('Offline', 1),
-    ('Online Schaltstufen', 2),
-    ('Online Kennlinie', 3),
-    ('Online Wasserstandsdifferenz', 4),
-    ('Ideal', 5)"
+    ('Offline', 1, 1),
+    ('Online Schaltstufen', 2, 2),
+    ('Online Kennlinie', 3, 3),
+    ('Online Wasserstandsdifferenz', 4, 4),
+    ('Ideal', 5, 5)"
 
 # Abfragen für Plausibilitätsprüfungen
 database_create_pruefsql: "
@@ -1257,7 +1258,7 @@ INSERT INTO haltungen_untersucht
   (haltnam, bezugspunkt, untersuchrichtung, schoben, schunten,
    hoehe, breite, laenge,
    kommentar, createdat, baujahr,  
-   geom, untersuchtag, untersucher, wetter, strasse, bewertungsart,
+   geom, untersuchtag, untersucher, wetter, auftragsbezeichnung, strasse, bewertungsart,
    bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
 SELECT 
   :haltnam, :bezugspunkt, :untersuchrichtung, :schoben, :schunten, 
@@ -1281,8 +1282,8 @@ SELECT
       )
     ELSE GeomFromWKB(:geom, :epsg)
   END,
-  :untersuchtag, :untersucher, :wetter, :strasse, :bewertungsart,
-  :bewertungstag, :datenart, coalesce(:max_ZD, 63), coalesce(:max_ZB, 63), coalesce(:max_ZS, 63)
+  :untersuchtag, :untersucher, :wetter, :auftragsbezeichnung, :strasse, :bewertungsart,
+  :bewertungstag, :datenart, :max_ZD, :max_ZB, :max_ZS
 FROM
   (SELECT :schoben AS schoben, :schunten AS schunten) AS ha
   LEFT JOIN schaechte_untersucht AS suo ON suo.schnam = ha.schoben
@@ -1301,7 +1302,7 @@ SELECT
   :inspektionslaenge , :station, :timecode, :video_offset, :kuerzel, :langtext, :charakt1, :charakt2, 
   :quantnr1, :quantnr2, :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
   :foto_dateiname, :film_dateiname, :ordner_bild, :ordner_video,
-  coalesce(:ZD, 63), coalesce(:ZB, 63), coalesce(:ZS, 63), coalesce(:createdat, CURRENT_TIMESTAMP);"
+  :ZD, :ZB, :ZS, coalesce(:createdat, CURRENT_TIMESTAMP);"
 
 database_insertdata_anschlussleitungen: "
 INSERT INTO anschlussleitungen
@@ -1334,7 +1335,7 @@ INSERT INTO anschlussleitungen_untersucht
   (leitnam, bezugspunkt, untersuchrichtung, schoben, schunten,
    hoehe, breite, laenge,
    kommentar, createdat, baujahr,  
-   geom, untersuchtag, untersucher, wetter, strasse, bewertungsart, bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
+   geom, untersuchtag, untersucher, wetter, auftragsbezeichnung, strasse, bewertungsart, bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
 SELECT 
   :leitnam, :bezugspunkt, :untersuchrichtung, :schoben, :schunten, 
   CASE WHEN :hoehe > 20 THEN :hoehe ELSE :hoehe*1000. END, 
@@ -1357,8 +1358,8 @@ SELECT
       )
     ELSE GeomFromWKB(:geom, :epsg)
   END, 
-  :untersuchtag, :untersucher, :wetter, :strasse, :bewertungsart,
-  :bewertungstag, :datenart, coalesce(:max_ZD, 63), coalesce(:max_ZB, 63), coalesce(:max_ZS, 63)
+  :untersuchtag, :untersucher, :wetter, :auftragsbezeichnung, :strasse, :bewertungsart,
+  :bewertungstag, :datenart, :max_ZD, :max_ZB, :max_ZS
 FROM
   (SELECT :schoben AS schoben, :schunten AS schunten) AS ha
   LEFT JOIN schaechte_untersucht AS suo ON suo.schnam = ha.schoben
@@ -1366,8 +1367,8 @@ FROM
   LEFT JOIN schaechte AS so ON so.schnam = ha.schoben
   LEFT JOIN schaechte AS su ON su.schnam = ha.schunten;"
 
-database_insertdata_untersuchdat_anschlussleitungen: "
-INSERT INTO untersuchdat_anschlussleitungen
+database_insertdata_untersuchdat_anschlussleitung: "
+INSERT INTO untersuchdat_anschlussleitung
   (untersuchleit, schoben, schunten, id, untersuchtag, bandnr, videozaehler, 
     inspektionslaenge, station, timecode, video_offset, kuerzel, langtext, charakt1, charakt2, 
     quantnr1, quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, foto_dateiname, 
@@ -1377,14 +1378,14 @@ SELECT
   :inspektionslaenge , :station, :timecode, :video_offset, :kuerzel, :langtext, :charakt1, :charakt2, 
   :quantnr1, :quantnr2, :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
   :foto_dateiname, :film_dateiname, :ordner_bild, :ordner_video,
-  coalesce(:ZD, 63), coalesce(:ZB, 63), coalesce(:ZS, 63), coalesce(:createdat, CURRENT_TIMESTAMP);"
+  :ZD, :ZB, :ZS, coalesce(:createdat, CURRENT_TIMESTAMP);"
 
 database_insertdata_schaechte_untersucht: "
 INSERT INTO schaechte_untersucht
   (schnam, durchm, bezugspunkt, id,
    kommentar, createdat, baujahr,
    geop, untersuchtag, untersucher, 
-   wetter, strasse, bewertungsart, 
+   wetter, auftragsbezeichnung, strasse, bewertungsart, 
    bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
 SELECT
   :schnam,
@@ -1392,16 +1393,13 @@ SELECT
   :kommentar, coalesce(:createdat, CURRENT_TIMESTAMP), :baujahr,
   CASE WHEN :geop IS NULL
     THEN
-      coalesce(
-        MakePoint(:xsch, :ysch, :epsg),
         sch.geop
-      )
     ELSE GeomFromWKB(:geop, :epsg)
   END,
   :untersuchtag, :untersucher, 
-  :wetter, :strasse, :bewertungsart, 
+  :wetter, :auftragsbezeichnung, :strasse, :bewertungsart, 
   :bewertungstag, :datenart, 
-  coalesce(:max_ZD, 63), coalesce(:max_ZB, 63), coalesce(:max_ZS, 63)
+  :max_ZD, :max_ZB, :max_ZS
 FROM
   (SELECT :schnam AS schnam) AS val
   LEFT JOIN schaechte AS sch ON val.schnam = sch.schnam;"
@@ -1421,7 +1419,7 @@ SELECT
     :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
     :vertikale_lage, :inspektionslaenge, :bereich, 
     :foto_dateiname, :ordner_bild, :film_dateiname, :ordner_video,
-    coalesce(:ZD, 63), coalesce(:ZB, 63), coalesce(:ZS, 63), 
+    :ZD, :ZB, :ZS, 
     coalesce(:createdat, CURRENT_TIMESTAMP)
 FROM
     schaechte AS sch
@@ -1439,6 +1437,20 @@ VALUES (
     :schwerpunktlaufzeit, :teilgebiet, 
     :abflussparameter, :kommentar,
 GeomFromWKB(:geom, :epsg));"
+
+database_insertdata_fotos: "
+INSERT INTO fotos
+  (name, untersuchtag, objekt, datei, createdat)
+VALUES (
+:name, :untersuchtag, :objekt, :datei, 
+coalesce(:createdat, CURRENT_TIMESTAMP));"
+
+database_insertdata_videos: "
+INSERT INTO videos
+  (name, untersuchtag, objekt, datei, createdat)
+VALUES (
+:name, :untersuchtag, :objekt, :datei, 
+coalesce(:createdat, CURRENT_TIMESTAMP));"
 
 database_insertdata_flaechen: "
 INSERT INTO flaechen

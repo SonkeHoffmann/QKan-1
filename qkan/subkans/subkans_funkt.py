@@ -443,11 +443,13 @@ class Subkans_funkt:
                 elif (attr[11] == "B" or attr[11] == "C"):
                     if attr[12] == "A":
                         if attr[25] in ["", "not found"]:
-                            if attr[13] >= 3:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 3:
                                 z = '1'
-                            if 3 > attr[13] >= 2:
+                            elif 3 > attr[13] >= 2:
                                 z = '2'
-                            if attr[13] < 2:
+                            elif attr[13] < 2:
                                 z = '3'
                             else:
                                 z = '5'
@@ -462,7 +464,9 @@ class Subkans_funkt:
                                 #     db.commit()
                             except:
                                 pass
-                            if attr[13] >= 8:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 8:
                                 z = '0'
                             elif 8 > attr[13] >= 5:
                                 z = '1'
@@ -487,12 +491,14 @@ class Subkans_funkt:
                             except:
                                 pass
 
-                        elif attr[25] <= 0.3:
-                            if attr[13] >= 3:
+                        elif attr[25]/1000 <= 0.3:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 3:
                                 z = '1'
-                            if 3 > attr[13] >= 2:
+                            elif 3 > attr[13] >= 2:
                                 z = '2'
-                            if attr[13] < 2:
+                            elif attr[13] < 2:
                                 z = '3'
                             else:
                                 z = '5'
@@ -507,7 +513,9 @@ class Subkans_funkt:
                                 #     db.commit()
                             except:
                                 pass
-                            if attr[13] >= 3:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 3:
                                 z = '0'
                             elif 3 > attr[13] >= 2:
                                 z = '1'
@@ -530,12 +538,14 @@ class Subkans_funkt:
                                 continue
                             except:
                                 pass
-                        elif 0.5 >= attr[25] > 0.3:
-                            if attr[13] >= 3:
+                        elif 0.5 >= attr[25]/1000 > 0.3:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 3:
                                 z = '1'
-                            if 3 > attr[13] >= 2:
+                            elif 3 > attr[13] >= 2:
                                 z = '2'
-                            if attr[13] < 2:
+                            elif attr[13] < 2:
                                 z = '3'
                             else:
                                 z = '5'
@@ -550,7 +560,9 @@ class Subkans_funkt:
                                 #     db.commit()
                             except:
                                 pass
-                            if attr[13] >= 5:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 5:
                                 z = '0'
                             elif 5 > attr[13] >= 3:
                                 z = '1'
@@ -575,12 +587,14 @@ class Subkans_funkt:
                                 continue
                             except:
                                 pass
-                        elif 0.7 >= attr[25] > 0.5:
-                            if attr[13] >= 3:
+                        elif 0.7 >= attr[25]/1000 > 0.5:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 3:
                                 z = '1'
-                            if 3 > attr[13] >= 2:
+                            elif 3 > attr[13] >= 2:
                                 z = '2'
-                            if attr[13] < 2:
+                            elif attr[13] < 2:
                                 z = '3'
                             else:
                                 z = '5'
@@ -595,7 +609,9 @@ class Subkans_funkt:
                                 #     db.commit()
                             except:
                                 pass
-                            if attr[13] >= 8:
+                            if attr[13] is None:
+                                z = 'Bitte pruefen!'
+                            elif attr[13] >= 8:
                                 z = '0'
                             elif 8 > attr[13] >= 4:
                                 z = '1'
@@ -633,11 +649,13 @@ class Subkans_funkt:
                             #db.commit()
                         except:
                             pass
-                        if attr[13] >= 3:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 3:
                             z = '1'
-                        if 3 > attr[13] >= 2:
+                        elif 3 > attr[13] >= 2:
                             z = '2'
-                        if attr[13] < 2:
+                        elif attr[13] < 2:
                             z = '3'
                         else:
                             z = '5'
@@ -654,11 +672,13 @@ class Subkans_funkt:
                         except:
                             pass
                     if attr[12] in ["C", "D", "E"]:
-                        if attr[13] >= 3:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 3:
                             z = '1'
-                        if 3 > attr[13] >= 2:
+                        elif 3 > attr[13] >= 2:
                             z = '2'
-                        if attr[13] < 2:
+                        elif attr[13] < 2:
                             z = '3'
                         else:
                             z = '5'
@@ -674,8 +694,9 @@ class Subkans_funkt:
                             continue
                         except:
                             pass
-
-                        if attr[13] >= 8:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 8:
                             z = '0'
                         elif 8 > attr[13] >= 5:
                             z = '1'
@@ -973,9 +994,11 @@ class Subkans_funkt:
                     except:
                         pass
             elif attr[10] == "BAE":
-                if attr[13] >= 100:
+                if attr[13] is None:
+                    z = 'Bitte pruefen!'
+                elif attr[13] >= 100:
                     z = '2'
-                if attr[13] < 100:
+                elif attr[13] < 100:
                     z = '4'
                 else:
                     z = '5'
@@ -1335,8 +1358,10 @@ class Subkans_funkt:
                     except:
                         pass
             elif attr[10] == "BAG":
-                if attr[25] <= 0.25:
-                    if attr[13] >= 50:
+                if attr[25]/1000 <= 0.25:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 30:
                         z = '1'
@@ -1348,8 +1373,10 @@ class Subkans_funkt:
                         z = '4'
                     else:
                         z = '5'
-                elif 0.25 < attr[25] <= 0.5:
-                    if attr[13] >= 80:
+                elif 0.25 < attr[25]/1000 <= 0.5:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 80:
                         z = '0'
                     elif 80 > attr[13] >= 60:
                         z = '1'
@@ -1361,8 +1388,10 @@ class Subkans_funkt:
                         z = '4'
                     else:
                         z = '5'
-                elif 0.5 < attr[25] <= 0.8:
-                    if attr[13] >= 70:
+                elif 0.5 < attr[25]/1000 <= 0.8:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 70:
                         z = '2'
                     elif 70 > attr[13] >= 10:
                         z = '3'
@@ -1370,8 +1399,10 @@ class Subkans_funkt:
                         z = '4'
                     else:
                         z = '5'
-                elif attr[25] > 0.8:
-                    if attr[13] >= 30:
+                elif attr[25]/1000 > 0.8:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 30:
                         z = '3'
                     elif attr[13] < 30:
                         z = '4'
@@ -1498,7 +1529,9 @@ class Subkans_funkt:
                         except:
                             pass
                 elif attr[11] == "Z" and attr[12] == "Y":
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 35:
                         z = '1'
@@ -1524,8 +1557,10 @@ class Subkans_funkt:
                         pass
             elif attr[10] == "BAJ":
                 if attr[11] == "A":
-                    if attr[25] <= 0.4:
-                        if attr[13] >= 70:
+                    if attr[25]/1000 <= 0.4:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 70:
                             z = '0'
                         elif 70 > attr[13] >= 50:
                             z = '1'
@@ -1548,8 +1583,10 @@ class Subkans_funkt:
                             #db.commit()
                         except:
                             pass
-                    elif 0.4 < attr[25] <= 0.8:
-                        if attr[13] >= 80:
+                    elif 0.4 < attr[25]/1000 <= 0.8:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 80:
                             z = '0'
                         elif 80 > attr[13] >= 60:
                             z = '1'
@@ -1572,8 +1609,10 @@ class Subkans_funkt:
                             #db.commit()
                         except:
                             pass
-                    elif attr[25] > 0.8:
-                        if attr[13] >= 90:
+                    elif attr[25]/1000 > 0.8:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 90:
                             z = '0'
                         elif 90 > attr[13] >= 65:
                             z = '1'
@@ -1610,15 +1649,17 @@ class Subkans_funkt:
                     except:
                         pass
                 elif attr[11] == "B":
-                    if attr[13] >= 30:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 30:
                         z = '0'
-                    if 30 > attr[13] >= 20:
+                    elif 30 > attr[13] >= 20:
                         z = '1'
-                    if 20 > attr[13] >= 15:
+                    elif 20 > attr[13] >= 15:
                         z = '2'
-                    if 15 > attr[13] >= 10:
+                    elif 15 > attr[13] >= 10:
                         z = '3'
-                    if attr[13] < 10:
+                    elif attr[13] < 10:
                         z = '4'
                     else:
                         z = '5'
@@ -1645,7 +1686,9 @@ class Subkans_funkt:
                         #db.commit()
                     except:
                         pass
-                    if attr[13] >= 10:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 10:
                         z = '3'
                     elif attr[13] < 10:
                         z = '4'
@@ -1662,8 +1705,10 @@ class Subkans_funkt:
                     except:
                         pass
                 elif attr[11] == "C":
-                    if attr[25] <= 0.2:
-                        if attr[13] >= 12:
+                    if attr[25]/1000 <= 0.2:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 12:
                             z = '0'
                         elif 12 > attr[13] >= 9:
                             z = '1'
@@ -1686,8 +1731,10 @@ class Subkans_funkt:
                             #db.commit()
                         except:
                             pass
-                    elif 0.2 < attr[25] <= 0.5:
-                        if attr[13] >= 6:
+                    elif 0.2 < attr[25]/1000 <= 0.5:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 6:
                             z = '0'
                         elif 6 > attr[13] >= 4:
                             z = '1'
@@ -1710,8 +1757,10 @@ class Subkans_funkt:
                             #db.commit()
                         except:
                             pass
-                    elif attr[25] > 0.5:
-                        if attr[13] >= 6:
+                    elif attr[25]/1000 > 0.5:
+                        if attr[13] is None:
+                            z = 'Bitte pruefen!'
+                        elif attr[13] >= 6:
                             z = '0'
                         elif 6 > attr[13] >= 4:
                             z = '1'
@@ -1749,7 +1798,9 @@ class Subkans_funkt:
                         pass
             elif attr[10] == "BAK":
                 if attr[11] == "A":
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 35:
                         z = '1'
@@ -1865,7 +1916,9 @@ class Subkans_funkt:
                         #db.commit()
                     except:
                         pass
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 35:
                         z = '1'
@@ -2133,7 +2186,9 @@ class Subkans_funkt:
                     except:
                         pass
                 elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 35:
                         z = '1'
@@ -2352,7 +2407,9 @@ class Subkans_funkt:
                     #db.commit()
                 except:
                     pass
-                if attr[13] >= 30:
+                if attr[13] is None:
+                    z = 'Bitte pruefen!'
+                elif attr[13] >= 30:
                     z = '0'
                 elif 30 > attr[13] >= 20:
                     z = '1'
@@ -2387,7 +2444,9 @@ class Subkans_funkt:
                     #db.commit()
                 except:
                     pass
-                if attr[13] >= 30:
+                if attr[13] is None:
+                    z = 'Bitte pruefen!'
+                elif attr[13] >= 30:
                     z = '0'
                 elif 30 > attr[13] >= 20:
                     z = '1'
@@ -2412,7 +2471,9 @@ class Subkans_funkt:
                 except:
                     pass
             elif attr[10] == "BBB" and (attr[11] == "B" or attr[11] == "C" or attr[11] == "Z"):
-                if attr[13] >= 30:
+                if attr[13] is None:
+                    z = 'Bitte pruefen!'
+                elif attr[13] >= 30:
                     z = '0'
                 elif 30 > attr[13] >= 20:
                     z = '1'
@@ -2452,7 +2513,9 @@ class Subkans_funkt:
                     except:
                         pass
                 elif (attr[11] == "C" or attr[11] == "Z"):
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 40:
                         z = '1'
@@ -2501,7 +2564,9 @@ class Subkans_funkt:
                     #db.commit()
                 except:
                     pass
-                if attr[13] >= 30:
+                if attr[13] is None:
+                    z = 'Bitte pruefen!'
+                elif attr[13] >= 30:
                     z = '0'
                 elif 30 > attr[13] >= 20:
                     z = '1'
@@ -2537,7 +2602,9 @@ class Subkans_funkt:
                         #db.commit()
                     except:
                         pass
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 35:
                         z = '1'
@@ -2562,7 +2629,9 @@ class Subkans_funkt:
                     except:
                         pass
                 elif attr[11] in ["A", "B", "C", "E", "F", "H", "Z"]:
-                    if attr[13] >= 50:
+                    if attr[13] is None:
+                        z = 'Bitte pruefen!'
+                    elif attr[13] >= 50:
                         z = '0'
                     elif 50 > attr[13] >= 35:
                         z = '1'
@@ -5815,7 +5884,9 @@ class Subkans_funkt:
 
                 db.commit()
 
-
+            #TODO: Streckenschadenüberlagerung so umprogrammieren, dass die Schäden aufgeteilt werden in die C-Bereiche
+            #und dann überlagert werden mit dem jeweiligen ZK-Wert und vorher immer schauen ob der Streckenschaden
+            #schwerer ist als ein Punktschaden
             # Schadensüberlagerung Str-Ofs:
             if self.datetype == 'Befahrungsdatum':
                 sql = """

@@ -657,13 +657,13 @@ def createdbtables(
 
     try:
 
-        daten = [
-            (None, 'in Fließrichtung', 'automatisch hinzugefügt'),
-            (None, 'gegen Fließrichtung', 'automatisch hinzugefügt'),
+        daten = [  # bezeichnung kuerzel isy m150 m145
+            ('in Fließrichtung', 'in', 'O', 'I', 'I'),
+            ('gegen Fließrichtung', 'gegen', 'U', 'G', 'G'),
         ]
 
         cursl.executemany(
-            "INSERT INTO untersuchrichtung (kuerzel, bezeichnung, bemerkung) VALUES (?, ?, ?)",
+            "INSERT INTO untersuchrichtung (bezeichnung, kuerzel, isybau, m150, m145) VALUES (?, ?, ?, ?, ?)",
             daten
         )
 
@@ -701,9 +701,9 @@ def createdbtables(
 
         daten = [
             (0, 'keine Angabe', None),
-            (1, 'kein Niederschlag', None),
-            (2, 'Regen', None),
-            (3, 'Schnee- oder Eisschmelzwasser', None),
+            (1, 'kein Niederschlag', 1, 'Trocken'),
+            (2, 'Regen', 2, 'Regen'),
+            (3, 'Schnee- oder Eisschmelzwasser', 3, 'Schnee'),
         ]
 
         cursl.executemany(
@@ -807,7 +807,8 @@ def createdbtables(
     sql = """CREATE TABLE pumpentypen (
     pk INTEGER PRIMARY KEY, 
     bezeichnung TEXT, 
-    he_nr INTEGER)"""
+    he_nr INTEGER,
+    isybau INTEGER)"""
 
     try:
         cursl.execute(sql)
@@ -821,15 +822,15 @@ def createdbtables(
 
     try:
         daten = [
-             ('Offline', 1),
-             ('Online Schaltstufen', 2),
-             ('Online Kennlinie', 3),
-             ('Online Wasserstandsdifferenz', 4),
-             ('Ideal', 5),
+             ('Offline', 1, 1),
+             ('Online Schaltstufen', 2, 2),
+             ('Online Kennlinie', 3, 3),
+             ('Online Wasserstandsdifferenz', 4, 4),
+             ('Ideal', 5, 5),
         ]
 
         cursl.executemany(
-            "INSERT INTO pumpentypen (bezeichnung, he_nr) VALUES (?, ?)",
+            "INSERT INTO pumpentypen (bezeichnung, he_nr, isybau) VALUES (?, ?, ?)",
             daten
         )
 
