@@ -3,13 +3,14 @@ import os
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 
-from qkan import QKan, get_default_dir
+from qkan import QKan
 from qkan.plugin import QKanPlugin
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 from ._animation import FloodanimationTask
 from .application_dialog import AnimationDialog
+from qkan.tools.qkan_utils import get_default_dir
 from ..utils import get_logger
 
 logger = get_logger("QKan.floodTools.application_dialog")

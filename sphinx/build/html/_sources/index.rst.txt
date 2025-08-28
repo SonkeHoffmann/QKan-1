@@ -26,8 +26,9 @@
     QKan_Zustandsklassifizierung
     QKan_Sanierungsbedarfszahl
     QKan_Substanzklassifizierung
-    
- 
+    QKan_Synchronisation
+
+
 .. toctree::
     :maxdepth: 3
     :caption: Übersicht

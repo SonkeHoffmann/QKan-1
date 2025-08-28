@@ -4,6 +4,10 @@ import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 from xml.etree.ElementTree import ElementTree
 
+from qgis.PyQt.QtCore import QStandardPaths
+from qgis.PyQt.QtWidgets import QListWidget
+from pathlib import Path
+
 from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry, QgsDataSourceUri
 from qgis.utils import iface, pluginDirectory
 from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
@@ -743,3 +747,31 @@ def loadlayer(
                           f" oder der Layerliste {group=}")
 
     return True
+
+def get_default_dir() -> str:
+    """
+    A helper method that returns the path of the currently opened project
+    *or* the user's default directory
+    """
+
+    # noinspection PyArgumentList
+    project_path = QgsProject.instance().fileName()
+    if project_path:
+        return str(Path(project_path).parent.absolute())
+    else:
+        # noinspection PyArgumentList
+        return str(
+            Path(
+                QStandardPaths.standardLocations(QStandardPaths.HomeLocation)[-1]
+            ).absolute()
+        )
+
+
+def list_selected_items(list_widget: QListWidget) -> List[str]:
+    """
+    Erstellt eine Liste aus den in einem Auswahllisten-Widget angeklickten Objektnamen
+
+    :param list_widget: Liste aller Widgets
+    """
+
+    return [_.text() for _ in list_widget.selectedItems()]

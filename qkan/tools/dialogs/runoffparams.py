@@ -13,8 +13,7 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from qkan import list_selected_items
-from qkan.tools.qkan_utils import sqlconditions
+from qkan.tools.qkan_utils import sqlconditions, list_selected_items
 
 from . import QKanDBDialog, logger
 

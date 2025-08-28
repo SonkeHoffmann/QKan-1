@@ -24,13 +24,14 @@ from qgis.PyQt.QtWidgets import QListWidgetItem
 from qgis.core import Qgis, QgsDataSourceUri, QgsProject, QgsVectorLayer
 from qgis.gui import QgisInterface
 
-from qkan import QKan, enums, list_selected_items
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_database_QKan,
     get_editable_layers,
     meldung,
+    list_selected_items,
 )
 from qkan.linkflaechen.updatelinks import updatelinkfl, updatelinksw
 from qkan.plugin import QKanPlugin

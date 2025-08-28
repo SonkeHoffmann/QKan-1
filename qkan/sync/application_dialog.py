@@ -12,9 +12,9 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from qkan import QKan, list_selected_items
+from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger, QkanError
+from qkan.utils import get_logger, QkanError, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.sync.application_dialog")
 
@@ -101,7 +101,7 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
 
-        help_file = "https://qkan.eu/QKan_Synchronisation.html#Synchronisation_von_QKan-Projekten"
+        help_file = "https://qkan.eu/QKan_Synchronisation.html#Synchronisation_von_QKan_Projekten"
         os.startfile(help_file)
 
     def _load_compare_config(self):
@@ -231,6 +231,8 @@ class AdjustDialog(_Dialog, ADJUST_CLASS):  # type: ignore
         # Attach events
         self.pb_protokolldatei.clicked.connect(self.select_protokolldatei)
 
+        self.button_box.helpRequested.connect(self.click_help)
+
         self._load_adjust_config()
 
     def select_protokolldatei(self):
@@ -259,3 +261,9 @@ class AdjustDialog(_Dialog, ADJUST_CLASS):  # type: ignore
         QKan.config.sync.protfile = self.tf_protokolldatei.text()
 
         QKan.config.save()
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+
+        help_file = "https://qkan.eu/QKan_Synchronisation.html#Synchronisation_von_QKan_Projekten"
+        os.startfile(help_file)

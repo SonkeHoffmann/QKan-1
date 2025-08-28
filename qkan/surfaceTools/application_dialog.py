@@ -13,8 +13,9 @@ from qgis.PyQt.QtWidgets import (
     QListWidgetItem,
 )
 
-from qkan import QKan, list_selected_items
+from qkan import QKan
 from qkan.database.dbfunc import DBConnection
+from qkan.tools.qkan_utils import  list_selected_items
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.surfaceTools.application_dialog")

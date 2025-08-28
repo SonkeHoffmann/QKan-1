@@ -55,9 +55,9 @@ class ImportTask:
             ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR'),
             ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1, 'S', 'KS'),
             ('Mischwasser', 'M', 'Mischwasser', 0, 0, 'M', 'KM'),
-            ('RW Druckleitung', 'RD', 'Transporthaltung ohne Anschlüsse', None, 2, None, 'DR'),
-            ('SW Druckleitung', 'SD', 'Transporthaltung ohne Anschlüsse', None, 1, None, 'DS'),
-            ('MW Druckleitung', 'MD', 'Transporthaltung ohne Anschlüsse', None, 0, None, 'DW'),
+            ('RW Druckleitung', 'RD', 'RW Druckleitung', 1, 2, None, 'DR'),
+            ('SW Druckleitung', 'SD', 'RW Druckleitung', 2, 1, None, 'DS'),
+            ('MW Druckleitung', 'MD', 'RW Druckleitung', 0, 0, None, 'DW'),
             ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, None, None),
             ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None),
         ]

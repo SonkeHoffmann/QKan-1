@@ -2,7 +2,7 @@ import os.path
 
 from qgis.gui import QgisInterface
 
-from qkan import QKan, get_default_dir
+from qkan import QKan
 from qkan.plugin import QKanPlugin
 
 from ._compare import CompareTask
@@ -12,7 +12,7 @@ from .application_dialog import CompareDialog, AdjustDialog
 # noinspection PyUnresolvedReferences
 from . import resources
 
-from qkan.tools.qkan_utils import get_logger, get_editable_layers
+from qkan.tools.qkan_utils import get_logger, get_editable_layers, get_default_dir
 
 logger = get_logger("QKan.sync.application")
 
@@ -93,7 +93,7 @@ class Synchronisation(QKanPlugin):
         task.run()
         del task
 
-        self.log.debug("Closed DB")
+        self.log.debug("Vergleich abgeschlossen")
 
         return True
 
@@ -135,6 +135,6 @@ class Synchronisation(QKanPlugin):
         task.run()
         del task
 
-        self.log.debug("Closed DB")
+        self.log.debug("Synchronisation abgeschlossen")
 
         return True

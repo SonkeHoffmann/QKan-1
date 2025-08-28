@@ -16,7 +16,8 @@ from qgis.PyQt.QtWidgets import (
     QDialogButtonBox,
 )
 
-from qkan import QKan, enums, list_selected_items
+from qkan import QKan
+from qkan.tools.qkan_utils import  list_selected_items
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
 

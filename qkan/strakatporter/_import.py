@@ -154,7 +154,7 @@ class ImportTask(Schadenstexte):
 
         result = all(
             [
-                self._strakat_kanaltabelle(), self.progress_bar.setValue(5),           logger.debug("_strakat_kanaltabelle"),
+                self._strakat_kanaltabelle(), self.progress_bar.setValue(5),            logger.debug("_strakat_kanaltabelle"),
                 self._strakat_reftables(), self.progress_bar.setValue(10),              logger.debug("_strakat_reftables"),
                 self._reftables(), self.progress_bar.setValue(15),                      logger.debug("_reftables"),
                 self._schaechte(), self.progress_bar.setValue(20),                      logger.debug("_schaechte"),
@@ -819,7 +819,7 @@ class ImportTask(Schadenstexte):
 
         if not self.db_qkan.fetchone():
             sql = """ 
-            CREATE TABLE t_strakathausanschluesse (
+            CREATE TABLE IF NOT EXISTS t_strakathausanschluesse (
                 pk INTEGER PRIMARY KEY,
                 nummer INTEGER,
                 nextnum INTEGER,
@@ -856,12 +856,14 @@ class ImportTask(Schadenstexte):
                 rohrbreite REAL,
                 berichtnr INTEGER,
                 anschlusshalnr INTEGER,
-                anschlusshalname TEXT,
+                anschlusshalname TEXT,      /* Bezeichnung der Anschlussleitung */
                 anschlussschob TEXT,
                 anschlussschun TEXT,
                 sohleoben REAL,             -- aus z-Wert
                 sohleunten REAL,            -- aus z-Wert
                 urstation REAL,
+                strassennummer INTEGER,
+                hausnummer TEXT,
                 geloescht INTEGER,
                 strakatid TEXT,
                 hausanschlid TEXT
@@ -922,7 +924,7 @@ class ImportTask(Schadenstexte):
 
                 rohrbreite = unpack('f', b[220:224])[0]  # nur erste von 9 Rohrbreiten lesen
 
-                hausnr = b[288:b[288:299].find(b'\x00')+288].decode('ansi').strip()
+                hausnummer = b[288:b[288:299].find(b'\x00')+288].decode('ansi').strip()
 
                 berichtnr = unpack('i', b[299:303])[0]
                 anschlusshalnr = unpack('i', b[303:307])[0]
@@ -935,12 +937,14 @@ class ImportTask(Schadenstexte):
 
                 urstation = unpack('f', b[515:519])[0]
 
+                strassennummer = unpack('h', b[597:599])[0]
+
                 anschlusshalname = b[611:b[611:631].find(b'\x00')+611].decode('ansi').strip()
                 if anschlusshalname == '':
                     if anschlussschob != '':
                         anschlusshalname = anschlussschob
                     else:
-                        anschlusshalname = hausnr
+                        anschlusshalname = hausnummer
 
                 (h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, ha, hb, hc, hd, he, hf
                  ) = [hex(z).replace('0x', '0')[-2:] for z in unpack('B' * 16, b[524:540])]
@@ -967,6 +971,7 @@ class ImportTask(Schadenstexte):
                     'anschlussschob': anschlussschob, 'anschlussschun': anschlussschun,
                     'sohleoben': sohleoben, 'sohleunten': sohleunten,
                     'urstation': urstation, 'geloescht': geloescht,
+                    'strassennummer': strassennummer, 'hausnummer': hausnummer,
                     'strakatid': strakatid, 'hausanschlid': hausanschlid, 'geomwkb': geomwkb, "epsg": self.epsg,
                 }
 
@@ -985,7 +990,8 @@ class ImportTask(Schadenstexte):
                     rohrbreite,
                     berichtnr,
                     anschlusshalnr, anschlusshalname,
-                    anschlussschob, anschlussschun, sohleoben, sohleunten, urstation, geloescht,
+                    anschlussschob, anschlussschun, sohleoben, sohleunten, urstation, 
+                    strassennummer, hausnummer, geloescht,
                     strakatid, hausanschlid, geom
                 )
                 VALUES (
@@ -1003,7 +1009,8 @@ class ImportTask(Schadenstexte):
                     :rohrbreite,
                     :berichtnr,
                     :anschlusshalnr, :anschlusshalname,
-                    :anschlussschob, :anschlussschun, :sohleoben, :sohleunten, :urstation, :geloescht,
+                    :anschlussschob, :anschlussschun, :sohleoben, :sohleunten, :urstation, 
+                    :strassennummer, :hausnummer, :geloescht,
                     :strakatid, :hausanschlid, GeomFromWKB(:geomwkb, :epsg)
                 )"""
 
@@ -1037,7 +1044,7 @@ class ImportTask(Schadenstexte):
             WHERE snn.pk = sdd.pk
             """
 
-        if not self.db_qkan.sql(sql, "strakat_import Eindeutige Bezeichnungen für Hausanschlüsse", params):
+        if not self.db_qkan.sql(sql, "strakat_import Eindeutige Bezeichnungen für Hausanschlüsse"):
             raise Exception(f'{self.__class__.__name__}: Fehler beim eindeutigen Bezeichnungen für Hausanschlüsse"')
 
         self.db_qkan.commit()
@@ -1546,11 +1553,9 @@ class ImportTask(Schadenstexte):
             ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR'),
             ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1, 'S', 'KS'),
             ('Mischwasser', 'M', 'Mischwasser', 0, 0, 'M', 'KM'),
-            ('RW Druckleitung', 'RD', 'Transporthaltung ohne Anschlüsse', 1, 2, None, 'DR'),
-            ('SW Druckleitung', 'SD', 'Transporthaltung ohne Anschlüsse', 2, 1, None, 'DS'),
-            ('MW Druckleitung', 'MD', 'Transporthaltung ohne Anschlüsse', 0, 0, None, 'DW'),
-            ('RW nicht angeschlossen', 'RT', 'Transporthaltung ohne Anschlüsse', 1, 2, None, None),
-            ('MW nicht angeschlossen', 'MT', 'Transporthaltung ohne Anschlüsse', 0, 0, None, None),
+            ('RW Druckleitung', 'RD', 'RW Druckleitung', 1, 2, None, 'DR'),
+            ('SW Druckleitung', 'SD', 'RW Druckleitung', 2, 1, None, 'DS'),
+            ('MW Druckleitung', 'MD', 'RW Druckleitung', 0, 0, None, 'DW'),
             ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, None, None),
             ('stillgelegt', 'SG', 'stillgelegt', None, None, None, None),
         ]
@@ -1987,12 +1992,21 @@ class ImportTask(Schadenstexte):
                 rohrbreite                      AS hoehe,
                 rohrbreite                      AS breite,
                 strakatid                       AS strakatid,
+                urstation                       AS urstation,
+                strassennummer                  AS strassennummer,
+                hausnummer                      AS hausnummer,
                 geom                            AS geom
             FROM t_strakathausanschluesse
             WHERE geloescht = 0
+            ),
+            strassen AS (
+                SELECT n1 AS id, kurz, trim(text) AS name
+                FROM t_reflists
+                WHERE tabtyp = 'strasse'
             )
-            INSERT INTO anschlussleitungen (leitnam, schoben, schunten, 
-                hoehe, breite, laenge, haltnam, 
+            INSERT INTO anschlussleitungen (leitnam, schoben, schunten,
+                hoehe, breite, laenge, haltnam,
+                urstation, ursprung,
                 simstatus, kommentar, geom)
             SELECT
                 ha.leitnam,
@@ -2002,19 +2016,20 @@ class ImportTask(Schadenstexte):
                 ha.breite,
                 GLength(ha.geom)                    AS laenge,
                 stk.haltungsname                    AS haltnam,
+                ha.urstation,
+                stn.name || ' ' || ha.hausnummer    AS ursprung,
                 'in Betrieb'                        AS simstatus,
                 'QKan-STRAKAT-Import'               AS kommentar,
                 ha.geom                             AS geom
             FROM
                 ha
                 LEFT JOIN anschlussleitungen    USING (leitnam, schoben, schunten)
-                LEFT JOIN t_strakatkanal AS stk ON stk.strakatid = ha.strakatid 
+                LEFT JOIN t_strakatkanal AS stk ON stk.strakatid = ha.strakatid
+                LEFT JOIN strassen AS stn ON ha.strassennummer = stn.id
             WHERE anschlussleitungen.pk IS NULL                         -- nur neue Anschlussleitungen hinzufügen
 			"""
 
-        params = {"epsg": self.epsg}
-
-        if not self.db_qkan.sql(sql, "strakat_import anschlussleitungen", params):
+        if not self.db_qkan.sql(sql, "strakat_import anschlussleitungen"):
             raise Exception(f"{self.__class__.__name__}: Fehler bei ")
 
         self.db_qkan.commit()

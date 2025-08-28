@@ -16,12 +16,13 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import Qgis, QgsCoordinateReferenceSystem
 from qgis.gui import QgsProjectionSelectionWidget
 
-from qkan import QKan, enums, list_selected_items
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_database_QKan,
     get_editable_layers,
+    list_selected_items,
 )
 from qkan.tools.dialogs import QKanDBDialog
 from qkan.utils import get_logger, QkanAbortError

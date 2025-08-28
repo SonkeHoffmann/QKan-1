@@ -6,9 +6,10 @@ from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 
-from qkan import QKan, enums, get_default_dir
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import eval_node_types, fehlermeldung
+from qkan.tools.qkan_utils import eval_node_types, get_default_dir
+
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 

@@ -90,7 +90,7 @@ kopiert werden. Anschließend können diese auf dem Layer "Teilgebiete" eingefü
 :guilabel:`Gewählte Objekte verschmelzen` zusammen gefasst werden können. In der Attribut-Tabelle kann das Teilgebiet in der Spalte 
 "Namen" benannt werden. Soll die Bearbeitung des Projektes in den erstellten Teilgebieten geschehen, müssen nun als nächstes die Elemente 
 des Entwässerungsnetzes den Teilgebieten zugeordnet werden. Dies ist mit der :ref:`Funktion <linkelementeteilgebietzuordnen>` |Tool_elemente_tezg_zuordnen| 
-:guilabel:`Zuordnung zu Teilgebiet` möglich (Option "überlappend sollte ausgewählt werden).
+:guilabel:`Zuordnung zu Teilgebiet` möglich (Option "überlappend" sollte ausgewählt werden).
 
 .. |Tool_layeraenderungen_speichern| image:: ./QKan_Bilder/Tool_layeraenderungen_speichern.png
                              :width: 1.25 em
@@ -128,7 +128,7 @@ Heute werden die Haltungsflächen nur noch für zwei Aufgaben benötigt:
     #. **Geometrische Aufteilung von Flächen**, die so groß sind, dass sie mehreren Haltungen zugeordnet werden müssen. 
 
 Nach wie vor gilt für den Export aus QKan in eine Simulationsprogramm die Anforderung, dass die Haltungsflächen das gesamte Einzugsgebiet geschlossen abdecken müssen. 
-QKan bietet mit dem der automatischen Erzeugung von Haltungslfächen die Möglichkeit, bezogen auf Teilgebiete automatisiwert Haltungsflächen zu erzeugen. Dabei 
+QKan bietet mit dem der automatischen Erzeugung von Haltungslfächen die Möglichkeit, bezogen auf Teilgebiete automatisiert Haltungsflächen zu erzeugen. Dabei 
 werden bereits vorhandene Haltungsflächen berücksichtigt (und nicht geändert). 
 Da in der heutigen Zeit in der Regel die Grundstücksflächen als Open Data zur Verfügung stehen, bietet es sich an, 
 diese als Ersatz für die früher mühsam erstellten Haltungsflächen einzusetzen, und nur dort automatisch Haltungsflächen zu erzeugen, wo diese nicht geeignet sind. Dies ist z. B. 

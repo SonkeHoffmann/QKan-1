@@ -12,7 +12,7 @@ from qgis.PyQt.QtWidgets import (
 )
 from qgis.gui import QgsProjectionSelectionWidget
 
-from qkan import QKan, list_selected_items
+from qkan import QKan
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.swmm_erg.application_dialog")

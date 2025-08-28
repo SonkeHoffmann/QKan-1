@@ -699,7 +699,7 @@ WHERE (IsTwEinzugsflaeche and :choice_tf)
 he8_count_sel_haltungen: "
 SELECT count() AS anz
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
                                     ON ha.profilnam = pf.profilnam
 JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
@@ -1168,8 +1168,8 @@ FROM (
         CASE WHEN coalesce(pf.he_nr, 68) = 68 THEN ha.profilnam
         ELSE NULL
         END                       AS Sonderprofilbezeichnung, 
-        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe), 0) AS Geometrie1, 
-        coalesce(IIF(ha.breite>20, ha.breite/1000, ha.breite),0) AS Geometrie2,
+        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+        coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
         ea.he_nr AS Kanalart,
         coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
@@ -1245,8 +1245,8 @@ FROM (
         CASE WHEN coalesce(pf.he_nr, 68) = 68 THEN ha.profilnam
         ELSE NULL
         END                       AS Sonderprofilbezeichnung, 
-        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe), 0) AS Geometrie1, 
-        coalesce(IIF(ha.breite>20, ha.breite/1000, ha.breite),0) AS Geometrie2,
+        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+        coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
         ea.he_nr AS Kanalart,
         coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
@@ -1259,7 +1259,7 @@ FROM (
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
@@ -1305,8 +1305,8 @@ SELECT
     ELSE NULL
     END
     AS Sonderprofilbezeichnung, 
-    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe), 0) AS Geometrie1, 
-    coalesce(IIF(ha.breite>20, ha.breite/1000, ha.breite),0) AS Geometrie2,
+    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+    coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
     ea.he_nr AS Kanalart,
     coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
     1 AS Rauigkeitsansatz, 
@@ -1364,8 +1364,8 @@ SELECT
     ELSE NULL
     END
     AS Sonderprofilbezeichnung, 
-    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe), 0) AS Geometrie1, 
-    coalesce(IIF(ha.breite>20, ha.breite/1000, ha.breite),0) AS Geometrie2,
+    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+    coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
     ea.he_nr AS Kanalart,
     coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
     1 AS Rauigkeitsansatz, 
@@ -1379,7 +1379,7 @@ SELECT
     0 AS UnbefestigteFlaeche,
 SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
@@ -1590,7 +1590,7 @@ WITH flintersect AS (
         CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000 AS flaeche, 
+        area(fl.geom)/10000.0 AS flaeche, 
         fl.regenschreiber AS regenschreiber,
         coalesce(ft.he_nr, 0) AS flaechentypnr, 
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
@@ -1654,7 +1654,7 @@ WITH flintersect AS (
         CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000 AS flaeche, 
+        area(fl.geom)/10000.0 AS flaeche, 
         fl.regenschreiber AS regenschreiber,
         coalesce(ft.he_nr, 0) AS flaechentypnr, 
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
@@ -1781,8 +1781,8 @@ WITH flintersect AS (
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL
-        THEN area(fl.geom)/10000. 
-        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000. 
+        THEN area(fl.geom)/10000.0 
+        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000.0 
         END AS flaeche, 
         fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
@@ -1795,7 +1795,7 @@ WITH flintersect AS (
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
     INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
     INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
-    INNER JOIN sel_haltungen AS selha   ON selha.pk = haltungen.pk
+    INNER JOIN sel_haltungen AS selha   ON selha.pk = ha.pk
     LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung
@@ -1841,7 +1841,7 @@ WITH flintersect AS (
         CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000 AS flaeche, 
+        area(fl.geom)/10000.0 AS flaeche, 
         fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
@@ -1893,7 +1893,7 @@ WITH flintersect AS (
         CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000 AS flaeche, 
+        area(fl.geom)/10000.0 AS flaeche, 
         fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
@@ -1902,7 +1902,7 @@ WITH flintersect AS (
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
     INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
     INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
-    INNER JOIN sel_haltungen AS selha   ON selha.pk = haltungen.pk
+    INNER JOIN sel_haltungen AS selha   ON selha.pk = ha.pk
     LEFT JOIN abflusstypen AS at        ON lf.abflusstyp = at.abflusstyp
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung)
@@ -1970,7 +1970,7 @@ SELECT
       ELSE printf('%s_u', tg.flnam) 
     END                                                             AS Name, 
     tg.haltnam                                                      AS Haltung, 
-    area(tg.geom)/10000.*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse, 
+    area(tg.geom)/10000.0*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse, 
     tg.regenschreiber                                               AS Regenschreiber, 
     coalesce(ft.he_nr, 0)                                           AS Flaechentyp, 
     2                                                               AS BerechnungSpeicherkonstante, 
@@ -2019,7 +2019,7 @@ SELECT
       ELSE printf('%s_u', tg.flnam) 
     END                                                             AS Name, 
     tg.haltnam                                                      AS Haltung, 
-    area(tg.geom)/10000.*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse, 
+    area(tg.geom)/10000.0*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse, 
     tg.regenschreiber                                               AS Regenschreiber, 
     coalesce(ft.he_nr, 0)                                           AS Flaechentyp, 
     2                                                               AS BerechnungSpeicherkonstante, 
@@ -2139,7 +2139,7 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Pumpe'
   AND ha.haltnam NOT IN (SELECT Name FROM he.Pumpe)
@@ -2199,7 +2199,7 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Pumpe'
       AND si.he_nr IS NOT NULL
@@ -2253,7 +2253,7 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Wehr'
   AND ha.haltnam NOT IN (SELECT Name FROM he.Wehr)
@@ -2317,7 +2317,7 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Wehr'
       AND si.he_nr IS NOT NULL
@@ -2367,7 +2367,7 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 WHERE ha.haltungstyp = 'Drossel'
   AND ha.haltnam NOT IN (SELECT Name FROM he.Drossel)
@@ -2425,7 +2425,7 @@ FROM (
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     WHERE ha.haltungstyp = 'Drossel'
       AND si.he_nr IS NOT NULL
@@ -2452,8 +2452,8 @@ SELECT
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
     ha.sohleoben AS Anfangsstellung,
-    ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS MaximaleHubhoehe,
-    IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS MaximaleHubhoehe,
+    IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ha.ks AS Verluste,
     pf.he_nr AS Profiltyp,
     si.he_nr AS Planungsstatus,
@@ -2488,8 +2488,8 @@ SELECT
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
     ha.sohleoben AS Anfangsstellung,
-    ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS MaximaleHubhoehe,
-    IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS MaximaleHubhoehe,
+    IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ha.ks AS Verluste,
     pf.he_nr AS Profiltyp,
     si.he_nr AS Planungsstatus,
@@ -2497,7 +2497,7 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
@@ -2534,8 +2534,8 @@ FROM
         ha.schoben AS SchachtOben,
         ha.schunten AS SchachtUnten,
         ha.sohleoben AS Anfangsstellung,
-        ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS MaximaleHubhoehe,
-        IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS MaximaleHubhoehe,
+        IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ha.ks AS Verluste,
         pf.he_nr AS Profiltyp,
         si.he_nr AS Planungsstatus,
@@ -2580,8 +2580,8 @@ FROM
         ha.schoben AS SchachtOben,
         ha.schunten AS SchachtUnten,
         ha.sohleoben AS Anfangsstellung,
-        ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS MaximaleHubhoehe,
-        IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        ha.sohleoben + IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS MaximaleHubhoehe,
+        IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ha.ks AS Verluste,
         pf.he_nr AS Profiltyp,
         si.he_nr AS Planungsstatus,
@@ -2589,7 +2589,7 @@ FROM
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
@@ -2617,7 +2617,7 @@ SELECT
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
     ha.sohleoben AS HoeheUnterkante,
-    IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ha.ks AS Auslassbeiwert,
     pf.he_nr AS Profiltyp,
     si.he_nr AS Planungsstatus,
@@ -2652,7 +2652,7 @@ SELECT
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
     ha.sohleoben AS HoeheUnterkante,
-    IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ha.ks AS Auslassbeiwert,
     pf.he_nr AS Profiltyp,
     si.he_nr AS Planungsstatus,
@@ -2660,7 +2660,7 @@ SELECT
     ha.createdat AS LastModified,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
@@ -2695,7 +2695,7 @@ FROM
         ha.schoben AS SchachtOben,
         ha.schunten AS SchachtUnten,
         ha.sohleoben AS HoeheUnterkante,
-        IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ha.ks AS Auslassbeiwert,
         pf.he_nr AS Profiltyp,
         si.he_nr AS Planungsstatus,
@@ -2738,7 +2738,7 @@ FROM
         ha.schoben AS SchachtOben,
         ha.schunten AS SchachtUnten,
         ha.sohleoben AS HoeheUnterkante,
-        IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ha.ks AS Auslassbeiwert,
         pf.he_nr AS Profiltyp,
         si.he_nr AS Planungsstatus,
@@ -2746,7 +2746,7 @@ FROM
         ha.createdat AS LastModified,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN simulationsstatus AS si   ON ha.simstatus = si.bezeichnung
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
@@ -2781,7 +2781,7 @@ SELECT
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-    IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
     coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
     1 AS Rauigkeitsansatz, 
@@ -2834,7 +2834,7 @@ SELECT
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-    IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
     coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
     1 AS Rauigkeitsansatz, 
@@ -2848,7 +2848,7 @@ SELECT
     0 AS UnbefestigteFlaeche,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
@@ -2904,7 +2904,7 @@ FROM
         coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
         coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-        IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
         coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
@@ -2973,7 +2973,7 @@ FROM
         coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
         coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-        IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
         coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
@@ -2986,7 +2986,7 @@ FROM
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
@@ -3026,7 +3026,7 @@ SELECT
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-    IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
     coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
     1 AS Rauigkeitsansatz, 
@@ -3078,7 +3078,7 @@ SELECT
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-    IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+    IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
     coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
     1 AS Rauigkeitsansatz, 
@@ -3092,7 +3092,7 @@ SELECT
     0 AS UnbefestigteFlaeche,
     SetSrid(ha.geom, -1) AS Geometry
 FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
@@ -3148,7 +3148,7 @@ FROM
         coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
         coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-        IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
         coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
@@ -3217,7 +3217,7 @@ FROM
         coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
         coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-        IIF(ha.hoehe>20, ha.hoehe/1000, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000, ha.breite) AS Geometrie2,
+        IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
         coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
@@ -3230,7 +3230,7 @@ FROM
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
-    JOIN sel_haltungen AS sel           ON sel.pk = haltungen.pk
+    JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf

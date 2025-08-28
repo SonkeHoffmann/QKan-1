@@ -18,9 +18,9 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import QgsCoordinateReferenceSystem
 from qgis.gui import QgsProjectionSelectionWidget
 
-from qkan import QKan, list_selected_items
+from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung, list_selected_items
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.swmm.application_dialog")

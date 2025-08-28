@@ -20,7 +20,7 @@ from qgis.PyQt.QtWidgets import (
 )
 from qgis.core import Qgis
 
-from qkan import list_selected_items
+from qkan.tools.qkan_utils import list_selected_items
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.dialogs import QKanDialog
 from .k_link import reload_group, store_group

@@ -5,15 +5,16 @@ from qgis.gui import QgisInterface
 from qgis.core import QgsProject
 
 import qkan.config
-from qkan import QKan, get_default_dir
+from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
 
 from ._plausi import PlausiTask
 from .application_dialog import PlausiDialog
 
-from qkan.utils import get_logger, QkanAbortError
+from qkan.utils import get_logger
 from qkan import enums
+from qkan.tools.qkan_utils import get_default_dir
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401

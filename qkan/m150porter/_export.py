@@ -366,17 +366,30 @@ class ExportTask:
             return
 
         fortschritt("Export Schächte...", 0.35)
-        for attr in self.db_qkan.fetchall():
+        for (schnam,
+             deckelhoehe,
+             sohlhoehe,
+             durchm,
+             druckdicht,
+             m150,
+             entwart,
+             strasse,
+             knotentyp,
+             kommentar,
+             simstatus,
+             xsch,
+             ysch,
+             ) in self.db_qkan.fetchall():
             abw = SubElement(self.root, "KG")
             _create_children_text(
                 abw,
                 {
-                    "KG001": attr[0],
-                    "KG211": attr[1]-attr[2],
-                    "KG302": attr[5],
+                    "KG001": schnam,
+                    "KG211": deckelhoehe - sohlhoehe,
+                    "KG302": m150,
                     "KG305": "S",
-                    "KG309": attr[3],
-                    "KG999": attr[9],
+                    "KG309": durchm,
+                    "KG999": kommentar,
                 },
             )
 
@@ -384,7 +397,7 @@ class ExportTask:
             _create_children_text(
                 geo,
                 {
-                    "GO001": attr[0],
+                    "GO001": schnam,
 
                 },
             )
@@ -392,10 +405,10 @@ class ExportTask:
             _create_children_text(
                 SubElement(geo, "GP"),
                 {
-                    "GO001": attr[0],
-                    "GP003": attr[7],
-                    "GP004": attr[8],
-                    "GP007": attr[1],
+                    "GO001": schnam,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": deckelhoehe,
                 },
             )
 
@@ -781,7 +794,7 @@ class ExportTask:
         iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
         # region Create XML structure
-        self.root = Element("DATA", {"xmlns": "",}
+        self.root = Element("DATA", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",}
         )
 
         # Export
@@ -793,8 +806,12 @@ class ExportTask:
         self._export_haltungen()
         self._export_anschlussleitungen()
 
-        Path(self.export_file).write_text(
-            minidom.parseString(tostring(self.root)).toprettyxml(indent="  ")
+        Path(self.export_file).write_bytes(
+            minidom.parseString(tostring(self.root)).toprettyxml(
+                indent="  ",
+                standalone = False,
+                encoding = 'iso-8859-1'
+            )
         )
 
         # Close connection

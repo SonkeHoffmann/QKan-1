@@ -63,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="QKan_Zustandsklassifizierung.html">Zustandsklassifizierung</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Sanierungsbedarfszahl.html">Sanierungsbedarfszahl</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Substanzklassifizierung.html">SubKanS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchronisation.html">Synchronisation von QKan-Projekten</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Übersicht</span></p>
 <ul>
@@ -96,13 +97,14 @@
              
   <section id="erstellung-von-qkan-plugins">
 <h1>Erstellung von QKan-Plugins<a class="headerlink" href="#erstellung-von-qkan-plugins" title="Link to this heading"></a></h1>
-<p>Grundsätzlich entspricht die Erstellung von QKan-Plugins in weiten Teilen der für QGIS empfohlenen Vorgehensweise.
-Wenn das Plugin als Bestandteil von QKan fungieren soll, sind lediglich einige kleinere Anpassungen und Ergänzungen notwendig.
+<p>Grundsätzlich entspricht die Erstellung von QKan-Plugins in Teilen der für QGIS empfohlenen Vorgehensweise.
+Wenn das Plugin als Bestandteil von QKan fungieren soll, sind einige Anpassungen und Ergänzungen notwendig.
 An dieser Stelle wird der Einfachheit halber der gesamte Workflow erläutert.</p>
 <section id="vorbereitung-des-moduls">
 <h2>Vorbereitung des Moduls<a class="headerlink" href="#vorbereitung-des-moduls" title="Link to this heading"></a></h2>
 <p>Am einfachsten ist es, den Vorlage-Ordner „template“ in das QKan-Module-Verzeichnis .plugins/qkan zu kopieren und diesen dann entsprechend dem
-gewünschten Modulnamen umzubenennen, wie z. B. das bereits existierende Modul „he8porter“.</p>
+gewünschten Modulnamen umzubenennen. Das neueste Modul, das nach dem hier erläuterten Standard erstellt wurde, ist das Modul „sync“, und ist
+deshalb ebenfalls als Vorlage empfehlendswert.</p>
 </section>
 <section id="erzeugen-von-modul-icons">
 <h2>Erzeugen von Modul-Icons<a class="headerlink" href="#erzeugen-von-modul-icons" title="Link to this heading"></a></h2>
@@ -115,14 +117,14 @@ Verwendung der durch das ISCE erstellten Batch-Datei „make resource.bat“.</p
 </section>
 <section id="anpassungen-in-den-moduldateien-py">
 <h2>Anpassungen in den Moduldateien (<cite>*</cite>.py)<a class="headerlink" href="#anpassungen-in-den-moduldateien-py" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>Folgende Bezeichnungen müssen angepasst werden:</dt><dd><ul class="simple">
+<p>Folgende Bezeichnungen müssen angepasst werden:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>„template“ durch den gewählten Modulnamen</p></li>
 <li><p>Icon-Bezeichnungen. Bei mehreren Icons müssen auch mehrere Aufrufe von QKan.instance.add_action() erfolgen</p></li>
 <li><p>In der Methode unload(self) müssen alle Dialoge wieder geschlossen werden</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <section id="help-schaltflache-anbinden">
 <h3>Help-Schaltfläche anbinden<a class="headerlink" href="#help-schaltflache-anbinden" title="Link to this heading"></a></h3>
 <p>Die Schaltfläche im Formular ruft die Methode application_dialog.click_help() auf. Hier muss der Link auf die Dokumentation
@@ -130,13 +132,14 @@ angepasst werden. Natürlich muss auch in der Dokumentation der Link, der hinter
 vorhanden sein. Meistens steht in der entsprechenden <cite>*</cite>.rst-Datei über der entsprechenden Überschrift ein
 Eintrag „.. _name_des_links:“, wobei das führende Unterstrichzeichen nicht zum Namen des Links gehört.</p>
 </section>
-<section id="allgemein-verfugbare-funktionen">
-<h3>Allgemein verfügbare Funktionen<a class="headerlink" href="#allgemein-verfugbare-funktionen" title="Link to this heading"></a></h3>
-<p>Im Modul <em>application</em> wird eine Klasse mit einem Namen ähnlich dem Modulnamen definiert, die folgende Aufgaben erfüllt:</p>
+<section id="zentrale-plugin-dateien">
+<h3>Zentrale Plugin-Dateien<a class="headerlink" href="#zentrale-plugin-dateien" title="Link to this heading"></a></h3>
+<section id="datei-application-py">
+<h4>Datei application.py<a class="headerlink" href="#datei-application-py" title="Link to this heading"></a></h4>
+<p>Im Modul <em>application,py</em> wird eine Klasse mit einem Namen ähnlich dem Modulnamen definiert, die folgende Aufgaben erfüllt:</p>
 <ul class="simple">
-<li><p>Einbindung des Moduls in die Menüleiste von QKan</p></li>
+<li><p>Die Funktion initGui stellt die nötigen Informationen zur Einbindung des Moduls in die Menüleiste von QKan zur Verfügung</p></li>
 <li><p>Öffnen des Formulars</p></li>
-<li><p>Speichern der im Formular vorgenommenen Einträge</p></li>
 <li><p>Aufruf des Modulcodes</p></li>
 </ul>
 <p>Dabei stehen über die geerbte Klasse „QKanPlugin“ folgende Funktionen zur Verfügung:</p>
@@ -151,6 +154,45 @@ Protokolldatei, im Meldungsfenster und/oder in der QGIS-Meldungsleiste erscheine
 - self.log.error_data(‚Datenfehler‘)
 - self.log.notice(‚Information für den Anwender…‘)</p></li>
 </ul>
+</section>
+<section id="datei-application-dialog-py">
+<h4>Datei application_dialog.py<a class="headerlink" href="#datei-application-dialog-py" title="Link to this heading"></a></h4>
+<p>In dieser Datei werden zunächst einmal die Bedienfunktionen des Formulars definiert und mit den entsprechenden Ereignissen
+verbunden (connect).</p>
+<p>Weiterhin werden die Felder des Formulars mit Standardwerten besetzt und nach Bestätigung von [OK] durch den Anwender
+wieder gelesen und in die QKan-Konfiguration übernommen (QKN.congig.xxx.varieble):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>_load_template_config(): Schreiben der in der QKan-Konfiguration gespeicherten Standardwerte in das Formular</p></li>
+<li><p>_save_template_config(): Auslesen der im Formular vorgenommenen Einträge und Speichern in der QKan-Konfiguration</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="ordner-res">
+<h4>Ordner <em>res</em><a class="headerlink" href="#ordner-res" title="Link to this heading"></a></h4>
+<p>Im Ordner <em>res</em> befinden sich die Formulardatei (<cite>*</cite>.ui) sowie die Icon-Datei.
+Die Icon-Datei muss für QGIS in Form der Python-Datei „resources.py“ zur Verfügung gestellt werden.
+Dazu muss zunächst der Verweis auf die Icon-Datei in der Datei „resources.qrc“ eingetragen und gegebenenfalls der Pfad
+in der Batch-Datei „make resources.bat“ auf das richtige QGIS-Verzeichnis angepasst werden. Anschließend kann mit der
+Batch-Datei „make resources.bat“ die Python-Datei erstellt werden.</p>
+</section>
+</section>
+<section id="einbindung-in-die-qkan-plugins">
+<h3>Einbindung in die QKan-Plugins<a class="headerlink" href="#einbindung-in-die-qkan-plugins" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>QKan-Plugins müssen zur Einbindung nur in der Datei „__init__.py“ im Hauptverzeichnis eingetragen werden.</dt><dd><ol class="arabic simple">
+<li><p>in der PLUGIN_LIST</p></li>
+<li><p>in der Funktion „sort_actions(): Zu Beginn steht die Liste der Hauptmenüs und im Anschluss folgen die dazu gehörenden Menüeinträge</p></li>
+</ol>
+</dd>
+</dl>
+</section>
+<section id="vorlage-plugin-template">
+<h3>Vorlage-Plugin „Template“<a class="headerlink" href="#vorlage-plugin-template" title="Link to this heading"></a></h3>
+<p>Hier können Sie ein ZIP-Archiv mit der Grundstruktur eines QKan-Plugins
+downloaden: <a class="reference download internal" download="" href="_downloads/ff1534563e8fbd11387becf47d33e96c/template_plugin.zip"><code class="xref download docutils literal notranslate"><span class="pre">template_plugin.zip</span></code></a></p>
+<p>Zunächst sollten Sie an allen Stellen den Text <em>template</em> durch den Namen Ihres Moduls ersetzen, wobei unbedingt
+auf Groß- und Kleinschreibung zu achten ist.</p>
 </section>
 </section>
 </section>

@@ -24,9 +24,9 @@ from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 
-from qkan import QKan, get_default_dir
+from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import fehlermeldung, get_default_dir
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 

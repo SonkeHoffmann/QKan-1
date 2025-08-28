@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Callable, List, Optional, cast, Dict
 
 import qgis
-from qgis.PyQt.QtCore import QCoreApplication, QSettings, QStandardPaths, QTranslator
+from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QListWidget, QMenu, QMenuBar, QWidget
+from qgis.PyQt.QtWidgets import QAction, QMenu, QMenuBar, QWidget
 from qgis.core import QgsProject, QgsSettings
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
@@ -394,32 +394,3 @@ class QKan:
         self.actions.append(action)
 
         return action
-
-
-def get_default_dir() -> str:
-    """
-    A helper method that returns the path of the currently opened project
-    *or* the user's default directory
-    """
-
-    # noinspection PyArgumentList
-    project_path = QgsProject.instance().fileName()
-    if project_path:
-        return str(Path(project_path).parent.absolute())
-    else:
-        # noinspection PyArgumentList
-        return str(
-            Path(
-                QStandardPaths.standardLocations(QStandardPaths.HomeLocation)[-1]
-            ).absolute()
-        )
-
-
-def list_selected_items(list_widget: QListWidget) -> List[str]:
-    """
-    Erstellt eine Liste aus den in einem Auswahllisten-Widget angeklickten Objektnamen
-
-    :param list_widget: Liste aller Widgets
-    """
-
-    return [_.text() for _ in list_widget.selectedItems()]

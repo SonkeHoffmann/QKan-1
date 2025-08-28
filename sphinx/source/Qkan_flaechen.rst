@@ -90,7 +90,7 @@ kopiert werden. Anschließend können diese auf dem Layer "Teilgebiete" eingefü
 :guilabel:`Gewählte Objekte verschmelzen` zusammen gefasst werden können. In der Attribut-Tabelle kann das Teilgebiet in der Spalte 
 "Namen" benannt werden. Soll die Bearbeitung des Projektes in den erstellten Teilgebieten geschehen, müssen nun als nächstes die Elemente 
 des Entwässerungsnetzes den Teilgebieten zugeordnet werden. Dies ist mit der :ref:`Funktion <linkelementeteilgebietzuordnen>` |Tool_elemente_tezg_zuordnen| 
-:guilabel:`Zuordnung zu Teilgebiet` möglich (Option "überlappend sollte ausgewählt werden).
+:guilabel:`Zuordnung zu Teilgebiet` möglich (Option "überlappend" sollte ausgewählt werden).
 
 .. |Tool_layeraenderungen_speichern| image:: ./QKan_Bilder/Tool_layeraenderungen_speichern.png
                              :width: 1.25 em

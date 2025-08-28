@@ -20,8 +20,8 @@
 
 from qgis.gui import QgisInterface
 
-from qkan import QKan, get_default_dir, list_selected_items
-from qkan.tools.qkan_utils import get_database_QKan
+from qkan import QKan
+from qkan.tools.qkan_utils import get_database_QKan, get_default_dir, list_selected_items
 from qkan.plugin import QKanPlugin
 
 from .application_dialog import SurfaceToolDialog, VoronoiDialog

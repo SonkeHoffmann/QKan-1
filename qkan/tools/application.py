@@ -11,14 +11,14 @@ from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 
-from qkan import QKan, enums, list_selected_items
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_database_QKan,
     get_editable_layers,
-    meldung,
     warnung,
+    list_selected_items,
 )
 from qkan.plugin import QKanPlugin
 
