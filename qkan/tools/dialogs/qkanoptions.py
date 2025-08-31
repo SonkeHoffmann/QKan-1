@@ -235,18 +235,21 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         ordner = QFileDialog.getExistingDirectory(
             self,
             self.tr("Ordner Pfad"),
-            self.default_dir,
+
         )
         if ordner:
             self.tf_fotopath.setText(ordner)
-            self.default_dir = os.path.dirname(ordner)
+            #self.default_dir = os.path.dirname(ordner)
+            QKan.config.fotopath = ordner
+
 
     def videopath(self):
         ordner = QFileDialog.getExistingDirectory(
             self,
             self.tr("Ordner Pfad"),
-            self.default_dir,
+
         )
         if ordner:
             self.tf_videopath.setText(ordner)
-            self.default_dir = os.path.dirname(ordner)
+            #self.default_dir = os.path.dirname(ordner)
+            QKan.config.videopath = ordner

@@ -1153,11 +1153,11 @@ class ImportTask(Schadenstexte):
                         vertikale_lage = _get_float(_untersuchdat_schacht.findtext("VertikaleLage", None, self.NS))
                         bereich = _untersuchdat_schacht.findtext("Schachtbereich", None, self.NS)
 
-                        _datei = _untersuchdat_schacht.findtext("Fotodatei", None, self.NS)
-                        if _datei is not None and self.ordner_bild is not None:
-                            foto_dateiname = os.path.join(self.ordner_bild, _datei)
-                        else:
-                            foto_dateiname = None
+                        foto_dateiname = _untersuchdat_schacht.findtext("Fotodatei", None, self.NS)
+                        #if _datei is not None and self.ordner_bild is not None:
+                        #    foto_dateiname = os.path.join(self.ordner_bild, _datei)
+                        #else:
+                        #    foto_dateiname = None
 
                         ZD = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
                         ZS = _get_int(_untersuchdat_schacht.findtext("Klassifizierung/Betriebssicherheit/SKSvAuto", None, self.NS))
@@ -1218,7 +1218,6 @@ class ImportTask(Schadenstexte):
                       'inspektionslage': untersuchdat_schacht.inspektionslaenge,
                       'bereich': untersuchdat_schacht.bereich,
                       'foto_dateiname': untersuchdat_schacht.foto_dateiname,
-                      'ordner_bild': untersuchdat_schacht.ordner_bild,
                       'ZD': untersuchdat_schacht.ZD, 'ZB': untersuchdat_schacht.ZB, 'ZS': untersuchdat_schacht.ZS, 'epsg': QKan.config.epsg}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: untersuchdat_schacht\n'
@@ -1297,9 +1296,10 @@ class ImportTask(Schadenstexte):
                             _datei = film.findtext("Filmname", None, self.NS)
 
                             # relativer pfad mit einfügen in datei
-                            ordner = film.findtext("Filmpfad", None, self.NS)
-                            if _datei is not None and self.ordner_bild is not None:
-                                filmdatei = os.path.join(self.ordner_video, _datei)
+                            # relativer pfad mit einfügen in datei
+                            filmpfad = film.findtext("Filmpfad", None, self.NS)
+                            if _datei is not None and filmpfad is not None:
+                                filmdatei = os.path.join(filmpfad, _datei)
                             else:
                                 filmdatei = None
 
@@ -2008,11 +2008,11 @@ class ImportTask(Schadenstexte):
                         pos_von = _get_int(_untersuchdat.findtext("PositionVon", None, self.NS))
                         pos_bis = _get_int(_untersuchdat.findtext("PositionBis", None, self.NS))
 
-                        _datei = _untersuchdat.findtext("Fotodatei", None, self.NS)
-                        if _datei is not None and self.ordner_bild is not None:
-                            foto_dateiname = os.path.join(self.ordner_bild, _datei)
-                        else:
-                            foto_dateiname = None
+                        foto_dateiname = _untersuchdat.findtext("Fotodatei", None, self.NS)
+                        #if _datei is not None and self.ordner_bild is not None:
+                        #    foto_dateiname = os.path.join(self.ordner_bild, _datei)
+                        #else:
+                        #    foto_dateiname = None
 
                         ZD = _get_int(_untersuchdat.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
                         ZS = _get_int(_untersuchdat.findtext("Klassifizierung/Betriebssicherheit/SKSvAuto", None, self.NS))
@@ -2092,8 +2092,7 @@ class ImportTask(Schadenstexte):
                       'pos_von': untersuchdat_haltung.pos_von, 'pos_bis': untersuchdat_haltung.pos_bis,
                       'foto_dateiname': untersuchdat_haltung.foto_dateiname,
                       'film_dateiname': untersuchdat_haltung.film_dateiname,
-                      'ordner_bild': untersuchdat_haltung.ordner_bild,
-                      'ordner_video': untersuchdat_haltung.ordner_video, 'ZD': untersuchdat_haltung.ZD,
+                         'ZD': untersuchdat_haltung.ZD,
                       'ZB': untersuchdat_haltung.ZB, 'ZS': untersuchdat_haltung.ZS, 'epsg': QKan.config.epsg}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: untersuchdat_haltung\n'
@@ -2176,9 +2175,9 @@ class ImportTask(Schadenstexte):
                             _datei = film.findtext("Filmname", None, self.NS)
 
                             # relativer pfad mit einfügen in datei
-                            ordner = film.findtext("Filmpfad", None, self.NS)
-                            if _datei is not None and self.ordner_bild is not None:
-                                filmdatei = os.path.join(self.ordner_video, _datei)
+                            filmpfad = film.findtext("Filmpfad", None, self.NS)
+                            if _datei is not None and filmpfad is not None:
+                                filmdatei = os.path.join(filmpfad, _datei)
                             else:
                                 filmdatei = None
 
@@ -2604,11 +2603,11 @@ class ImportTask(Schadenstexte):
                         pos_von = _get_int(_untersuchdat.findtext("PositionVon", None, self.NS))
                         pos_bis = _get_int(_untersuchdat.findtext("PositionBis", None, self.NS))
 
-                        _datei = _untersuchdat.findtext("Fotodatei", None, self.NS)
-                        if _datei is not None and self.ordner_bild is not None:
-                            foto_dateiname = os.path.join(self.ordner_bild, _datei)
-                        else:
-                            foto_dateiname = None
+                        foto_dateiname = _untersuchdat.findtext("Fotodatei", None, self.NS)
+                        #if _datei is not None and self.ordner_bild is not None:
+                        #    foto_dateiname = os.path.join(self.ordner_bild, _datei)
+                        #else:
+                        #    foto_dateiname = None
 
                         ZD = _get_int(
                             _untersuchdat.findtext("Klassifizierung/Dichtheit/SKDvAuto", None, self.NS))
@@ -2690,8 +2689,7 @@ class ImportTask(Schadenstexte):
                       'pos_von': untersuchdat_anschlussleitung.pos_von, 'pos_bis': untersuchdat_anschlussleitung.pos_bis,
                       'foto_dateiname': untersuchdat_anschlussleitung.foto_dateiname,
                       'film_dateiname': untersuchdat_anschlussleitung.film_dateiname,
-                      'ordner_bild': untersuchdat_anschlussleitung.ordner_bild,
-                      'ordner_video': untersuchdat_anschlussleitung.ordner_video, 'ZD': untersuchdat_anschlussleitung.ZD,
+                         'ZD': untersuchdat_anschlussleitung.ZD,
                       'ZB': untersuchdat_anschlussleitung.ZB, 'ZS': untersuchdat_anschlussleitung.ZS, 'epsg': QKan.config.epsg}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: untersuchdat_anschlussleitung\n'
@@ -2774,9 +2772,10 @@ class ImportTask(Schadenstexte):
                                 _datei = film.findtext("Filmname", None, self.NS)
 
                                 # relativer pfad mit einfügen in datei
-                                ordner = film.findtext("Filmpfad", None, self.NS)
-                                if _datei is not None and self.ordner_bild is not None:
-                                    filmdatei = os.path.join(self.ordner_video, _datei)
+                                # relativer pfad mit einfügen in datei
+                                filmpfad = film.findtext("Filmpfad", None, self.NS)
+                                if _datei is not None and filmpfad is not None:
+                                    filmdatei = os.path.join(filmpfad, _datei)
                                 else:
                                     filmdatei = None
 

@@ -7790,7 +7790,9 @@ class Zustandsklassen_funkt:
 			# Tab A.2
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 7:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 7:
 					z = '0'
 				elif 4 <= attr[13] < 7:
 					z = '1'
@@ -7813,7 +7815,9 @@ class Zustandsklassen_funkt:
 					db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '0'
 				elif 40 <= attr[13] < 50:
 					z = '1'
@@ -7839,7 +7843,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '0'
 				elif 10 <= attr[13] < 15:
 					z = '1'
@@ -7862,7 +7868,9 @@ class Zustandsklassen_funkt:
 					db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '0'
 				elif 40 <= attr[13] < 50:
 					z = '1'
@@ -7908,7 +7916,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] in ["B", "C"]:
 					if attr[12] in ["A", "B", "C", "D", "E"]:
-						if attr[13] >= 3:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 3:
 							z = '1'
 						elif 3 > attr[13] >= 2:
 							z = '2'
@@ -7928,7 +7938,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and ((attr[25] in ["", "NULL", "None", None, "not found"]) or (attr[25] / 1000 > 0.7)):
-						if attr[13] >= 8:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 8:
 							z = '0'
 						elif 8 > attr[13] >= 5:
 							z = '1'
@@ -7953,7 +7965,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and attr[25] / 1000 <= 0.3:
-						if attr[13] >= 3:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 3:
 							z = '0'
 						elif 3 > attr[13] >= 2:
 							z = '1'
@@ -7976,7 +7990,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and 0.5 >= attr[25] / 1000 > 0.3:
-						if attr[13] >= 5:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 5:
 							z = '0'
 						elif 5 > attr[13] >= 3:
 							z = '1'
@@ -8001,7 +8017,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and 0.7 >= attr[25] / 1000 > 0.5:
-						if attr[13] >= 8:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 8:
 							z = '0'
 						elif 8 > attr[13] >= 4:
 							z = '1'
@@ -8316,9 +8334,11 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '2'
-				if attr[13] < 100:
+				elif attr[13] < 100:
 					z = '4'
 				else:
 					z = '5'
@@ -8333,7 +8353,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '1'
 				elif 100 > attr[13] > 50:
 					z = '2'
@@ -8681,7 +8703,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAG":
 				if attr[25] / 1000 <= 0.25:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 30:
 						z = '1'
@@ -8694,7 +8718,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif 0.25 < attr[25] / 1000 <= 0.5:
-					if attr[13] >= 80:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 80:
 						z = '0'
 					elif 80 > attr[13] >= 60:
 						z = '1'
@@ -8707,7 +8733,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif 0.5 < attr[25] / 1000 <= 0.8:
-					if attr[13] >= 70:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 70:
 						z = '2'
 					elif 70 > attr[13] >= 10:
 						z = '3'
@@ -8716,7 +8744,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif attr[25] / 1000 > 0.8:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '3'
 					elif attr[13] < 30:
 						z = '4'
@@ -8856,7 +8886,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -8883,7 +8915,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25] / 1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '0'
 						elif 70 > attr[13] >= 50:
 							z = '1'
@@ -8907,7 +8941,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if 0.4 < attr[25] / 1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '0'
 						elif 80 > attr[13] >= 60:
 							z = '1'
@@ -8931,7 +8967,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[25] / 1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '0'
 						elif 90 > attr[13] >= 65:
 							z = '1'
@@ -8968,7 +9006,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -9018,7 +9058,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25] / 1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '0'
 						elif 12 > attr[13] >= 9:
 							z = '1'
@@ -9042,7 +9084,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if 0.2 < attr[25] / 1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '0'
 						elif 6 > attr[13] >= 4:
 							z = '1'
@@ -9066,7 +9110,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[25] / 1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '0'
 						elif 6 > attr[13] >= 4:
 							z = '1'
@@ -9104,7 +9150,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9219,7 +9267,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9487,7 +9537,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9706,7 +9758,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
 					z = '1'
@@ -9742,7 +9796,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -9767,7 +9823,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -9807,7 +9865,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["C", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 40:
 						z = '1'
@@ -9856,7 +9916,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
 					z = '1'
@@ -9892,7 +9954,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9917,7 +9981,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["A", "B", "C", "E", "F", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -14333,7 +14399,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -14359,7 +14427,9 @@ class Zustandsklassen_funkt:
 					pass
 			elif (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5'
 				elif 10 <= attr[13] < 15:
 					z = '4'
@@ -14383,7 +14453,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -14449,7 +14521,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5'
 					elif 10 > attr[13] >= 5:
 						z = '4'
@@ -14712,7 +14786,9 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif attr[13] < 100:
 					z = '1'
@@ -14729,7 +14805,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif 100 > attr[13] >= 10:
 					z = '2'
@@ -15072,7 +15150,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5'
 				elif 75 > attr[13] >= 60:
 					z = '4'
@@ -15193,7 +15273,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15220,7 +15302,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25]/1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5'
 						elif 70 > attr[13] >= 50:
 							z = '4'
@@ -15244,7 +15328,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25]/1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5'
 						elif 80 > attr[13] >= 60:
 							z = '4'
@@ -15268,7 +15354,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5'
 						elif 90 > attr[13] >= 65:
 							z = '4'
@@ -15305,7 +15393,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -15340,7 +15430,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1'
 					elif attr[13] >= 10:
 						z = '2'
@@ -15360,7 +15452,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25]/1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5'
 						elif 12 > attr[13] >= 9:
 							z = '4'
@@ -15384,7 +15478,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25]/1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -15408,7 +15504,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -15446,7 +15544,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15551,7 +15651,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15778,7 +15880,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15987,7 +16091,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -16011,7 +16117,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -16034,7 +16142,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 40:
 					z = '4'
@@ -16083,7 +16193,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5'
 				elif 30 > attr[13] >= 20:
 					z = '4'
@@ -16121,7 +16233,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -16348,11 +16462,11 @@ class Zustandsklassen_funkt:
 						pass
 
 			# if für alle übrigen sachen Haltungsanfang ende usw.
-			if attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
+			elif attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
 				z = '-'
 				sql = f"""
 								   UPDATE untersuchdat_haltung_bewertung
-								   SET Zustandsklasse_D = ?
+								   SET Schadensklasse_D = ?
 								   WHERE untersuchdat_haltung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -16363,7 +16477,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_haltung_bewertung
-								   SET Zustandsklasse_B = ?
+								   SET Schadensklasse_B = ?
 								   WHERE untersuchdat_haltung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -16374,7 +16488,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_haltung_bewertung
-								   SET Zustandsklasse_S = ?
+								   SET Schadensklasse_S = ?
 								   WHERE untersuchdat_haltung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -16844,7 +16958,9 @@ class Zustandsklassen_funkt:
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] < 6:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] < 6:
 					z = '3'
 				elif 6 <= attr[13] < 15:
 					z = '4'
@@ -16863,7 +16979,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -16889,7 +17007,9 @@ class Zustandsklassen_funkt:
 					pass
 			elif (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5'
 				elif 10 <= attr[13] < 15:
 					z = '4'
@@ -16913,7 +17033,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -16979,7 +17101,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5'
 					elif 10 > attr[13] >= 5:
 						z = '4'
@@ -17242,7 +17366,9 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif attr[13] < 100:
 					z = '1'
@@ -17259,7 +17385,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif 100 > attr[13] >= 10:
 					z = '2'
@@ -17602,7 +17730,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5'
 				elif 75 > attr[13] >= 60:
 					z = '4'
@@ -17723,7 +17853,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -17750,7 +17882,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25] / 1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5'
 						elif 70 > attr[13] >= 50:
 							z = '4'
@@ -17774,7 +17908,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25] / 1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5'
 						elif 80 > attr[13] >= 60:
 							z = '4'
@@ -17798,7 +17934,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5'
 						elif 90 > attr[13] >= 65:
 							z = '4'
@@ -17835,7 +17973,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -17870,7 +18010,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1'
 					elif attr[13] >= 10:
 						z = '2'
@@ -17890,7 +18032,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25] / 1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5'
 						elif 12 > attr[13] >= 9:
 							z = '4'
@@ -17914,7 +18058,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25] / 1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -17938,7 +18084,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -17976,7 +18124,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18081,7 +18231,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18308,7 +18460,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18517,7 +18671,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -18541,7 +18697,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -18564,7 +18722,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 40:
 					z = '4'
@@ -18613,7 +18773,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5'
 				elif 30 > attr[13] >= 20:
 					z = '4'
@@ -18651,7 +18813,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18878,11 +19042,11 @@ class Zustandsklassen_funkt:
 						pass
 
 			# if für alle übrigen sachen Haltungsanfang ende usw.
-			if attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
+			elif attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
 				z = '-'
 				sql = f"""
 								   UPDATE untersuchdat_anschlussleitung_bewertung
-								   SET Zustandsklasse_D = ?
+								   SET Schadensklasse_D = ?
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -18893,7 +19057,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_anschlussleitung_bewertung
-								   SET Zustandsklasse_B = ?
+								   SET Schadensklasse_B = ?
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -18904,7 +19068,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_anschlussleitung_bewertung
-								   SET Zustandsklasse_S = ?
+								   SET Schadensklasse_S = ?
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -22092,7 +22256,7 @@ class Zustandsklassen_funkt:
 				z = '-'
 				sql = f"""
 							   UPDATE Untersuchdat_schacht_bewertung
-							   SET Zustandsklasse_D = ?
+							   SET ZSchadensklasse_D = ?
 							   WHERE Untersuchdat_schacht_bewertung.pk = ?;
 							   """
 				data = (z, attr[0])
@@ -22103,7 +22267,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 							   UPDATE Untersuchdat_schacht_bewertung
-							   SET Zustandsklasse_B = ?
+							   SET Schadensklasse_B = ?
 							   WHERE Untersuchdat_schacht_bewertung.pk = ?;
 							   """
 				data = (z, attr[0])
@@ -22114,7 +22278,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 							   UPDATE Untersuchdat_schacht_bewertung
-							   SET Zustandsklasse_S = ?
+							   SET Schadensklasse_S = ?
 							   WHERE Untersuchdat_schacht_bewertung.pk = ?;
 							   """
 				data = (z, attr[0])
@@ -22578,7 +22742,9 @@ class Zustandsklassen_funkt:
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] < 6:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] < 6:
 					z = '3_isy'
 				elif 6 <= attr[13] < 15:
 					z = '4_isy'
@@ -22597,7 +22763,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -22623,7 +22791,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5_isy'
 				elif 10 <= attr[13] < 15:
 					z = '4_isy'
@@ -22647,7 +22817,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -22713,7 +22885,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5_isy'
 					elif 10 > attr[13] >= 5:
 						z = '4_isy'
@@ -22976,7 +23150,9 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif attr[13] < 100:
 					z = '1_isy'
@@ -22993,7 +23169,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif 100 > attr[13] >= 10:
 					z = '2_isy'
@@ -23336,7 +23514,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5_isy'
 				elif 75 > attr[13] >= 60:
 					z = '4_isy'
@@ -23400,6 +23580,17 @@ class Zustandsklassen_funkt:
 					try:
 						db.sql(sql, parameters=data)
 						# db.commit()
+					except:
+						pass
+					sql = f"""
+													  UPDATE untersuchdat_haltung_bewertung
+														SET Zustandsklasse_S = ?
+														WHERE untersuchdat_haltung_bewertung.pk = ?
+														"""
+					data = (z, attr[0])
+					try:
+						db.sql(sql, parameters=data)
+						# db.commit()
 						continue
 					except:
 						pass
@@ -23457,7 +23648,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -23484,7 +23677,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25]/1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5_isy'
 						elif 70 > attr[13] >= 50:
 							z = '4_isy'
@@ -23508,7 +23703,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25]/1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5_isy'
 						elif 80 > attr[13] >= 60:
 							z = '4_isy'
@@ -23532,7 +23729,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5_isy'
 						elif 90 > attr[13] >= 65:
 							z = '4_isy'
@@ -23569,7 +23768,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -23604,7 +23805,9 @@ class Zustandsklassen_funkt:
 						# db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1_isy'
 					elif attr[13] >= 10:
 						z = '2_isy'
@@ -23624,7 +23827,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25]/1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5_isy'
 						elif 12 > attr[13] >= 9:
 							z = '4_isy'
@@ -23648,7 +23853,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25]/1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -23672,7 +23879,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -23710,7 +23919,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -23815,7 +24026,9 @@ class Zustandsklassen_funkt:
 						# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -24043,7 +24256,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -24252,7 +24467,9 @@ class Zustandsklassen_funkt:
 						# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -24276,7 +24493,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -24299,7 +24518,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 50 > attr[13] >= 40:
 					z = '4_isy'
@@ -24348,7 +24569,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5_isy'
 				elif 30 > attr[13] >= 20:
 					z = '4_isy'
@@ -24386,7 +24609,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -24927,7 +25152,9 @@ class Zustandsklassen_funkt:
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] < 6:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] < 6:
 					z = '3_isy'
 				elif 6 <= attr[13] < 15:
 					z = '4_isy'
@@ -24946,7 +25173,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -24972,7 +25201,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5_isy'
 				elif 10 <= attr[13] < 15:
 					z = '4_isy'
@@ -24996,7 +25227,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -25062,7 +25295,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5_isy'
 					elif 10 > attr[13] >= 5:
 						z = '4_isy'
@@ -25325,7 +25560,9 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif attr[13] < 100:
 					z = '1_isy'
@@ -25342,7 +25579,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif 100 > attr[13] >= 10:
 					z = '2_isy'
@@ -25685,7 +25924,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5_isy'
 				elif 75 > attr[13] >= 60:
 					z = '4_isy'
@@ -25806,7 +26047,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -25833,7 +26076,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25] / 1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5_isy'
 						elif 70 > attr[13] >= 50:
 							z = '4_isy'
@@ -25857,7 +26102,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25] / 1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5_isy'
 						elif 80 > attr[13] >= 60:
 							z = '4_isy'
@@ -25881,7 +26128,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5_isy'
 						elif 90 > attr[13] >= 65:
 							z = '4_isy'
@@ -25918,7 +26167,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -25953,7 +26204,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1_isy'
 					elif attr[13] >= 10:
 						z = '2_isy'
@@ -25973,7 +26226,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25] / 1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5_isy'
 						elif 12 > attr[13] >= 9:
 							z = '4_isy'
@@ -25997,7 +26252,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25] / 1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -26021,7 +26278,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -26059,7 +26318,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26164,7 +26425,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26392,7 +26655,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26601,7 +26866,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -26625,7 +26892,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -26648,7 +26917,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 50 > attr[13] >= 40:
 					z = '4_isy'
@@ -26697,7 +26968,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5_isy'
 				elif 30 > attr[13] >= 20:
 					z = '4_isy'
@@ -26735,7 +27008,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
