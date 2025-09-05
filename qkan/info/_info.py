@@ -22,7 +22,7 @@ logger = get_logger("QKan.xml.info")
 
 
 class Info:
-    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, fig_7, canv_7, fig_8, canv_8, fig_9, canv_9, fig_10, canv_10, combo, combo3, dat1, dat2, dat3, dat8, dat9, db_qkan: DBConnection):
+    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, fig_7, canv_7, fig_8, canv_8, fig_9, canv_9, fig_10, canv_10, combo, dat1, dat2, dat3, dat8, dat9, db_qkan: DBConnection, check):
         self.db_qkan = db_qkan
         self.anz_haltungen = 0
         self.anz_schaechte = 0
@@ -49,25 +49,41 @@ class Info:
         self.canv_10 = canv_10
         self.fig_10 = fig_10
         self.combo = combo
-        self.combo3 = combo3
+        #self.combo3 = combo3
         self.dat1 = dat1
         self.dat2 = dat2
         self.dat3 = dat3
         self.dat8 = dat8
         self.dat9 = dat9
+        self.check = check
+        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='sel_haltungen'
+                                                        """
+        if not self.db_qkan.sql(sql):
+            return
+        liste = self.db_qkan.fetchall()
 
-        if len(combo3)>0:
-            self.abfrage_and = f"AND teilgebiet = {str(self.combo3)}"
+        if self.check and liste != []:
 
-            self.abfrage_where = f"WHERE teilgebiet = {str(self.combo3)}"
+
+            self.abfrage_and_halt = f"AND haltungen.pk IN (SELECT sel_haltungen.pk FROM sel_haltungen)"
+            self.abfrage_where_halt = f"WHERE haltungen.pk IN (SELECT sel_haltungen.pk FROM sel_haltungen)"
+            self.abfrage_and_sch = f"AND schaechte.pk IN (SELECT sel_schaechte.pk FROM sel_schaechte)"
+            self.abfrage_where_sch = f"WHERE schaechte.pk IN (SELECT sel_schaechte.pk FROM sel_schaechte)"
+            #Todo: anschlussleitungen geht nicht!
+
+            self.abfrage_and_leit = (f"JOIN haltungen h ON ST_Intersects(anschlussleitungen.geom, h.geom) OR "
+                                     f"ST_Distance(anschlussleitungen.geom, h.geom) <= 1 where h.pk IN "
+                                     f"(SELECT sel_haltungen.pk FROM sel_haltungen) ")
+            self.abfrage_where_leit = (f"JOIN haltungen h ON ST_Intersects(a.geom, h.geom) OR ST_Distance(a.geom, h.geom) <= 1	"
+                                       f"where h.pk IN (SELECT sel_haltungen.pk FROM sel_haltungen) ")
 
         else:
-            self.abfrage_and = ""
-            self.abfrage_where = ""
-
-        # iface.messageBar().pushMessage("Error",
-        #                                str(self.combo),
-        #                                level=Qgis.Critical)
+            self.abfrage_and_halt = ""
+            self.abfrage_where_halt = ""
+            self.abfrage_and_sch = ""
+            self.abfrage_where_sch = ""
+            self.abfrage_and_leit = ""
+            self.abfrage_where_leit = ""
 
         #variable für schatten
         self.shadow = True
@@ -1052,7 +1068,7 @@ class Info:
                     round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
                     count() AS anzahl
                 FROM haltungen
-                WHERE entwart IS NOT NULL {self.abfrage_and}
+                WHERE entwart IS NOT NULL {self.abfrage_and_halt}
                 GROUP BY entwart
             )
             SELECT *
@@ -1075,7 +1091,7 @@ class Info:
                             entwart,
                             count() AS anzahl
                         FROM schaechte
-                        WHERE entwart IS NOT NULL {self.abfrage_and}
+                        WHERE entwart IS NOT NULL {self.abfrage_and_sch}
                         GROUP BY entwart
                     )
                     SELECT *
@@ -1102,16 +1118,16 @@ class Info:
             sql = f"""
                         WITH liste AS (
                             SELECT
-                                entwart,
-                                round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
+                                anschlussleitungen.entwart,
+                                round(sum(iif(coalesce(anschlussleitungen.laenge,0)=0,GLength(anschlussleitungen.geom),anschlussleitungen.laenge))/1000.,2) AS gesamtlaenge, 
                                 count() AS anzahl
                             FROM anschlussleitungen
-                            WHERE entwart IS NOT NULL {self.abfrage_and}
-                            GROUP BY entwart
+                            {self.abfrage_and_leit}
+                            GROUP BY anschlussleitungen.entwart
                         )
                         SELECT *
                         FROM liste
-                        WHERE entwart NOT LIKE '%still%' 
+                        WHERE entwart NOT LIKE '%still%' and entwart is Not NULL
                         ORDER BY gesamtlaenge DESC
                     """
             # pos=111
@@ -1130,7 +1146,7 @@ class Info:
                             round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge, 
                             count() AS anzahl
                         FROM haltungen
-                        WHERE entwart IS NOT NULL {self.abfrage_and}
+                        WHERE entwart IS NOT NULL {self.abfrage_and_halt}
                         GROUP BY tgb
                 """
 
@@ -1160,7 +1176,7 @@ class Info:
                             iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
                             baujahr
                             FROM haltungen
-                            {self.abfrage_where}
+                            {self.abfrage_where_halt}
                     )
                     SELECT
                         baujahr,
@@ -1191,7 +1207,7 @@ class Info:
                     material,
                     round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
                 FROM haltungen
-                WHERE material IS NOT NULL  {self.abfrage_and}
+                WHERE material IS NOT NULL  {self.abfrage_and_halt}
                 GROUP BY material
             )
             SELECT *
@@ -1226,7 +1242,7 @@ class Info:
                 SELECT
                     iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(breite/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
                     iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
-                FROM haltungen {self.abfrage_where}
+                FROM haltungen {self.abfrage_where_halt}
             )
             SELECT
                 printf('bis %d', Hoehe) AS t_hoehe,
@@ -1253,7 +1269,7 @@ class Info:
                     profilnam,
                     round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
                 FROM haltungen
-                WHERE profilnam IS NOT NULL {self.abfrage_and}
+                WHERE profilnam IS NOT NULL {self.abfrage_and_halt}
                 GROUP BY profilnam
             )
             SELECT *
@@ -1278,7 +1294,7 @@ class Info:
                             laenge,
                             ROUND(SUM(IIF(COALESCE(laenge, 0) = 0, GLength(geom), laenge)), 2) AS gesamtlaenge
                         FROM haltungen
-                        WHERE laenge IS NOT NULL {self.abfrage_and}
+                        WHERE laenge IS NOT NULL {self.abfrage_and_halt}
                         GROUP BY laenge
                     ),
                     intervalle AS (
@@ -1344,10 +1360,10 @@ class Info:
             sql = f"""
                                 WITH liste AS (
                                     SELECT
-                                        iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge,
-                                        baujahr
+                                        iif(coalesce(anschlussleitungen.laenge,0)=0,GLength(anschlussleitungen.geom),anschlussleitungen.laenge) AS laenge,
+                                        anschlussleitungen.baujahr
                                         FROM anschlussleitungen
-                                        {self.abfrage_where}
+                                        {self.abfrage_and_leit}
                                 )
                                 SELECT
                                     baujahr,
@@ -1380,15 +1396,15 @@ class Info:
             sql = f"""
                         WITH liste AS (
                             SELECT
-                                material,
-                                round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
+                                anschlussleitungen.material,
+                                round(sum(iif(coalesce(anschlussleitungen.laenge,0)=0,GLength(anschlussleitungen.geom),anschlussleitungen.laenge))/1000.,2) AS gesamtlaenge
                             FROM anschlussleitungen
-                            WHERE material IS NOT NULL  {self.abfrage_and}
-                            GROUP BY material
+                            {self.abfrage_and_leit}
+                            GROUP BY anschlussleitungen.material
                         )
                         SELECT *
                         FROM liste
-                        WHERE gesamtlaenge > 0.01
+                        WHERE gesamtlaenge > 0.01 and material IS NOT NULL
                         ORDER BY gesamtlaenge DESC
                     """
 
@@ -1423,9 +1439,9 @@ class Info:
             sql = f"""
                         WITH liste AS (
                             SELECT
-                                iif(breite <= 501, ceil(breite/100.)*100, iif(breite <= 1001, ceil(breite/250.)*250, iif(breite <= 3001, ceil(breite/250.)*250, ceil(breite/1000.)*1000))) AS Hoehe,
-                                iif(coalesce(laenge,0)=0,GLength(geom),laenge) AS laenge
-                            FROM anschlussleitungen {self.abfrage_where}
+                                iif(anschlussleitungen.breite <= 501, ceil(anschlussleitungen.breite/100.)*100, iif(anschlussleitungen.breite <= 1001, ceil(anschlussleitungen.breite/250.)*250, iif(anschlussleitungen.breite <= 3001, ceil(anschlussleitungen.breite/250.)*250, ceil(anschlussleitungen.breite/1000.)*1000))) AS Hoehe,
+                                iif(coalesce(anschlussleitungen.laenge,0)=0,GLength(anschlussleitungen.geom),anschlussleitungen.laenge) AS laenge
+                            FROM anschlussleitungen {self.abfrage_and_leit}
                         )
                         SELECT
                             printf('bis %d', Hoehe) AS t_hoehe,
@@ -1456,15 +1472,15 @@ class Info:
             sql = f"""
                         WITH liste AS (
                             SELECT
-                                profilnam,
-                                round(sum(iif(coalesce(laenge,0)=0,GLength(geom),laenge))/1000.,2) AS gesamtlaenge
+                                anschlussleitungen.profilnam,
+                                round(sum(iif(coalesce(anschlussleitungen.laenge,0)=0,GLength(anschlussleitungen.geom),anschlussleitungen.laenge))/1000.,2) AS gesamtlaenge
                             FROM anschlussleitungen
-                            WHERE profilnam IS NOT NULL {self.abfrage_and}
-                            GROUP BY profilnam
+                            {self.abfrage_and_leit}
+                            GROUP BY anschlussleitungen.profilnam
                         )
                         SELECT *
                         FROM liste
-                        WHERE gesamtlaenge > 0.01
+                        WHERE gesamtlaenge > 0.01 and profilnam IS NOT NULL
                         ORDER BY gesamtlaenge DESC
                     """
 
@@ -1488,11 +1504,11 @@ class Info:
             sql = f"""
                                     WITH liste AS (
                                     SELECT
-                                        laenge,
-                                        ROUND(SUM(IIF(COALESCE(laenge, 0) = 0, GLength(geom), laenge)), 2) AS gesamtlaenge
+                                        anschlussleitungen.laenge,
+                                        ROUND(SUM(IIF(COALESCE(anschlussleitungen.laenge, 0) = 0, GLength(anschlussleitungen.geom), anschlussleitungen.laenge)), 2) AS gesamtlaenge
                                     FROM anschlussleitungen
-                                    WHERE laenge IS NOT NULL {self.abfrage_and}
-                                    GROUP BY laenge
+                                    {self.abfrage_and_leit}
+                                    GROUP BY anschlussleitungen.laenge
                                 ),
                                 intervalle AS (
                                     SELECT
@@ -1565,8 +1581,8 @@ class Info:
                                         ) / 1000.0, 2),0) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
                                     FROM haltungen_untersucht  
-                                    LEFT JOIN haltungen h ON haltungen_untersucht.haltnam = h.haltnam
-                                    {self.abfrage_where}
+                                    LEFT JOIN haltungen  ON haltungen_untersucht.haltnam = haltungen.haltnam
+                                    {self.abfrage_where_halt}
                                     GROUP BY CASE
                                     WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
                                         WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1608,7 +1624,7 @@ class Info:
             # plt.figure(figure_3.number)
             new_plot_2 = figure_3.add_subplot(gs[1])
             l_bezeich = []
-            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht LEFT JOIN haltungen h ON h.haltnam = haltungen_untersucht.haltnam {self.abfrage_where}"""
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_untersucht.haltnam {self.abfrage_where_halt}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -1621,7 +1637,7 @@ class Info:
 
             for i in data.keys():
                 if i not in ['None', 63, '63']:
-                    sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen h ON h.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
+                    sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and_halt}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -1692,8 +1708,8 @@ class Info:
                                         ) / 1000.0, 2),0) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
                                     FROM haltungen_untersucht_bewertung  
-                                    LEFT JOIN haltungen h ON haltungen_untersucht_bewertung.haltnam = h.haltnam
-                                    {self.abfrage_where}
+                                    LEFT JOIN haltungen  ON haltungen_untersucht_bewertung.haltnam = haltungen.haltnam
+                                    {self.abfrage_where_halt}
                                     GROUP BY CASE
                                         WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                         WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1717,7 +1733,7 @@ class Info:
 
 
                 sql = f"""
-                                         select kuerzel,count(*) from untersuchdat_haltung_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where} group by kuerzel
+                                         select kuerzel,count(*) from untersuchdat_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where_halt} group by kuerzel
                                     """
 
                 self._barplot(
@@ -1732,7 +1748,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_3.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_untersucht_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where}"""
+                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_untersucht_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where_halt}"""
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -1745,7 +1761,7 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from haltungen_untersucht_bewertung LEFT JOIN haltungen h ON h.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
+                        sql = f"""select count(*) from haltungen_untersucht_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE objektklasse_gesamt = {i}  {self.abfrage_and_halt} """
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -1818,8 +1834,8 @@ class Info:
                                         ) / 1000.0, 2),0) AS gesamtlaenge,
                                         COUNT(*) AS anzahl
                                     FROM haltungen_substanz_bewertung  
-                                    LEFT JOIN haltungen h ON haltungen_substanz_bewertung.haltnam = h.haltnam
-                                    {self.abfrage_where}
+                                    LEFT JOIN haltungen  ON haltungen_substanz_bewertung.haltnam = haltungen.haltnam
+                                    {self.abfrage_where_halt}
                                     GROUP BY CASE
                                     WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                         WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1842,7 +1858,7 @@ class Info:
                 )
 
                 sql = f"""
-                            select kuerzel,count(*) from substanz_haltung_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where} group by kuerzel
+                            select kuerzel,count(*) from substanz_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where_halt} group by kuerzel
                                                 """
 
                 self._barplot(
@@ -1857,7 +1873,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_3.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where} """
+                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where_halt} """
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -1870,7 +1886,7 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam WHERE objektklasse_gesamt = {i}  {self.abfrage_and}"""
+                        sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam WHERE objektklasse_gesamt = {i}  {self.abfrage_and_halt}"""
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -1933,8 +1949,8 @@ class Info:
                                                 END AS Zustandszahl,
                                                 COUNT(*) AS anzahl
                                             FROM schaechte_untersucht  
-                                            LEFT JOIN schaechte h ON schaechte_untersucht.schnam = h.schnam
-                                            {self.abfrage_where}
+                                            LEFT JOIN schaechte  ON schaechte_untersucht.schnam = schaechte.schnam
+                                            {self.abfrage_where_sch}
                                             GROUP BY CASE
                                             WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
                                                 WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1975,7 +1991,7 @@ class Info:
             # plt.figure(figure_3.number)
             new_plot_2 = figure_10.add_subplot(gs[1])
             l_bezeich = []
-            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from schaechte_untersucht LEFT JOIN schaechte h ON h.schnam = schaechte_untersucht.schnam {self.abfrage_where}"""
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from schaechte_untersucht LEFT JOIN schaechte  ON schaechte.schnam = schaechte_untersucht.schnam {self.abfrage_where_sch}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -1988,7 +2004,7 @@ class Info:
 
             for i in data.keys():
                 if i not in ['None', 63, '63']:
-                    sql = f"""select count(*) from schaechte_untersucht LEFT JOIN schaechte h ON h.schnam = schaechte_untersucht.schnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
+                    sql = f"""select count(*) from schaechte_untersucht LEFT JOIN schaechte  ON schaechte.schnam = schaechte_untersucht.schnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and_sch}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -2053,8 +2069,8 @@ class Info:
                                                 END AS Zustandszahl,
                                                 COUNT(*) AS anzahl
                                             FROM schaechte_untersucht_bewertung  
-                                            LEFT JOIN schaechte h ON schaechte_untersucht_bewertung.schnam = h.schnam
-                                            {self.abfrage_where}
+                                            LEFT JOIN schaechte  ON schaechte_untersucht_bewertung.schnam = schaechte.schnam
+                                            {self.abfrage_where_sch}
                                             GROUP BY CASE
                                                 WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                                 WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -2077,7 +2093,7 @@ class Info:
                 )
 
                 sql = f"""
-                                                 select kuerzel,count(*) from untersuchdat_schacht_bewertung LEFT JOIN schaechte h ON h.schnam = untersuchdat_schacht_bewertung.untersuchsch {self.abfrage_where} group by kuerzel
+                                                 select kuerzel,count(*) from untersuchdat_schacht_bewertung LEFT JOIN schaechte  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch {self.abfrage_where_sch} group by kuerzel
                                             """
 
                 self._barplot(
@@ -2092,7 +2108,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_10.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from schaechte_untersucht_bewertung LEFT JOIN schaechte h ON h.schnam = untersuchdat_schacht_bewertung.untersuchsch {self.abfrage_where}"""
+                sql = f"""select DISTINCT objektklasse_gesamt from schaechte_untersucht_bewertung LEFT JOIN schaechte  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch {self.abfrage_where_sch}"""
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -2105,7 +2121,7 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from schaechte_untersucht_bewertung LEFT JOIN schaechte h ON h.schnam = untersuchdat_schacht_bewertung.untersuchsch WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
+                        sql = f"""select count(*) from schaechte_untersucht_bewertung LEFT JOIN schaechte  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch WHERE objektklasse_gesamt = {i}  {self.abfrage_and_sch} """
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -2175,8 +2191,8 @@ class Info:
                                                 ) / 1000.0, 2),0) AS gesamtlaenge,
                                                 COUNT(*) AS anzahl
                                             FROM anschlussleitungen_untersucht  
-                                            LEFT JOIN anschlussleitungen h ON anschlussleitungen_untersucht.leitnam = h.leitnam
-                                            {self.abfrage_where}
+                                            LEFT JOIN anschlussleitungen a ON anschlussleitungen_untersucht.leitnam = a.leitnam
+                                            {self.abfrage_where_leit}
                                             GROUP BY CASE
                                             WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
                                                 WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -2217,7 +2233,7 @@ class Info:
             # plt.figure(figure_3.number)
             new_plot_2 = figure_9.add_subplot(gs[1])
             l_bezeich = []
-            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from anschlussleitungen_untersucht LEFT JOIN anschlussleitungen h ON h.leitnam = anschlussleitungen_untersucht.leitnam {self.abfrage_where}"""
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from anschlussleitungen_untersucht LEFT JOIN anschlussleitungen a ON a.leitnam = anschlussleitungen_untersucht.leitnam {self.abfrage_where_leit}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -2230,7 +2246,7 @@ class Info:
 
             for i in data.keys():
                 if i not in ['None', 63, '63']:
-                    sql = f"""select count(*) from anschlussleitung_untersucht LEFT JOIN anschlussleitungen h ON h.leitnam = anschlussleitungen_untersucht.leitnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and}"""
+                    sql = f"""select count(*) from anschlussleitung_untersucht LEFT JOIN anschlussleitungen a ON a.leitnam = anschlussleitungen_untersucht.leitnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_where_leit}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -2302,8 +2318,8 @@ class Info:
                                                 ) / 1000.0, 2),0) AS gesamtlaenge,
                                                 COUNT(*) AS anzahl
                                             FROM anschlussleitungen_untersucht_bewertung  
-                                            LEFT JOIN ansclhussleitungen h ON anschlussleitungen_untersucht_bewertung.leitnam = h.leitnam
-                                            {self.abfrage_where}
+                                            LEFT JOIN anschlussleitungen a ON anschlussleitungen_untersucht_bewertung.leitnam = a.leitnam
+                                             {self.abfrage_where_leit}
                                             GROUP BY CASE
                                                 WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                                 WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -2314,6 +2330,7 @@ class Info:
                                         FROM liste
                                         WHERE gesamtlaenge > 0.01 OR Zustandszahl = 'sonstige'
                                         ORDER BY Zustandszahl
+
                                     """
 
                 self._barplot(
@@ -2326,7 +2343,7 @@ class Info:
                 )
 
                 sql = f"""
-                                                 select kuerzel,count(*) from untersuchdat_anschlussleitungen_bewertung LEFT JOIN anschlussleitungen h ON h.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where} group by kuerzel
+                                                 select kuerzel,count(*) from untersuchdat_anschlussleitungen_bewertung LEFT JOIN anschlussleitungen a ON a.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where_leit} group by kuerzel
                                             """
 
                 self._barplot(
@@ -2341,7 +2358,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_9.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen h ON h.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where}"""
+                sql = f"""select DISTINCT objektklasse_gesamt from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen a ON a.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where_leit}"""
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -2354,7 +2371,7 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen h ON h.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit WHERE objektklasse_gesamt = {i}  {self.abfrage_and} """
+                        sql = f"""select count(*) from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen a ON a .leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit WHERE objektklasse_gesamt = {i}  {self.abfrage_where_leit} """
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -2457,7 +2474,7 @@ class Info:
                             END AS baujahr
                             FROM schaechte
                             Where schachttyp = 'Schacht'
-                            {self.abfrage_and}      
+                            {self.abfrage_and_sch}      
                     )
                     SELECT
                         baujahr,
@@ -2486,7 +2503,7 @@ class Info:
                         END AS material
                         FROM schaechte
                         Where schachttyp = 'Schacht'
-                            {self.abfrage_and}
+                            {self.abfrage_and_sch}
                            
                     )
                     SELECT
@@ -2569,8 +2586,8 @@ class Info:
                           ) / 1000.0, 2) AS gesamtlaenge,
                           COUNT(*) AS anzahl
                           FROM haltungen_substanz_bewertung
-                          LEFT JOIN haltungen h ON haltungen_substanz_bewertung.haltnam = h.haltnam
-                                    {self.abfrage_where}
+                          LEFT JOIN haltungen  ON haltungen_substanz_bewertung.haltnam = haltungen.haltnam
+                                    {self.abfrage_where_halt}
                             GROUP BY CASE
                              WHEN Substanzklasse IS NULL THEN 'sonstige'
                           WHEN Substanzklasse NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -2594,7 +2611,7 @@ class Info:
 
             new_plot_2 = figure_5.add_subplot(gs[1])
             l_bezeich = []
-            sql = f"""select DISTINCT Substanzklasse from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where}"""
+            sql = f"""select DISTINCT Substanzklasse from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where_halt}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -2607,7 +2624,7 @@ class Info:
 
             for i in data.keys():
                 if i != 'None':
-                    sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen h ON h.haltnam = haltungen_substanz_bewertung.haltnam WHERE Substanzklasse = {i}  {self.abfrage_where}"""
+                    sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam WHERE Substanzklasse = {i}  {self.abfrage_and_halt}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -2650,7 +2667,7 @@ class Info:
             self.fig_5.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
             sql = f"""
-                     select kuerzel, IIF(sum(Schadenslaenge),sum(Schadenslaenge), 0) from substanz_haltung_bewertung LEFT JOIN haltungen h ON h.haltnam = substanz_haltung_bewertung.untersuchhal {self.abfrage_where} group by kuerzel
+                     select kuerzel, IIF(sum(Schadenslaenge),sum(Schadenslaenge), 0) from substanz_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = substanz_haltung_bewertung.untersuchhal {self.abfrage_where_halt} group by kuerzel
                                 """
 
             self._barplot(

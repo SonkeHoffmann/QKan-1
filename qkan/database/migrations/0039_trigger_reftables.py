@@ -229,12 +229,12 @@ def run(dbcon: DBConnection) -> bool:
 
 
     #TODO: Bestehende Daten aus den untersuchungen in die neuen Tabellen schreiben?
-
-    sql = """ALTER TABLE pumpentyp ADD COLUMN isybau """
-
-    if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
-                          f"Änderung Tabelle Pumpentyp"):
-        logger.error('Fehler in migration 0039')
-        raise Exception(f"{__name__}")
-
-    return True
+    #
+    # sql = """ALTER TABLE pumpentyp ADD COLUMN isybau """
+    #
+    # if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
+    #                       f"Änderung Tabelle Pumpentyp"):
+    #     logger.error('Fehler in migration 0039')
+    #     raise Exception(f"{__name__}")
+    #
+    # return True

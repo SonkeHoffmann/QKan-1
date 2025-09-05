@@ -21,20 +21,11 @@
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QCheckBox" name="checkBox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QCheckBox" name="checkBox_2">
        <property name="text">
-        <string>Auswahl der Teilgebiete</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
+        <string>Auswahl anhand Selektion</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox_3"/>
      </item>
      <item>
       <spacer name="horizontalSpacer">
