@@ -94,6 +94,7 @@ class LAYERBEZ(enum.Enum):
     QKAN_GROUP              = "QKan"
 
     #Referenztabellen
+    REFERENZTABELLEN        = "Referenztabellen"
     ENTWAESSERUNGSARTEN     = "Entwässerungsarten"
     PROFILE                 = "Profile"
     PUMPENTYPEN             = "Pumpentypen"
@@ -107,6 +108,7 @@ class LAYERBEZ(enum.Enum):
     SCHACHTTYPEN            = "Schachttypen"
     SYMBOLKATALOG           = "Symbolkatalog"
     FLAECHENTYPEN           = "Flächentypen"
+    M150_KNOTENARTEN        = "M150 Knotenarten"
 
     #Ergebnislayer
     ZK_EINZELSCHAEDEN_HA_LEITUNGEN  = "Ergebnis_ZK_Einzelschäden_HA_Leitungen"

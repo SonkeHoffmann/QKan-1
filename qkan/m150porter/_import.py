@@ -12,7 +12,6 @@ from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger, QkanError
 from qkan.tools.k_xml import _get_float, _get_int
 from qkan.tools.k_schadenstexte import Schadenstexte
-from qkan.datacheck.application import Plausi
 
 logger = get_logger("QKan.xml.import")
 
@@ -242,7 +241,7 @@ class ImportTask(Schadenstexte):
         self.mapper_simstatus: Dict[str, str] = {}
         # self.mapper_untersuchrichtung: Dict[str, str] = {}
         self.mapper_wetter: Dict[str, str] = {}
-        self.mapper_knotentypen: Dict[str, str] = {}
+        self.mapper_m150knotenarten: Dict[str, str] = {}
         # self.mapper_bewertungsart: Dict[str, str] = {}
         # self.mapper_druckdicht: Dict[str, str] = {}
 
@@ -506,6 +505,7 @@ class ImportTask(Schadenstexte):
         return geom_wkb, sohleoben, sohleunten
 
     def run(self) -> bool:
+        """Import. Gibt False zurück, wenn der Layer M150:Knotenarten noch ergänzt werden muss"""
 
         iface = QKan.instance.iface
 
@@ -519,10 +519,12 @@ class ImportTask(Schadenstexte):
         status_message.layout().addWidget(self.progress_bar)
         iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
-        status_complete = self._reftables()                 ;self.progress_bar.setValue(5)
-        if not status_complete:
-            logger.warning("M150-Export nicht möglich: M150-Knotentypen müssen noch bearbeitet werden!")
-            return True
+        complete = self._reftables()                 ;self.progress_bar.setValue(5)
+        if not complete:
+            logger.warning('In der M150-Datei sind individuelle Knotentypen definiert. '
+                           'Vor einem Import müssen diese bearbeitet werden (siehe '
+                           '<a href="https://qkan.eu/">QKan Dokumentation</a>)!')
+            return False
 
         self._init_mappers()
 #        if getattr(QKan.config.xml, "import_stamm", True):
@@ -893,7 +895,8 @@ class ImportTask(Schadenstexte):
 
         # Prüfen, ob Tabelle schon vorhanden
 
-        if self.db_qkan.attrlist('m150_knotentypen') == []:
+        if self.db_qkan.attrlist('m150_knotenarten') == []:
+            logger.debug('Tabelle m150_knotenarten wird erstellt')
             sql = """CREATE TABLE m150_knotenarten (
                 pk INTEGER PRIMARY KEY, 
                 bezeichnung TEXT,                   /* eindeutige QKan-Bezeichnung  */
@@ -902,8 +905,12 @@ class ImportTask(Schadenstexte):
                 isybau TEXT,                        /* BFR Abwasser */
                 m150 TEXT,                          /* DWA M150 */
                 m145 TEXT,                          /* DWA M145 */
-                bemerkung TEXT
+                kommentar TEXT)
             """
+            if not self.db_qkan.sql(sql, "Erstellen der Tabelle m150_knotenarten"):
+                logger.error_data(
+                    f'{self.__class__.__name__}: Tabelle m150_knotenarten konnte nicht erstellt werden')
+                raise QkanError
 
             params = []
 
@@ -920,7 +927,8 @@ class ImportTask(Schadenstexte):
                 params.append(
                     {
                         'bezeichnung': bezeichnung,
-                        'm150':kuerzel,
+                        'kuerzel': kuerzel,
+                        'schachttyp': None,                     # anschließend durch den Anwender zu ergänzen
                         'kommentar': 'aus Referenztabelle in der M150-Datei',
                     }
                 )
@@ -942,48 +950,43 @@ class ImportTask(Schadenstexte):
                     ('Sonstige', 'Z',           'Symbol'),       # wird in Tabelle symbole eingefügt
                 ]
 
-                for (bezeichnung, m150, schachttyp) in data:
+                for (bezeichnung, kuerzel, schachttyp) in data:
                     params.append(
                         {
                             'bezeichnung': bezeichnung,
-                            'm150': m150,
+                            'kuerzel': kuerzel,
                             'schachttyp': schachttyp,
                             'kommentar': 'M150-Standard',
                         }
                     )
-                status_complete = False                 # muss noch durch den Anwender bearbeitet werden
+                complete = True                  # Vorgaben entsprechend M150
             else:
-                status_complete = True                  # Vorgaben entsprechend M150
+                complete = False                 # muss noch durch den Anwender bearbeitet werden
 
-            sql = """INSERT INTO m150_knotentypen (
-                        schachttyp, m150, kommentar)
-                        SELECT :schachttyp, :m150, :kommentar
-                        WHERE :schachttyp NOT IN (SELECT schachttyp FROM schachttypen)"""
+            sql = """INSERT INTO m150_knotenarten (
+                        bezeichnung, kuerzel, m150, m145, schachttyp, kommentar)
+                        SELECT :bezeichnung, :kuerzel, :kuerzel, :kuerzel, :schachttyp, :kommentar
+                        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM m150_knotenarten)"""
             if not self.db_qkan.sql(sql, "M150 Import Referenzliste Nr. 116 Knotenart", params, many=True):
                 logger.error_data(
                     f'{self.__class__.__name__}: '
-                    f'Datensätze konnten nicht in Tabelle m150_knotentypen eingefügt werden:'
+                    f'Datensätze konnten nicht in Tabelle m150_knotenarten eingefügt werden:'
                     f'{params=}')
                 raise QkanError
 
-            return status_complete
+            self.db_qkan.commit()
+            return complete
         else:
-            # Tabelle m150_knotentypen existiert bereits. Deshalb: Plausibilitätskontrolle
-            QKan.config.plausi.themen = ["M150"]
-            QKan.config.plausi.keepdata = False
-            QKan.config.plausi.limitdata = True
+            sql = """SELECT pk
+                FROM m150_knotenarten
+                WHERE schachttyp IS NULL OR schachttyp not in ('Schacht', 'Symbol')"""
 
-            iface = QKan.instance.iface
-            test = Plausi(iface)
-            test._prepareplausi(self.db_qkan)
-            test._doplausi(self.db_qkan, is_test=True)
-
-            sql = """SELECT count() FROM pruefliste"""
             self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
             data = self.db_qkan.fetchone()
-            status_complete = (data == [])
+            complete = (data == [])
 
-            return status_complete
+            self.db_qkan.commit()
+            return complete
 
     def _init_mappers(self) -> None:
 
@@ -1031,9 +1034,9 @@ class ImportTask(Schadenstexte):
 
         # Knotentypen
         sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
-              "FROM knotentypen WHERE m150 IS NOT NULL GROUP BY m150"
-        subject = "xml_import knotentypen"
-        self.db_qkan.consume_mapper(sql, subject, self.mapper_knotentypen)
+              "FROM m150_knotenarten WHERE m150 IS NOT NULL GROUP BY m150"
+        subject = "xml_import m150_knotenarten"
+        self.db_qkan.consume_mapper(sql, subject, self.mapper_m150knotenarten)
 
         # sql = "SELECT kuerzel, bezeichnung FROM bewertungsart"
         # subject = "xml_import bewertungsart"
@@ -1090,7 +1093,7 @@ class ImportTask(Schadenstexte):
 
                 knotentyp = self.db_qkan.get_from_mapper(
                     block.findtext("KG305"),                                 # m150-Knotenart (Ref.-Tab. 116)
-                    self.mapper_knotentypen,
+                    self.mapper_m150knotenarten,
                     'schacht',
                     'knotentyp',
                     'bezeichnung',

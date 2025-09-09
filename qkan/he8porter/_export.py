@@ -8,6 +8,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import checknames, fortschritt
 from qkan.linkflaechen.updatelinks import updatelinkfl
 from qkan.utils import get_logger
+from qkan.datacheck.application import Plausi
 
 logger = get_logger("QKan.he8.export")
 
@@ -46,6 +47,10 @@ class ExportTask:
         # Tabellen verknuepft ist und dieser ID eindeutig sein muss.
 
         self.db_qkan.loadmodule('he8porter')
+
+        if not self._check_complete():
+            logger.warning("Die Daten sind noch nicht vollständig (siehe Fehlerliste). Export nicht möglich!")
+
         self.db_qkan.sqlyml('he8_get_id', 'id der HE-idbm-Datenbank lesen')
         data = self.db_qkan.fetchone()
         if not data:
@@ -1043,3 +1048,21 @@ class ExportTask:
                 self.progress_bar.setValue(2)
 
         return True
+
+    def _check_complete(self):
+        """Prüft Vollständigkeit der Daten für den Export"""
+        QKan.config.plausi.themen = ["HYSTEM-EXTRAN"]
+        QKan.config.plausi.keepdata = False
+        QKan.config.plausi.limitdata = True
+
+        iface = QKan.instance.iface
+        test = Plausi(iface)
+        test._prepareplausi(self.db_qkan)
+        test._doplausi(self.db_qkan, is_test=True)
+
+        sql = """SELECT count() FROM pruefliste"""
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = (data == [])
+
+        return complete

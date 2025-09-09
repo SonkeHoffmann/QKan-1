@@ -345,7 +345,7 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         # noinspection PyArgumentList,PyCallByClass
         ordner_bild = QFileDialog.getExistingDirectory(
             self,
-            self.tr("Ordner Pfad"),
+            self.tr("Ordner zur Speicherung der Fotos"),
             self.default_dir,
         )
         if ordner_bild:
@@ -356,7 +356,7 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         # noinspection PyArgumentList,PyCallByClass
         ordner_video = QFileDialog.getExistingDirectory(
             self,
-            self.tr("Ordner Pfad"),
+            self.tr("Ordner zur Speicherung der Videos"),
             self.default_dir,
         )
         if ordner_video:

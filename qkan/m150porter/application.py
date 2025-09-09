@@ -3,11 +3,12 @@ from pathlib import Path
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan, eval_node_types
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
+from qkan.tools.qkan_utils import loadlayer
 
 from ._export import ExportTask
 from ._import import ImportTask
@@ -205,7 +206,7 @@ class M150Porter(QKanPlugin):
                 QKan.config.xml.ordner_bild,
                 QKan.config.xml.ordner_video
             )
-            imp.run()
+            layer_m150_knotenarten_exists = imp.run()
             del imp
 
             # eval_node_types(db_qkan)  # in qkan.database.qkan_utils
@@ -230,6 +231,19 @@ class M150Porter(QKanPlugin):
                 project.read(QKan.config.project.file)
                 project.reloadAllLayers()
 
+            if not layer_m150_knotenarten_exists:
+                grouppath = [
+                    enums.LAYERBEZ.QKAN_GROUP.value,
+                    enums.LAYERBEZ.REFERENZTABELLEN.value,
+                ]
+
+                loadlayer(
+                    layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN,
+                    table=      "m150_knotenarten",
+                    qmlfile=    "qkan_m150_knotenarten.qml",
+                    uifile=     "qkan_m150_knotenarten.ui",
+                    group=      grouppath
+                )
             # TODO: Some layers don't have a valid EPSG attached or wrong coordinates
 
         self.log.debug("Closed DB")
