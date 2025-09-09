@@ -457,7 +457,8 @@ def sqlconditions(keyword: str, attrlis: List[str], valuelis2: List[List[str]]) 
 
 def check_flaechenbilanz(db_qkan: "DBConnection") -> bool:
     """
-    Stellt Attribut- und Wertelisten zu einem SQL-String zusammen.
+    Prüft Übereinstimmung der Flächensumme der Flächen und der verschnittenen Flächen.
+    Wird für die Erstellung der Flächenverknüpfungen benötigt.
 
     :param db_qkan:     Typ der Datenbank (spatialite, postgis)
     """

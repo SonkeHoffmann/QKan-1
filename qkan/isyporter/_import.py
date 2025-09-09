@@ -760,6 +760,24 @@ class ImportTask(Schadenstexte):
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste Wetter", params, many=True):
             return False
 
+        # Referenztabelle Schachtarten. Daten in unterschiedlichen Tabellen (schaechte, symbole)
+        data = [  # schachttyp, isy, m150, m145
+            ('Anschlusspunkt allgemein', 'AP', None, None,),
+            ('Zu-/Ablauf Entwässerungsrinne', 'ER', None, None,),
+            ('Gebäudeanschluss', 'GA', None, None,),
+            ('Regenfallrohr', 'RR', None, None,),
+            ('Straßenablauf', 'SE', None, None,),
+            ('nicht bekannt, weiterer Verlauf unbekannt', 'NN', None, None,),
+            ('Zu-/Ablauf Versickerungs-/ Regenwassernutzungsanlage', 'AV', None, None,),
+            ('Rohrende verschlossen', 'RV', None, None,),
+            ('Entwässerungspunkt im Gebäude', 'EG', None, None,),
+            ('Bodenablauf', 'BA', None, None,),
+            ('Zulauf Gerinne', 'ZG', None, None,),
+            ('Drainage, Anfang', 'DR', None, None,),
+            ('Gerinnepunkt', 'GP', None, None,),
+            ('Außenliegender Untersturz', 'AS', None, None,),
+        ]
+
     def _init_mappers(self) -> None:
         # Entwässerungsarten
         sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \

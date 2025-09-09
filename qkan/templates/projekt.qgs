@@ -36507,8 +36507,8 @@ def my_form_open(dialog, layer, feature):
         <alias field="mu_nr" index="4" name="Bez (MIKE)" />
         <alias field="kp_nr" index="5" name="Bez (Kanal++)" />
         <alias field="isybau" index="6" name="Bez (ISYBAU)" />
-        <alias field="m150" index="7" name="Bez (DWA_M 145)" />
-        <alias field="m145" index="8" name="Bez (DWA-M 150)" />
+        <alias field="m150" index="7" name="Bez (DWA-M 150)" />
+        <alias field="m145" index="8" name="Bez (DWA-M 145)" />
         <alias field="kommentar" index="9" name="Kommentar" />
       </aliases>
       <defaults>

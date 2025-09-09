@@ -869,6 +869,10 @@ class DBConnection:
                 "max_ZD",
                 "max_ZB",
                 "max_ZS",
+                "xschob",
+                "yschob",
+                "xschun",
+                "yschun",
                 "geom",
                 "epsg",
             ]
@@ -996,6 +1000,10 @@ class DBConnection:
                 "max_ZD",
                 "max_ZB",
                 "max_ZS",
+                "xschob",
+                "yschob",
+                "xschun",
+                "yschun",
                 "geom",
                 "epsg",
             ]
@@ -1074,6 +1082,8 @@ class DBConnection:
                 "max_ZS",
                 "kommentar",
                 "createdat",
+                "xsch",
+                "ysch",
                 "geop",
             ]
             for el in parlis:

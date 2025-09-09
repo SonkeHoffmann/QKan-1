@@ -16,6 +16,8 @@ class PlausiTask:
         else:
             limit = 5000
 
+        # todo: nachfolgende Abfragen zu untersuchdat sollten hier nicht dauerhaft bleiben
+
         # update damit die Charakterisierungsfehler funktionieren
         sql = f"""Update Untersuchdat_haltung
                             Set charakt1 = ''

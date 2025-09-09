@@ -12,7 +12,7 @@ from qkan.plugin import QKanPlugin
 from ._plausi import PlausiTask
 from .application_dialog import PlausiDialog
 
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanError
 from qkan import enums
 from qkan.tools.qkan_utils import get_default_dir
 
@@ -88,7 +88,10 @@ class Plausi(QKanPlugin):
         logger.debug("Plausibilitätsprüfungen mit Datei 'Plausibilitaetspruefungen.sql' ergänzt.")
 
         if not self.plausi_dlg.prepareDialog(db_qkan):
-            return False
+            self.log.error_code(
+                f'{self.__class__.__name__}: '
+                f'prepareDialog fehlgeschlagen')
+            raise QkanError
 
         # Laden der Plausibilitätsdaten zu Zustandsklassen
         reflist_zustandfile = os.path.join(
@@ -137,9 +140,11 @@ class Plausi(QKanPlugin):
         if not is_test:
             project = QgsProject.instance()
             layers = project.mapLayersByName(enums.LAYERBEZ.FEHLERLISTE.value)
-            if not layers:
-                self.log.warning('Layer "Fehlerliste" fehlt!')
-                return True
+            if layers is None or layers == []:
+                self.log.error_code(
+                    f'{self.__class__.__name__}: '
+                    f'Layer {enums.LAYERBEZ.FEHLERLISTE.value} fehlt!')
+                raise QkanError
             self.iface.showAttributeTable(layers[0])
 
         return True

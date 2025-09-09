@@ -847,8 +847,8 @@ SELECT
     coalesce(schaechte.durchm, 0.0)*1000. AS durchmesser,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
-JOIN simulationsstatus AS st   ON schaechte.simstatus = st.bezeichnung
-LEFT JOIN he.Schacht AS sh          ON sh.Name = schaechte.schnam
+JOIN simulationsstatus AS st    ON schaechte.simstatus = st.bezeichnung
+LEFT JOIN he.Schacht AS sh      ON sh.Name = schaechte.schnam
 WHERE sh.Name IS NULL
   AND st.he_nr IS NOT NULL"
 
@@ -871,8 +871,8 @@ SELECT
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
 JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
-JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
-LEFT JOIN he.Schacht AS sh ON sh.Name = schaechte.schnam
+JOIN simulationsstatus AS st    ON schaechte.simstatus = st.bezeichnung
+LEFT JOIN he.Schacht AS sh      ON sh.Name = schaechte.schnam
 WHERE sh.Name IS NULL
   AND st.he_nr IS NOT NULL"
 

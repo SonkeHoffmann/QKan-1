@@ -137,7 +137,7 @@ class StrakatPorter(QKanPlugin):
             imp.run()
             del imp
 
-            eval_node_types(db_qkan)  # in qkan.database.qkan_utils
+            # eval_node_types(db_qkan)  # in qkan.database.qkan_utils
 
             # Write and load new project file, only if new project
             if QgsProject.instance().fileName() == '':
