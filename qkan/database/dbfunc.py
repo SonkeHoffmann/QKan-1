@@ -862,6 +862,7 @@ class DBConnection:
                 "untersuchtag",
                 "untersucher",
                 "wetter",
+                "auftragsbezeichnung",
                 "strasse",
                 "bewertungsart",
                 "bewertungstag",
@@ -993,6 +994,7 @@ class DBConnection:
                 "untersuchtag",
                 "untersucher",
                 "wetter",
+                "auftragsbezeichnung",
                 "strasse",
                 "bewertungsart",
                 "bewertungstag",
@@ -1021,7 +1023,7 @@ class DBConnection:
                 f"insert anschlussleitung - sql: {sqlnam}\n" f"parameter: {param1}"
             )
 
-        elif tabnam == "untersuchdat_anschlussleitungen":
+        elif tabnam == "untersuchdat_anschlussleitung":
             parlis = [
                 "untersuchleit",
                 "schoben",
@@ -1061,7 +1063,7 @@ class DBConnection:
                     else:
                         parameters[el] = None
 
-            sqlnam = 'database_insertdata_untersuchdat_anschlussleitungen'
+            sqlnam = 'database_insertdata_untersuchdat_anschlussleitung'
 
         elif tabnam == "schaechte_untersucht":
             parlis = [
@@ -1073,6 +1075,7 @@ class DBConnection:
                 "untersuchtag",
                 "untersucher",
                 "wetter",
+                "auftragsbezeichnung",
                 "strasse",
                 "bewertungsart",
                 "bewertungstag",
@@ -1153,6 +1156,24 @@ class DBConnection:
                         parameters[el] = None
 
             sqlnam = 'database_insertdata_videos'
+
+        elif tabnam == "fotos":
+            parlis = [
+                "name",
+                "untersuchtag",
+                "objekt",
+                "datei",
+                "createdat",
+            ]
+            for el in parlis:
+                if param1.get(el, None) is None:
+                    if isinstance(parameters, tuple):
+                        for ds in parameters:
+                            ds[el] = None
+                    else:
+                        parameters[el] = None
+
+            sqlnam = 'database_insertdata_fotos'
 
         elif tabnam == 'tezg':
             parlis = ['flnam', 'regenschreiber', 'schnam', 'befgrad', 'neigung',

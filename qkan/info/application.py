@@ -63,8 +63,8 @@ class Infos(QKanPlugin):
         self.info_dlg.lineEdit_3.textChanged.connect(self.run)
 
         self.info_dlg.comboBox_2.currentTextChanged.connect(self.run)
-        self.info_dlg.checkBox.clicked.connect(self.run)
-        self.info_dlg.comboBox_3.currentTextChanged.connect(self.run)
+        self.info_dlg.checkBox_2.clicked.connect(self.run)
+        #self.info_dlg.comboBox_3.currentTextChanged.connect(self.run)
         self.info_dlg.comboBox_8.currentTextChanged.connect(self.run)
         self.info_dlg.comboBox_9.currentTextChanged.connect(self.run)
 
@@ -275,18 +275,19 @@ class Infos(QKanPlugin):
             self.fig_10 = self.dialog.fig_10
             self.canv_10 = self.dialog.canv_10
             self.comboBox_2 = self.dialog.comboBox_2.currentText()
-            self.comboBox_3 = self.dialog.comboBox_3.currentText()
-            self.comboBox_3 = self.dialog.comboBox_3.currentText()
-            self.comboBox_8 = self.dialog.comboBox_3.currentText()
-            self.comboBox_9 = self.dialog.comboBox_3.currentText()
+            #self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            #self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            self.comboBox_8 = self.dialog.comboBox_8.currentText()
+            self.comboBox_9 = self.dialog.comboBox_9.currentText()
             self.dat_1 = self.dialog.lineEdit.text()
             self.dat_2 = self.dialog.lineEdit_2.text()
             self.dat_3 = self.dialog.lineEdit_3.text()
+            self.check = self.dialog.checkBox_2.isChecked()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
 
-            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.fig_7, self.canv_7, self.fig_8, self.canv_8, self.fig_9, self.canv_9, self.fig_10, self.canv_10, self.comboBox_2, self.comboBox_3, self.comboBox_8, self.comboBox_9, self.dat_1, self.dat_2, self.dat_3, DBConnection())
+            test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4, self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.fig_7, self.canv_7, self.fig_8, self.canv_8, self.fig_9, self.canv_9, self.fig_10, self.canv_10, self.comboBox_2,  self.comboBox_8, self.comboBox_9, self.dat_1, self.dat_2, self.dat_3, DBConnection(),self.check)
             test.run()
 
             # def on_click(self, event):
@@ -402,12 +403,13 @@ class Infos(QKanPlugin):
             self.fig_10 = self.dialog.fig_10
             self.canv_10 = self.dialog.canv_10
             self.comboBox_2 = self.dialog.comboBox_2.currentText()
-            self.comboBox_3 = self.dialog.comboBox_3.currentText()
-            self.comboBox_8 = self.dialog.comboBox_3.currentText()
-            self.comboBox_9 = self.dialog.comboBox_3.currentText()
+            #self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            self.comboBox_8 = self.dialog.comboBox_8.currentText()
+            self.comboBox_9 = self.dialog.comboBox_9.currentText()
             self.dat_1 = self.dialog.lineEdit.text()
             self.dat_2 = self.dialog.lineEdit_2.text()
             self.dat_3 = self.dialog.lineEdit_3.text()
+            self.check = self.dialog.checkBox_2.isChecked()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
@@ -415,8 +417,8 @@ class Infos(QKanPlugin):
             test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4,
                         self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.fig_7, self.canv_7,
                         self.fig_8, self.canv_8, self.fig_9, self.canv_9, self.fig_10, self.canv_10, self.comboBox_2,
-                        self.comboBox_3, self.comboBox_8, self.comboBox_9, self.dat_1, self.dat_2, self.dat_3,
-                        DBConnection())
+                         self.comboBox_8, self.comboBox_9, self.dat_1, self.dat_2, self.dat_3,
+                        DBConnection(), self.check)
             test.run()
             # Vorgabe Projektname aktivieren, wenn kein Projekt geladen
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')
@@ -689,12 +691,13 @@ class Infos(QKanPlugin):
             self.fig_10 = self.dialog.fig_10
             self.canv_10 = self.dialog.canv_10
             self.comboBox_2 = self.dialog.comboBox_2.currentText()
-            self.comboBox_3 = self.dialog.comboBox_3.currentText()
-            self.comboBox_8 = self.dialog.comboBox_3.currentText()
-            self.comboBox_9 = self.dialog.comboBox_3.currentText()
+            #self.comboBox_3 = self.dialog.comboBox_3.currentText()
+            self.comboBox_8 = self.dialog.comboBox_9.currentText()
+            self.comboBox_9 = self.dialog.comboBox_9.currentText()
             self.dat_1 = self.dialog.lineEdit.text()
             self.dat_2 = self.dialog.lineEdit_2.text()
             self.dat_3 = self.dialog.lineEdit_3.text()
+            self.check = self.dialog.checkBox_2.isChecked()
 
             # with DBConnection() as db_qkan:
             #     connected = db_qkan.connected
@@ -702,8 +705,8 @@ class Infos(QKanPlugin):
             test = Info(self.fig_1, self.canv_1, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.fig_4,
                         self.canv_4, self.fig_5, self.canv_5, self.fig_6, self.canv_6, self.fig_7, self.canv_7,
                         self.fig_8, self.canv_8, self.fig_9, self.canv_9, self.fig_10, self.canv_10, self.comboBox_2,
-                        self.comboBox_3, self.comboBox_8, self.comboBox_9, self.dat_1, self.dat_2, self.dat_3,
-                        DBConnection())
+                         self.comboBox_8, self.comboBox_9, self.dat_1, self.dat_2, self.dat_3,
+                        DBConnection(),self.check)
             test.run()
             # Vorgabe Projektname aktivieren, wenn kein Projekt geladen
             # self.info_dlg.gb_projectfile.setEnabled(QgsProject.instance().fileName() == '')

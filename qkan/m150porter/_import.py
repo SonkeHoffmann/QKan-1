@@ -751,12 +751,12 @@ class ImportTask(Schadenstexte):
         if len(blocks) == 0:
             data = [          #   kurz    he    mu    kp  m150  m145   isy
                 ('in Betrieb',     'B',    1,    1,    0,  'B',  '1',  '0', 'QKan-Standard'),
-                ('außer Betrieb',  'AB',   4, None,    3,  'B',  '1', '20', 'QKan-Standard'),
-                ('geplant',        'P',    2, None,    1,  'P', None, '10', 'QKan-Standard'),
-                ('stillgelegt',    'N', None, None,    4,  'N', None, '21', 'QKan-Standard'),
-                ('verdämmert',     'V',    5, None, None,  'V', None, None, 'QKan-Standard'),
-                ('fiktiv',         'F',    3, None,    2, None, None, '99', 'QKan-Standard'),
-                ('rückgebaut',     'P', None, None,    6, None, None, '22', 'QKan-Standard'),
+                ('außer Betrieb',  'AB',   4, None,    3,  'B',  '1', '3', 'QKan-Standard'),
+                ('geplant',        'P',    2, None,    1,  'P', None, '1', 'QKan-Standard'),
+                ('stillgelegt',    'N', None, None,    4,  'N', None, '3', 'QKan-Standard'),
+                ('verdämmert',     'V',    5, None, None,  'V', None, '4', 'QKan-Standard'),
+                ('fiktiv',         'F',    3, None,    2, None, None, '2', 'QKan-Standard'),
+                ('rückgebaut',     'P', None, None,    6, None, None, '6', 'QKan-Standard'),
             ]
 
             for (bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, m150, m145, isybau, kommentar) in data:

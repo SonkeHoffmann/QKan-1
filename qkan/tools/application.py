@@ -27,6 +27,7 @@ from . import resources  # noqa: F401
 from .dialogs.dbAdapt import DbAdaptDialog
 from .dialogs.empty_db import EmptyDBDialog
 from .dialogs.filepath import QgsFileDialog
+from .dialogs.befahrung import QgsBefahrungDialog
 from .dialogs.help import QgsHelpDialog
 from .dialogs.layersadapt import LayersAdaptDialog
 from .dialogs.qgsadapt import QgsAdaptDialog
@@ -38,6 +39,7 @@ from .k_filepath import setfilepath
 from .k_layersadapt import layersadapt
 from .k_qgsadapt import qgsadapt
 from .k_runoffparams import setRunoffparams
+from .k_befahrung import setbefahrung
 
 from ..utils import get_logger
 
@@ -58,6 +60,7 @@ class QKanTools(QKanPlugin):
         self.dlgdb = DbAdaptDialog(self)
         self.dlghp = QgsHelpDialog(self)
         self.dlgfp = QgsFileDialog(self)
+        self.dlgbf = QgsBefahrungDialog(self)
         self.iface = iface
 
     # noinspection PyPep8Naming
@@ -134,6 +137,14 @@ class QKanTools(QKanPlugin):
             icon_file_path,
             text=self.tr("Dateipfade suchen"),
             callback=self.run_filepath,
+            parent=self.iface.mainWindow(),
+        )
+
+        icon_befahrung = ":/plugins/qkan/tools/res/icon_befahrung.png"
+        QKan.instance.add_action(
+            icon_befahrung,
+            text=self.tr("Inspektionsdaten anpassen"),
+            callback=self.run_befahrung,
             parent=self.iface.mainWindow(),
         )
 
@@ -853,8 +864,6 @@ class QKanTools(QKanPlugin):
 
 
     def run_filepath(self) -> None:
-        get_database_QKan(silent=True)
-        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
 
         self.dlgfp.lineEdit.setText(QKan.config.xml.ordner_video)
         self.dlgfp.lineEdit_2.setText(QKan.config.xml.ordner_bild)
@@ -872,23 +881,65 @@ class QKanTools(QKanPlugin):
             videopath = self.dlgfp.lineEdit.text()
             fotopath = self.dlgfp.lineEdit_2.text()
             fotopath_2 = self.dlgfp.lineEdit_3.text()
+            videopath_2 = self.dlgfp.lineEdit_5.text()
+            fotopath_3 = self.dlgfp.lineEdit_6.text()
+            videopath_3 = self.dlgfp.lineEdit_7.text()
             ausw_haltung = self.dlgfp.checkBox.isChecked()
             ausw_schacht = self.dlgfp.checkBox_2.isChecked()
+            ausw_leitung = self.dlgfp.checkBox_3.isChecked()
 
-            QKan.config.xml.ordner_bild = videopath
-            QKan.config.xml.ordner_video = fotopath
+            QKan.config.videopath = videopath
+            QKan.config.fotopath = fotopath
 
             QKan.config.save()
 
-            setfilepath(
-                self.database_name,
-                videopath,
-                fotopath,
-                fotopath_2,
-                ausw_haltung,
-                ausw_schacht,
-            )
+            with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+                if not db_qkan.connected:
+                    self.log.error(
+                        "Fehler im XML-Export\n"
+                        f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                    )
+                    raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
+
+                # Run
+
+                setfilepath(
+                    db_qkan,
+                    videopath,
+                    fotopath,
+                    fotopath_2,
+                    videopath_2,
+                    fotopath_3,
+                    videopath_3,
+                    ausw_haltung,
+                    ausw_schacht,
+                    ausw_leitung,
+                )
+
+    def run_befahrung(self) -> None:
 
 
+        # show the dialog
+        self.dlgfp.show()
+
+        # Run the dialog event loop
+        result = self.dlgfp.exec()
+
+        # See if OK was pressed
+        if result:
+
+            with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+                if not db_qkan.connected:
+                    self.log.error(
+                        "Fehler im XML-Export\n"
+                        f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                    )
+                    raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
+
+                # Run
+
+                setbefahrung(
+                    db_qkan,
+                )
 
 

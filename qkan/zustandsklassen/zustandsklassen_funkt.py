@@ -185,7 +185,7 @@ class Zustandsklassen_funkt:
 				sql = """
 						SELECT
 							untersuchdat_anschlussleitung_bewertung.pk,
-							untersuchdat_anschlussleitung_bewertung.untersuchhal,
+							untersuchdat_anschlussleitung_bewertung.untersuchleit,
 							anschlussleitungen.createdat,
 							untersuchdat_anschlussleitung_bewertung.schoben,
 							untersuchdat_anschlussleitung_bewertung.schunten,
@@ -257,7 +257,7 @@ class Zustandsklassen_funkt:
 				sql = """
 						SELECT
 							untersuchdat_anschlussleitung_bewertung.pk,
-							untersuchdat_anschlussleitung_bewertung.untersuchhal,
+							untersuchdat_anschlussleitung_bewertung.untersuchleit,
 							anschlussleitungen.createdat,
 							untersuchdat_anschlussleitung_bewertung.schoben,
 							untersuchdat_anschlussleitung_bewertung.schunten,
@@ -1420,7 +1420,7 @@ class Zustandsklassen_funkt:
 							untersuchdat_anschlussleitung_bewertung.pos_bis,
 							untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 							untersuchdat_anschlussleitung_bewertung.film_dateiname,
-							untersuchdat_anschlussleitung_bewertung.baujahr,
+							NULL,
 							untersuchdat_anschlussleitung_bewertung.createdat,
 							anschlussleitungen.leitnam,
 							anschlussleitungen.material,
@@ -1456,7 +1456,7 @@ class Zustandsklassen_funkt:
 							untersuchdat_anschlussleitung_bewertung.pos_bis,
 							untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 							untersuchdat_anschlussleitung_bewertung.film_dateiname,
-							untersuchdat_anschlussleitung_bewertung.baujahr,
+							NULL,
 							untersuchdat_anschlussleitung_bewertung.untersuchtag,
 							anschlussleitungen.leitnam,
 							anschlussleitungen.material,
@@ -3739,7 +3739,7 @@ class Zustandsklassen_funkt:
 				sql = """
 							SELECT
 								untersuchdat_anschlussleitung_bewertung.pk,
-								untersuchdat_anschlussleitung_bewertung.untersuchhal,
+								untersuchdat_anschlussleitung_bewertung.untersuchleit,
 								anschlussleitungen.createdat,
 								untersuchdat_anschlussleitung_bewertung.schoben,
 								untersuchdat_anschlussleitung_bewertung.schunten,
@@ -3813,7 +3813,7 @@ class Zustandsklassen_funkt:
 				sql = """
 							SELECT
 								untersuchdat_anschlussleitung_bewertung.pk,
-								untersuchdat_anschlussleitung_bewertung.untersuchhal,
+								untersuchdat_anschlussleitung_bewertung.untersuchleit,
 								anschlussleitungen.createdat,
 								untersuchdat_anschlussleitung_bewertung.schoben,
 								untersuchdat_anschlussleitung_bewertung.schunten,
@@ -4046,7 +4046,7 @@ class Zustandsklassen_funkt:
 								untersuchdat_anschlussleitung_bewertung.pos_bis,
 								untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 								untersuchdat_anschlussleitung_bewertung.film_dateiname,
-								untersuchdat_anschlussleitung_bewertung.baujahr,
+								NULL,
 								untersuchdat_anschlussleitung_bewertung.bw_bs,
 								untersuchdat_anschlussleitung_bewertung.untersuchtag,
 								anschlussleitungen.leitnam,
@@ -4084,7 +4084,7 @@ class Zustandsklassen_funkt:
 								untersuchdat_anschlussleitung_bewertung.pos_bis,
 								untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 								untersuchdat_anschlussleitung_bewertung.film_dateiname,
-								untersuchdat_anschlussleitung_bewertung.baujahr,
+								NULL,
 								untersuchdat_anschlussleitung_bewertung.bw_bs,
 								untersuchdat_anschlussleitung_bewertung.createdat,
 								anschlussleitungen.leitnam,
@@ -4578,7 +4578,7 @@ class Zustandsklassen_funkt:
 							"PVC", "PVC Polyvinylchlorid", "PVCU", "PVCU Polyvinylchlorid hart", "ST", "ST Stahl",
 							"Edelstahl", "Nichtidentifiziertes Metall", "Glasfaserverstärkter Kunststoff", "Grauguß",
 							"Duktiles Gußeisen", "Nichtidentifizier Kunststoff", "Polyethylen", "Polyesterharz",
-							"Polypropylen", "Polyvinylchlorid", "Polyvinylchlorid hart", "Stahl"]:
+							"Polypropylen", "Polyvinylchlorid", "Polyvinylchlorid hart", "Stahl", "NBR"]:
 				bw_bs = 'biegeweich'
 				x = attr1[0]
 
@@ -4669,7 +4669,7 @@ class Zustandsklassen_funkt:
 				sql = """
 					SELECT
 						untersuchdat_anschlussleitung_bewertung.pk,
-						untersuchdat_anschlussleitung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.untersuchleit,
 						anschlussleitungen.createdat,
 						untersuchdat_anschlussleitung_bewertung.schoben,
 						untersuchdat_anschlussleitung_bewertung.schunten,
@@ -4743,7 +4743,7 @@ class Zustandsklassen_funkt:
 				sql = """
 					SELECT
 						untersuchdat_anschlussleitung_bewertung.pk,
-						untersuchdat_anschlussleitung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.untersuchleit,
 						anschlussleitungen.createdat,
 						untersuchdat_anschlussleitung_bewertung.schoben,
 						untersuchdat_anschlussleitung_bewertung.schunten,
@@ -4782,7 +4782,9 @@ class Zustandsklassen_funkt:
 			# Tab A.2
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 7:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13]>= 7:
 					z = '0'
 				elif 4 <= attr[13] < 7:
 					z = '1'
@@ -4805,7 +4807,9 @@ class Zustandsklassen_funkt:
 					db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13]>= 50:
 					z = '0'
 				elif 40 <= attr[13] < 50:
 					z = '1'
@@ -4831,7 +4835,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13]>= 15:
 					z = '0'
 				elif 10 <= attr[13] < 15:
 					z = '1'
@@ -4854,7 +4860,9 @@ class Zustandsklassen_funkt:
 					db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '0'
 				elif 40 <= attr[13] < 50:
 					z = '1'
@@ -4900,7 +4908,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] in ["B", "C"]:
 					if attr[12] in ["A","B", "C", "D", "E"]:
-						if attr[13] >= 3:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 3:
 							z = '1'
 						elif 3 > attr[13] >= 2:
 							z = '2'
@@ -4920,7 +4930,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and attr[25] in ["", "NULL", "None", None, "not found"]:
-						if attr[13] >= 8:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 8:
 							z = '0'
 						elif 8 > attr[13] >= 5:
 							z = '1'
@@ -4945,7 +4957,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and attr[25]/1000 <= 0.3:
-						if attr[13] >= 3:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 3:
 							z = '0'
 						elif 3 > attr[13] >= 2:
 							z = '1'
@@ -4968,7 +4982,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and 0.5 >= attr[25]/1000 > 0.3:
-						if attr[13] >= 5:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 5:
 							z = '0'
 						elif 5 > attr[13] >= 3:
 							z = '1'
@@ -4992,8 +5008,10 @@ class Zustandsklassen_funkt:
 							continue
 						except:
 							pass
-					if attr[12] == "A" and 0.7 >= attr[25]/1000 > 0.5:
-						if attr[13] >= 8:
+					if attr[12] == "A" and attr[25]/1000 > 0.5:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 8:
 							z = '0'
 						elif 8 > attr[13] >= 4:
 							z = '1'
@@ -5308,9 +5326,11 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13]>= 100:
 					z = '2'
-				if attr[13] < 100:
+				elif attr[13] < 100:
 					z = '4'
 				else:
 					z = '5'
@@ -5325,7 +5345,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13]>= 100:
 					z = '1'
 				elif 100 > attr[13] > 50:
 					z = '2'
@@ -5673,7 +5695,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAG":
 				if attr[25]/1000 <= 0.25:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 50:
 						z = '0'
 					elif 50 > attr[13] >= 30:
 						z = '1'
@@ -5686,7 +5710,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif 0.25 < attr[25]/1000 <= 0.5:
-					if attr[13] >= 80:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 80:
 						z = '0'
 					elif 80 > attr[13] >= 60:
 						z = '1'
@@ -5699,7 +5725,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif 0.5 < attr[25]/1000 <= 0.8:
-					if attr[13] >= 70:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 70:
 						z = '2'
 					elif 70 > attr[13] >= 10:
 						z = '3'
@@ -5708,7 +5736,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif attr[25]/1000 > 0.8:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 30:
 						z = '3'
 					elif attr[13] < 30:
 						z = '4'
@@ -5850,7 +5880,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -5877,7 +5909,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25]/1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '0'
 						elif 70 > attr[13] >= 50:
 							z = '1'
@@ -5901,7 +5935,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if 0.4 < attr[25]/1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 80:
 							z = '0'
 						elif 80 > attr[13] >= 60:
 							z = '1'
@@ -5925,7 +5961,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[25]/1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 90:
 							z = '0'
 						elif 90 > attr[13] >= 65:
 							z = '1'
@@ -5962,7 +6000,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -6012,7 +6052,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25]/1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 12:
 							z = '0'
 						elif 12 > attr[13] >= 9:
 							z = '1'
@@ -6036,7 +6078,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if 0.2 < attr[25]/1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 6:
 							z = '0'
 						elif 6 > attr[13] >= 4:
 							z = '1'
@@ -6060,7 +6104,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[25]/1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13]>= 6:
 							z = '0'
 						elif 6 > attr[13] >= 4:
 							z = '1'
@@ -6098,7 +6144,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = "Bitte pruefen!"
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -6213,7 +6261,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -6481,7 +6531,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -6700,7 +6752,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
 					z = '1'
@@ -6736,7 +6790,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr [13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -6761,7 +6817,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -6801,7 +6859,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["C", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 50:
 						z = '0'
 					elif 50 > attr[13] >= 40:
 						z = '1'
@@ -6850,7 +6910,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13]>= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
 					z = '1'
@@ -6886,7 +6948,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -6911,7 +6975,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["A", "B", "C", "E", "F", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13]>= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -7576,7 +7642,7 @@ class Zustandsklassen_funkt:
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
 						SET bw_bs = ?
-						WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = ?
 						"""
 				data = (bw_bs, x)
 				try:
@@ -7597,7 +7663,7 @@ class Zustandsklassen_funkt:
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
 						SET bw_bs = ?
-						WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = ?
 						"""
 				data = (bw_bs, x)
 				try:
@@ -7644,7 +7710,7 @@ class Zustandsklassen_funkt:
 				sql = """
 					SELECT
 						untersuchdat_anschlussleitung_bewertung.pk,
-						untersuchdat_anschlussleitung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.untersuchleit,
 						NULL,
 						untersuchdat_anschlussleitung_bewertung.schoben,
 						untersuchdat_anschlussleitung_bewertung.schunten,
@@ -7663,7 +7729,7 @@ class Zustandsklassen_funkt:
 						untersuchdat_anschlussleitung_bewertung.pos_bis,
 						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 						untersuchdat_anschlussleitung_bewertung.film_dateiname,
-						untersuchdat_anschlussleitung_bewertung.baujahr,
+						NULL,
 						untersuchdat_anschlussleitung_bewertung.bw_bs,
 						untersuchdat_anschlussleitung_bewertung.createdat,
 						anschlussleitungen.leitnam,
@@ -7683,7 +7749,7 @@ class Zustandsklassen_funkt:
 				sql = """
 					SELECT
 						untersuchdat_anschlussleitung_bewertung.pk,
-						untersuchdat_anschlussleitung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.untersuchleit,
 						NULL,
 						untersuchdat_anschlussleitung_bewertung.schoben,
 						untersuchdat_anschlussleitung_bewertung.schunten,
@@ -7702,7 +7768,7 @@ class Zustandsklassen_funkt:
 						untersuchdat_anschlussleitung_bewertung.pos_bis,
 						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 						untersuchdat_anschlussleitung_bewertung.film_dateiname,
-						untersuchdat_anschlussleitung_bewertung.baujahr,
+						NULL,
 						untersuchdat_anschlussleitung_bewertung.bw_bs,
 						untersuchdat_anschlussleitung_bewertung.untersuchtag,
 						anschlussleitungen.leitnam,
@@ -7724,7 +7790,9 @@ class Zustandsklassen_funkt:
 			# Tab A.2
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 7:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 7:
 					z = '0'
 				elif 4 <= attr[13] < 7:
 					z = '1'
@@ -7747,7 +7815,9 @@ class Zustandsklassen_funkt:
 					db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '0'
 				elif 40 <= attr[13] < 50:
 					z = '1'
@@ -7773,7 +7843,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '0'
 				elif 10 <= attr[13] < 15:
 					z = '1'
@@ -7796,7 +7868,9 @@ class Zustandsklassen_funkt:
 					db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '0'
 				elif 40 <= attr[13] < 50:
 					z = '1'
@@ -7829,9 +7903,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -7842,7 +7916,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] in ["B", "C"]:
 					if attr[12] in ["A", "B", "C", "D", "E"]:
-						if attr[13] >= 3:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 3:
 							z = '1'
 						elif 3 > attr[13] >= 2:
 							z = '2'
@@ -7851,9 +7927,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_D = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7862,7 +7938,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and ((attr[25] in ["", "NULL", "None", None, "not found"]) or (attr[25] / 1000 > 0.7)):
-						if attr[13] >= 8:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 8:
 							z = '0'
 						elif 8 > attr[13] >= 5:
 							z = '1'
@@ -7875,9 +7953,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_S = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7887,7 +7965,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and attr[25] / 1000 <= 0.3:
-						if attr[13] >= 3:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 3:
 							z = '0'
 						elif 3 > attr[13] >= 2:
 							z = '1'
@@ -7898,9 +7978,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_S = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7910,7 +7990,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and 0.5 >= attr[25] / 1000 > 0.3:
-						if attr[13] >= 5:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 5:
 							z = '0'
 						elif 5 > attr[13] >= 3:
 							z = '1'
@@ -7923,9 +8005,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_S = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7935,7 +8017,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[12] == "A" and 0.7 >= attr[25] / 1000 > 0.5:
-						if attr[13] >= 8:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 8:
 							z = '0'
 						elif 8 > attr[13] >= 4:
 							z = '1'
@@ -7948,9 +8032,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_S = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7962,9 +8046,9 @@ class Zustandsklassen_funkt:
 					if attr[12] == "B":
 						z = '4'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_S = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7976,9 +8060,9 @@ class Zustandsklassen_funkt:
 					if attr[12] in ["C", "D", "E"]:
 						z = 'Einzelfallbetrachtung'
 						sql = f"""
-										  UPDATE untersuchdat_haltung_bewertung
+										  UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_S = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 						data = (z, attr[0])
 						try:
@@ -7991,9 +8075,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '1'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8003,9 +8087,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8015,9 +8099,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8029,9 +8113,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B":
 					z = '1'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8041,9 +8125,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8055,9 +8139,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '0'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8066,9 +8150,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8077,9 +8161,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8092,9 +8176,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8103,9 +8187,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8115,9 +8199,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8129,9 +8213,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] == "A":
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8140,9 +8224,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8154,9 +8238,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] == "B":
 					z = '1'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8165,9 +8249,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8179,9 +8263,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '0'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8190,9 +8274,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8202,9 +8286,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8216,9 +8300,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D":
 					z = '0'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8227,9 +8311,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8238,9 +8322,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8250,16 +8334,18 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '2'
-				if attr[13] < 100:
+				elif attr[13] < 100:
 					z = '4'
 				else:
 					z = '5'
 				sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 				data = (z, attr[0])
 				try:
@@ -8267,7 +8353,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '1'
 				elif 100 > attr[13] > 50:
 					z = '2'
@@ -8278,9 +8366,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '5'
 				sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 				data = (z, attr[0])
 				try:
@@ -8293,9 +8381,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8304,9 +8392,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8318,9 +8406,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 					z = '3'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8330,9 +8418,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8344,9 +8432,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8356,9 +8444,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8370,9 +8458,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8382,9 +8470,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8396,9 +8484,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8408,9 +8496,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8422,9 +8510,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8434,9 +8522,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8448,9 +8536,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8460,9 +8548,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8474,9 +8562,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "H" and attr[12] in ["B", "C", "D", "E"]:
 					z = '1'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8486,9 +8574,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8500,9 +8588,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8512,9 +8600,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8524,9 +8612,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8538,9 +8626,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8550,9 +8638,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8564,9 +8652,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
-													  UPDATE untersuchdat_haltung_bewertung
+													  UPDATE untersuchdat_anschlussleitung_bewertung
 														SET Zustandsklasse_B = ?
-														WHERE untersuchdat_haltung_bewertung.pk = ?;
+														WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 														"""
 					data = (z, attr[0])
 					try:
@@ -8578,9 +8666,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8590,9 +8678,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8602,9 +8690,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8615,7 +8703,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAG":
 				if attr[25] / 1000 <= 0.25:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 30:
 						z = '1'
@@ -8628,7 +8718,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif 0.25 < attr[25] / 1000 <= 0.5:
-					if attr[13] >= 80:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 80:
 						z = '0'
 					elif 80 > attr[13] >= 60:
 						z = '1'
@@ -8641,7 +8733,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif 0.5 < attr[25] / 1000 <= 0.8:
-					if attr[13] >= 70:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 70:
 						z = '2'
 					elif 70 > attr[13] >= 10:
 						z = '3'
@@ -8650,16 +8744,18 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 				elif attr[25] / 1000 > 0.8:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '3'
 					elif attr[13] < 30:
 						z = '4'
 					else:
 						z = '5'
 				sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 				data = (z, attr[0])
 				try:
@@ -8672,9 +8768,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '3'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8686,9 +8782,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["B", "C", "D"]:
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8700,9 +8796,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E":
 					z = '-'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8714,9 +8810,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z":
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8725,9 +8821,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8740,9 +8836,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] == "A":
 					z = '2'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8752,9 +8848,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8766,9 +8862,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 					z = '2'
 					sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8778,9 +8874,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3'
 					sql = f""" 
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8790,7 +8886,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -8803,9 +8901,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8817,7 +8915,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25] / 1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '0'
 						elif 70 > attr[13] >= 50:
 							z = '1'
@@ -8830,9 +8930,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 						data = (z, attr[0])
 						try:
@@ -8841,7 +8941,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if 0.4 < attr[25] / 1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '0'
 						elif 80 > attr[13] >= 60:
 							z = '1'
@@ -8854,9 +8956,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 						data = (z, attr[0])
 						try:
@@ -8865,7 +8967,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[25] / 1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '0'
 						elif 90 > attr[13] >= 65:
 							z = '1'
@@ -8878,9 +8982,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 						data = (z, attr[0])
 						try:
@@ -8890,9 +8994,9 @@ class Zustandsklassen_funkt:
 							pass
 					z = '4'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -8902,7 +9006,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -8915,9 +9021,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -8927,9 +9033,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -8939,9 +9045,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -8952,7 +9058,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25] / 1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '0'
 						elif 12 > attr[13] >= 9:
 							z = '1'
@@ -8965,9 +9073,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 						data = (z, attr[0])
 						try:
@@ -8976,7 +9084,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if 0.2 < attr[25] / 1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '0'
 						elif 6 > attr[13] >= 4:
 							z = '1'
@@ -8989,9 +9099,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 						data = (z, attr[0])
 						try:
@@ -9000,7 +9110,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					if attr[25] / 1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '0'
 						elif 6 > attr[13] >= 4:
 							z = '1'
@@ -9013,9 +9125,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '5'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 						data = (z, attr[0])
 						try:
@@ -9025,9 +9137,9 @@ class Zustandsklassen_funkt:
 							pass
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9038,7 +9150,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9051,9 +9165,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9065,9 +9179,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B":
 					z = '4'
 					sql = f"""
-													UPDATE untersuchdat_haltung_bewertung
+													UPDATE untersuchdat_anschlussleitung_bewertung
 													SET Zustandsklasse_D = ?
-													WHERE untersuchdat_haltung_bewertung.pk = ?;
+													WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 													"""
 					data = (z, attr[0])
 					try:
@@ -9079,9 +9193,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '2'
 					sql = f"""
-										UPDATE untersuchdat_haltung_bewertung
+										UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -9090,9 +9204,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9104,9 +9218,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D" and attr[12] in ["A", "B", "D"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9118,9 +9232,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D" and attr[12] == "C":
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-										UPDATE untersuchdat_haltung_bewertung
+										UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?;
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 										"""
 					data = (z, attr[0])
 					try:
@@ -9129,9 +9243,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9143,9 +9257,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E":
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9153,7 +9267,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9166,9 +9282,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9180,9 +9296,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F":
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9194,9 +9310,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G":
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9208,9 +9324,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "H":
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9222,9 +9338,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "I":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9236,9 +9352,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "J":
 					z = '1'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9250,9 +9366,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "K":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9262,9 +9378,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9276,9 +9392,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "L":
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9288,9 +9404,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-													UPDATE untersuchdat_haltung_bewertung
+													UPDATE untersuchdat_anschlussleitung_bewertung
 													SET Zustandsklasse_S = ?
-													WHERE untersuchdat_haltung_bewertung.pk = ?;
+													WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 													"""
 					data = (z, attr[0])
 					try:
@@ -9302,9 +9418,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "M":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9316,9 +9432,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "N":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9330,9 +9446,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z":
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9341,9 +9457,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9352,9 +9468,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9367,9 +9483,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D"]:
 					z = '1'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9381,9 +9497,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] in ["A", "B", "C", "D"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9395,9 +9511,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C" and attr[12] in ["A", "B", "C", "D"]:
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9409,9 +9525,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D" and attr[12] in ["A", "B", "C", "D"]:
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9421,7 +9537,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9434,9 +9552,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9448,9 +9566,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 					z = '1'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9462,9 +9580,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G" and attr[12] in ["A", "B", "C", "D"]:
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9476,9 +9594,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9487,9 +9605,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9502,9 +9620,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "C"]:
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9514,9 +9632,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9528,9 +9646,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9540,9 +9658,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9554,9 +9672,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAN":
 				z = '2'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9565,9 +9683,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9579,9 +9697,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAO":
 				z = '1'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9590,9 +9708,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9604,9 +9722,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAP":
 				z = '1'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9616,9 +9734,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '0'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9630,9 +9748,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBA" and attr[11] in ["A", "B", "C"]:
 				z = '2'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9640,7 +9758,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
 					z = '1'
@@ -9651,9 +9771,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '5'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_B = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9666,9 +9786,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9676,7 +9796,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -9689,9 +9811,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9701,7 +9823,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '0'
 					elif 30 > attr[13] >= 20:
 						z = '1'
@@ -9714,9 +9838,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9729,9 +9853,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"]:
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9741,7 +9865,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["C", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 40:
 						z = '1'
@@ -9754,9 +9880,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9768,9 +9894,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '1'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9780,9 +9906,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '0'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9790,7 +9916,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '0'
 				elif 30 > attr[13] >= 20:
 					z = '1'
@@ -9801,9 +9929,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '5'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_B = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -9816,9 +9944,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["D", "G"]:
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9826,7 +9954,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9839,9 +9969,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9851,7 +9981,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] in ["A", "B", "C", "E", "F", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '0'
 					elif 50 > attr[13] >= 35:
 						z = '1'
@@ -9864,9 +9996,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '5'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9879,9 +10011,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9891,9 +10023,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9903,9 +10035,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9917,9 +10049,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["B", "C"]:
 					z = '1'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9929,9 +10061,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9941,9 +10073,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9955,9 +10087,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D":
 					z = '1'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9966,9 +10098,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9978,9 +10110,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -9992,9 +10124,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBG":
 				z = '1'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -10004,9 +10136,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = 'Einzelfallbetrachtung'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -10018,9 +10150,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBH" and attr[11] in ["A", "B", "Z"] and attr[12] in ["A", "B", "C", "Z"]:
 				z = '-'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_B = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?;
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								"""
 				data = (z, attr[0])
 				try:
@@ -10033,9 +10165,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-													UPDATE untersuchdat_haltung_bewertung
+													UPDATE untersuchdat_anschlussleitung_bewertung
 													SET Zustandsklasse_D = ?
-													WHERE untersuchdat_haltung_bewertung.pk = ?;
+													WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 													"""
 					data = (z, attr[0])
 					try:
@@ -10044,9 +10176,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -10058,9 +10190,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["BA", "BB", "BC"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-											UPDATE untersuchdat_haltung_bewertung
+											UPDATE untersuchdat_anschlussleitung_bewertung
 											SET Zustandsklasse_D = ?
-											WHERE untersuchdat_haltung_bewertung.pk = ?;
+											WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 											"""
 					data = (z, attr[0])
 					try:
@@ -10073,9 +10205,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B", "C", "D", "E"]:
 					z = 'Einzelfallbetrachtung'
 					sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Zustandsklasse_B = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?;
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 						"""
 					data = (z, attr[0])
 					try:
@@ -10088,9 +10220,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 					z = '1'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -10102,9 +10234,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 					z = '2'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?;
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 									"""
 					data = (z, attr[0])
 					try:
@@ -10232,7 +10364,7 @@ class Zustandsklassen_funkt:
 				pass
 
 
-		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
+		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht"""
 		db.sql(sql)
 
 		sql = """SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
@@ -10290,8 +10422,8 @@ class Zustandsklassen_funkt:
 							SET objektklasse_dichtheit =
 							(SELECT min(Zustandsklasse_D) 
 							FROM untersuchdat_anschlussleitung_bewertung
-							WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = anschlussleitungen_untersucht_bewertung.leitnam AND Zustandsklasse_D <> '-'
-							GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchhal);""")
+							WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.leitnam AND Zustandsklasse_D <> '-'
+							GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchleit);""")
 			#db.commit()
 		except:
 			pass
@@ -10301,8 +10433,8 @@ class Zustandsklassen_funkt:
 							SET objektklasse_standsicherheit =
 							(SELECT min(Zustandsklasse_S) 
 							FROM untersuchdat_anschlussleitung_bewertung
-							WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = anschlussleitungen_untersucht_bewertung.leitnam AND Zustandsklasse_S <> '-'
-							GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchhal);""")
+							WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.leitnam AND Zustandsklasse_S <> '-'
+							GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchleit);""")
 			#db.commit()
 		except:
 			pass
@@ -10312,8 +10444,8 @@ class Zustandsklassen_funkt:
 							SET objektklasse_betriebssicherheit =
 							(SELECT min(Zustandsklasse_B) 
 							FROM untersuchdat_anschlussleitung_bewertung
-							WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = anschlussleitungen_untersucht_bewertung.leitnam AND Zustandsklasse_B <> '-'
-							GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchhal);""")
+							WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.leitnam AND Zustandsklasse_B <> '-'
+							GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchleit);""")
 			#db.commit()
 		except:
 			pass
@@ -14139,7 +14271,7 @@ class Zustandsklassen_funkt:
 				
 					SELECT
 						untersuchdat_anschlussleitung_bewertung.pk,
-						untersuchdat_anschlussleitung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.untersuchleit,
 						anschlussleitungen.createdat,
 						untersuchdat_anschlussleitung_bewertung.schoben,
 						untersuchdat_anschlussleitung_bewertung.schunten,
@@ -14212,7 +14344,7 @@ class Zustandsklassen_funkt:
 
 					SELECT
 						untersuchdat_anschlussleitung_bewertung.pk,
-						untersuchdat_anschlussleitung_bewertung.untersuchhal,
+						untersuchdat_anschlussleitung_bewertung.untersuchleit,
 						anschlussleitungen.createdat,
 						untersuchdat_anschlussleitung_bewertung.schoben,
 						untersuchdat_anschlussleitung_bewertung.schunten,
@@ -14267,7 +14399,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -14293,7 +14427,9 @@ class Zustandsklassen_funkt:
 					pass
 			elif (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5'
 				elif 10 <= attr[13] < 15:
 					z = '4'
@@ -14317,7 +14453,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -14383,7 +14521,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5'
 					elif 10 > attr[13] >= 5:
 						z = '4'
@@ -14646,7 +14786,9 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif attr[13] < 100:
 					z = '1'
@@ -14663,7 +14805,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif 100 > attr[13] >= 10:
 					z = '2'
@@ -15006,7 +15150,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5'
 				elif 75 > attr[13] >= 60:
 					z = '4'
@@ -15127,7 +15273,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15154,7 +15302,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25]/1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5'
 						elif 70 > attr[13] >= 50:
 							z = '4'
@@ -15178,7 +15328,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25]/1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5'
 						elif 80 > attr[13] >= 60:
 							z = '4'
@@ -15202,7 +15354,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5'
 						elif 90 > attr[13] >= 65:
 							z = '4'
@@ -15239,7 +15393,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -15274,7 +15430,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1'
 					elif attr[13] >= 10:
 						z = '2'
@@ -15294,7 +15452,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25]/1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5'
 						elif 12 > attr[13] >= 9:
 							z = '4'
@@ -15318,7 +15478,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25]/1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -15342,7 +15504,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -15380,7 +15544,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15485,7 +15651,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15712,7 +15880,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -15921,7 +16091,9 @@ class Zustandsklassen_funkt:
 						#db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -15945,7 +16117,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -15968,7 +16142,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 40:
 					z = '4'
@@ -16017,7 +16193,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5'
 				elif 30 > attr[13] >= 20:
 					z = '4'
@@ -16055,7 +16233,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -16282,11 +16462,11 @@ class Zustandsklassen_funkt:
 						pass
 
 			# if für alle übrigen sachen Haltungsanfang ende usw.
-			if attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
+			elif attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
 				z = '-'
 				sql = f"""
 								   UPDATE untersuchdat_haltung_bewertung
-								   SET Zustandsklasse_D = ?
+								   SET Schadensklasse_D = ?
 								   WHERE untersuchdat_haltung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -16297,7 +16477,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_haltung_bewertung
-								   SET Zustandsklasse_B = ?
+								   SET Schadensklasse_B = ?
 								   WHERE untersuchdat_haltung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -16308,7 +16488,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_haltung_bewertung
-								   SET Zustandsklasse_S = ?
+								   SET Schadensklasse_S = ?
 								   WHERE untersuchdat_haltung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -16722,8 +16902,7 @@ class Zustandsklassen_funkt:
 						untersuchdat_anschlussleitung_bewertung.pos_bis,
 						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 						untersuchdat_anschlussleitung_bewertung.film_dateiname,
-						untersuchdat_anschlussleitung_bewertung.baujahr,
-						untersuchdat_anschlussleitung_bewertung.bw_bs,
+						NULL,
 						untersuchdat_anschlussleitung_bewertung.createdat,
 						anschlussleitungen.leitnam,
 						anschlussleitungen.material,
@@ -16760,7 +16939,7 @@ class Zustandsklassen_funkt:
 						untersuchdat_anschlussleitung_bewertung.pos_bis,
 						untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 						untersuchdat_anschlussleitung_bewertung.film_dateiname,
-						untersuchdat_anschlussleitung_bewertung.baujahr,
+						NULL,
 						untersuchdat_anschlussleitung_bewertung.bw_bs,
 						untersuchdat_anschlussleitung_bewertung.untersuchtag,
 						anschlussleitungen.leitnam,
@@ -16779,7 +16958,9 @@ class Zustandsklassen_funkt:
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] < 6:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] < 6:
 					z = '3'
 				elif 6 <= attr[13] < 15:
 					z = '4'
@@ -16798,7 +16979,9 @@ class Zustandsklassen_funkt:
 					#db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -16824,7 +17007,9 @@ class Zustandsklassen_funkt:
 					pass
 			elif (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5'
 				elif 10 <= attr[13] < 15:
 					z = '4'
@@ -16837,9 +17022,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0'
 				sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ? 
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ? 
 							"""
 				data = (z, attr[0])
 				try:
@@ -16848,7 +17033,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 40 <= attr[13] < 50:
 					z = '4'
@@ -16861,9 +17048,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0'
 				sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ? 
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ? 
 							"""
 				data = (z, attr[0])
 				try:
@@ -16878,9 +17065,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16889,9 +17076,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16903,9 +17090,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "B") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16914,7 +17101,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5'
 					elif 10 > attr[13] >= 5:
 						z = '4'
@@ -16925,9 +17114,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16938,9 +17127,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["B", "C"] and attr[12] == "B":
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16952,9 +17141,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "C") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '4'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16968,9 +17157,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16981,9 +17170,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"]:
 					z = '4'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -16993,9 +17182,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17007,9 +17196,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '5'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17018,9 +17207,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17029,9 +17218,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17044,9 +17233,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17055,9 +17244,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17067,9 +17256,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17081,9 +17270,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] in ["A", "B"]:
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17092,9 +17281,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17106,9 +17295,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '5'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17117,9 +17306,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17128,9 +17317,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17142,9 +17331,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D":
 					z = '5'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17153,9 +17342,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17164,9 +17353,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17177,16 +17366,18 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif attr[13] < 100:
 					z = '1'
 				else:
 					z = '0'
 				sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 				data = (z, attr[0])
 				try:
@@ -17194,7 +17385,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3'
 				elif 100 > attr[13] >= 10:
 					z = '2'
@@ -17203,9 +17396,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0'
 				sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 				data = (z, attr[0])
 				try:
@@ -17218,9 +17411,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17229,9 +17422,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17243,9 +17436,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17255,9 +17448,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17269,9 +17462,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17281,9 +17474,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17295,9 +17488,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17307,9 +17500,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17321,9 +17514,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17333,9 +17526,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17347,9 +17540,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17359,9 +17552,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17373,9 +17566,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17385,9 +17578,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17399,9 +17592,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "H" and attr[12] in ["B", "C", "D", "E"]:
 					z = '4'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17411,9 +17604,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17425,9 +17618,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '5'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17437,9 +17630,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17449,9 +17642,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17463,9 +17656,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17475,9 +17668,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17489,9 +17682,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17503,9 +17696,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17514,9 +17707,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17525,9 +17718,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17537,7 +17730,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5'
 				elif 75 > attr[13] >= 60:
 					z = '4'
@@ -17550,9 +17745,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0'
 				sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 				data = (z, attr[0])
 				try:
@@ -17565,9 +17760,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A"]:
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17579,9 +17774,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["B", "C", "D"]:
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17593,9 +17788,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z":
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17608,9 +17803,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] == "A":
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17620,9 +17815,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17634,9 +17829,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 					z = '3'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17646,9 +17841,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17658,7 +17853,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -17671,9 +17868,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17685,7 +17882,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25] / 1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5'
 						elif 70 > attr[13] >= 50:
 							z = '4'
@@ -17698,9 +17897,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0'
 						sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17709,7 +17908,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25] / 1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5'
 						elif 80 > attr[13] >= 60:
 							z = '4'
@@ -17722,9 +17923,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0'
 						sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17733,7 +17934,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5'
 						elif 90 > attr[13] >= 65:
 							z = '4'
@@ -17746,9 +17949,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0'
 						sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17758,9 +17961,9 @@ class Zustandsklassen_funkt:
 							pass
 					z = '1'
 					sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 					data = (z, attr[0])
 					try:
@@ -17770,7 +17973,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -17783,9 +17988,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17795,9 +18000,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17805,16 +18010,18 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1'
 					elif attr[13] >= 10:
 						z = '2'
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17825,7 +18032,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25] / 1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5'
 						elif 12 > attr[13] >= 9:
 							z = '4'
@@ -17838,9 +18047,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0'
 						sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17849,7 +18058,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25] / 1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -17862,9 +18073,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0'
 						sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17873,7 +18084,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5'
 						elif 6 > attr[13] >= 4:
 							z = '4'
@@ -17886,9 +18099,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0'
 						sql = f"""
-							  UPDATE untersuchdat_haltung_bewertung
+							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17898,9 +18111,9 @@ class Zustandsklassen_funkt:
 							pass
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17911,7 +18124,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -17924,9 +18139,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17938,9 +18153,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B":
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17952,9 +18167,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17963,9 +18178,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -17978,9 +18193,9 @@ class Zustandsklassen_funkt:
 					if attr[12] in ["A", "B", "C", "D"]:
 						z = '2'
 						sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_B = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -17991,9 +18206,9 @@ class Zustandsklassen_funkt:
 					if attr[12] == "C":
 						z = '3'
 						sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Schadensklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 						data = (z, attr[0])
 						try:
@@ -18006,9 +18221,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E":
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18016,7 +18231,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18029,9 +18246,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18043,9 +18260,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F":
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18057,9 +18274,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G":
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18071,9 +18288,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "H":
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18085,9 +18302,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "I":
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18099,9 +18316,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "J":
 					z = '4'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18113,9 +18330,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "K":
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18127,9 +18344,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "L":
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18138,9 +18355,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18152,9 +18369,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "M":
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18166,9 +18383,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "N":
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18180,9 +18397,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z":
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18191,9 +18408,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18202,9 +18419,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18217,9 +18434,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"] and attr[12] in ["A", "B", "C", "D"]:
 					z = '4'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18231,9 +18448,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["C", "D"] and attr[12] in ["A", "B", "C", "D"]:
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18243,7 +18460,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18256,9 +18475,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18270,9 +18489,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 					z = '4'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18284,9 +18503,9 @@ class Zustandsklassen_funkt:
 				elif (attr[11] == "G") and attr[12] in ["A", "B", "C", "D"]:
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18298,9 +18517,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18309,9 +18528,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18324,9 +18543,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B", "C"]:
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18337,9 +18556,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["A", "C"]:
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18351,9 +18570,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B":
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18365,9 +18584,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAN":
 				z = '3'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_D = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18376,9 +18595,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_S = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18390,9 +18609,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAO":
 				z = '4'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_D = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18401,9 +18620,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_S = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18415,9 +18634,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAP":
 				z = '4'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_D = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18427,9 +18646,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '5'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_S = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18442,9 +18661,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B", "C"]:
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18452,7 +18671,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -18463,9 +18684,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18476,7 +18697,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5'
 					elif 30 > attr[13] >= 20:
 						z = '4'
@@ -18487,9 +18710,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18499,7 +18722,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5'
 				elif 50 > attr[13] >= 40:
 					z = '4'
@@ -18512,9 +18737,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_B = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18526,9 +18751,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '4'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_D = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18538,9 +18763,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '5'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_S = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18548,7 +18773,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5'
 				elif 30 > attr[13] >= 20:
 					z = '4'
@@ -18559,9 +18786,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_B = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18574,9 +18801,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["D", "G"]:
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18586,7 +18813,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5'
 					elif 50 > attr[13] >= 35:
 						z = '4'
@@ -18599,9 +18828,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18614,9 +18843,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"]:
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18626,9 +18855,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18638,9 +18867,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18652,9 +18881,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "C"):
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18665,9 +18894,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "D"):
 					z = '4'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_S = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18678,9 +18907,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["C", "D"]:
 					z = '4'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18690,9 +18919,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18704,9 +18933,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBG":
 				z = '4'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_D = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18716,9 +18945,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '2'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_S = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18732,9 +18961,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18743,9 +18972,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18757,9 +18986,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["BA", "BB", "BC"]:
 					z = '2'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18771,9 +19000,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BDD" and attr[11] in ["A", "B", "C", "D", "E"]:
 				z = '2'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Schadensklasse_B = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -18786,9 +19015,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 					z = '4'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18800,9 +19029,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 					z = '3'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Schadensklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -18813,11 +19042,11 @@ class Zustandsklassen_funkt:
 						pass
 
 			# if für alle übrigen sachen Haltungsanfang ende usw.
-			if attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
+			elif attr[10] in ["BCD", "BCE", "BDC", "BCA", "BCB", "BCC", "BDA", "BDF", "BDG", "BDB", "AEC", "AED"]:
 				z = '-'
 				sql = f"""
 								   UPDATE untersuchdat_anschlussleitung_bewertung
-								   SET Zustandsklasse_D = ?
+								   SET Schadensklasse_D = ?
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -18828,7 +19057,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_anschlussleitung_bewertung
-								   SET Zustandsklasse_B = ?
+								   SET Schadensklasse_B = ?
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -18839,7 +19068,7 @@ class Zustandsklassen_funkt:
 					pass
 				sql = f"""
 								   UPDATE untersuchdat_anschlussleitung_bewertung
-								   SET Zustandsklasse_S = ?
+								   SET Schadensklasse_S = ?
 								   WHERE untersuchdat_anschlussleitung_bewertung.pk = ?;
 								   """
 				data = (z, attr[0])
@@ -19027,7 +19256,7 @@ class Zustandsklassen_funkt:
 			atcGroup = layersRoot.addGroup(group)
 		atcGroup.addLayer(vlayer)
 
-		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
+		sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht"""
 		db.sql(sql)
 		sql = """SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');"""
 		try:
@@ -22026,9 +22255,9 @@ class Zustandsklassen_funkt:
 							"DDG"]:
 				z = '-'
 				sql = f"""
-							   UPDATE untersuchdat_haltung_bewertung
-							   SET Zustandsklasse_D = ?
-							   WHERE untersuchdat_haltung_bewertung.pk = ?;
+							   UPDATE Untersuchdat_schacht_bewertung
+							   SET ZSchadensklasse_D = ?
+							   WHERE Untersuchdat_schacht_bewertung.pk = ?;
 							   """
 				data = (z, attr[0])
 				try:
@@ -22037,9 +22266,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-							   UPDATE untersuchdat_haltung_bewertung
-							   SET Zustandsklasse_B = ?
-							   WHERE untersuchdat_haltung_bewertung.pk = ?;
+							   UPDATE Untersuchdat_schacht_bewertung
+							   SET Schadensklasse_B = ?
+							   WHERE Untersuchdat_schacht_bewertung.pk = ?;
 							   """
 				data = (z, attr[0])
 				try:
@@ -22048,9 +22277,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-							   UPDATE untersuchdat_haltung_bewertung
-							   SET Zustandsklasse_S = ?
-							   WHERE untersuchdat_haltung_bewertung.pk = ?;
+							   UPDATE Untersuchdat_schacht_bewertung
+							   SET Schadensklasse_S = ?
+							   WHERE Untersuchdat_schacht_bewertung.pk = ?;
 							   """
 				data = (z, attr[0])
 				try:
@@ -22513,7 +22742,9 @@ class Zustandsklassen_funkt:
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] < 6:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] < 6:
 					z = '3_isy'
 				elif 6 <= attr[13] < 15:
 					z = '4_isy'
@@ -22532,7 +22763,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -22558,7 +22791,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5_isy'
 				elif 10 <= attr[13] < 15:
 					z = '4_isy'
@@ -22582,7 +22817,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -22648,7 +22885,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5_isy'
 					elif 10 > attr[13] >= 5:
 						z = '4_isy'
@@ -22911,7 +23150,9 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif attr[13] < 100:
 					z = '1_isy'
@@ -22928,7 +23169,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif 100 > attr[13] >= 10:
 					z = '2_isy'
@@ -23271,7 +23514,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5_isy'
 				elif 75 > attr[13] >= 60:
 					z = '4_isy'
@@ -23335,6 +23580,17 @@ class Zustandsklassen_funkt:
 					try:
 						db.sql(sql, parameters=data)
 						# db.commit()
+					except:
+						pass
+					sql = f"""
+													  UPDATE untersuchdat_haltung_bewertung
+														SET Zustandsklasse_S = ?
+														WHERE untersuchdat_haltung_bewertung.pk = ?
+														"""
+					data = (z, attr[0])
+					try:
+						db.sql(sql, parameters=data)
+						# db.commit()
 						continue
 					except:
 						pass
@@ -23392,7 +23648,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -23419,7 +23677,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25]/1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5_isy'
 						elif 70 > attr[13] >= 50:
 							z = '4_isy'
@@ -23443,7 +23703,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25]/1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5_isy'
 						elif 80 > attr[13] >= 60:
 							z = '4_isy'
@@ -23467,7 +23729,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5_isy'
 						elif 90 > attr[13] >= 65:
 							z = '4_isy'
@@ -23504,7 +23768,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -23539,7 +23805,9 @@ class Zustandsklassen_funkt:
 						# db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1_isy'
 					elif attr[13] >= 10:
 						z = '2_isy'
@@ -23559,7 +23827,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25]/1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5_isy'
 						elif 12 > attr[13] >= 9:
 							z = '4_isy'
@@ -23583,7 +23853,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25]/1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -23607,7 +23879,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25]/1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -23645,7 +23919,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -23750,7 +24026,9 @@ class Zustandsklassen_funkt:
 						# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -23978,7 +24256,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -24187,7 +24467,9 @@ class Zustandsklassen_funkt:
 						# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -24211,7 +24493,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -24234,7 +24518,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 50 > attr[13] >= 40:
 					z = '4_isy'
@@ -24283,7 +24569,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5_isy'
 				elif 30 > attr[13] >= 20:
 					z = '4_isy'
@@ -24321,7 +24609,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -24789,7 +25079,7 @@ class Zustandsklassen_funkt:
 							untersuchdat_anschlussleitung_bewertung.pos_bis,
 							untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 							untersuchdat_anschlussleitung_bewertung.film_dateiname,
-							untersuchdat_anschlussleitung_bewertung.baujahr,
+							NULL,
 							untersuchdat_anschlussleitung_bewertung.bw_bs,
 							untersuchdat_anschlussleitung_bewertung.createdat,
 							anschlussleitungen.leitnam,
@@ -24835,7 +25125,7 @@ class Zustandsklassen_funkt:
 							untersuchdat_anschlussleitung_bewertung.pos_bis,
 							untersuchdat_anschlussleitung_bewertung.foto_dateiname,
 							untersuchdat_anschlussleitung_bewertung.film_dateiname,
-							untersuchdat_anschlussleitung_bewertung.baujahr,
+							NULL,
 							untersuchdat_anschlussleitung_bewertung.bw_bs,
 							untersuchdat_anschlussleitung_bewertung.untersuchtag,
 							anschlussleitungen.leitnam,
@@ -24862,7 +25152,9 @@ class Zustandsklassen_funkt:
 
 			if (attr[21] == "biegesteif" and attr[10] == "BAA" and (attr[11] == "A")) or (
 					attr[21] == "biegesteif" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] < 6:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] < 6:
 					z = '3_isy'
 				elif 6 <= attr[13] < 15:
 					z = '4_isy'
@@ -24881,7 +25173,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -24907,7 +25201,9 @@ class Zustandsklassen_funkt:
 					pass
 			if (attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "A") or (
 					attr[21] == "biegeweich" and attr[10] == "BAA" and attr[11] == "B"):
-				if attr[13] >= 15:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 15:
 					z = '5_isy'
 				elif 10 <= attr[13] < 15:
 					z = '4_isy'
@@ -24931,7 +25227,9 @@ class Zustandsklassen_funkt:
 					continue
 				except:
 					pass
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 40 <= attr[13] < 50:
 					z = '4_isy'
@@ -24961,9 +25259,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -24972,9 +25270,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -24986,9 +25284,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "B") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -24997,7 +25295,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["B", "C"] and attr[12] in ["A", "C", "D", "E"]:
-					if attr[13] >= 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 10:
 						z = '5_isy'
 					elif 10 > attr[13] >= 5:
 						z = '4_isy'
@@ -25008,9 +25308,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25021,9 +25321,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["B", "C"] and attr[12] == "B":
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25035,9 +25335,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "C") and attr[12] in ["A", "B", "C", "D", "E"]:
 					z = '4_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25051,9 +25351,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25064,9 +25364,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"]:
 					z = '4_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25076,9 +25376,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25090,9 +25390,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "C":
 					z = '5_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25101,9 +25401,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25112,9 +25412,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25127,9 +25427,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A":
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25138,9 +25438,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25150,9 +25450,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25164,9 +25464,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "B" and attr[12] in ["A", "B"]:
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25175,9 +25475,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25189,9 +25489,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '5_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25200,9 +25500,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25211,9 +25511,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25225,9 +25525,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D":
 					z = '5_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25236,9 +25536,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25247,9 +25547,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25260,16 +25560,18 @@ class Zustandsklassen_funkt:
 						pass
 
 			elif attr[10] == "BAE":
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif attr[13] < 100:
 					z = '1_isy'
 				else:
 					z = '0_isy'
 				sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 				data = (z, attr[0])
 				try:
@@ -25277,7 +25579,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 100:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 100:
 					z = '3_isy'
 				elif 100 > attr[13] >= 10:
 					z = '2_isy'
@@ -25286,9 +25590,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0_isy'
 				sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 				data = (z, attr[0])
 				try:
@@ -25301,9 +25605,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25312,9 +25616,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25326,9 +25630,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B" and attr[12] in ["A", "E", "Z"]:
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25338,9 +25642,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25352,9 +25656,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25364,9 +25668,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25378,9 +25682,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "D" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25390,9 +25694,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25404,9 +25708,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25416,9 +25720,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25430,9 +25734,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25442,9 +25746,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25456,9 +25760,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25468,9 +25772,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25482,9 +25786,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "H" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '4_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25494,9 +25798,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25508,9 +25812,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "I" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '5_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25520,9 +25824,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '4_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25532,9 +25836,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25546,9 +25850,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "J" and attr[12] in ["B", "C", "D", "E", "Z"]:
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25558,9 +25862,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25572,9 +25876,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "K" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25586,9 +25890,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z" and attr[12] in ["A", "B", "C", "D", "E", "Z"]:
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25597,9 +25901,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25608,9 +25912,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25620,7 +25924,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BAG":
-				if attr[13] >= 75:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 75:
 					z = '5_isy'
 				elif 75 > attr[13] >= 60:
 					z = '4_isy'
@@ -25633,9 +25939,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0_isy'
 				sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 				data = (z, attr[0])
 				try:
@@ -25648,9 +25954,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A"]:
 					z = '2_isy'
 					sql = f"""
-						  UPDATE untersuchdat_haltung_bewertung
+						  UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Zustandsklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -25662,9 +25968,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["B", "C", "D"]:
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25676,9 +25982,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z":
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25691,9 +25997,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "A" and attr[12] == "A":
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25703,9 +26009,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25717,9 +26023,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "A" and attr[12] in ["B", "C", "D"]:
 					z = '3_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25729,9 +26035,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25741,7 +26047,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "Z":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -25754,9 +26062,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-								  UPDATE untersuchdat_haltung_bewertung
+								  UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25768,7 +26076,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAJ":
 				if attr[11] == "A":
 					if attr[25] / 1000 <= 0.4:
-						if attr[13] >= 70:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 70:
 							z = '5_isy'
 						elif 70 > attr[13] >= 50:
 							z = '4_isy'
@@ -25781,9 +26091,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0_isy'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -25792,7 +26102,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.4 < attr[25] / 1000 <= 0.8:
-						if attr[13] >= 80:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 80:
 							z = '5_isy'
 						elif 80 > attr[13] >= 60:
 							z = '4_isy'
@@ -25805,9 +26117,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0_isy'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -25816,7 +26128,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.8:
-						if attr[13] >= 90:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 90:
 							z = '5_isy'
 						elif 90 > attr[13] >= 65:
 							z = '4_isy'
@@ -25829,9 +26143,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0_isy'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -25841,9 +26155,9 @@ class Zustandsklassen_funkt:
 							pass
 					z = '1_isy'
 					sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 					data = (z, attr[0])
 					try:
@@ -25853,7 +26167,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "B":
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -25866,9 +26182,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25878,9 +26194,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25888,16 +26204,18 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] < 10:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] < 10:
 						z = '1_isy'
 					elif attr[13] >= 10:
 						z = '2_isy'
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25908,7 +26226,9 @@ class Zustandsklassen_funkt:
 						pass
 				elif attr[11] == "C":
 					if attr[25] / 1000 <= 0.2:
-						if attr[13] >= 12:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 12:
 							z = '5_isy'
 						elif 12 > attr[13] >= 9:
 							z = '4_isy'
@@ -25921,9 +26241,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0_isy'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -25932,7 +26252,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif 0.2 < attr[25] / 1000 <= 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -25945,9 +26267,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0_isy'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -25956,7 +26278,9 @@ class Zustandsklassen_funkt:
 						except:
 							pass
 					elif attr[25] / 1000 > 0.5:
-						if attr[13] >= 6:
+						if attr[13] is None:
+							z = 'Bitte pruefen!'
+						elif attr[13] >= 6:
 							z = '5_isy'
 						elif 6 > attr[13] >= 4:
 							z = '4_isy'
@@ -25969,9 +26293,9 @@ class Zustandsklassen_funkt:
 						else:
 							z = '0_isy'
 						sql = f"""
-									  UPDATE untersuchdat_haltung_bewertung
+									  UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_D = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -25981,9 +26305,9 @@ class Zustandsklassen_funkt:
 							pass
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -25994,7 +26318,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BAK":
 				if attr[11] == "A":
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26007,9 +26333,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26021,9 +26347,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "B":
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26035,9 +26361,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "C":
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26046,9 +26372,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26061,9 +26387,9 @@ class Zustandsklassen_funkt:
 					if attr[12] in ["A", "B", "C", "D"]:
 						z = '2_isy'
 						sql = f"""
-										UPDATE untersuchdat_haltung_bewertung
+										UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_B = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -26074,9 +26400,9 @@ class Zustandsklassen_funkt:
 					if attr[12] == "C":
 						z = '3_isy'
 						sql = f"""
-										UPDATE untersuchdat_haltung_bewertung
+										UPDATE untersuchdat_anschlussleitung_bewertung
 										SET Zustandsklasse_S = ?
-										WHERE untersuchdat_haltung_bewertung.pk = ?
+										WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 										"""
 						data = (z, attr[0])
 						try:
@@ -26089,9 +26415,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "E":
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26099,7 +26425,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26112,9 +26440,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26126,9 +26454,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F":
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26140,9 +26468,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G":
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26154,9 +26482,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "H":
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26168,9 +26496,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "I":
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26182,9 +26510,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "J":
 					z = '4_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26196,9 +26524,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "K":
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26210,9 +26538,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "L":
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26221,9 +26549,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26235,9 +26563,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "M":
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26249,9 +26577,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "N":
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26263,9 +26591,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z":
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26274,9 +26602,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26286,9 +26614,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26301,9 +26629,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"] and attr[12] in ["A", "B", "C", "D"]:
 					z = '4_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26315,9 +26643,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["C", "D"] and attr[12] in ["A", "B", "C", "D"]:
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26327,7 +26655,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				elif attr[11] == "E" and attr[12] in ["A", "B", "C", "D"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26340,9 +26670,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26354,9 +26684,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "F" and attr[12] in ["A", "B", "C", "D"]:
 					z = '4_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26368,9 +26698,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "G" and attr[12] in ["A", "B", "C", "D"]:
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26382,9 +26712,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] == "Z" and attr[12] in ["A", "B", "C", "D"]:
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26393,9 +26723,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26408,9 +26738,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B", "C"]:
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26421,9 +26751,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "C"]:
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26435,9 +26765,9 @@ class Zustandsklassen_funkt:
 				if attr[11] == "B":
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26449,9 +26779,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAN":
 				z = '3_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26460,9 +26790,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26474,9 +26804,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAO":
 				z = '4_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26485,9 +26815,9 @@ class Zustandsklassen_funkt:
 				except:
 					pass
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26499,9 +26829,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BAP":
 				z = '4_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26511,9 +26841,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '5_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26526,9 +26856,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B", "C"]:
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26536,7 +26866,9 @@ class Zustandsklassen_funkt:
 					# db.commit()
 					except:
 						pass
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -26547,9 +26879,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26560,7 +26892,9 @@ class Zustandsklassen_funkt:
 						pass
 			elif attr[10] == "BBB":
 				if attr[11] in ["A", "B", "C", "Z"]:
-					if attr[13] >= 30:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 30:
 						z = '5_isy'
 					elif 30 > attr[13] >= 20:
 						z = '4_isy'
@@ -26571,9 +26905,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26583,7 +26917,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 			elif attr[10] == "BBC" and attr[11] in ["A", "B", "C", "Z"]:
-				if attr[13] >= 50:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 50:
 					z = '5_isy'
 				elif 50 > attr[13] >= 40:
 					z = '4_isy'
@@ -26596,9 +26932,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_B = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26610,9 +26946,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBD" and attr[11] in ["A", "B", "C", "D", "Z"]:
 				z = '4_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26622,9 +26958,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '5_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26632,7 +26968,9 @@ class Zustandsklassen_funkt:
 				# db.commit()
 				except:
 					pass
-				if attr[13] >= 30:
+				if attr[13] is None:
+					z = 'Bitte pruefen!'
+				elif attr[13] >= 30:
 					z = '5_isy'
 				elif 30 > attr[13] >= 20:
 					z = '4_isy'
@@ -26643,9 +26981,9 @@ class Zustandsklassen_funkt:
 				else:
 					z = '0_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_B = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26658,9 +26996,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["D", "G"]:
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26670,7 +27008,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 				if attr[11] in ["A", "B", "C", "D", "E", "F", "G", "H", "Z"]:
-					if attr[13] >= 50:
+					if attr[13] is None:
+						z = 'Bitte pruefen!'
+					elif attr[13] >= 50:
 						z = '5_isy'
 					elif 50 > attr[13] >= 35:
 						z = '4_isy'
@@ -26683,9 +27023,9 @@ class Zustandsklassen_funkt:
 					else:
 						z = '0_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26698,9 +27038,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "B"]:
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26710,9 +27050,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26722,9 +27062,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '1_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26736,9 +27076,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "C"):
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26749,9 +27089,9 @@ class Zustandsklassen_funkt:
 				if (attr[11] == "D"):
 					z = '4_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_S = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26762,9 +27102,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["C", "D"]:
 					z = '4_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_D = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26774,9 +27114,9 @@ class Zustandsklassen_funkt:
 						pass
 					z = '2_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26788,9 +27128,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BBG":
 				z = '4_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_D = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26800,9 +27140,9 @@ class Zustandsklassen_funkt:
 					pass
 				z = '2_isy'
 				sql = f"""
-								UPDATE untersuchdat_haltung_bewertung
+								UPDATE untersuchdat_anschlussleitung_bewertung
 								SET Zustandsklasse_S = ?
-								WHERE untersuchdat_haltung_bewertung.pk = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 								"""
 				data = (z, attr[0])
 				try:
@@ -26815,9 +27155,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["AA", "AB", "AC", "AD", "AE"]:
 					z = '2_isy'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Zustandsklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -26826,9 +27166,9 @@ class Zustandsklassen_funkt:
 					except:
 						pass
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Zustandsklasse_B = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -26840,9 +27180,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["BA", "BB", "BC"]:
 					z = '2_isy'
 					sql = f"""
-							UPDATE untersuchdat_haltung_bewertung
+							UPDATE untersuchdat_anschlussleitung_bewertung
 							SET Zustandsklasse_D = ?
-							WHERE untersuchdat_haltung_bewertung.pk = ?
+							WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 							"""
 					data = (z, attr[0])
 					try:
@@ -26854,9 +27194,9 @@ class Zustandsklassen_funkt:
 			elif attr[10] == "BDD" and attr[11] in ["A", "B", "C", "D", "E"]:
 				z = '2_isy'
 				sql = f"""
-						UPDATE untersuchdat_haltung_bewertung
+						UPDATE untersuchdat_anschlussleitung_bewertung
 						SET Zustandsklasse_B = ?
-						WHERE untersuchdat_haltung_bewertung.pk = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 						"""
 				data = (z, attr[0])
 				try:
@@ -26869,9 +27209,9 @@ class Zustandsklassen_funkt:
 				if attr[11] in ["A", "C", "D", "E"] and attr[12] == "A":
 					z = '4_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -26883,9 +27223,9 @@ class Zustandsklassen_funkt:
 				elif attr[11] in ["A", "C", "D", "E"] and attr[12] == "B":
 					z = '3_isy'
 					sql = f"""
-									UPDATE untersuchdat_haltung_bewertung
+									UPDATE untersuchdat_anschlussleitung_bewertung
 									SET Zustandsklasse_B = ?
-									WHERE untersuchdat_haltung_bewertung.pk = ?
+									WHERE untersuchdat_anschlussleitung_bewertung.pk = ?
 									"""
 					data = (z, attr[0])
 					try:
@@ -27067,7 +27407,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		x = os.path.dirname(os.path.abspath(__file__))
-		vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
+		vlayer.loadNamedStyle(x + '/untersuchdat_anschlussleitung_bewertung_dwa.qml')
 		#QgsProject.instance().addMapLayer(vlayer)
 		group = 'Ergebnisse'
 		layersRoot = QgsProject.instance().layerTreeRoot()
@@ -30453,9 +30793,9 @@ class Zustandsklassen_funkt:
 					anschlussleitungen.leitnam,
 					anschlussleitungen.material,
 					anschlussleitungen.hoehe,
-					untersuchdat_haltung_bewertung.untersuchhal
+					untersuchdat_anschlussleitung_bewertung.untersuchleit
 				FROM anschlussleitungen
-				INNER JOIN untersuchdat_anschlussleitung_bewertung ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchhal
+				INNER JOIN untersuchdat_anschlussleitung_bewertung ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
 			"""
 
 		try:
@@ -30486,7 +30826,7 @@ class Zustandsklassen_funkt:
 				sql = f"""
 					UPDATE untersuchdat_anschlussleitung_bewertung
 						SET bw_bs = ?
-						WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = ?
 						"""
 				data = (bw_bs, x)
 				try:
@@ -30507,7 +30847,7 @@ class Zustandsklassen_funkt:
 				sql = f"""
 					  UPDATE untersuchdat_anschlussleitung_bewertung
 						SET bw_bs = ?
-						WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = ?
+						WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = ?
 						"""
 				data = (bw_bs, x)
 				try:
@@ -30599,8 +30939,8 @@ class Zustandsklassen_funkt:
 									SET objektklasse_dichtheit =
 									(SELECT min(Zustandsklasse_D)
 									FROM untersuchdat_anschlussleitung_bewertung
-									WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = anschlussleitungen_untersucht_bewertung.haltnam AND Zustandsklasse_D <> '-'
-									GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchhal);""")
+									WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.haltnam AND Zustandsklasse_D <> '-'
+									GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchleit);""")
 		# db.commit()
 		except:
 			pass
@@ -30610,8 +30950,8 @@ class Zustandsklassen_funkt:
 									SET objektklasse_standsicherheit =
 									(SELECT min(Zustandsklasse_S)
 									FROM untersuchdat_anschlussleitung_bewertung
-									WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = anschlussleitungen_untersucht_bewertung.haltnam AND Zustandsklasse_S <> '-'
-									GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchhal);""")
+									WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.haltnam AND Zustandsklasse_S <> '-'
+									GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchleit);""")
 		# db.commit()
 		except:
 			pass
@@ -30621,8 +30961,8 @@ class Zustandsklassen_funkt:
 									SET objektklasse_betriebssicherheit =
 									(SELECT min(Zustandsklasse_B)
 									FROM untersuchdat_anschlussleitung_bewertung
-									WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = anschlussleitungen_untersucht_bewertung.haltnam AND Zustandsklasse_B <> '-'
-									GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchhal);""")
+									WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = anschlussleitungen_untersucht_bewertung.haltnam AND Zustandsklasse_B <> '-'
+									GROUP BY untersuchdat_anschlussleitung_bewertung.untersuchleit);""")
 		# db.commit()
 		except:
 			pass
@@ -31290,9 +31630,9 @@ class Zustandsklassen_funkt:
 							anschlussleitungen.leitnam,
 							anschlussleitungen.material,
 							anschlussleitungen.hoehe,
-							untersuchdat_haltung_bewertung.untersuchhal
+							untersuchdat_anschlussleitung_bewertung.untersuchleit
 						FROM anschlussleitungen
-						INNER JOIN untersuchdat_haltung_bewertung ON anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal
+						INNER JOIN untersuchdat_anschlussleitung_bewertung ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
 					"""
 
 		try:
@@ -31326,7 +31666,7 @@ class Zustandsklassen_funkt:
 				sql = f"""
 							UPDATE untersuchdat_anschlussleitung_bewertung
 								SET bw_bs = ?
-								WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = ?
 								"""
 				data = (bw_bs, x)
 				try:
@@ -31350,7 +31690,7 @@ class Zustandsklassen_funkt:
 				sql = f"""
 							  UPDATE untersuchdat_anschlussleitung_bewertung
 								SET bw_bs = ?
-								WHERE untersuchdat_anschlussleitung_bewertung.untersuchhal = ?
+								WHERE untersuchdat_anschlussleitung_bewertung.untersuchleit = ?
 								"""
 				data = (bw_bs, x)
 				try:

@@ -100,7 +100,6 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.group.addButton(self.cb_flaechen)
         self.group.addButton(self.cb_haltungsflaechen)
 
-
     def select_template(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
         #if self.cb_use_templatedir.isChecked():

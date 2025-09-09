@@ -62,6 +62,7 @@ class ShowSelected():
         for child in root_rule.children():
             rule = root_rule.takeChild(child)
             label = rule.label()
+            #TODO: evtuell umändern da dies bei NULL werten nicht funktioniert
             if 'Zustandsklasse' in label:
                 pos = label.find('Zustandsklasse') + 15
                 i = label[pos]

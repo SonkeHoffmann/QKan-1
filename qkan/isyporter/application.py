@@ -86,6 +86,10 @@ class IsyPorter(QKanPlugin):
                 self.export_dlg.cb_export_wehre.isChecked()
             )
 
+            QKan.config.check_export.zustandsdaten = (
+                self.export_dlg.cb_export_zustandsdaten.isChecked()
+            )
+
             QKan.config.save()
 
             self._doexport()
@@ -96,6 +100,8 @@ class IsyPorter(QKanPlugin):
         Einspringpunkt für Test
         """
 
+        auswahl_zustand = self.export_dlg.comboBox.currentText()
+
         with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
             if not db_qkan.connected:
                 self.log.error(
@@ -105,7 +111,7 @@ class IsyPorter(QKanPlugin):
                 raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
 
             # Run export
-            ExportTask(db_qkan, QKan.config.xml.export_file, QKan.config.xml.vorlage).run()
+            ExportTask(db_qkan, QKan.config.xml.export_file, QKan.config.xml.vorlage, auswahl_zustand).run()
 
     def run_import(self) -> None:
         """Anzeigen des Importformulars ISYBAU-XML und anschließender Start des Import"""
