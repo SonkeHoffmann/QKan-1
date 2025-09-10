@@ -605,7 +605,9 @@ class ImportTask(Schadenstexte):
             """,
             # Mehrfache "schacht_oben" mit SA_ im Gegensatz zu den Haltungen ohne Namen, die mit SN_ beginnen
             """ UPDATE t_strakatkanal
-                SET schacht_oben = 'SA_' || substr(printf('0000%d', t_strakatkanal.pk), -5)
+                SET schacht_oben = 'SA_' || substr(printf('SA_00000%d_', t_strakatkanal.pk), -7) || 
+                                    t_strakatkanal.schacht_oben
+                
                 FROM (SELECT pk, schacht_oben FROM t_strakatkanal) AS std
                 WHERE t_strakatkanal.schacht_oben = std.schacht_oben AND t_strakatkanal.pk > std.pk""",
             # 1.2.2 Abzweigende Haltungen (k1k), deren schacht_oben nicht mit dem eines durchlaufenden
@@ -1677,7 +1679,7 @@ class ImportTask(Schadenstexte):
                 ELSE 'QKan-STRAKAT-Import' END              AS kommentar,
                 Makepoint(stk.rw_gerinne_o, stk.hw_gerinne_o, :epsg)  AS geop,
                 CastToMultiLineString(MakeCircle(
-                    stk.rw_gerinne_o, stk.hw_gerinne_o, 1.0, :epsg)) AS geom
+                    stk.rw_gerinne_o, stk.hw_gerinne_o, 0.5, :epsg)) AS geom
             FROM t_strakatkanal AS stk
             LEFT JOIN strassen          ON stk.strassennummer = strassen.id
             LEFT JOIN schachtmaterial   ON stk.schachtmaterial = schachtmaterial.id

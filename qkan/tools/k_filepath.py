@@ -210,22 +210,22 @@ def setfilepath(
                                            "Name: " + str(bild_nam),
                                            level=Qgis.MessageLevel.Critical)
 
-                for root, dirs, files in os.walk(fotopath_2):
-                    for file in files:
-                        if file.lower() == bild_nam.lower():
-                            bild = Path(root+'/'+file)
+            for root, dirs, files in os.walk(fotopath_2):
+                for file in files:
+                    if file.lower() == bild_nam.lower():
+                        bild = Path(root+'/'+file)
 
-                            rest = bild.relative_to(pfad_foto)
+                        rest = bild.relative_to(pfad_foto)
 
-                            # pfad in db erstzen
-                            sql = f"""Update untersuchdat_schacht set foto_dateiname = '{rest}'
-                                                WHERE untersuchdat_schacht.pk = {attr[0]};"""
-                            #data = (rest, attr[0])
+                        # pfad in db erstzen
+                        sql = f"""Update untersuchdat_schacht set foto_dateiname = '{rest}'
+                                            WHERE untersuchdat_schacht.pk = {attr[0]};"""
+                        #data = (rest, attr[0])
 
-                            try:
-                                db.sql(sql)
-                            except BaseException as err:
-                                return False
+                        try:
+                            db.sql(sql)
+                        except BaseException as err:
+                            return False
 
 
             db.commit()

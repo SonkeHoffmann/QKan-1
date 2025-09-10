@@ -58,10 +58,10 @@
                 <Option value="Wehr" name="Wehr, Überfallbauwerk" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option value="Straßeneinlauf" name="Straßeneinlauf" type="QString"/>
+                <Option value="Strasseneinlauf" name="Strasseneinlauf" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option value="Hausanschluss" name="Hausanschluss zu Anschlussleitungen" type="QString"/>
+                <Option value="Anschlusschacht" name="Hausanschlussschacht, allg. Anschlussschacht" type="QString"/>
               </Option>
               <Option type="Map">
                 <Option value="Symbol" name="allg. Symbol" type="QString"/>

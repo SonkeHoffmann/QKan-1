@@ -9,6 +9,7 @@ from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan, eval_node_ty
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 from qkan.tools.qkan_utils import loadlayer
+from qgis.core import QgsMessageLog, Qgis
 
 from ._export import ExportTask
 from ._import import ImportTask
@@ -206,7 +207,7 @@ class M150Porter(QKanPlugin):
                 QKan.config.xml.ordner_bild,
                 QKan.config.xml.ordner_video
             )
-            layer_m150_knotenarten_exists = imp.run()
+            complete, layerexists = imp.run()
             del imp
 
             # eval_node_types(db_qkan)  # in qkan.database.qkan_utils
@@ -231,19 +232,41 @@ class M150Porter(QKanPlugin):
                 project.read(QKan.config.project.file)
                 project.reloadAllLayers()
 
-            if not layer_m150_knotenarten_exists:
+            if not layerexists:
                 grouppath = [
                     enums.LAYERBEZ.QKAN_GROUP.value,
                     enums.LAYERBEZ.REFERENZTABELLEN.value,
                 ]
 
                 loadlayer(
-                    layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN,
+                    layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN.value,
                     table=      "m150_knotenarten",
+                    geom_column=None,
                     qmlfile=    "qkan_m150_knotenarten.qml",
                     uifile=     "qkan_m150_knotenarten.ui",
                     group=      grouppath
                 )
+                project.write()
+            if not complete:
+                msg = ('In der M150-Datei sind individuelle Knotentypen definiert. '
+                                'Vor einem Import müssen diese bearbeitet werden (siehe '
+                                '<a href="https://qkan.eu/">QKan Dokumentation</a>)!')
+                # noinspection PyArgumentList
+                QgsMessageLog.logMessage(
+                    message=msg,
+                    tag="QKan",
+                    notifyUser=True,
+                    level=Qgis.MessageLevel.Info,
+                )
+
+                self.iface.openMessageLog()
+                self.iface.messageBar().pushMessage(
+                    "QKan",
+                    msg,
+                    level=Qgis.MessageLevel.Info,
+                    duration=0
+                )
+
             # TODO: Some layers don't have a valid EPSG attached or wrong coordinates
 
         self.log.debug("Closed DB")

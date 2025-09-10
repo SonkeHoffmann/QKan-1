@@ -504,7 +504,7 @@ class ImportTask(Schadenstexte):
 
         return geom_wkb, sohleoben, sohleunten
 
-    def run(self) -> bool:
+    def run(self) -> (bool, bool):
         """Import. Gibt False zurück, wenn der Layer M150:Knotenarten noch ergänzt werden muss"""
 
         iface = QKan.instance.iface
@@ -519,12 +519,9 @@ class ImportTask(Schadenstexte):
         status_message.layout().addWidget(self.progress_bar)
         iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
-        complete = self._reftables()                 ;self.progress_bar.setValue(5)
+        complete, layerexists = self._reftables()           ;self.progress_bar.setValue(5)
         if not complete:
-            logger.warning('In der M150-Datei sind individuelle Knotentypen definiert. '
-                           'Vor einem Import müssen diese bearbeitet werden (siehe '
-                           '<a href="https://qkan.eu/">QKan Dokumentation</a>)!')
-            return False
+            return False, layerexists
 
         self._init_mappers()
 #        if getattr(QKan.config.xml, "import_stamm", True):
@@ -549,9 +546,9 @@ class ImportTask(Schadenstexte):
         self.progress_bar.setValue(100)
         status_message.setText("Fertig! M150-Import abgeschlossen.")
 
-        return True
+        return True, layerexists
 
-    def _reftables(self) -> bool:
+    def _reftables(self) -> (bool, bool):
         """Referenztabellen mit Datensätzen für DWA-Import füllen"""
 
         # Hinweis: 'None' bewirkt beim Import eine Zuordnung unabhängig vom Wert - SQLite
@@ -960,8 +957,10 @@ class ImportTask(Schadenstexte):
                         }
                     )
                 complete = True                  # Vorgaben entsprechend M150
+                logger.debug("M150-Referenztabelle: Standardtabelle")
             else:
                 complete = False                 # muss noch durch den Anwender bearbeitet werden
+                logger.debug("M150-Referenztabelle aus XML-Datei muss noch bearbeitet werden")
 
             sql = """INSERT INTO m150_knotenarten (
                         bezeichnung, kuerzel, m150, m145, schachttyp, kommentar)
@@ -975,18 +974,19 @@ class ImportTask(Schadenstexte):
                 raise QkanError
 
             self.db_qkan.commit()
-            return complete
+            return complete, False
         else:
             sql = """SELECT pk
                 FROM m150_knotenarten
-                WHERE schachttyp IS NULL OR schachttyp not in ('Schacht', 'Symbol')"""
+                WHERE schachttyp IS NULL OR schachttyp = ''"""
 
             self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
             data = self.db_qkan.fetchone()
-            complete = (data == [])
+            complete = (data is None)
+            logger.debug(f"M150-Referenztabelle wurde getestet: {complete=}")
 
             self.db_qkan.commit()
-            return complete
+            return complete, True
 
     def _init_mappers(self) -> None:
 
@@ -1091,11 +1091,11 @@ class ImportTask(Schadenstexte):
                     'kuerzel',
                 )
 
-                knotentyp = self.db_qkan.get_from_mapper(
+                knotenart = self.db_qkan.get_from_mapper(
                     block.findtext("KG305"),                                 # m150-Knotenart (Ref.-Tab. 116)
                     self.mapper_m150knotenarten,
                     'schacht',
-                    'knotentyp',
+                    'knotenarten',
                     'bezeichnung',
                     'm150',
                     'kommentar',
@@ -1104,16 +1104,20 @@ class ImportTask(Schadenstexte):
 
                 bauwerksart = block.findtext("KG306")                               # m150-Bauwerksart (Ref.-Tab. 117)
 
-                if bauwerksart in ('ZPW', 'ZRUE'):
-                    # Pumpwerke und Wehre ausschließen, weil Linienobjekte
+                # Pumpwerke und Wehre ausschließen, weil Linienobjekte
+                if knotenart in ('Pumpe', 'Wehr'):
                     continue
 
-                if bauwerksart in ('ZRKB', 'ZRRB', 'ZRUB', 'ZRUE'):
-                    schachttyp = 'Speicher'                                          # QKan-Schachtart
-                elif bauwerksart == 'ZAL' or knotentyp == 'A':
-                    schachttyp = 'Auslass'                                           # QKan-Schachtart
+                if knotenart == 'Speicher':
+                    schachttyp = 'Speicher'
+                elif knotenart == 'Schacht':
+                    schachttyp = 'Speicher'
+                elif knotenart == 'Auslass':
+                    schachttyp = 'Auslass'
+                elif knotenart == 'Anschluss':
+                    schachttyp = 'Anschlussschacht'
                 else:
-                    schachttyp = 'Schacht'
+                    schachttyp = 'Symbol'
 
                 geop, geom, sohlhoehe, deckelhoehe = self._get_KG_GO(block, name)
                 if geop is None:
@@ -1128,7 +1132,7 @@ class ImportTask(Schadenstexte):
                     druckdicht=_get_int(block, "KG315", None),
                     entwart=entwart,
                     strasse=block.findtext("KG102", None),
-                    knotentyp=knotentyp,
+                    knotentyp=None,
                     schachttyp=schachttyp,
                     material=material,
                     simstatus=simstatus,
@@ -1139,21 +1143,19 @@ class ImportTask(Schadenstexte):
 
         for schacht in _iter():
 
-            # Datensatz einfügen
-            params = {'schnam': schacht.schnam,
-                      'sohlhoehe': schacht.sohlhoehe, 'deckelhoehe': schacht.deckelhoehe,
-                      'knotentyp': schacht.knotentyp,
-                      'durchm': schacht.durchm, 'druckdicht': schacht.druckdicht,
-                      'entwart': schacht.entwart, 'strasse': schacht.strasse,
-                      'baujahr': schacht.baujahr, 'material': schacht.material,
-                      'simstatus': schacht.simstatus, 'kommentar': schacht.kommentar,
-                      'geop': schacht.geop,
-                      'geom': schacht.geom,
-                      'schachttyp': schacht.schachttyp, 'epsg': QKan.config.epsg}
-
             # Je nach Knotentyp wird das Element unterschiedlichen Tabellen hinzugefügt!
 
-            if schacht.schachttyp in ('Schacht', 'Auslass', 'Speicher'):
+            if schacht.schachttyp in ('Schacht', 'Auslass', 'Speicher', 'Anschlussschacht'):
+                params = {'schnam': schacht.schnam,
+                          'sohlhoehe': schacht.sohlhoehe, 'deckelhoehe': schacht.deckelhoehe,
+                          'knotentyp': schacht.knotentyp,
+                          'durchm': schacht.durchm, 'druckdicht': schacht.druckdicht,
+                          'entwart': schacht.entwart, 'strasse': schacht.strasse,
+                          'baujahr': schacht.baujahr, 'material': schacht.material,
+                          'simstatus': schacht.simstatus, 'kommentar': schacht.kommentar,
+                          'geop': schacht.geop,
+                          'geom': schacht.geom,
+                          'schachttyp': schacht.schachttyp, 'epsg': QKan.config.epsg}
                 if not self.db_qkan.insertdata(
                         tabnam="schaechte",
                         stmt_category='m150-import schaechte',
@@ -1165,11 +1167,16 @@ class ImportTask(Schadenstexte):
                         f'Schacht {schacht.schnam} kann nicht eingefügt werden')
                     raise QkanError
             else:
-                if not self.db_qkan.insertdata(
-                        tabnam="schaechte",
-                        stmt_category='m150-import schaechte',
-                        mute_logger=False,
-                        parameters=params,
+                params = {'bezeichnung': schacht.schnam,
+                          'art': schacht.knotentyp,
+                          'gruppe': 'Entwässerung',
+                          'kommentar': 'M150-Import',
+                          }
+                sql = """INSERT INTO symbole (bezeichnung, art, gruppe, kommentar) VALUES
+                    (:bezeichnung, :art, :gruppe, :kommentar)"""
+                if not self.db_qkan.sql(
+                    sql=sql,
+                    parameters=params,
                 ):
                     logger.error_data(
                         f'{self.__class__.__name__}: '
@@ -1180,7 +1187,6 @@ class ImportTask(Schadenstexte):
 
     def _schaechte_untersucht(self) -> None:
         def _iter() -> Iterator[Schacht_untersucht]:
-            # .//Schacht/../.. nimmt AbwassertechnischeAnlage
             blocks = self.xml.findall("KG/KI/..")
 
             logger.debug(f"Anzahl Schächte: {len(blocks)}")

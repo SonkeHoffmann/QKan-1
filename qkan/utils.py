@@ -61,7 +61,7 @@ class QgisPanelLogger(StreamHandler):
             level=_translate_level(record.levelno),
         )
 
-        if record.levelno >= logging.WARNING:
+        if record.levelno >= logging.INFO:
             self.iface.openMessageLog()
             self.iface.messageBar().pushMessage(
                 "QKan",
@@ -133,13 +133,13 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
     # todo: dynamically decide where to log to, configurable in settings
     qgis_handler = QgisPanelLogger(iface)
     qgis_handler.setFormatter(logging.Formatter(fmt="%(name)s - %(message)s"))
-    qgis_handler.setLevel(logging.DEBUG)
+    qgis_handler.setLevel(logging.INFO)
     logger.addHandler(qgis_handler)
 
     if log_to_console:
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(formatter)
-        stream_handler.setLevel(logging.DEBUG)
+        stream_handler.setLevel(logging.INFO)
         logger.addHandler(stream_handler)
 
     # inject our logger into global logger registry

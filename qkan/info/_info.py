@@ -56,15 +56,8 @@ class Info:
         self.dat8 = dat8
         self.dat9 = dat9
         self.check = check
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='sel_haltungen'
-                                                        """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
 
-        if self.check and liste != []:
-
-
+        if self.check and self.db_qkan.attrlist('sel_haltungen') != []:
             self.abfrage_and_halt = f"AND haltungen.pk IN (SELECT sel_haltungen.pk FROM sel_haltungen)"
             self.abfrage_where_halt = f"WHERE haltungen.pk IN (SELECT sel_haltungen.pk FROM sel_haltungen)"
             self.abfrage_and_sch = f"AND schaechte.pk IN (SELECT sel_schaechte.pk FROM sel_schaechte)"
@@ -1108,13 +1101,7 @@ class Info:
 
 
         # #Infos Anschlussleitungen nach Entwässerungsarten -------------------------------------------
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
-                                                """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
+        if self.db_qkan.attrlist('anschlussleitungen') != []:
             sql = f"""
                         WITH liste AS (
                             SELECT
@@ -1350,13 +1337,7 @@ class Info:
         gs = GridSpec(1, 2, figure=figure, wspace=0.15)
 
         # Darstellungen Haltungen nach Baujahr
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
-                                                """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
+        if self.db_qkan.attrlist('anschlussleitungen') != []:
             sql = f"""
                                 WITH liste AS (
                                     SELECT
@@ -1385,14 +1366,7 @@ class Info:
         # TODO:Darstellung nach Tiefenlage?
 
         # Darstellungen Haltungen nach Material
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
-                                                """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
-
+        if self.db_qkan.attrlist('anschlussleitungen') != []:
             sql = f"""
                         WITH liste AS (
                             SELECT
@@ -1428,13 +1402,7 @@ class Info:
         # Darstellungen Haltungen nach Profiltyp
 
         # Darstellungen Haltungen nach Durchmesser
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
-                                                """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
+        if self.db_qkan.attrlist('anschlussleitungen') != []:
 
             sql = f"""
                         WITH liste AS (
@@ -1461,13 +1429,7 @@ class Info:
             )
 
         # Darstellungen Haltungen nach Profiltyp
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
-                                                """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
+        if self.db_qkan.attrlist('anschlussleitungen') != []:
 
             sql = f"""
                         WITH liste AS (
@@ -1494,13 +1456,7 @@ class Info:
             )
 
         # Darstellungen Haltungen nach Länge
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen'
-                                        """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
+        if self.db_qkan.attrlist('anschlussleitungen') != []:
             sql = f"""
                                     WITH liste AS (
                                     SELECT
@@ -1683,13 +1639,7 @@ class Info:
             self.fig_3.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
         elif self.combo == 'Automatisierte Bewertung':
-            sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='haltungen_untersucht_bewertung'
-                                """
-            if not self.db_qkan.sql(sql):
-                return
-            liste = self.db_qkan.fetchall()
-
-            if liste != []:
+            if self.db_qkan.attrlist('haltungen_untersucht_bewertung') != []:
                 gs = GridSpec(2, 2, figure=figure_3, wspace=0.15, width_ratios=[2, 1])
 
                 sql = f"""
@@ -1809,13 +1759,7 @@ class Info:
 
 
         elif self.combo == 'Bewertung nach SubKanS':
-            sql = f""" SELECT name FROM sqlite_master WHERE type='table' AND name='haltungen_substanz_bewertung'
-                                            """
-            if not self.db_qkan.sql(sql):
-                return
-            liste = self.db_qkan.fetchall()
-
-            if liste != []:
+            if self.db_qkan.attrlist('haltungen_substanz_bewertung') != []:
                 gs = GridSpec(2, 2, figure=figure_3, wspace=0.15, width_ratios=[2, 1])
 
                 sql = f"""
@@ -2050,13 +1994,7 @@ class Info:
             self.fig_10.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
         elif self.combo == 'Automatisierte Bewertung':
-            sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='schaechte_untersucht_bewertung'
-                                        """
-            if not self.db_qkan.sql(sql):
-                return
-            liste = self.db_qkan.fetchall()
-
-            if liste != []:
+            if self.db_qkan.attrlist('schaechte_untersucht_bewertung') != []:
                 gs = GridSpec(2, 2, figure=figure_10, wspace=0.15, width_ratios=[2, 1])
 
                 sql = f"""
@@ -2293,13 +2231,7 @@ class Info:
             self.fig_10.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15, wspace=0.3, hspace=0.4)
 
         elif self.combo == 'Automatisierte Bewertung':
-            sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='anschlussleitungen_untersucht_bewertung'
-                                        """
-            if not self.db_qkan.sql(sql):
-                return
-            liste = self.db_qkan.fetchall()
-
-            if liste != []:
+            if self.db_qkan.attrlist('anschlussleitungen_untersucht_bewertung') != []:
                 gs = GridSpec(2, 2, figure=figure_9, wspace=0.15, width_ratios=[2, 1])
 
                 sql = f"""
@@ -2562,13 +2494,7 @@ class Info:
         gs = GridSpec(2, 2, figure=figure_5, wspace=0.15, width_ratios=[2, 1])
 
         #testen ob tabelle vorhanden:
-        sql = """ SELECT name FROM sqlite_master WHERE type='table' AND name='substanz_haltung_bewertung'
-                """
-        if not self.db_qkan.sql(sql):
-            return
-        liste = self.db_qkan.fetchall()
-
-        if liste != []:
+        if self.db_qkan.attrlist('substanz_haltung_bewertung') != []:
 
             sql = f"""
                         WITH liste AS (
@@ -2810,17 +2736,7 @@ class Info:
             if attr[0][0] != None and attr != []:
                 self.laenge_haltungen_mw = round(attr[0][0]/1000, 2)
 
-            sql = """
-                        SELECT * FROM
-                        sqlite_master
-                        WHERE
-                        name = 'haltungen_untersucht_bewertung' and type = 'table'
-                        """
-            if not self.db_qkan.sql(sql):
-                return
-
-            if len(self.db_qkan.fetchall()) != 0:
-
+            if self.db_qkan.attrlist('haltungen_untersucht_bewertung') != []:
                 sql = """
                             SELECT MAX(haltungen_untersucht_bewertung.datenart)
 
@@ -3184,16 +3100,7 @@ class Info:
             if attr[0][0] != None and attr != []:
                 self.anz_schaechte_mw = attr[0][0]
 
-            sql = """
-                SELECT *
-                FROM sqlite_master
-                WHERE
-                    name = 'schaechte_untersucht_bewertung' and type = 'table'
-            """
-            if not self.db_qkan.sql(sql):
-                return
-
-            if len(self.db_qkan.fetchall()) != 0:
+            if self.db_qkan.attrlist('schaechte_untersucht_bewertung') != []:
                 sql = """
                     SELECT MAX(schaechte_untersucht_bewertung.datenart)
                     FROM schaechte_untersucht_bewertung
