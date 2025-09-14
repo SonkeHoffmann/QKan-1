@@ -2341,6 +2341,64 @@ class ExportTask:
             self.hydraulik_objekte = SubElement(rechen, "HydraulikObjekt")
             # endregion
 
+        if self.vorlage == "":
+
+            Path(self.export_file).write_text(
+                minidom.parseString(tostring(root)).toprettyxml(indent="  ")
+            )
+
+        # if self.selection:
+        #     select_s = []
+        #     select_h = []
+        #
+        #     sql = f"""
+        #                         SELECT
+        #                         pk
+        #                         from sel_schaechte
+        #                      """
+        #
+        #     if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+        #         return
+        #
+        #
+        #     for attr in self.db_qkan.fetchall():
+        #         select_s.append(attr[0])
+        #
+        #     sql = f"""
+        #                                     SELECT
+        #                                     pk
+        #                                     from sel_haltungen
+        #                                  """
+        #
+        #     if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+        #         return
+        #
+        #     for attr in self.db_qkan.fetchall():
+        #         select_h.append(attr[0])
+        #
+        #     select_s_t = tuple(select_s)
+        #
+        #     select_h_t = tuple(select_h)
+        #
+        #
+        #     self.abfrage_s_and = f"AND schaechte.pk in {select_s_t}"
+        #
+        #     self.abfrage_s_where = f"WHERE schaechte.pk in {select_s_t}"
+        #
+        #     self.abfrage_h_and = f"AND haltungen.pk in {select_h_t}"
+        #
+        #     self.abfrage_h_where = f"WHERE haltungen.pk in {select_h_t}"
+        #
+        # else:
+        #     self.abfrage_s_and = ""
+        #     self.abfrage_s_where = ""
+        #     self.abfrage_h_and = ""
+        #     self.abfrage_h_where = ""
+
+        self.abfrage_s_and = ""
+        self.abfrage_s_where = ""
+        self.abfrage_h_and = ""
+        self.abfrage_h_where = ""
         # Export
         if QKan.config.check_export.wehre:
             self._export_wehre()
@@ -2362,60 +2420,6 @@ class ExportTask:
             self._export_zustandsdaten_schaechte()
             self._export_zustandsdaten_anschlussleitungen()
 
-
-        if self.vorlage == "":
-
-            Path(self.export_file).write_text(
-                minidom.parseString(tostring(root)).toprettyxml(indent="  ")
-            )
-
-        if self.selection:
-            select_s = []
-            select_h = []
-
-            sql = f"""
-                                SELECT
-                                pk
-                                from sel_schaechte
-                             """
-
-            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
-                return
-
-
-            for attr in self.db_qkan.fetchall():
-                select_s.append(attr[0])
-
-            sql = f"""
-                                            SELECT
-                                            pk
-                                            from sel_haltungen
-                                         """
-
-            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
-                return
-
-            for attr in self.db_qkan.fetchall():
-                select_h.append(attr[0])
-
-            select_s_t = tuple(select_s)
-
-            select_h_t = tuple(select_h)
-
-
-            self.abfrage_s_and = f"AND schaechte.pk in {select_s_t}"
-
-            self.abfrage_s_where = f"WHERE schaechte.pk in {select_s_t}"
-
-            self.abfrage_h_and = f"AND haltungen.pk in {select_h_t}"
-
-            self.abfrage_h_where = f"WHERE haltungen.pk in {select_h_t}"
-
-        else:
-            self.abfrage_s_and = ""
-            self.abfrage_s_where = ""
-            self.abfrage_h_and = ""
-            self.abfrage_h_where = ""
 
         # Close connection
         del self.db_qkan

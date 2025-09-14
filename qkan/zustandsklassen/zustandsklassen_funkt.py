@@ -24211,7 +24211,6 @@ class Zustandsklassen_funkt:
 					try:
 						db.sql(sql, parameters=data)
 						# db.commit()
-						continue
 					except:
 						pass
 					sql = f"""
