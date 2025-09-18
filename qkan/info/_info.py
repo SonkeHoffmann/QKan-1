@@ -576,7 +576,7 @@ class Info:
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
 
             if len(labels)>1:
-                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
+                label = [str(baujahr) if (baujahr is not None and baujahr % 50 == 0)  else str(baujahr) for baujahr in labels]
                 new_plot.set_xticklabels(label)
             else:
                 new_plot.set_xticklabels(labels)
@@ -671,7 +671,11 @@ class Info:
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
 
             if len(labels)>1:
-                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
+                label = [
+                    str(baujahr) if (baujahr is not None and baujahr != 'sonstige' and baujahr % 50 == 0)
+                    else "" if baujahr is not None
+                    else "None"
+                    for baujahr in labels]
                 new_plot.set_xticklabels(label)
             else:
                 new_plot.set_xticklabels(labels)

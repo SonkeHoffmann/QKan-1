@@ -3666,7 +3666,7 @@ class Zustandsklassen_funkt:
 		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
-		geom_column = 'geop'
+		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
 		Untersuchdat_schacht_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_SCHAECHTE.value
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
@@ -4447,7 +4447,7 @@ class Zustandsklassen_funkt:
 		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
-		geom_column = 'geop'
+		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
 		Untersuchdat_schacht_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_SCHAECHTE.value
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
@@ -14050,7 +14050,7 @@ class Zustandsklassen_funkt:
 		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
-		geom_column = 'geop'
+		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
 		Untersuchdat_schacht_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_SCHAECHTE.value
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
@@ -22445,7 +22445,7 @@ class Zustandsklassen_funkt:
 		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'Untersuchdat_schacht_bewertung'
-		geom_column = 'geop'
+		geom_column = 'geom'
 		uri.setDataSource(schema, table, geom_column)
 		Untersuchdat_schacht_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_SCHAECHTE.value
 		vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
@@ -30444,7 +30444,7 @@ class Zustandsklassen_funkt:
 			pass
 
 		x = os.path.dirname(os.path.abspath(__file__))
-		vlayer.loadNamedStyle(x + '/Untersuchdat_schacht_bewertung_dwa.qml')
+		vlayer.loadNamedStyle(x + '/untersuchdat_schacht_bewertung_dwa.qml')
 		#QgsProject.instance().addMapLayer(vlayer)
 		group = 'Ergebnisse'
 		layersRoot = QgsProject.instance().layerTreeRoot()
@@ -30458,7 +30458,7 @@ class Zustandsklassen_funkt:
 		uri.setDatabase(db.dbname)
 		schema = ''
 		table = 'schaechte_untersucht_bewertung'
-		geom_column = 'geom'
+		geom_column = 'geop'
 		uri.setDataSource(schema, table, geom_column)
 		schaechte_untersucht_bewertung = enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value
 		vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
