@@ -9,12 +9,13 @@ from qgis.PyQt.QtWidgets import (
     QLineEdit,
     QPushButton,
     QWidget,
+    QRadioButton
 )
 from qgis.core import QgsCoordinateReferenceSystem
 from qgis.gui import QgsProjectionSelectionWidget
 
-from qkan import QKan
-from ..utils import get_logger
+from qkan import QKan, enums
+from ..utils import get_logger, QkanError
 
 logger = get_logger("QKan.floodTools.application_dialog")
 
@@ -56,6 +57,9 @@ class AnimationDialog(_Dialog, ANIMATION_CLASS):  # type: ignore
     tf_min_w: QLineEdit
     tg_min_v: QLineEdit
 
+    rb_v1 : QRadioButton
+    rb_v2 : QRadioButton
+
     def __init__(
         self,
         iface,
@@ -87,6 +91,14 @@ class AnimationDialog(_Dialog, ANIMATION_CLASS):  # type: ignore
         self.tf_faktor_v.setText(str(QKan.config.flood.faktor_v))
         self.tf_min_v.setText(str(QKan.config.flood.min_v))
         self.tf_min_w.setText(str(QKan.config.flood.min_w))
+
+        if QKan.config.flood.mikeversion == enums.MikeVersion.v1:
+            self.rb_v1.setChecked(True)
+        elif QKan.config.flood.mikeversion == enums.MikeVersion.v2:
+            self.rb_v2.setChecked(True)
+        else:
+            logger.error_code(f'Keine gültige Mike-Version: {QKan.config.flood.mikeversion}')
+            raise QkanError
 
     def select_import(self) -> None:
         # noinspection PyArgumentList,PyCallByClass

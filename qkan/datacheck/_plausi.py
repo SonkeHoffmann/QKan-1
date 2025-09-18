@@ -87,7 +87,7 @@ class PlausiTask:
                 'limit':     limit,
             }
 
-            logger.info(f'Plausibilitätsprüfung: {warntext} ({pk} - {gruppe})')
+            logger.debug(f'Plausibilitätsprüfung: {warntext} ({pk} - {gruppe})')
 
             if not self.db_qkan.sqlyml(
                 'datacheck_plausi',

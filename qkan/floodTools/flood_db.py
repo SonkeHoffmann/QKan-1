@@ -4,8 +4,9 @@ import os.path
 
 from qgis.utils import spatialite_connect
 
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError
 
+logger = get_logger("QKan.floodTools.flood_db")
 
 class FloodDB:
     """Zugriff auf eine SQLite Datenbank"""
@@ -82,4 +83,5 @@ class FloodDB:
             return None
 
     def commit(self):
+        logger.debug('commit ...')
         self.db.commit()

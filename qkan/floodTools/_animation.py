@@ -16,10 +16,11 @@ from qgis.core import (
     QgsRasterLayer,
     QgsLayerTreeLayer,
 )
+from qgis.gui import QgsMapCanvas
 
-from qkan import QKan
+from qkan import QKan, enums
 from .flood_db import FloodDB
-from ..utils import get_logger
+from ..utils import get_logger, QkanError
 
 logger = get_logger("QKan.floodTools._animation")
 
@@ -37,10 +38,22 @@ class FloodanimationTask:
         self.faktor_v = float(QKan.config.flood.faktor_v)
         self.min_v = float(QKan.config.flood.min_v)
         self.min_w = float(QKan.config.flood.min_w)
+        self.mikeversion = QKan.config.flood.mikeversion
 
     def run(self) -> bool:
 
         iface = QKan.instance.iface
+
+        if self.mikeversion == enums.MikeVersion.v1:
+            self.tabnam_velo = 'result2d__velocity'
+            self.tabnam_wlevel = 'result2d__topo_decimated'
+        elif self.mikeversion == enums.MikeVersion.v2:
+            self.tabnam_velo = "velocity"
+            self.tabnam_wlevel = "topo_decimated"
+        else:
+            logger.error_code(f'Keine gültige Mike-Version: {QKan.config.flood.mikeversion}')
+            raise QkanError
+        logger.debug(f'Mike-Version: {QKan.config.flood.mikeversion}')
 
         # Create progress bar
         self.progress_bar = QProgressBar(iface.messageBar())
@@ -72,14 +85,14 @@ class FloodanimationTask:
 
             vlayer = QgsVectorLayer(
                 result_dir,
-                "result2d__velocity",
+                self.tabnam_velo,
                 "ogr"
             )
             vlayer.setCrs(QgsCoordinateReferenceSystem(self.epsg))
             QgsProject.instance().addMapLayer(vlayer)
 
             o_save_options = QgsVectorFileWriter.SaveVectorOptions()
-            o_save_options.layerName = 'result2d__velocity'
+            o_save_options.layerName = self.tabnam_velo
             o_save_options.driverName = 'SQLite'
             o_save_options.fileEncoding = 'utf-8'
             o_save_options.onlySelectedFeatures = False
@@ -105,14 +118,14 @@ class FloodanimationTask:
 
             vlayer = QgsVectorLayer(
                 result_dir,
-                "result2d__topo_decimated",
+                self.tabnam_wlevel,
                 "ogr"
             )
             vlayer.setCrs(QgsCoordinateReferenceSystem(self.epsg))
             QgsProject.instance().addMapLayer(vlayer)
 
             o_save_options = QgsVectorFileWriter.SaveVectorOptions()
-            o_save_options.layerName = 'result2d__topo_decimated'
+            o_save_options.layerName = self.tabnam_wlevel
             o_save_options.driverName = 'SQLite'
             o_save_options.fileEncoding = 'utf-8'
             o_save_options.onlySelectedFeatures = False
@@ -135,9 +148,9 @@ class FloodanimationTask:
                 # Erstellung Tabelle wlevel
                 sql = "PRAGMA table_list('wlevel')"
                 data = db.select(sql, 'Tabelleninfos')
-                print(f'{data=}\n')
+                logger.debug(f'{data=}\n')
                 if not data:
-                    print(f'not data\n')
+                    logger.debug(f'not data\n')
                     sqls = [
                         """CREATE TABLE IF NOT EXISTS wlevel (
                            pk INTEGER PRIMARY KEY,
@@ -155,9 +168,9 @@ class FloodanimationTask:
                 # Erstellung Tabelle velo
                 sql = "PRAGMA table_list('velo')"
                 data = db.select(sql, 'Tabelleninfos')
-                print(f'{data=}\n')
+                logger.debug(f'{data=}\n')
                 if not data:
-                    print(f'not data\n')
+                    logger.debug(f'not data\n')
                     sqls = [
                         """CREATE TABLE IF NOT EXISTS velo (
                            pk INTEGER PRIMARY KEY,
@@ -183,13 +196,15 @@ class FloodanimationTask:
                 if not db.sql(sql, 'Zurücksetzen der Flächen-Tabelle'):
                     return False
 
+            db.commit()
+
             # Berechnung der Anzahl Zeitschritte
             if self.velo_choice:
-                sql = "PRAGMA table_info('result2d__velocity')"
-                data = db.select(sql, 'Tabelleninfo result2d__velocity')
+                sql = f"PRAGMA table_info('{self.tabnam_velo}')"
+                data = db.select(sql, 'Tabelleninfo velocity')
             elif self.wlevel_choice:
-                sql = "PRAGMA table_info('result2d__topo_decimated')"
-                data = db.select(sql, 'Tabelleninfo result2d__topo_decimated')
+                sql = f"PRAGMA table_info('{self.tabnam_wlevel}')"
+                data = db.select(sql, 'Tabelleninfo water level')
             else:
                 logger.warning("In der Ergebnisauswahl wurde keine Auswahl getroffen. Abbruch!")
                 return False
@@ -202,7 +217,7 @@ class FloodanimationTask:
                     timakt = datetime.now()
                     db.logger.info(f'Zeitschritt {tstep}')
 
-                if self.velo_choice:
+                if self.wlevel_choice:
                     # Flächen mit maßgeblichem Wasserstand übertragen
                     sql = f'''
                         INSERT INTO wlevel (h, tanf, tend, geom)
@@ -211,13 +226,13 @@ class FloodanimationTask:
                             datetime(julianday('{starttime}') + {tstep} * {interval}) AS tanf,
                             datetime(julianday('{starttime}') + {tstep + 1} * {interval}) AS tend,
                             CastToXY(CastToPolygon(GEOMETRY)) AS geom
-                        FROM result2d__topo_decimated
+                        FROM {self.tabnam_wlevel}
                         WHERE wl_{tstep} >= {self.min_w}
                         '''
                     if not db.sql(sql, 'Erzeugen der wlevel-Flächen'):
                         return False
 
-                if self.wlevel_choice:
+                if self.velo_choice:
                     # Geschwindikeitspfeile für maßgebliche Geschwindigkeiten erzeugen
                     sql = f'''
                         INSERT INTO velo (v, tanf, tend, geom)
@@ -232,7 +247,7 @@ class FloodanimationTask:
                                           y(GEOMETRY)+v_{tstep}*sin(v_dir_{tstep}/57.2958)*{self.faktor_v},
                                           {self.epsg})
                             ) as geom
-                        FROM result2d__velocity
+                        FROM {self.tabnam_velo}
                         WHERE v_{tstep} >= {self.min_v}
                         '''
                     if not db.sql(sql, 'Erzeugen der wlevel-Flächen'):
@@ -240,74 +255,75 @@ class FloodanimationTask:
 
             db.commit()
 
-            if self.wlevel_choice:
-                vlayer = QgsVectorLayer(
-                    self.db_name + '|layername=wlevel',
-                    "wlevel",
-                    "ogr"
-                )
-                QgsProject.instance().addMapLayer(vlayer)
-                qmlfile = os.path.join(QKan.template_dir, 'qml', "waterlevel.qml")
-                try:
-                    vlayer.loadNamedStyle(qmlfile)
-                except:
-                    db.logger.error(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
-                    iface.messageBar().pushMessage("Programmfehler",
-                                                   f"Die Styledatei {qmlfile} konnte nicht gelesen werden!",
-                                                   level=Qgis.MessageLevel.Critical)
-                    return False
-
-            if self.velo_choice:
-                vlayer = QgsVectorLayer(
-                    self.db_name + '|layername=velo',
-                    "velo",
-                    "ogr"
-                )
-                QgsProject.instance().addMapLayer(vlayer)
-                qmlfile = os.path.join(QKan.template_dir, 'qml', "velocity.qml")
-                try:
-                    vlayer.loadNamedStyle(qmlfile)
-                except:
-                    db.logger.error(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
-                    iface.messageBar().pushMessage("Programmfehler",
-                                                   f"Die Styledatei {qmlfile} konnte nicht gelesen werden!",
-                                                   level=Qgis.MessageLevel.Critical)
-                    return False
-
-            canvas = iface.mapCanvas()
-
-            # set frame duration
-            timeController = canvas.temporalController()
-            intervall = QgsInterval()
-            intervall.setMinutes(interval * 1440)
-            timeController.setFrameDuration(intervall)
-
-            # set frame rate
-            timeController.setFramesPerSecond(0.5)
-
-            # set time range
-            timerange = QgsTemporalUtils.calculateTemporalRangeForProject(QgsProject.instance())
-            if timerange.isInfinite():
-                db.logger.error(f'Die Ergebnisdaten enthalten keine Zeitschritte')
-                iface.messageBar().pushMessage("Datenfehler", "Eine Ergebnistabelle enthält keine Zeitschritte. "
-                                                              "Möglicherweise wurden bei der Ergebnisausgabe nicht "
-                                                              "alle Zeitschrittausgaben aktiviert.",
-                                               level=Qgis.MessageLevel.Warning)
+        if self.wlevel_choice:
+            vlayer = QgsVectorLayer(
+                self.db_name + '|layername=wlevel',
+                "wlevel",
+                "ogr"
+            )
+            QgsProject.instance().addMapLayer(vlayer)
+            qmlfile = os.path.join(QKan.template_dir, 'qml', "waterlevel.qml")
+            try:
+                vlayer.loadNamedStyle(qmlfile)
+            except:
+                db.logger.error(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
+                iface.messageBar().pushMessage("Programmfehler",
+                                               f"Die Styledatei {qmlfile} konnte nicht gelesen werden!",
+                                               level=Qgis.MessageLevel.Critical)
                 return False
 
-            timeController.setTemporalExtents(timerange)
-
-            # set navigation mode to 'animated'
-            timeController.setNavigationMode(1)
-
-            urlWithParams = f"crs=EPSG:{self.epsg}&format=image/png&layers=web&" \
-                            f"styles&url=https://sgx.geodatenzentrum.de/wms_topplus_open"
-            rlayer = QgsRasterLayer(urlWithParams, 'TopPlusOpen', 'wms')
-            if not rlayer.isValid():
-                db.logger.error("Layer failed to load!")
+        if self.velo_choice:
+            vlayer = QgsVectorLayer(
+                self.db_name + '|layername=velo',
+                "velo",
+                "ogr"
+            )
+            QgsProject.instance().addMapLayer(vlayer)
+            qmlfile = os.path.join(QKan.template_dir, 'qml', "velocity.qml")
+            try:
+                vlayer.loadNamedStyle(qmlfile)
+            except:
+                db.logger.error(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
+                iface.messageBar().pushMessage("Programmfehler",
+                                               f"Die Styledatei {qmlfile} konnte nicht gelesen werden!",
+                                               level=Qgis.MessageLevel.Critical)
                 return False
-            QgsProject.instance().addMapLayer(rlayer, False)
-            QgsProject.instance().layerTreeRoot().insertChildNode(2, QgsLayerTreeLayer(rlayer))
 
-            iface.messageBar().pushMessage("Hinweis", 'Bitte Bedienfeld "Zeitsteuerung aktivieren"', level=Qgis.MessageLevel.Info)
+        canvas = iface.mapCanvas()
+        # canvas = QgsMapCanvas()
+
+        # set frame duration
+        timeController = canvas.temporalController()
+        intervall = QgsInterval()
+        intervall.setMinutes(interval * 1440)
+        timeController.setFrameDuration(intervall)
+
+        # set frame rate
+        timeController.setFramesPerSecond(0.5)
+
+        # set time range
+        timerange = QgsTemporalUtils.calculateTemporalRangeForProject(QgsProject.instance())
+        if timerange.isInfinite():
+            db.logger.error(f'Die Ergebnisdaten enthalten keine Zeitschritte')
+            iface.messageBar().pushMessage("Datenfehler", "Eine Ergebnistabelle enthält keine Zeitschritte. "
+                                                          "Möglicherweise wurden bei der Ergebnisausgabe nicht "
+                                                          "alle Zeitschrittausgaben aktiviert.",
+                                           level=Qgis.MessageLevel.Warning)
+            return False
+
+        timeController.setTemporalExtents(timerange)
+
+        # set navigation mode to 'animated'
+        timeController.setNavigationMode(1)
+
+        urlWithParams = f"crs=EPSG:{self.epsg}&format=image/png&layers=web&" \
+                        f"styles&url=https://sgx.geodatenzentrum.de/wms_topplus_open"
+        rlayer = QgsRasterLayer(urlWithParams, 'TopPlusOpen', 'wms')
+        if not rlayer.isValid():
+            db.logger.error("Layer failed to load!")
+            return False
+        QgsProject.instance().addMapLayer(rlayer, False)
+        QgsProject.instance().layerTreeRoot().insertChildNode(2, QgsLayerTreeLayer(rlayer))
+
+        iface.messageBar().pushMessage("Hinweis", 'Bitte Bedienfeld "Zeitsteuerung aktivieren"', level=Qgis.MessageLevel.Info)
 

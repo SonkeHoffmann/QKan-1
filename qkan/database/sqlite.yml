@@ -2,13 +2,13 @@ database_create_notizen: "
 CREATE TABLE notizen (
     pk INTEGER PRIMARY KEY,
     notiz TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_notizen_geom: "
 SELECT AddGeometryColumn('notizen', 'geom', :epsg, 'POINT', 2);"
 
 database_createspatialindex_notizen_geom: "
-SELECT CreateSpatialIndex('notizen', 'geom')"
+SELECT CreateSpatialIndex('notizen', 'geom');"
 
 database_create_haltungen: "
 CREATE TABLE haltungen (
@@ -20,8 +20,8 @@ CREATE TABLE haltungen (
     breite REAL,                                    /* Profilbreite (mm) */
     laenge REAL,                                    /* abweichende Haltungslänge (m) */
     aussendurchmesser REAL,
-    sohleoben REAL,                                 /* abweichende Sohlhöhe oben (m) */
-    sohleunten REAL,                                /* abweichende Sohlhöhe unten (m) */
+    sohleoben REAL,                                 /* Sohlhöhe oben (m) */
+    sohleunten REAL,                                /* Sohlhöhe unten (m) */
     baujahr INT,
     eigentum TEXT,                                  /* join eigentum.name */
     teilgebiet TEXT,                                /* join teilgebiet.tgnam */
@@ -31,7 +31,7 @@ CREATE TABLE haltungen (
     material TEXT,                                  /* join material.bezeichnung */
     profilauskleidung TEXT,
     innenmaterial TEXT,
-    ks REAL DEFAULT 1.5,                            /* abs. Rauheit (Prandtl-Colebrook) */
+    ks REAL DEFAULT 1.5,                            /* abs. Rauheit (mmm, Prandtl-Colebrook) */
     haltungstyp TEXT DEFAULT 'Haltung',             /* join haltungstypen.bezeichnung */
     simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
     rwanschluss INTEGER DEFAULT 1,                  /* soll bei TEZG-Erstellung berücksichtigt werden */
@@ -41,13 +41,13 @@ CREATE TABLE haltungen (
     xschun REAL,
     yschun REAL,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_haltungen_geom: "
-SELECT AddGeometryColumn('haltungen', 'geom', :epsg, 'LINESTRING', 2)"
+SELECT AddGeometryColumn('haltungen', 'geom', :epsg, 'LINESTRING', 2);"
 
 database_createspatialindex_haltungen_geom: "
-SELECT CreateSpatialIndex('haltungen', 'geom')"
+SELECT CreateSpatialIndex('haltungen', 'geom');"
 
 # Datenuebernahme aus Schaechten -- aktuell deaktiviert
 database_haltungen_trig_new_hal: "
@@ -168,13 +168,13 @@ CREATE TABLE haltungen_untersucht(
     xschun REAL,
     yschun REAL,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_haltungen_untersucht_geom: "
-SELECT AddGeometryColumn('haltungen_untersucht', 'geom', :epsg, 'LINESTRING', 2)"
+SELECT AddGeometryColumn('haltungen_untersucht', 'geom', :epsg, 'LINESTRING', 2);"
 
 database_createspatialindex_haltungen_untersucht_geom: "
-SELECT CreateSpatialIndex('haltungen_untersucht', 'geom')"
+SELECT CreateSpatialIndex('haltungen_untersucht', 'geom');"
 
 database_create_untersuchdat_haltung: "
 CREATE TABLE untersuchdat_haltung (
@@ -212,13 +212,13 @@ CREATE TABLE untersuchdat_haltung (
     ZB INTEGER,
     ZS INTEGER,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_untersuchdat_haltung_geom: "
-SELECT AddGeometryColumn('untersuchdat_haltung', 'geom', :epsg, 'LINESTRING',2)"
+SELECT AddGeometryColumn('untersuchdat_haltung', 'geom', :epsg, 'LINESTRING',2);"
 
 database_createspatialindex_untersuchdat_haltung_geom: "
-SELECT CreateSpatialIndex('untersuchdat_haltung', 'geom')"
+SELECT CreateSpatialIndex('untersuchdat_haltung', 'geom');"
 
 database_create_anschlussleitungen: "
 CREATE TABLE anschlussleitungen (
@@ -230,8 +230,8 @@ CREATE TABLE anschlussleitungen (
     breite REAL,                                    /* Profilbreite (mm) */
     laenge REAL,                                    /* abweichende Haltungslänge (m) */
     aussendurchmesser REAL,
-    sohleoben REAL,                                 /* abweichende Sohlhöhe oben (m) */
-    sohleunten REAL,                                /* abweichende Sohlhöhe unten (m) */
+    sohleoben REAL,                                 /* Sohlhöhe oben (m) */
+    sohleunten REAL,                                /* Sohlhöhe unten (m) */
     baujahr INTEGER,
     haltnam TEXT,                                   /* Anschluss an Haltung */
     urstation REAL,                                 /* Anschlussposition gegen Fließrichtung */
@@ -251,13 +251,13 @@ CREATE TABLE anschlussleitungen (
     xschun REAL,
     yschun REAL,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_anschlussleitungen_geom: "
-SELECT AddGeometryColumn('anschlussleitungen', 'geom', :epsg, 'LINESTRING',2)"
+SELECT AddGeometryColumn('anschlussleitungen', 'geom', :epsg, 'LINESTRING',2);"
 
 database_createspatialindex_anschlussleitungen_geom: "
-SELECT CreateSpatialIndex('anschlussleitungen', 'geom')"
+SELECT CreateSpatialIndex('anschlussleitungen', 'geom');"
 
 database_create_anschlussleitungen_untersucht: "
 CREATE TABLE anschlussleitungen_untersucht(
@@ -288,13 +288,13 @@ CREATE TABLE anschlussleitungen_untersucht(
     xschun REAL,
     yschun REAL,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_anschlussleitungen_untersucht_geom: "
-SELECT AddGeometryColumn('anschlussleitungen_untersucht', 'geom', :epsg, 'LINESTRING',2)"
+SELECT AddGeometryColumn('anschlussleitungen_untersucht', 'geom', :epsg, 'LINESTRING',2);"
 
 database_createspatialindex_anschlussleitungen_untersucht_geom: "
-SELECT CreateSpatialIndex('anschlussleitungen_untersucht', 'geom')"
+SELECT CreateSpatialIndex('anschlussleitungen_untersucht', 'geom');"
 
 database_create_untersuchdat_anschlussleitung: "
 CREATE TABLE untersuchdat_anschlussleitung (
@@ -332,13 +332,13 @@ CREATE TABLE untersuchdat_anschlussleitung (
     ZB INTEGER,
     ZS INTEGER,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_untersuchdat_anschlussleitung_geom: "
-SELECT AddGeometryColumn('untersuchdat_anschlussleitung', 'geom', :epsg, 'LINESTRING',2)"
+SELECT AddGeometryColumn('untersuchdat_anschlussleitung', 'geom', :epsg, 'LINESTRING',2);"
 
 database_createspatialindex_untersuchdat_anschlussleitung_geom: "
-SELECT CreateSpatialIndex('untersuchdat_anschlussleitung', 'geom')"
+SELECT CreateSpatialIndex('untersuchdat_anschlussleitung', 'geom');"
 
 database_create_schaechte: "
 CREATE TABLE schaechte (
@@ -362,7 +362,7 @@ CREATE TABLE schaechte (
     xsch REAL, 
     ysch REAL,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_schaechte_geop: "
 SELECT AddGeometryColumn('schaechte', 'geop', :epsg, 'POINT', 2);"
@@ -371,10 +371,10 @@ database_add_schaechte_geom: "
 SELECT AddGeometryColumn('schaechte', 'geom', :epsg, 'MULTILINESTRING',2);"
 
 database_createspatialindex_schaechte_geom: "
-SELECT CreateSpatialIndex('schaechte', 'geom')"
+SELECT CreateSpatialIndex('schaechte', 'geom');"
 
 database_createspatialindex_schaechte_geop: "
-SELECT CreateSpatialIndex('schaechte', 'geop')"
+SELECT CreateSpatialIndex('schaechte', 'geop');"
 
 database_create_schaechte_untersucht: "
 CREATE TABLE schaechte_untersucht (
@@ -403,7 +403,7 @@ database_add_schaechte_untersucht_geop: "
 SELECT AddGeometryColumn('schaechte_untersucht', 'geop', :epsg, 'POINT',2);"
 
 database_createspatialindex_schaechte_untersucht_geop: "
-SELECT CreateSpatialIndex('schaechte_untersucht', 'geop')"
+SELECT CreateSpatialIndex('schaechte_untersucht', 'geop');"
 
 database_create_untersuchdat_schacht: "
 CREATE TABLE untersuchdat_schacht (
@@ -445,7 +445,7 @@ database_add_untersuchdat_schacht_geom: "
 SELECT AddGeometryColumn('untersuchdat_schacht', 'geom', :epsg, 'LINESTRING',2);"
 
 database_createspatialindex_untersuchdat_schacht_geom: "
-SELECT CreateSpatialIndex('untersuchdat_schacht', 'geom')"
+SELECT CreateSpatialIndex('untersuchdat_schacht', 'geom');"
 
 # Einzugsgebiete 
 # Entsprechen in HYSTEM-EXTRAN 7.x den Siedlungstypen
@@ -462,13 +462,13 @@ CREATE TABLE einzugsgebiete (
     stdmittel REAL,                         /* stdmittel (h/d) */
     fremdwas REAL,                          /* fremdwas (%) */
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_einzugsgebiete_geom: "
-SELECT AddGeometryColumn('einzugsgebiete', 'geom', :epsg, 'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('einzugsgebiete', 'geom', :epsg, 'MULTIPOLYGON',2);"
 
 database_createspatialindex_einzugsgebiete_geom: "
-SELECT CreateSpatialIndex('einzugsgebiete', 'geom')"
+SELECT CreateSpatialIndex('einzugsgebiete', 'geom');"
 
 # Teilgebiete: Auswahl von Objekten in verschiedenen Tabellen für verschiedene 
 # Aufgaben, z. B. automatische Verknüpfung von befestigten Flächen und direkten 
@@ -478,13 +478,13 @@ CREATE TABLE teilgebiete (
     pk INTEGER PRIMARY KEY,
     tgnam TEXT,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_teilgebiete_geom: "
-SELECT AddGeometryColumn('teilgebiete', 'geom', :epsg, 'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('teilgebiete', 'geom', :epsg, 'MULTIPOLYGON',2);"
 
 database_createspatialindex_teilgebiete_geom: "
-SELECT CreateSpatialIndex('teilgebiete', 'geom')"
+SELECT CreateSpatialIndex('teilgebiete', 'geom');"
 
 database_create_flaechen: "
 CREATE TABLE flaechen (
@@ -530,22 +530,22 @@ CREATE TABLE linkfl (
 );"
 
 database_add_linkfl_geom: "
-SELECT AddGeometryColumn('linkfl', 'geom', :epsg, 'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('linkfl', 'geom', :epsg, 'MULTIPOLYGON',2);"
 
 database_add_linkfl_gbuf: "
-SELECT AddGeometryColumn('linkfl', 'gbuf', :epsg, 'MULTIPOLYGON', 2)"
+SELECT AddGeometryColumn('linkfl', 'gbuf', :epsg, 'MULTIPOLYGON', 2);"
 
 database_add_linkfl_glink: "
-SELECT AddGeometryColumn('linkfl', 'glink', :epsg, 'LINESTRING', 2)"
+SELECT AddGeometryColumn('linkfl', 'glink', :epsg, 'LINESTRING', 2);"
 
 database_createspatialindex_linkfl_geom: "
-SELECT CreateSpatialIndex('linkfl', 'geom')"
+SELECT CreateSpatialIndex('linkfl', 'geom');"
 
 database_createspatialindex_linkfl_gbuf: "
-SELECT CreateSpatialIndex('linkfl', 'gbuf')"
+SELECT CreateSpatialIndex('linkfl', 'gbuf');"
 
 database_createspatialindex_linkfl_glink: "
-SELECT CreateSpatialIndex('linkfl', 'glink')"
+SELECT CreateSpatialIndex('linkfl', 'glink');"
 
 # Anbindung Direkteinleitungen:
 # Die Tabelle linksw verwaltet die Anbindung von Gebäuden an Haltungen. Diese Anbindung
@@ -557,25 +557,25 @@ CREATE TABLE linksw (
     elnam TEXT,
     haltnam TEXT,               /* join haltungen.haltnam */
     schnam TEXT,                /* join schaechte.schnam */
-    teilgebiet TEXT)"
+    teilgebiet TEXT);"
 
 database_add_linksw_geom: "
-SELECT AddGeometryColumn('linksw', 'geom',  :epsg, 'POLYGON',      2)"
+SELECT AddGeometryColumn('linksw', 'geom',  :epsg, 'POLYGON',      2);"
 
 database_add_linksw_gbuf: "
-SELECT AddGeometryColumn('linksw', 'gbuf',  :epsg, 'MULTIPOLYGON', 2)"
+SELECT AddGeometryColumn('linksw', 'gbuf',  :epsg, 'MULTIPOLYGON', 2);"
 
 database_add_linksw_glink: "
-SELECT AddGeometryColumn('linksw', 'glink', :epsg, 'LINESTRING',   2)"
+SELECT AddGeometryColumn('linksw', 'glink', :epsg, 'LINESTRING',   2);"
 
 database_createspatialindex_linksw_geom: "
-SELECT CreateSpatialIndex('linksw', 'geom')"
+SELECT CreateSpatialIndex('linksw', 'geom');"
 
 database_createspatialindex_linksw_gbuf: "
-SELECT CreateSpatialIndex('linksw', 'gbuf')"
+SELECT CreateSpatialIndex('linksw', 'gbuf');"
 
 database_createspatialindex_linksw_glink: "
-SELECT CreateSpatialIndex('linksw', 'glink')"
+SELECT CreateSpatialIndex('linksw', 'glink');"
 
 database_create_tezg: "
 CREATE TABLE tezg (
@@ -591,13 +591,13 @@ CREATE TABLE tezg (
     teilgebiet TEXT,            /* join teilgebiet.tgnam */
     abflussparameter TEXT,      /* als Vorgabe fuer automatisch erzeugte unbef Flaechen */
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_tezg_geom: "
-SELECT AddGeometryColumn('tezg', 'geom', :epsg, 'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('tezg', 'geom', :epsg, 'MULTIPOLYGON',2);"
 
 database_createspatialindex_tezg_geom: "
-SELECT CreateSpatialIndex('tezg', 'geom')"
+SELECT CreateSpatialIndex('tezg', 'geom');"
 
 # Direkte Einleitungen:
 # Erfasst alle Direkteinleitungen mit festem SW-Zufluss (m³/a)
@@ -609,17 +609,17 @@ CREATE TABLE einleit (
     haltnam TEXT,               /* join haltungen.haltnam */
     schnam TEXT,                /* join schaechte.schnam */
     teilgebiet TEXT,            /* join teilgebiet.tgnam  */
-    zufluss REAL,
-    ew REAL,
+    zufluss REAL,               /* Zufluss (l/s) */
+    ew REAL,                    /* Einwohner */
     einzugsgebiet TEXT,         /* join einzugsgebiete.tgnam */
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_einleit_geom: "
-SELECT AddGeometryColumn('einleit', 'geom', :epsg, 'POINT',2)"
+SELECT AddGeometryColumn('einleit', 'geom', :epsg, 'POINT',2);"
 
 database_createspatialindex_einleit_geom: "
-SELECT CreateSpatialIndex('einleit', 'geom')"
+SELECT CreateSpatialIndex('einleit', 'geom');"
 
 # Einleitungen aus Aussengebieten 
 # Erfasst alle Außengebiete
@@ -637,13 +637,13 @@ CREATE TABLE aussengebiete (
     regenschreiber TEXT, 
     teilgebiet TEXT,            /* join teilgebiet.tgnam  */
     kommentar TEXT, 
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_aussengebiete_geom: "
-SELECT AddGeometryColumn('aussengebiete', 'geom', :epsg, 'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('aussengebiete', 'geom', :epsg, 'MULTIPOLYGON',2);"
 
 database_createspatialindex_aussengebiete_geom: "
-SELECT CreateSpatialIndex('aussengebiete', 'geom')"
+SELECT CreateSpatialIndex('aussengebiete', 'geom');"
 
 # Anbindung Aussengebiete 
 # Die Tabelle linkageb verwaltet die Anbindung von Aussengebieten an Schächte. Diese Anbindung
@@ -653,13 +653,13 @@ database_create_linkageb: "
 CREATE TABLE linkageb (
     pk INTEGER PRIMARY KEY,
     gebnam TEXT,
-    schnam TEXT)"
+    schnam TEXT);"
 
 database_add_linkageb_glink: "
-SELECT AddGeometryColumn('linkageb', 'glink', :epsg, 'LINESTRING', 2)"
+SELECT AddGeometryColumn('linkageb', 'glink', :epsg, 'LINESTRING', 2);"
 
 database_createspatialindex_linkageb_glink: "
-SELECT CreateSpatialIndex('linkageb', 'glink')"
+SELECT CreateSpatialIndex('linkageb', 'glink');"
 
 # Hilfstabelle für den Flächen-Export
 database_create_flaechen_he8: "
@@ -683,13 +683,13 @@ CREATE TABLE IF NOT EXISTS flaechen_he8 (
     IstPolygonalflaeche SMALLINT, 
     ZuordnungGesperrt SMALLINT, 
     LastModified TEXT DEFAULT CURRENT_TIMESTAMP, 
-    Kommentar TEXT)"
+    Kommentar TEXT);"
 
 database_add_flaechen_he8_geometry: "
-SELECT AddGeometryColumn('flaechen_he8', 'Geometry', -1,'MULTIPOLYGON',2)"
+SELECT AddGeometryColumn('flaechen_he8', 'Geometry', -1,'MULTIPOLYGON',2);"
 
 database_createspatialindex_flaechen_he8_geometry: "
-SELECT CreateSpatialIndex('flaechen_he8', 'Geometry')"
+SELECT CreateSpatialIndex('flaechen_he8', 'Geometry');"
 
 database_create_simulationsstatus: "
 CREATE TABLE simulationsstatus (
@@ -702,22 +702,22 @@ CREATE TABLE simulationsstatus (
     isybau TEXT,                        /* BFR Abwasser */
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
-    kommentar TEXT)"
+    kommentar TEXT);"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_simulationsstatus: "
+database_trigger_simulationsstatus: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON simulationsstatus
-                BEGIN
-                    UPDATE haltungen
-                    SET simstatus = new.bezeichnung
-                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-                    UPDATE schaechte
-                    SET simstatus = new.bezeichnung
-                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-                    UPDATE anschlussleitungen
-                    SET simstatus = new.bezeichnung
-                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-                END;"
+BEGIN
+    UPDATE haltungen
+    SET simstatus = new.bezeichnung
+    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
+    UPDATE schaechte
+    SET simstatus = new.bezeichnung
+    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
+    UPDATE anschlussleitungen
+    SET simstatus = new.bezeichnung
+    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
+END;"
 
 database_create_material: "
 CREATE TABLE material (
@@ -727,10 +727,10 @@ CREATE TABLE material (
     isybau TEXT,                        /* BFR Abwasser */
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
-    kommentar TEXT)"
+    kommentar TEXT);"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_material: "
+database_trigger_material: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON material
 BEGIN
     UPDATE haltungen
@@ -750,7 +750,7 @@ CREATE TABLE auslasstypen (
     bezeichnung TEXT,
     he_nr INTEGER,
     mu_nr INTEGER,
-    kp_nr INTEGER)"
+    kp_nr INTEGER);"
 
 database_insert_auslasstypen: "
 INSERT INTO auslasstypen (
@@ -759,7 +759,7 @@ VALUES ('frei', 0, NULL, NULL),
        ('normal', 1, NULL, NULL),
        ('konstant', 2, NULL, NULL),
        ('Tide', 3, NULL, NULL),
-       ('Zeitreihe', 4, NULL, NULL)"
+       ('Zeitreihe', 4, NULL, NULL);"
 
 database_create_abflussparameter: "
 CREATE TABLE abflussparameter (
@@ -776,13 +776,25 @@ CREATE TABLE abflussparameter (
     bodenklasse TEXT,                       /* impervious = NULL, pervious = JOIN TO bodenklasse.bknam */
     flaechentyp TEXT,                       /* JOIN TO flaechentypen.bezeichnung */
     kommentar TEXT, 
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+# Änderungen an der Bezeichnung in der Detailtabelle nachführen
+database_trigger_abflussparameter: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON abflussparameter
+BEGIN
+    UPDATE flaechen
+    SET abflussparameter = new.apnam
+    WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
+    UPDATE tezg
+    SET abflussparameter = new.apnam
+    WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
+END;"
 
 database_create_flaechentypen: "
 CREATE TABLE IF NOT EXISTS flaechentypen (
     pk INTEGER PRIMARY KEY,
     bezeichnung TEXT,
-    he_nr INTEGER)"
+    he_nr INTEGER);"
 
 database_insert_flaechentypen: "
 INSERT INTO flaechentypen (
@@ -791,8 +803,7 @@ Values
     ('Gebäude', 0),
     ('Straße', 1),
     ('Grünfläche', 2),
-    ('Gewässer', 3)
-"
+    ('Gewässer', 3);"
 
 database_create_bodenklassen: "
 CREATE TABLE bodenklassen (
@@ -805,14 +816,14 @@ CREATE TABLE bodenklassen (
     regenerationskonstante REAL,                /* (1/d) */
     saettigungswassergehalt REAL,               /* (mm) */
     kommentar TEXT, 
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_create_abflusstypen: "
 CREATE TABLE abflusstypen (
     pk INTEGER PRIMARY KEY, 
     abflusstyp TEXT,
     he_nr INTEGER,              /* JOIN he.Flaeche.BerechnungSpeicherkonstante */
-    kp_nr INTEGER)"
+    kp_nr INTEGER);"
 
 database_insert_abflusstypen: "
 INSERT INTO abflusstypen (
@@ -820,12 +831,12 @@ abflusstyp, he_nr, kp_nr)
 Values 
     ('Speicherkaskade', 0, 0),
     ('Fliesszeiten', 1, 1),
-    ('Schwerpunktlaufzeit', 2, 2)"
+    ('Schwerpunktlaufzeit', 2, 2);"
 
 database_create_knotentypen: "
 CREATE TABLE knotentypen (
     pk INTEGER PRIMARY KEY, 
-    knotentyp TEXT)"
+    knotentyp TEXT);"
 
 database_insert_knotentypen: "
 INSERT INTO knotentypen (
@@ -838,12 +849,12 @@ Values
     ('Normalschacht'),
     ('Tiefpunkt'),
     ('Verzweigung'),
-    ('Fliesszeiten')"
+    ('Fliesszeiten');"
 
 database_create_schachttypen: "
 CREATE TABLE schachttypen (
     pk INTEGER PRIMARY KEY, 
-    schachttyp TEXT)"
+    schachttyp TEXT);"
 
 database_insert_schachttypen: "
 INSERT INTO schachttypen (
@@ -852,13 +863,13 @@ Values
     ('Auslass'),
     ('Schacht'),
     ('Anschlussschacht'),
-    ('Speicher')"
+    ('Speicher');"
 
 database_create_eigentum: "
 CREATE TABLE eigentum (
     pk INTEGER PRIMARY KEY,
     name TEXT, 
-    kommentar TEXT)"
+    kommentar TEXT);"
 
 # Hilfstabelle für den DYNA-Export
 # TODO: als temporäre Tabelle in das Export-Modul verschieben
@@ -874,7 +885,7 @@ CREATE TABLE IF NOT EXISTS dynahal (
     anzobob INTEGER,
     anzobun INTEGER,
     anzunun INTEGER,
-    anzunob INTEGER)"
+    anzunob INTEGER);"
 
 # Tabelle Gruppen:
 # Bearbeitungen, die auf Auswahlen basieren, verwenden ausschließlich die
@@ -899,7 +910,7 @@ CREATE TABLE gruppen (
     teilgebiet TEXT,                               /* join teilgebiet.tgnam */
     tabelle TEXT,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_create_profile: "
 CREATE TABLE profile (
@@ -916,16 +927,16 @@ CREATE TABLE profile (
 );"
 
 # Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_profile: "
+database_trigger_profile: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON profile
-                BEGIN
-                    UPDATE haltungen
-                    SET profilnam = new.profilnam
-                    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
-                    UPDATE anschlussleitungen
-                    SET profilnam = new.profilnam
-                    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
-                END;"
+BEGIN
+    UPDATE haltungen
+    SET profilnam = new.profilnam
+    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
+    UPDATE anschlussleitungen
+    SET profilnam = new.profilnam
+    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
+END;"
 
 database_create_entwaesserungsarten: "
 CREATE TABLE entwaesserungsarten (
@@ -941,25 +952,25 @@ CREATE TABLE entwaesserungsarten (
 );"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_entwaesserungsarten: "
+database_trigger_entwaesserungsarten: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON entwaesserungsarten
-                BEGIN
-                    UPDATE haltungen
-                    SET entwart = new.bezeichnung
-                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-                    UPDATE schaechte
-                    SET entwart = new.bezeichnung
-                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-                    UPDATE anschlussleitungen
-                    SET entwart = new.bezeichnung
-                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-                END;"
+BEGIN
+    UPDATE haltungen
+    SET entwart = new.bezeichnung
+    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
+    UPDATE schaechte
+    SET entwart = new.bezeichnung
+    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
+    UPDATE anschlussleitungen
+    SET entwart = new.bezeichnung
+    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
+END;"
 
 database_create_haltungstypen: "
 CREATE TABLE haltungstypen(
     pk INTEGER PRIMARY KEY, 
     bezeichnung TEXT, 
-    bemerkung TEXT)"
+    bemerkung TEXT);"
 
 database_insert_haltungstypen: "
 INSERT INTO haltungstypen (
@@ -972,7 +983,7 @@ VALUES
     ('Schieber', 'HYSTEM-EXTRAN 8'),
     ('GrundSeitenauslass', 'HYSTEM-EXTRAN 8'),
     ('Pumpe', NULL),
-    ('Wehr', NULL)"
+    ('Wehr', NULL);"
 
 # Tabelle Untersuchungsrichtung wird nur für das Nachschlagefeld benötigt
 database_create_untersuchrichtung: "
@@ -983,14 +994,14 @@ CREATE TABLE untersuchrichtung (
     isybau TEXT,                        /* BFR Abwasser */
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
-    bemerkung TEXT)"
+    bemerkung TEXT);"
 
 database_insert_untersuchrichtung: "
 INSERT INTO untersuchrichtung (
 kuerzel, bezeichnung, bemerkung)
 VALUES
     (NULL, 'in Fließrichtung', 'automatisch hinzugefügt'),
-    (NULL, 'gegen Fließrichtung', 'automatisch hinzugefügt')"
+    (NULL, 'gegen Fließrichtung', 'automatisch hinzugefügt');"
 
 database_create_wetter: "
 CREATE TABLE wetter (
@@ -1000,7 +1011,7 @@ CREATE TABLE wetter (
     isybau TEXT,                        /* BFR Abwasser */
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
-    bemerkung TEXT)"
+    bemerkung TEXT);"
 
 database_insert_wetter: "
 INSERT INTO wetter (
@@ -1009,14 +1020,14 @@ VALUES
     (0, 'keine Angabe', NULL),
     (1, 'kein Niederschlag', NULL),
     (2, 'Regen', NULL),
-    (3, 'Schnee- oder Eisschmelzwasser', NULL)"
+    (3, 'Schnee- oder Eisschmelzwasser', NULL);"
 
 database_create_bewertungsart: "
 CREATE TABLE bewertungsart (
     pk INTEGER PRIMARY KEY, 
     kuerzel INTEGER, 
     bezeichnung TEXT, 
-    bemerkung TEXT)"
+    bemerkung TEXT);"
 
 database_insert_bewertungsart: "
 INSERT INTO bewertungsart (
@@ -1026,14 +1037,14 @@ VALUES
     (1, 'ISYBAU 2006/DIN-EN 13508-2:2011', NULL),
     (2, 'ISYBAU 2001', NULL),
     (3, 'ISYBAU 1996', NULL),
-    (4, 'Anderes Verfahren', NULL)"
+    (4, 'Anderes Verfahren', NULL);"
 
 database_create_pumpentypen: "
 CREATE TABLE pumpentypen (
     pk INTEGER PRIMARY KEY, 
     bezeichnung TEXT, 
     he_nr INTEGER,
-    isybau INTEGER)"
+    isybau INTEGER);"
 
 database_insert_pumpentypen: "
 INSERT INTO pumpentypen (
@@ -1043,7 +1054,7 @@ VALUES
     ('Online Schaltstufen', 2, 2),
     ('Online Kennlinie', 3, 3),
     ('Online Wasserstandsdifferenz', 4, 4),
-    ('Ideal', 5, 5)"
+    ('Ideal', 5, 5);"
 
 # Abfragen für Plausibilitätsprüfungen
 database_create_pruefsql: "
@@ -1056,7 +1067,7 @@ CREATE TABLE IF NOT EXISTS pruefsql (
     sql TEXT,
     layername TEXT,                     /* Objektsuche Layername */
     attrname TEXT,                      /* Objektsuche Attribut zur Objektidentifikation, */
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 # Ergebnisse der Plausibilitätsprüfungen
 database_create_pruefliste: "
@@ -1068,7 +1079,7 @@ CREATE TABLE IF NOT EXISTS pruefliste (
     layername TEXT,                     /* Objektsuche Layername */
     attrname TEXT,                      /* Objektsuche Attribut zur Objektidentifikation, */
     objname TEXT,                       /* Objektsuche Objektname */
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 # Referenztabelle für Plausi Zustandsklassen
 database_create_reflist_zustand: "
@@ -1086,7 +1097,7 @@ CREATE TABLE info (
     pk INTEGER PRIMARY KEY, 
     subject TEXT, 
     value TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_insert_info: "
 INSERT INTO info (
@@ -1100,7 +1111,7 @@ CREATE TABLE IF NOT EXISTS fotos (
                     untersuchtag TEXT,
                     objekt TEXT,
                     datei TEXT,
-                    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+                    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_create_videos: "
 CREATE TABLE IF NOT EXISTS videos (
@@ -1109,7 +1120,7 @@ CREATE TABLE IF NOT EXISTS videos (
                     untersuchtag TEXT,
                     objekt TEXT,
                     datei TEXT,
-                    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+                    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_create_symbole: "
 CREATE TABLE IF NOT EXISTS symbole (
@@ -1119,13 +1130,13 @@ CREATE TABLE IF NOT EXISTS symbole (
     link TEXT,
     gruppe TEXT,
     kommentar TEXT,
-    createdat TEXT DEFAULT CURRENT_TIMESTAMP)"
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
 database_add_symbole_geom: "
-SELECT AddGeometryColumn('symbole', 'geom', :epsg, 'POINT', 2)"
+SELECT AddGeometryColumn('symbole', 'geom', :epsg, 'POINT', 2);"
 
 database_createspatialindex_symbole_geom: "
-SELECT CreateSpatialIndex('symbole', 'geom')"
+SELECT CreateSpatialIndex('symbole', 'geom');"
 
 database_create_symbolkatalog: "
 CREATE TABLE IF NOT EXISTS symbolkatalog (
@@ -1176,7 +1187,7 @@ WITH um AS (
     GROUP BY untersuchhal, schoben, schunten)
 SELECT uh.*
 FROM untersuchdat_haltung AS uh
-JOIN um USING(untersuchhal, schoben, schunten)"
+JOIN um USING(untersuchhal, schoben, schunten);"
 
 database_getepsg: "
 SELECT srid
@@ -1185,13 +1196,13 @@ WHERE Lower(f_table_name) = Lower('haltungen')
 AND Lower(f_geometry_column) = Lower('geom');"
 
 database_altertable_addgeometrycolumn: "
-SELECT AddGeometryColumn(?, ?, ?, ?, ?)"
+SELECT AddGeometryColumn(?, ?, ?, ?, ?);"
 
 database_altertable_discardgeometrycolumn: "
-SELECT DiscardGeometryColumn(?, ?)"
+SELECT DiscardGeometryColumn(?, ?);"
 
 database_altertable_createspatialindex: "
-SELECT CreateSpatialIndex(?, ?)"
+SELECT CreateSpatialIndex(?, ?);"
 
 database_insertdata_schaechte: "
 INSERT INTO schaechte (
@@ -1489,10 +1500,10 @@ database_update_info: "
 UPDATE info SET value = ? WHERE subject = 'version'"
 
 database_insertversion: "
-INSERT INTO info (subject, value) Values ('version', '1.9.9')"
+INSERT INTO info (subject, value) Values ('version', '1.9.9');"
 
 database_pragma: "
-PRAGMA table_info({tabnam})"
+PRAGMA table_info({tabnam});"
 
 database_foreign_key_off: "
 PRAGMA foreign_keys=OFF;"
@@ -1530,11 +1541,11 @@ PRAGMA foreign_keys=ON;"
 
 database_insert_into: "
 INSERT INTO {reftable} ({attr_name}, {attr_key}, {attr_bem})
-VALUES (?, ?, ?)"
+VALUES (?, ?, ?);"
 
 database_insert_short: "
 INSERT INTO {reftable} ({attr_name}, {attr_key}, {attr_short}, {attr_bem})
-VALUES (?, ?, ?, ?)"
+VALUES (?, ?, ?, ?);"
 
 database_get_bezeichnung: "
 SELECT bezeichnung FROM {tabnam}"
@@ -1543,22 +1554,22 @@ database_set_bezeichnung: "
 UPDATE {tabnam} SET bezeichnung = :qkan_bez WHERE bezeichnung = :bezeichnung"
 
 database_create_sel_haltungen: "
-CREATE TABLE IF NOT EXISTS sel_haltungen (pk INTEGER PRIMARY KEY)"
+CREATE TABLE IF NOT EXISTS sel_haltungen (pk INTEGER PRIMARY KEY);"
 
 database_create_sel_schaechte: "
-CREATE TABLE IF NOT EXISTS sel_schaechte (pk INTEGER PRIMARY KEY)"
+CREATE TABLE IF NOT EXISTS sel_schaechte (pk INTEGER PRIMARY KEY);"
 
 database_create_sel_flaechen: "
-CREATE TABLE IF NOT EXISTS sel_flaechen (pk INTEGER PRIMARY KEY)"
+CREATE TABLE IF NOT EXISTS sel_flaechen (pk INTEGER PRIMARY KEY);"
 
 database_insert_sel_haltungen: "
-INSERT INTO sel_haltungen (pk) VALUES (:pk)"
+INSERT INTO sel_haltungen (pk) VALUES (:pk);"
 
 database_insert_sel_schaechte: "
-INSERT INTO sel_schaechte (pk) VALUES (:pk)"
+INSERT INTO sel_schaechte (pk) VALUES (:pk);"
 
 database_insert_sel_flaechen: "
-INSERT INTO sel_flaechen (pk) VALUES (:pk)"
+INSERT INTO sel_flaechen (pk) VALUES (:pk);"
 
 database_clear_sel_haltungen: "
 DELETE FROM sel_haltungen"
@@ -1612,7 +1623,7 @@ WITH doppelte AS (
 )
 UPDATE {tab}
 SET {attr} = printf('{prefix}%d', ROWID)
-WHERE {attr} IN (SELECT {attr} FROM doppelte)"
+WHERE {attr} IN (SELECT {attr} FROM doppelte);"
 
 database_checkflaechenbilanz: "
 WITH flintersect AS (
@@ -1660,7 +1671,7 @@ LEFT JOIN haltungen AS t_hob
 ON t_sch.schnam = t_hob.schoben
 LEFT JOIN haltungen AS t_hun
 ON t_sch.schnam = t_hun.schunten
-WHERE t_hun.pk IS NULL)"
+WHERE t_hun.pk IS NULL);"
 
 database_knotentyp_end: "
 UPDATE schaechte SET knotentyp = 'Endschacht' WHERE schaechte.schnam IN
@@ -1670,7 +1681,7 @@ JOIN haltungen AS t_hob                 /* nur Schaechte mit Haltung oben */
 ON t_sch.schnam = t_hob.schunten
 LEFT JOIN haltungen AS t_hun
 ON t_sch.schnam = t_hun.schoben
-WHERE t_hun.pk IS NULL)"
+WHERE t_hun.pk IS NULL);"
 
 database_knotentyp_hoch: "
 UPDATE schaechte SET knotentyp = 'Hochpunkt' WHERE schaechte.schnam IN
@@ -1685,7 +1696,7 @@ UPDATE schaechte SET knotentyp = 'Hochpunkt' WHERE schaechte.schnam IN
   JOIN schaechte AS t_sob
   ON t_sob.schnam = t_hob.schunten
   WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)>ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
-        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)>ifnull(t_hun.sohleunten,t_sun.sohlhoehe))"
+        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)>ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
 
 database_knotentyp_tief: "
 UPDATE schaechte SET knotentyp = 'Tiefpunkt' WHERE schaechte.schnam IN
@@ -1700,7 +1711,7 @@ UPDATE schaechte SET knotentyp = 'Tiefpunkt' WHERE schaechte.schnam IN
   JOIN schaechte AS t_sob
   ON t_sob.schnam = t_hob.schunten
   WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)<ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
-        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)<ifnull(t_hun.sohleunten,t_sun.sohlhoehe))"
+        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)<ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
 
 database_knotentyp_zweig: "
 UPDATE schaechte SET knotentyp = 'Verzweigung' WHERE schaechte.schnam IN
@@ -1709,7 +1720,7 @@ UPDATE schaechte SET knotentyp = 'Verzweigung' WHERE schaechte.schnam IN
   JOIN haltungen AS t_hun
   ON t_sch.schnam = t_hun.schoben
   GROUP BY t_sch.pk
-  HAVING count(*) > 1)"
+  HAVING count(*) > 1);"
 
 database_knotentyp_einzel: "
 UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
@@ -1720,4 +1731,3 @@ UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
   LEFT JOIN haltungen AS t_hob
   ON t_sch.schnam = t_hob.schunten
   WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL)"
-

@@ -405,7 +405,7 @@ def layersadapt(
         eval_node_types(dbQK)  # in qkan.database.qkan_utils
 
     # Wenn noch kein Titel vergeben, dann QKan mit Versionsnummer setzen
-    if not project.title():
+    if project.title() is None or project.title() == '':
         project.setTitle("QKan Version {}".format(QKan.qgsVersion))
 
     # if status_neustart:

@@ -3,7 +3,7 @@ import os
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.plugin import QKanPlugin
 
 # noinspection PyUnresolvedReferences
@@ -11,7 +11,7 @@ from . import resources  # noqa: F401
 from ._animation import FloodanimationTask
 from .application_dialog import AnimationDialog
 from qkan.tools.qkan_utils import get_default_dir
-from ..utils import get_logger
+from ..utils import get_logger, QkanError
 
 logger = get_logger("QKan.floodTools.application_dialog")
 
@@ -54,16 +54,23 @@ class FloodTools(QKanPlugin):
             QKan.config.flood.faktor_v = float(self.animation_dlg.tf_faktor_v.text())
             QKan.config.flood.min_v = float(self.animation_dlg.tf_min_v.text())
             QKan.config.flood.min_w = float(self.animation_dlg.tf_min_w.text())
+            if self.animation_dlg.rb_v1.isChecked():
+                QKan.config.flood.mikeversion = enums.MikeVersion.v1
+            elif self.animation_dlg.rb_v2.isChecked():
+                QKan.config.flood.mikeversion = enums.MikeVersion.v2
+            else:
+                logger.error_code(f'Keine gültige Mike-Version: {QKan.config.flood.mikeversion}')
+                raise QkanError
 
             if not QKan.config.flood.import_dir:
 
-                logger.error("Fehler: Es wurde kein Verzeichnis ausgewählt!")
+                logger.warning("Fehler: Es wurde kein Verzeichnis ausgewählt!")
                 self.iface.messageBar().pushMessage(
                     "Fehler:",
                     "Es wurde kein Verzeichnis ausgewählt!",
                     level=Qgis.MessageLevel.Critical,
                 )
-                return False
+                return
             else:
                 crs: QgsCoordinateReferenceSystem = self.animation_dlg.pw_epsg.crs()
 
@@ -82,7 +89,7 @@ class FloodTools(QKanPlugin):
                         crs.srsid(),
                         crs.ellipsoidAcronym(),
                     )
-                    return False
+                    return
                 # else:
                     # TODO: This should all be run in a QgsTask to prevent the main
                     #  thread/GUI from hanging. However this seems to either not work

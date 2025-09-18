@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>580</width>
-    <height>522</height>
+    <height>580</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,8 +31,8 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>470</y>
+     <x>150</x>
+     <y>530</y>
      <width>271</width>
      <height>32</height>
     </rect>
@@ -445,7 +445,7 @@
   <widget class="QGroupBox" name="gb_action">
    <property name="geometry">
     <rect>
-     <x>350</x>
+     <x>20</x>
      <y>340</y>
      <width>211</width>
      <height>111</height>
@@ -592,7 +592,7 @@
   <widget class="QGroupBox" name="gb_action_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>250</x>
      <y>340</y>
      <width>311</width>
      <height>111</height>
@@ -883,6 +883,87 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="gb_action_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>460</y>
+     <width>211</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string comment="Pfad der Zieldatenbank">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auswahl der zu verarbeitenden Ergebnisdaten aus der HE-Berechnung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="statusTip">
+    <string>Auswahl der zu verarbeitenden Ergebnisdaten aus der HE-Berechnung</string>
+   </property>
+   <property name="whatsThis">
+    <string>Auswahl der zu verarbeitenden Ergebnisdaten aus der HE-Berechnung</string>
+   </property>
+   <property name="title">
+    <string>Mike+ Version</string>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <widget class="QRadioButton" name="rb_v1">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>61</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>2023</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rb_v2">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>20</y>
+      <width>61</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>2025</string>
     </property>
    </widget>
   </widget>

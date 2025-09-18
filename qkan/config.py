@@ -320,14 +320,15 @@ class STRAKATConfig(ClassObject):
 
 
 class FLOODConfig(ClassObject):
-    import_dir: str = ""    # Importverzeichnis mit den Geodatabase-Ergebnisdaten
-    database: str = ""      # Ergebnisdatenbank
-    velo: bool = True       # Creation of volocity arrows checked
-    wlevel: bool = True     # Creation of water level triangles checked
-    gdblayer: bool = False  # Keeps GDB-Layer in layer list
-    faktor_v: float = 5.    # Factor for arrow length in relation to velocity
-    min_w: float = 0.1      # Minimal water level to display
-    min_v: float = 0.1      # Minimal velocitiy to display
+    import_dir: str = ""                        # Importverzeichnis mit den Geodatabase-Ergebnisdaten
+    database: str = ""                          # Ergebnisdatenbank
+    velo: bool = True                           # Creation of volocity arrows checked
+    wlevel: bool = True                         # Creation of water level triangles checked
+    gdblayer: bool = False                      # Keeps GDB-Layer in layer list
+    faktor_v: float = 5.                        # Factor for arrow length in relation to velocity
+    min_w: float = 0.1                          # Minimal water level to display
+    min_v: float = 0.1                          # Minimal velocitiy to display
+    mikeversion: enums.MikeVersion = enums.MikeVersion.v1     # aktuell 2023 und 2025
 
 
 class MUConfig(ClassObject):
@@ -337,13 +338,6 @@ class MUConfig(ClassObject):
     template: str = ""
     import_file: str = ""  # Import-Datenbank *.sqlite
     export_file: str = ""  # Export-Datenbank *.sqlite
-
-
-class SWMMConfig(ClassObject):
-    database: str = ""      # QKan-Projektdatenbank
-    template: str = ""
-    import_file: str = ""   # Importdatei *.inp
-    export_file: str = ""   # Exportdatei *.inp
 
 
 class ProjectConfig(ClassObject):

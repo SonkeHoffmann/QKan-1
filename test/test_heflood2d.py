@@ -6,7 +6,7 @@ from qgis.testing import unittest
 
 from qkan import QKan
 from qkan.floodTools.application import FloodTools
-
+from qkan import enums
 
 # Fuer einen Test mit PyCharm Workingdir auf C:\Users\...\default\python\plugins einstellen (d. h. "\test" löschen)
 class TestHEFlood(QgisTest):
@@ -29,6 +29,7 @@ class TestHEFlood(QgisTest):
         QKan.config.flood.faktor_v = 2.
         QKan.config.flood.min_v = 0.05
         QKan.config.flood.min_w = 0.05
+        QKan.config.flood.mikeversion = enums.MikeVersion.v1
 
         run = FloodTools(iface())
         erg = run._dofloodAnimation()

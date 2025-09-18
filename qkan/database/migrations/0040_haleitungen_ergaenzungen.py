@@ -1,10 +1,12 @@
-from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
-from qkan.tools.qkan_utils import loadlayer
-from qgis.utils import pluginDirectory
-from qkan import QKan, enums
 import os
 
+from qgis.core import QgsProject
+
+from qkan.database.dbfunc import DBConnection
+from qkan.utils import get_logger
+from qgis.utils import pluginDirectory
+from qkan import QKan, enums
+from qkan.tools.qkan_utils import loadlayer
 VERSION = "3.4.8"  # must be higher than previous one and correspond with qkan_database.py: __dbVersion__
 
 logger = get_logger("QKan.database.migrations.0040")
@@ -15,10 +17,34 @@ def run(dbcon: DBConnection) -> bool:
 
     sql_file = os.path.join(pluginDirectory("qkan"), 'database/migrations', '0040_sqlite.sql')
     try:
-        dbcon.executefile(sql_file
+        dbcon.executefile(sql_file,
+                          replacefun = lambda sqltext: sqltext.format(epsg=QKan.config.epsg)
                           )
     except BaseException as err:
         logger.debug(f"Fehler in {__name__}.0040, {sql_file =}")
+        return False
+
+    project = QgsProject.instance()
+    vlayers = project.mapLayersByName('Geometrien')         # können mehrere sein, auch wenn's nicht gewollt ist ...
+    for vlayer in vlayers:
+        qmlfile = os.path.join(QKan.template_dir, 'qml', "Geometrien.qml")
+        try:
+            vlayer.loadNamedStyle(qmlfile)
+        except:
+            logger.error_code(f'Die Styledatei {qmlfile} konnte nicht gelesen werden!')
+            return False
+
+    if not loadlayer(
+            enums.LAYERBEZ.MATERIAL.value,
+            'material',
+            None,
+            'Material.qml',
+            'qkan_material.ui',
+            'Referenztabellen',
+            6,):
+        logger.error(
+            f"Fehler beim Einfügen des Layers Material"
+        )
         return False
 
     dbcon.commit()

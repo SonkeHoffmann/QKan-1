@@ -473,17 +473,14 @@ class DBConnection:
                 # für Nachführung von Attributen in Haltungen bei Änderung in Referenztabellen
 
                 tablis = [
-                    # "new_hal",  # Fangen von Haltungen auf Schächte
-                    # "mod_hal",
-
-                    "update_simulationsstatus",  # Änderung in Referenztabelle
-                    "update_material",
-                    "update_profile",
-                    "update_entwaesserungsarten",
+                    "profile",
+                    "entwaesserungsarten",
+                    "simulationsstatus",
+                    "material",
+                    "abflussparameter",
                 ]
-
                 for tabnam in tablis:
-                    sqlnam = f"database_haltungen_trig_{tabnam}"
+                    sqlnam = f"database_trigger_{tabnam}"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
                             stmt_category=sqlnam,

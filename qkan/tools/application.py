@@ -4,7 +4,6 @@ Diverse Tools zur QKan-Datenbank
 """
 import os
 from typing import Optional, cast
-import shutil
 
 from qgis.PyQt.QtWidgets import QListWidgetItem
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject

@@ -25,8 +25,8 @@ __copyright__ = "(C) 2020, Joerg Hoettges"
 from qgis.core import QgsProject
 
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
+from qkan import QKan
 
 logger = get_logger("QKan.tools.k_dbAdapt")
 
@@ -54,6 +54,7 @@ def dbAdapt(
 
     if projectFile:
         qkan_project.setFileName(projectFile)
+        qkan_project.setTitle("QKan Version {}".format(QKan.qgsVersion))
         qkan_project.write()
 
     with DBConnection(

@@ -109,6 +109,7 @@ class LAYERBEZ(enum.Enum):
     SYMBOLKATALOG           = "Symbolkatalog"
     FLAECHENTYPEN           = "Flächentypen"
     M150_KNOTENARTEN        = "M150 Knotenarten"
+    MATERIAL                = "Material"
 
     #Ergebnislayer
     ZK_EINZELSCHAEDEN_HA_LEITUNGEN  = "Ergebnis_ZK_Einzelschäden_HA_Leitungen"
@@ -135,3 +136,9 @@ class LAYERBEZ(enum.Enum):
     SYNC_GROUP_SCHAECHTE            = "Vergleich Schächte"
     SYNC_GROUP_HALTUNGEN            = "Vergleich Haltungen"
     SYNC_GROUP_ANSCHLUSSLEITUNGEN   = "Vergleich HA-Leitungen"
+
+
+class MikeVersion(enum.Enum):
+    """Programmversion der Ergebnisdateien zu Mike+"""
+    v1 = '2023'
+    v2 = '2025'

@@ -1,4 +1,1648 @@
+database_create_notizen: "
+CREATE TABLE IF NOT EXISTS qkan.notizen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    notiz TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING) );"
+
+database_createspatialindex_notizen_geom: "
+CREATE INDEX idx_notizen_geom ON qkan.notizen USING GIST(geom);"
+
+database_create_haltungen: "
+CREATE TABLE IF NOT EXISTS qkan.haltungen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    haltnam TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
+    breite NUMERIC(4,0),                            /* Profilbreite (mm) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    aussendurchmesser NUMERIC(4,0),
+    sohleoben NUMERIC(7,3),                         /* Sohlhöhe oben (m) */
+    sohleunten NUMERIC(7,3),                        /* Sohlhöhe unten (m) */
+    baujahr INT,
+    eigentum TEXT,                                  /* join eigentum.name */
+    teilgebiet TEXT,                                /* join teilgebiet.tgnam */
+    strasse TEXT,                                   /* für ISYBAU benötigt */
+    profilnam TEXT DEFAULT 'Kreisquerschnitt',      /* join profile.profilnam */
+    entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
+    material TEXT,                                  /* join material.bezeichnung */
+    profilauskleidung TEXT,
+    innenmaterial TEXT,
+    ks NUMERIC(7,4) DEFAULT 1.5,                    /* abs. Rauheit (mm, Prandtl-Colebrook) */
+    haltungstyp TEXT DEFAULT 'Haltung',             /* join haltungstypen.bezeichnung */
+    simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
+    rwanschluss INTEGER DEFAULT 1,                  /* soll bei TEZG-Erstellung berücksichtigt werden */
+    druckdicht INTEGER DEFAULT 0,                   /* Druckleitung */
+    xschob NUMERIC(11,3),
+    yschob NUMERIC(11,3),
+    xschun NUMERIC(11,3),
+    yschun NUMERIC(11,3),
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_haltungen_geom: "
+CREATE INDEX idx_haltungen_geom ON qkan.haltungen USING GIST(geom);"
+
+# Datenuebernahme aus Schaechten -- aktuell deaktiviert
+database_haltungen_trig_new_hal: "
+CREATE TRIGGER IF NOT EXISTS trig_new_hal
+AFTER INSERT ON qkan.haltungen
+BEGIN
+    UPDATE haltungen 
+    SET haltnam = (
+        SELECT coalesce(new.haltnam, s.schnam || '.1') AS haltnam
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, 1))
+    )
+    WHERE pk = new.pk AND (haltnam = '' OR haltnam IS NULL);
+
+    UPDATE haltungen SET
+    (schoben, sohleoben) = (
+        SELECT
+            coalesce(new.schnam, s.schnam) AS schoben, 
+            coalesce(new.sohleoben, old.sohleoben, s.sohlhoehe) AS sohleoben
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, 1))
+    )
+    WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
+
+    UPDATE haltungen SET
+    (schunten, sohleunten) = (
+        SELECT
+            coalesce(new.schnam, s.schnam) AS schunten, 
+            coalesce(new.sohleunten, old.sohleunten, s.sohlhoehe) AS sohleunten
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, -1))
+    )
+    WHERE pk = new.pk AND (schunten = '' OR schunten IS NULL);
+END;"
+
+# Datenuebernahme aus Schaechten -- aktuell deaktiviert
+database_haltungen_trig_mod_hal: "
+CREATE TRIGGER IF NOT EXISTS trig_mod_hal
+AFTER UPDATE OF geom ON qkan.haltungen
+BEGIN
+    UPDATE haltungen
+    SET (schoben, sohleoben) = 
+    (   SELECT
+            coalesce(s.schnam, OLD.schoben),
+            coalesce(OLD.sohleoben, NEW.sohleoben, s.sohlhoehe)
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, 1))
+    )
+    WHERE pk = old.pk;
+
+    UPDATE haltungen
+    SET (schunten, sohleunten) = 
+    (   SELECT 
+            coalesce(s.schnam, OLD.schunten),
+            coalesce(OLD.sohleunten, NEW.sohleunten, s.sohlhoehe)
+        FROM schaechte AS s
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = ST_PointN(new.geom, -1))
+    )
+    WHERE pk = old.pk;
+END;"
+
+database_create_haltungen_untersucht: "
+CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht(
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    haltnam TEXT,
+    bezugspunkt TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
+    breite NUMERIC(4,0),                            /* Profilbreite (mm) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    baujahr INTEGER,
+    id INTEGER,                                     /* absolute Nummer der Inspektion */
+    untersuchtag TEXT,
+    untersucher TEXT,
+    untersuchrichtung TEXT,
+    wetter INTEGER DEFAULT 0,
+    bewertungsart TEXT,
+    bewertungstag TEXT,
+    strasse TEXT,
+    datenart TEXT,
+    auftragsbezeichnung TEXT,
+    max_ZD INTEGER,
+    max_ZB INTEGER, 
+    max_ZS INTEGER,
+    xschob NUMERIC(11,3),
+    yschob NUMERIC(11,3),
+    xschun NUMERIC(11,3),
+    yschun NUMERIC(11,3),
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_haltungen_untersucht_geom: "
+CREATE INDEX idx_haltungen_untersucht_geom ON qkan.haltungen_untersucht USING GIST(geom);"
+
+database_create_untersuchdat_haltung: "
+CREATE TABLE IF NOT EXISTS qkan.untersuchdat_haltung (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    untersuchhal TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam  */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    id INTEGER,                                     /* absolute Nummer der Inspektion */
+    untersuchtag TEXT,
+    bandnr INTEGER,
+    videozaehler TEXT,
+    inspektionslaenge NUMERIC(7,3),
+    station NUMERIC(7,3),
+    stationtext NUMERIC(7,3),
+    timecode TEXT,
+    video_offset NUMERIC(7,1),
+    langtext TEXT,
+    kuerzel TEXT,
+    charakt1 TEXT,
+    charakt2 TEXT,
+    quantnr1 NUMERIC(7,2), 
+    quantnr2 NUMERIC(7,2), 
+    streckenschaden TEXT,
+    streckenschaden_lfdnr INTEGER,
+    pos_von INTEGER, 
+    pos_bis INTEGER,
+    foto_dateiname TEXT,
+    film_dateiname TEXT,
+    ordner_bild TEXT,
+    ordner_video TEXT,
+    filmtyp INTEGER,
+    video_start INTEGER,
+    video_ende INTEGER,
+    ZD INTEGER,
+    ZB INTEGER,
+    ZS INTEGER,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_untersuchdat_haltung_geom: "
+CREATE INDEX idx_untersuchdat_haltung_geom ON qkan.untersuchdat_haltung USING GIST(geom);"
+
+database_create_anschlussleitungen: "
+CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    leitnam TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
+    breite NUMERIC(4,0),                            /* Profilbreite (mm) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    aussendurchmesser NUMERIC(4,0),
+    sohleoben NUMERIC(7,3),                         /* Sohlhöhe oben (m) */
+    sohleunten NUMERIC(7,3),                        /* Sohlhöhe unten (m) */
+    baujahr INTEGER,
+    haltnam TEXT,                                   /* Anschluss an Haltung */
+    urstation NUMERIC(7,3),                         /* Anschlussposition gegen Fließrichtung */
+    ursprung TEXT,                                  /* Adresse oder Objektbezeichnung */
+    anschlusstyp TEXT,
+    teilgebiet TEXT,                                /* join teilgebiet.tgnam */
+    strasse TEXT,                                   /* für ISYBAU benötigt */
+    profilnam TEXT DEFAULT 'Kreisquerschnitt',      /* join profile.profilnam */
+    entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
+    material TEXT,                                  /* join material.bezeichnung */
+    profilauskleidung TEXT,
+    innenmaterial TEXT,
+    ks NUMERIC(7,4) DEFAULT 1.5,                    /* abs. Rauheit (mm, Prandtl-Colebrook) */
+    simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
+    xschob NUMERIC(11,3),
+    yschob NUMERIC(11,3),
+    xschun NUMERIC(11,3),
+    yschun NUMERIC(11,3),
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_anschlussleitungen_geom: "
+CREATE INDEX idx_anschlussleitungen_geom ON qkan.anschlussleitungen USING GIST(geom);"
+
+database_create_anschlussleitungen_untersucht: "
+CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen_untersucht(
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    leitnam TEXT,
+    bezugspunkt TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
+    breite NUMERIC(4,0),                            /* Profilbreite (mm) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    baujahr INTEGER,
+    id INTEGER,                                     /* absolute Nummer der Inspektion */
+    untersuchtag TEXT,
+    untersucher TEXT,
+    untersuchrichtung TEXT,
+    wetter INTEGER DEFAULT 0,
+    bewertungsart TEXT,
+    bewertungstag TEXT,
+    strasse TEXT,
+    datenart TEXT,
+    auftragsbezeichnung TEXT,
+    max_ZD INTEGER,
+    max_ZB INTEGER, 
+    max_ZS INTEGER,
+    xschob NUMERIC(11,3),
+    yschob NUMERIC(11,3),
+    xschun NUMERIC(11,3),
+    yschun NUMERIC(11,3),
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_anschlussleitungen_untersucht_geom: "
+CREATE INDEX idx_anschlussleitungen_untersucht_geom ON qkan.anschlussleitungen_untersucht USING GIST(geom);"
+
+database_create_untersuchdat_anschlussleitung: "
+CREATE TABLE IF NOT EXISTS qkan.untersuchdat_anschlussleitung (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    untersuchleit TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam  */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    id INTEGER,                                     /* absolute Nummer der Inspektion */
+    untersuchtag TEXT,
+    bandnr INTEGER,
+    videozaehler TEXT,
+    inspektionslaenge NUMERIC(7,3),
+    station NUMERIC(7,3),
+    stationtext NUMERIC(7,3),
+    timecode TEXT,
+    video_offset NUMERIC(7,1),
+    langtext TEXT,
+    kuerzel TEXT,
+    charakt1 TEXT,
+    charakt2 TEXT,
+    quantnr1 NUMERIC(7,2), 
+    quantnr2 NUMERIC(7,2), 
+    streckenschaden TEXT,
+    streckenschaden_lfdnr INTEGER,
+    pos_von INTEGER, 
+    pos_bis INTEGER,
+    foto_dateiname TEXT,
+    film_dateiname TEXT,
+    ordner_bild TEXT,
+    ordner_video TEXT,
+    filmtyp INTEGER,
+    video_start INTEGER,
+    video_ende INTEGER,
+    ZD INTEGER,
+    ZB INTEGER,
+    ZS INTEGER,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_untersuchdat_anschlussleitung_geom: "
+CREATE INDEX idx_untersuchdat_anschlussleitung_geom ON qkan.untersuchdat_anschlussleitung USING GIST(geom);"
+
+database_create_schaechte: "
+CREATE TABLE IF NOT EXISTS qkan.schaechte (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    schnam TEXT,
+    sohlhoehe NUMERIC(7,3),
+    deckelhoehe NUMERIC(7,3),
+    durchm NUMERIC(4,2),                            /* Schachtdurchmesser (m) */
+    druckdicht INTEGER, 
+    ueberstauflaeche NUMERIC(7,0) DEFAULT 0,
+    entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
+    strasse TEXT,
+    baujahr INTEGER,
+    eigentum TEXT,                                  /* join eigentum.name */
+    teilgebiet TEXT,                                /* join teilgebiet.tgnam */
+    knotentyp TEXT,                                 /* join knotentypen.knotentyp */
+    auslasstyp TEXT,                                /* join auslasstypen.bezeichnung */
+    schachttyp TEXT DEFAULT 'Schacht',              /* join schachttypen.schachttyp */
+    simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
+    material TEXT,                                  /* join material.bezeichnung */
+    xsch NUMERIC(11,3), 
+    ysch NUMERIC(11,3),
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geop geometry(POINT, :epsg) ,
+    geom geometry(MULTILINESTRING, :epsg) );"
+
+database_createspatialindex_schaechte_geom: "
+CREATE INDEX idx_schaechte_geom ON qkan.schaechte USING GIST(geom);"
+
+database_createspatialindex_schaechte_geop: "
+CREATE INDEX idx_schaechte_geop ON qkan.schaechte USING GIST(geop);"
+
+database_create_schaechte_untersucht: "
+CREATE TABLE IF NOT EXISTS qkan.schaechte_untersucht (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    schnam TEXT, 
+    durchm NUMERIC(4,2),                            /* Schachtdurchmesser (m) */
+    baujahr INTEGER,
+    bezugspunkt TEXT,
+    id INTEGER,                                     /* absolute Nummer der Inspektion */
+    untersuchtag TEXT, 
+    untersucher TEXT, 
+    wetter INTEGER DEFAULT 0, 
+    strasse TEXT,
+    bewertungsart TEXT, 
+    bewertungstag TEXT,
+    datenart TEXT,
+    auftragsbezeichnung TEXT,
+    max_ZD INTEGER,
+    max_ZB INTEGER,
+    max_ZS INTEGER, 
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geop geometry(POINT, :epsg) );"
+
+database_createspatialindex_schaechte_untersucht_geop: "
+CREATE INDEX idx_schaechte_untersucht_geop ON qkan.schaechte_untersucht USING GIST(geop);"
+
+database_create_untersuchdat_schacht: "
+CREATE TABLE IF NOT EXISTS qkan.untersuchdat_schacht (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    untersuchsch TEXT,
+    id INTEGER,                                     /* absolute Nummer der Inspektion */
+    untersuchtag TEXT,
+    bandnr INTEGER,
+    videozaehler TEXT,
+    timecode TEXT,
+    langtext TEXT,
+    kuerzel TEXT,
+    charakt1 TEXT,
+    charakt2 TEXT,
+    quantnr1 NUMERIC(7,2), 
+    quantnr2 NUMERIC(7,2), 
+    streckenschaden TEXT,
+    streckenschaden_lfdnr INTEGER,
+    pos_von INTEGER,
+    pos_bis INTEGER,
+    vertikale_lage INTEGER,
+    inspektionslaenge INTEGER,
+    bereich TEXT,
+    foto_dateiname TEXT,
+    ordner_bild TEXT,
+    film_dateiname TEXT,
+    ordner_video TEXT,
+    filmtyp INTEGER,
+    video_start INTEGER,
+    video_ende INTEGER,
+    ZD INTEGER,
+    ZB INTEGER,
+    ZS INTEGER,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_untersuchdat_schacht_geom: "
+CREATE INDEX idx_untersuchdat_schacht_geom ON qkan.untersuchdat_schacht USING GIST(geom);"
+
+# Einzugsgebiete 
+# Entsprechen in HYSTEM-EXTRAN 7.x den Siedlungstypen
+# "flaeche" wird nur für den Import benötigt, wenn keine Flächenobjekte vorhanden sind
+# Verwendung:
+# Spezifische Verbrauchsdaten in Verbindung mit "einwohner"
+
+database_create_einzugsgebiete: "
+CREATE TABLE IF NOT EXISTS qkan.einzugsgebiete (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    tgnam TEXT,
+    ewdichte NUMERIC(6,2),                  /* ewdichte (EW/ha) */
+    wverbrauch NUMERIC(4,1),                /* wverbrauch (l/(EW·d)) */
+    stdmittel NUMERIC(4,2),                 /* stdmittel (h/d) */
+    fremdwas NUMERIC(4,1),                  /* fremdwas (%) */
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(MULTIPOLYGON, :epsg) );"
+
+database_createspatialindex_einzugsgebiete_geom: "
+CREATE INDEX idx_einzugsgebiete_geom ON qkan.einzugsgebiete USING GIST(geom);"
+
+# Teilgebiete: Auswahl von Objekten in verschiedenen Tabellen für verschiedene 
+# Aufgaben, z. B. automatische Verknüpfung von befestigten Flächen und direkten 
+# Einleitungen.
+database_create_teilgebiete: "
+CREATE TABLE IF NOT EXISTS qkan.teilgebiete (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    tgnam TEXT,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(MULTIPOLYGON, :epsg) );"
+
+database_createspatialindex_teilgebiete_geom: "
+CREATE INDEX idx_teilgebiete_geom ON qkan.teilgebiete USING GIST(geom);"
+
+database_create_flaechen: "
+CREATE TABLE IF NOT EXISTS qkan.flaechen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    flnam TEXT,
+    haltnam TEXT,                           /* join haltungen.haltnam */
+    schnam TEXT,                            /* join schaechte.schnam */
+    neigkl INTEGER DEFAULT 1,               /* Neigungsklasse (1-4) */
+    neigung NUMERIC(4,1),                   /* absolute Neigung (%) */
+    teilgebiet TEXT,                        /* join teilgebiet.tgnam */
+    regenschreiber TEXT,
+    abflussparameter TEXT,                  /* join abflussparameter.apnam */
+    aufteilen INTEGER DEFAULT 0,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(MULTIPOLYGON, :epsg) );"
+
+database_createspatialindex_flaechen_geom: "
+CREATE INDEX idx_flaechen_geom ON qkan.flaechen USING GIST(geom);"
+
+# Anbindung Flächen
+# Die Tabelle linkfl verwaltet die Anbindung von Flächen an Haltungen. Diese Anbindung
+# wird ausschließlich grafisch verwaltet und beim Export direkt verwendet.
+# Flächen, bei denen das Attribut "aufteilen" den Wert 'ja' hat, werden mit dem
+# Werkzeug "QKan_Link_Flaechen" mit allen durch die Verschneidung mit tezg entstehenden
+# Anteilen zugeordnet.
+
+database_create_linkfl: "
+CREATE TABLE IF NOT EXISTS qkan.linkfl (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    flnam TEXT,
+    haltnam TEXT,                       /* join haltungen.haltnam */
+    schnam TEXT,                        /* join schaechte.schnam */
+    tezgnam TEXT,                       /* join tezg.flnam */
+    teilgebiet TEXT,                    /* join teilgebiet.tgnam */
+    abflusstyp TEXT,                    /* JOIN abflusstypen.abflusstyp */
+    speicherzahl INTEGER,               /* HE8 AnzahlSpeicher */
+    speicherkonst NUMERIC(4,1),         /* HE8 Speicherkonstante (Typ 0) */
+    fliesszeitkanal NUMERIC(4,1),       /* HE8 LaengsteFliesszeitKanal (Typ 1) */
+    fliesszeitflaeche NUMERIC(4,1),     /* HE8 FliesszeitOberflaeche (Typ 1) oder */
+                                        /* Schwerpunktlaufzeit (Typ 2) */
+    geom geometry(MULTIPOLYGON, :epsg) ,
+    gbuf geometry(MULTIPOLYGON, :epsg) ,
+    glink geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_linkfl_geom: "
+CREATE INDEX idx_linkfl_geom ON qkan.linkfl USING GIST(geom);"
+
+database_createspatialindex_linkfl_gbuf: "
+CREATE INDEX idx_linkfl_gbuf ON qkan.linkfl USING GIST(gbuf);"
+
+database_createspatialindex_linkfl_glink: "
+CREATE INDEX idx_linkfl_glink ON qkan.linkfl USING GIST(glink);"
+
+# Anbindung Direkteinleitungen:
+# Die Tabelle linksw verwaltet die Anbindung von Gebäuden an Haltungen. Diese Anbindung
+# wird anschließend in das Feld haltnam eingetragen. Der Export erfolgt allerdings anhand
+# der grafischen Verknüpfungen dieser Tabelle.
+
+database_create_linksw: "
+CREATE TABLE IF NOT EXISTS qkan.linksw (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    elnam TEXT,
+    haltnam TEXT,               /* join haltungen.haltnam */
+    schnam TEXT,                /* join schaechte.schnam */
+    teilgebiet TEXT,
+    geom geometry(POLYGON, :epsg),
+    gbuf geometry(MULTIPOLYGON, :epsg),
+    glink geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_linksw_geom: "
+CREATE INDEX idx_linksw_geom ON qkan.linksw USING GIST(geom);"
+
+database_createspatialindex_linksw_gbuf: "
+CREATE INDEX idx_linksw_gbuf ON qkan.linksw USING GIST(gbuf);"
+
+database_createspatialindex_linksw_glink: "
+CREATE INDEX idx_linksw_glink ON qkan.linksw USING GIST(glink);"
+
+database_create_tezg: "
+CREATE TABLE IF NOT EXISTS qkan.tezg (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    flnam TEXT,
+    haltnam TEXT,                       /* join haltungen.haltnam */
+    schnam TEXT,                        /* join schaechte.schnam */
+    neigkl INTEGER DEFAULT 1,           /* Werte [1-5], als Vorgabe fuer automatisch erzeugte unbef Flaechen */
+    neigung NUMERIC(4,1),               /* absolute Neigung (%) */
+    befgrad NUMERIC(4,3),               /* (-) Befestigungsgrad absolut, nur optional fuer SWMM und HE6 */
+    schwerpunktlaufzeit NUMERIC(4,1),   /* nur, wenn nur Haltungsflächen aber keine Flächen eingelesen werden */
+    regenschreiber TEXT,                /* Regenschreiber beziehen sich auf Zieldaten */
+    teilgebiet TEXT,                    /* join teilgebiet.tgnam */
+    abflussparameter TEXT,              /* als Vorgabe fuer automatisch erzeugte unbef Flaechen */
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(MULTIPOLYGON, :epsg) );"
+
+database_createspatialindex_tezg_geom: "
+CREATE INDEX idx_tezg_geom ON qkan.tezg USING GIST(geom);"
+
+# Direkte Einleitungen:
+# Erfasst alle Direkteinleitungen mit festem SW-Zufluss (m³/a)
+# Die Zuordnung zum Teilgebiet dient nur der Auswahl
+
+database_create_einleit: "
+CREATE TABLE IF NOT EXISTS qkan.einleit (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    elnam TEXT,
+    haltnam TEXT,               /* join haltungen.haltnam */
+    schnam TEXT,                /* join schaechte.schnam */
+    teilgebiet TEXT,            /* join teilgebiet.tgnam  */
+    zufluss NUMERIC(8,2),       /* Zufluss (l/s) */
+    ew NUMERIC(8,2),            /* Einwohner */
+    einzugsgebiet TEXT,         /* join einzugsgebiete.tgnam */
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(POINT, :epsg) );"
+
+database_createspatialindex_einleit_geom: "
+CREATE INDEX idx_einleit_geom ON qkan.einleit USING GIST(geom);"
+
+# Einleitungen aus Aussengebieten 
+# Erfasst alle Außengebiete
+# Die Zuordnung zum Teilgebiet dient nur der Auswahl
+
+database_create_aussengebiete: "
+CREATE TABLE IF NOT EXISTS qkan.aussengebiete (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    gebnam TEXT, 
+    schnam TEXT,                /* join schaechte.schnam  */
+    hoeheob NUMERIC(7,3),
+    hoeheun NUMERIC(7,3),
+    fliessweg NUMERIC(5,1),
+    basisabfluss NUMERIC(5,1), 
+    cn NUMERIC(5,1),
+    regenschreiber TEXT, 
+    teilgebiet TEXT,            /* join teilgebiet.tgnam  */
+    kommentar TEXT, 
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(MULTIPOLYGON, :epsg) );"
+
+database_createspatialindex_aussengebiete_geom: "
+CREATE INDEX idx_aussengebiete_geom ON qkan.aussengebiete USING GIST(geom);"
+
+# Anbindung Aussengebiete 
+# Die Tabelle linkageb verwaltet die Anbindung von Aussengebieten an Schächte. Diese Anbindung
+# wird anschließend in das Feld schnam eingetragen. Der Export erfolgt allerdings anhand
+# der grafischen Verknüpfungen dieser Tabelle.
+
+database_create_linkageb: "
+CREATE TABLE IF NOT EXISTS qkan.linkageb (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    gebnam TEXT,
+    schnam TEXT,
+    glink geometry(LINESTRING, :epsg) );"
+
+database_createspatialindex_linkageb_glink: "
+CREATE INDEX idx_linkageb_glink ON qkan.linkageb USING GIST(glink);"
+
+database_create_simulationsstatus: "
+CREATE TABLE IF NOT EXISTS qkan.simulationsstatus (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    kuerzel TEXT,
+    he_nr INTEGER,                      /* HYSTEM-EXTRAN */
+    mu_nr INTEGER,                      /* Mike+ */
+    kp_nr INTEGER,                      /* DYNA / Kanal++ */
+    isybau TEXT,                        /* BFR Abwasser */
+    m150 TEXT,                          /* DWA M150 */
+    m145 TEXT,                          /* DWA M145 */
+    kommentar TEXT);"
+
+# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
+database_haltungen_trig_update_simulationsstatus: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON qkan.simulationsstatus
+                BEGIN
+                    UPDATE haltungen
+                    SET simstatus = new.bezeichnung
+                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
+                    UPDATE schaechte
+                    SET simstatus = new.bezeichnung
+                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
+                    UPDATE anschlussleitungen
+                    SET simstatus = new.bezeichnung
+                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
+                END;"
+
+database_create_material: "
+CREATE TABLE IF NOT EXISTS qkan.material (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    kuerzel TEXT,
+    isybau TEXT,                        /* BFR Abwasser */
+    m150 TEXT,                          /* DWA M150 */
+    m145 TEXT,                          /* DWA M145 */
+    kommentar TEXT);"
+
+# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
+database_haltungen_trig_update_material: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON qkan.material
+BEGIN
+    UPDATE haltungen
+    SET material = new.bezeichnung
+    WHERE material = old.bezeichnung AND material IS NOT NULL;
+    UPDATE schaechte
+    SET material = new.bezeichnung
+    WHERE material = old.bezeichnung AND material IS NOT NULL;
+    UPDATE anschlussleitungen
+    SET material = new.bezeichnung
+    WHERE material = old.bezeichnung AND material IS NOT NULL;
+END;"
+
+database_create_auslasstypen: "
+CREATE TABLE IF NOT EXISTS qkan.auslasstypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    he_nr INTEGER,
+    mu_nr INTEGER,
+    kp_nr INTEGER);"
+
+database_insert_auslasstypen: "
+INSERT INTO qkan.auslasstypen (
+bezeichnung, he_nr, mu_nr, kp_nr)
+VALUES ('frei', 0, NULL, NULL),
+       ('normal', 1, NULL, NULL),
+       ('konstant', 2, NULL, NULL),
+       ('Tide', 3, NULL, NULL),
+       ('Zeitreihe', 4, NULL, NULL);"
+
+database_create_abflussparameter: "
+CREATE TABLE IF NOT EXISTS qkan.abflussparameter (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    apnam TEXT, 
+    anfangsabflussbeiwert NUMERIC(4,1), 
+    endabflussbeiwert NUMERIC(4,1), 
+    benetzungsverlust NUMERIC(4,1), 
+    muldenverlust NUMERIC(4,1), 
+    benetzung_startwert NUMERIC(4,1), 
+    mulden_startwert NUMERIC(4,1), 
+    rauheit_kst NUMERIC(4,1),               /* Rauheit Stricklerbeiwert = 1/n */
+    pctZero NUMERIC(4,1),                   /* SWMM % Zero-Imperv */
+    bodenklasse TEXT,                       /* impervious = NULL, pervious = JOIN TO bodenklasse.bknam */
+    flaechentyp TEXT,                       /* JOIN TO flaechentypen.bezeichnung */
+    kommentar TEXT, 
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_create_flaechentypen: "
+CREATE TABLE IF NOT EXISTS qkan.flaechentypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    he_nr INTEGER);"
+
+database_insert_flaechentypen: "
+INSERT INTO qkan.flaechentypen (
+bezeichnung, he_nr)
+Values 
+    ('Gebäude', 0),
+    ('Straße', 1),
+    ('Grünfläche', 2),
+    ('Gewässer', 3);"
+
+database_create_bodenklassen: "
+CREATE TABLE IF NOT EXISTS qkan.bodenklassen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bknam TEXT, 
+    infiltrationsrateanfang NUMERIC(6,3),   /* (mm/min) */
+    infiltrationsrateende NUMERIC(6,3),     /* (mm/min) */
+    infiltrationsratestart NUMERIC(6,3),    /* (mm/min) */
+    rueckgangskonstante NUMERIC(5,1),       /* (1/d) */
+    regenerationskonstante NUMERIC(5,1),    /* (1/d) */
+    saettigungswassergehalt NUMERIC(5,1),   /* (mm) */
+    kommentar TEXT, 
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_create_abflusstypen: "
+CREATE TABLE IF NOT EXISTS qkan.abflusstypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    abflusstyp TEXT,
+    he_nr INTEGER,              /* JOIN he.Flaeche.BerechnungSpeicherkonstante */
+    kp_nr INTEGER);"
+
+database_insert_abflusstypen: "
+INSERT INTO qkan.abflusstypen (
+abflusstyp, he_nr, kp_nr)
+Values 
+    ('Speicherkaskade', 0, 0),
+    ('Fliesszeiten', 1, 1),
+    ('Schwerpunktlaufzeit', 2, 2);"
+
+database_create_knotentypen: "
+CREATE TABLE IF NOT EXISTS qkan.knotentypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    knotentyp TEXT);"
+
+database_insert_knotentypen: "
+INSERT INTO qkan.knotentypen (
+knotentyp)
+Values
+    ('Anfangsschacht'),
+    ('Einzelschacht'),
+    ('Endschacht'),
+    ('Hochpunkt'),
+    ('Normalschacht'),
+    ('Tiefpunkt'),
+    ('Verzweigung'),
+    ('Fliesszeiten');"
+
+database_create_schachttypen: "
+CREATE TABLE IF NOT EXISTS qkan.schachttypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    schachttyp TEXT);"
+
+database_insert_schachttypen: "
+INSERT INTO qkan.schachttypen (
+schachttyp)
+Values
+    ('Auslass'),
+    ('Schacht'),
+    ('Anschlussschacht'),
+    ('Speicher');"
+
+database_create_eigentum: "
+CREATE TABLE IF NOT EXISTS qkan.eigentum (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name TEXT, 
+    kommentar TEXT);"
+
+# Hilfstabelle für den DYNA-Export
+# TODO: als temporäre Tabelle in das Export-Modul verschieben
+database_create_dynahal: "
+CREATE TABLE IF NOT EXISTS qkan.dynahal (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    haltnam TEXT,
+    schoben TEXT,                                   /* join schaechte.schnam */
+    schunten TEXT,                                  /* join schaechte.schnam */
+    teilgebiet TEXT,                                /* join teilgebiet.tgnam */
+    kanalnummer TEXT,
+    haltungsnummer TEXT,
+    anzobob INTEGER,
+    anzobun INTEGER,
+    anzunun INTEGER,
+    anzunob INTEGER);"
+
+# Tabelle Gruppen:
+# Bearbeitungen, die auf Auswahlen basieren, verwenden ausschließlich die
+# Tabelle "Teilgebiete". Diese Zuordnung ist sozusagen aktiv, im Gegensatz
+# zu inaktiven Zuordnungen, die in der Tabelle "gruppen" gespeichert werden.
+# Mit einem plugin "Zuordnung zu Teilgebieten" können gespeicherte
+# Zuordnungen gespeichert und geladen werden. Dabei werden die
+# Zuordnungen für folgende Tabellen verwaltet:
+#  - "haltungen"
+#  - "schaechte"
+#  - "flaechen"
+#  - "linkfl"
+#  - "linksw"
+#  - "tezg"
+#  - "einleit"
+#  - "swgebaeude"
+database_create_gruppen: "
+CREATE TABLE IF NOT EXISTS qkan.gruppen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    pktab INTEGER,
+    grnam TEXT,
+    teilgebiet TEXT,                               /* join teilgebiet.tgnam */
+    tabelle TEXT,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_create_profile: "
+CREATE TABLE IF NOT EXISTS qkan.profile (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    profilnam TEXT,
+    kuerzel TEXT,                       /* nur für Beschriftung */
+    he_nr INTEGER,                      /* HYSTEM-EXTRAN */
+    mu_nr INTEGER,
+    kp_key TEXT,                        /* DYNA / Kanal++ */
+    isybau TEXT,                        /* BFR Abwasser */
+    m150 TEXT,                          /* DWA M150 */
+    m145 TEXT,                          /* DWA M145 */
+    kommentar TEXT
+);"
+
+# Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
+database_haltungen_trig_update_profile: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON qkan.profile
+                BEGIN
+                    UPDATE haltungen
+                    SET profilnam = new.profilnam
+                    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
+                    UPDATE anschlussleitungen
+                    SET profilnam = new.profilnam
+                    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
+                END;"
+
+database_create_entwaesserungsarten: "
+CREATE TABLE IF NOT EXISTS qkan.entwaesserungsarten (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,                   /* eindeutige QKan-Bezeichnung  */
+    kuerzel TEXT,                       /* nur für Beschriftung */
+    he_nr INTEGER,                      /* HYSTEM-EXTRAN */
+    kp_nr INTEGER,                      /* DYNA / Kanal++ */
+    isybau TEXT,                        /* BFR Abwasser */
+    m150 TEXT,                          /* DWA M150 */
+    m145 TEXT,                          /* DWA M145 */
+    bemerkung TEXT
+);"
+
+# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
+database_haltungen_trig_update_entwaesserungsarten: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON qkan.entwaesserungsarten
+                BEGIN
+                    UPDATE haltungen
+                    SET entwart = new.bezeichnung
+                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
+                    UPDATE schaechte
+                    SET entwart = new.bezeichnung
+                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
+                    UPDATE anschlussleitungen
+                    SET entwart = new.bezeichnung
+                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
+                END;"
+
+database_create_haltungstypen: "
+CREATE TABLE IF NOT EXISTS qkan.haltungstypen(
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT, 
+    bemerkung TEXT);"
+
+database_insert_haltungstypen: "
+INSERT INTO qkan.haltungstypen (
+bezeichnung, bemerkung)
+VALUES
+    ('Haltung', NULL),
+    ('Drossel', 'HYSTEM-EXTRAN 8'),
+    ('H-Regler', 'HYSTEM-EXTRAN 8'),
+    ('Q-Regler', 'HYSTEM-EXTRAN 8'),
+    ('Schieber', 'HYSTEM-EXTRAN 8'),
+    ('GrundSeitenauslass', 'HYSTEM-EXTRAN 8'),
+    ('Pumpe', NULL),
+    ('Wehr', NULL);"
+
+# Tabelle Untersuchungsrichtung wird nur für das Nachschlagefeld benötigt
+database_create_untersuchrichtung: "
+CREATE TABLE IF NOT EXISTS qkan.untersuchrichtung (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT, 
+    kuerzel TEXT, 
+    isybau TEXT,                        /* BFR Abwasser */
+    m150 TEXT,                          /* DWA M150 */
+    m145 TEXT,                          /* DWA M145 */
+    bemerkung TEXT);"
+
+database_insert_untersuchrichtung: "
+INSERT INTO qkan.untersuchrichtung (
+kuerzel, bezeichnung, bemerkung)
+VALUES
+    (NULL, 'in Fließrichtung', 'automatisch hinzugefügt'),
+    (NULL, 'gegen Fließrichtung', 'automatisch hinzugefügt');"
+
+database_create_wetter: "
+CREATE TABLE IF NOT EXISTS qkan.wetter (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    kuerzel INTEGER, 
+    bezeichnung TEXT, 
+    isybau TEXT,                        /* BFR Abwasser */
+    m150 TEXT,                          /* DWA M150 */
+    m145 TEXT,                          /* DWA M145 */
+    bemerkung TEXT);"
+
+database_insert_wetter: "
+INSERT INTO qkan.wetter (
+kuerzel, bezeichnung, bemerkung)
+VALUES
+    (0, 'keine Angabe', NULL),
+    (1, 'kein Niederschlag', NULL),
+    (2, 'Regen', NULL),
+    (3, 'Schnee- oder Eisschmelzwasser', NULL);"
+
+database_create_bewertungsart: "
+CREATE TABLE IF NOT EXISTS qkan.bewertungsart (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    kuerzel INTEGER, 
+    bezeichnung TEXT, 
+    bemerkung TEXT);"
+
+database_insert_bewertungsart: "
+INSERT INTO qkan.bewertungsart (
+kuerzel, bezeichnung, bemerkung)
+VALUES
+    (0, 'keine Angabe', NULL),
+    (1, 'ISYBAU 2006/DIN-EN 13508-2:2011', NULL),
+    (2, 'ISYBAU 2001', NULL),
+    (3, 'ISYBAU 1996', NULL),
+    (4, 'Anderes Verfahren', NULL);"
+
+database_create_pumpentypen: "
+CREATE TABLE IF NOT EXISTS qkan.pumpentypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT, 
+    he_nr INTEGER,
+    isybau INTEGER);"
+
+database_insert_pumpentypen: "
+INSERT INTO qkan.pumpentypen (
+bezeichnung, he_nr, isybau)
+VALUES
+    ('Offline', 1, 1),
+    ('Online Schaltstufen', 2, 2),
+    ('Online Kennlinie', 3, 3),
+    ('Online Wasserstandsdifferenz', 4, 4),
+    ('Ideal', 5, 5);"
+
+# Abfragen für Plausibilitätsprüfungen
+database_create_pruefsql: "
+CREATE TABLE IF NOT EXISTS qkan.pruefsql (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    gruppe TEXT,                        /* zur Auswahl nach Thema */
+    warntext TEXT,                      /* Beschreibung der SQL-Abfrage */
+    warntyp TEXT,                       /* 'Info', 'Warnung', 'Fehler' */
+    warnlevel INTEGER,                  /* zur Sortierung, 1-3 = Info, 4-7 = Warnung, 8-10 = Fehler */
+    sql TEXT,
+    layername TEXT,                     /* Objektsuche Layername */
+    attrname TEXT,                      /* Objektsuche Attribut zur Objektidentifikation, */
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+# Ergebnisse der Plausibilitätsprüfungen
+database_create_pruefliste: "
+CREATE TABLE IF NOT EXISTS qkan.pruefliste (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    warntext TEXT,                      /* Beschreibung der SQL-Abfrage */
+    warntyp TEXT,                       /* 'Info', 'Warnung', 'Fehler' */
+    warnlevel INTEGER,                  /* zur Sortierung, 1-3 = Info, 4-7 = Warnung, 8-10 = Fehler */
+    layername TEXT,                     /* Objektsuche Layername */
+    attrname TEXT,                      /* Objektsuche Attribut zur Objektidentifikation, */
+    objname TEXT,                       /* Objektsuche Objektname */
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+# Referenztabelle für Plausi Zustandsklassen
+database_create_reflist_zustand: "
+CREATE TABLE IF NOT EXISTS qkan.reflist_zustand (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    art TEXT,
+    hauptcode TEXT,
+    charakterisierung1 TEXT,
+    charakterisierung2 TEXT,
+    bereich TEXT
+);"
+
+database_create_info: "
+CREATE TABLE IF NOT EXISTS qkan.info (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    subject TEXT, 
+    value TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_insert_info: "
+INSERT INTO qkan.info (
+subject, value)
+VALUES ('version', ?);"
+
+database_create_fotos: "
+CREATE TABLE IF NOT EXISTS qkan.fotos (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                    name TEXT, 
+                    untersuchtag TEXT,
+                    objekt TEXT,
+                    datei TEXT,
+                    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_create_videos: "
+CREATE TABLE IF NOT EXISTS qkan.videos (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                    name TEXT, 
+                    untersuchtag TEXT,
+                    objekt TEXT,
+                    datei TEXT,
+                    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_create_symbole: "
+CREATE TABLE IF NOT EXISTS qkan.symbole (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    art TEXT,               /* QGIS-Referenz Thematische Karte zur Auswahl des Symbols */
+    link TEXT,
+    gruppe TEXT,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(POINT, :epsg) );"
+
+database_createspatialindex_symbole_geom: "
+CREATE INDEX idx_symbole_geom ON qkan.symbole USING GIST(geom);"
+
+database_create_symbolkatalog: "
+CREATE TABLE IF NOT EXISTS qkan.symbolkatalog (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    gruppe TEXT,                            /* zur Aufteilung auf verschiedene Layer */
+    kommentar TEXT);"
+
+database_insert_symbolkatalog: "
+INSERT INTO qkan.symbolkatalog (bezeichnung, gruppe, kommentar) VALUES
+('KA gepl', 'ABK NRW', NULL),
+('KA vorh', 'ABK NRW', NULL),
+('KKA', 'ABK NRW', NULL),
+('NW Einl in Gew gepl', 'ABK NRW', NULL),
+('NW Einl in Gew vorh', 'ABK NRW', NULL),
+('NW Einl in GW gepl', 'ABK NRW', NULL),
+('NW Einl in GW vorh', 'ABK NRW', NULL),
+('PW gepl', 'ABK NRW', NULL),
+('PW vorh', 'ABK NRW', NULL),
+('RRB gepl', 'ABK NRW', NULL),
+('RRB vorh', 'ABK NRW', NULL),
+('RÜ gepl', 'ABK NRW', NULL),
+('RÜ vorh', 'ABK NRW', NULL),
+('RÜB gepl', 'ABK NRW', NULL),
+('RÜB vorh', 'ABK NRW', NULL),
+('SW Einl in Gew gepl', 'ABK NRW', NULL),
+('SW Einl in Gew vorh', 'ABK NRW', NULL),
+('SW Einl in GW gepl', 'ABK NRW', NULL),
+('SW Einl in GW vorh', 'ABK NRW', NULL),
+('Übergabe gepl', 'ABK NRW', NULL),
+('Übergabe vorh', 'ABK NRW', NULL),
+('Übernahme gepl', 'ABK NRW', NULL),
+('Übernahme vorh', 'ABK NRW', NULL),
+('VSA gepl', 'ABK NRW', NULL),
+('VSA vorh', 'ABK NRW', NULL),
+('wegfallend', 'ABK NRW', NULL),
+('Abflusslose Grube', 'Entwässerung', NULL),
+('Be-/Entlüftungsschacht', 'Entwässerung', NULL),
+('Molchschacht', 'Entwässerung', NULL),
+('Strassenablauf', 'Entwässerung', NULL),
+('Vakuumstation', 'Entwässerung', NULL);"
+
+database_createview_untersuchdat_aktuell: "
+CREATE VIEW qkan.v_untersuchdat_hal_last AS
+WITH um AS (
+    SELECT untersuchhal, schoben, schunten, max(untersuchtag) AS letzter_untersuchtag
+    FROM qkan.untersuchdat_haltung
+    GROUP BY untersuchhal, schoben, schunten)
+SELECT uh.*
+FROM qkan.untersuchdat_haltung AS uh
+JOIN um USING(untersuchhal, schoben, schunten);"
+
+database_getepsg: "
+SELECT srid
+FROM geom_cols_ref_sys
+WHERE Lower(f_table_name) = Lower('haltungen')
+AND Lower(f_geometry_column) = Lower('geom');"
+
+database_altertable_addgeometrycolumn: "
+SELECT AddGeometryColumn(?, ?, ?, ?, ?);"
+
+database_altertable_discardgeometrycolumn: "
+SELECT DiscardGeometryColumn(?, ?);"
+
+database_altertable_createspatialindex: "
+CREATE INDEX ? ON qkan.? USING GIST(?);"
+
+
+database_insertdata_schaechte: "
+INSERT INTO qkan.schaechte (
+    schnam, sohlhoehe, deckelhoehe, 
+    durchm, 
+    druckdicht,
+    ueberstauflaeche, 
+    entwart, strasse, baujahr, teilgebiet, 
+    knotentyp, auslasstyp, schachttyp,
+    simstatus, material,
+    kommentar, createdat, 
+    geop, geom)
+VALUES (
+    :schnam, :sohlhoehe, :deckelhoehe,
+    CASE WHEN :durchm > 200 THEN :durchm/1000. ELSE :durchm END, 
+    :druckdicht, coalesce(:ueberstauflaeche, 0), 
+    coalesce(:entwart, 'Regenwasser'), :strasse, :baujahr, :teilgebiet, 
+    :knotentyp, :auslasstyp, coalesce(:schachttyp, 'Schacht'), 
+    coalesce(:simstatus, 'vorhanden'), :material,
+    :kommentar, coalesce(:createdat, CURRENT_TIMESTAMP),
+    CASE WHEN :geop IS NULL
+        THEN MakePoint(:xsch, :ysch, :epsg)
+        ELSE GeomFromWKB(:geop, :epsg)
+    END,
+    CASE WHEN :geom IS NULL
+        THEN CastToMultiLineString(MakeCircle(:xsch,:ysch,coalesce(iif(:durchm>200.0,:durchm/1000.0,:durchm), 1.0)/2.0, :epsg))
+        ELSE GeomFromWKB(:geom, :epsg)
+    END);"
+
+database_insertdata_haltungen: "
+INSERT INTO qkan.haltungen
+  (haltnam, baujahr, schoben, schunten,
+   hoehe, breite, laenge, aussendurchmesser,
+   sohleoben, sohleunten, 
+   teilgebiet, profilnam, 
+   entwart, strasse, material, profilauskleidung, innenmaterial, ks, haltungstyp,
+   simstatus, kommentar, createdat,  
+   geom)
+SELECT 
+  :haltnam, :baujahr, :schoben, :schunten,
+  CASE WHEN :hoehe > 20 THEN :hoehe ELSE :hoehe*1000. END,
+  CASE WHEN :breite > 20 THEN :breite ELSE :breite*1000. END,
+  :laenge, :aussendurchmesser,
+  :sohleoben, :sohleunten,
+  :teilgebiet, coalesce(:profilnam, 'Kreisquerschnitt'),
+  coalesce(:entwart, 'Regenwasser'), :strasse, :material, :profilauskleidung, :innenmaterial, coalesce(:ks, 1.5), coalesce(:haltungstyp, 'Haltung'),
+  coalesce(:simstatus, 'vorhanden'), :kommentar,
+  coalesce(:createdat, CURRENT_TIMESTAMP),
+  CASE WHEN :geom IS NULL
+    THEN
+      MakeLine(
+        coalesce(
+          (SELECT geop FROM schaechte WHERE schnam = :schoben LIMIT 1),
+          MakePoint(:xschob, :yschob, :epsg)
+        ),
+        coalesce(
+          (SELECT geop FROM schaechte WHERE schnam = :schunten LIMIT 1),
+          MakePoint(:xschun, :yschun, :epsg)
+        )
+      )
+    ELSE GeomFromWKB(:geom, :epsg)
+  END;"
+
+database_insertdata_haltungen_untersucht: "
+INSERT INTO qkan.haltungen_untersucht
+  (haltnam, bezugspunkt, untersuchrichtung, schoben, schunten,
+   hoehe, breite, laenge,
+   kommentar, createdat, baujahr,  
+   geom, untersuchtag, untersucher, wetter, auftragsbezeichnung, strasse, bewertungsart,
+   bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
+SELECT 
+  :haltnam, :bezugspunkt, :untersuchrichtung, :schoben, :schunten, 
+  CASE WHEN :hoehe > 20 THEN :hoehe ELSE :hoehe*1000. END, 
+  CASE WHEN :breite > 20 THEN :breite ELSE :breite*1000. END,
+  :laenge, :kommentar, 
+  coalesce(:createdat, CURRENT_TIMESTAMP), :baujahr,
+  CASE WHEN :geom IS NULL
+    THEN
+      MakeLine(
+        coalesce(
+          MakePoint(:xschob, :yschob, :epsg),
+          suo.geop,
+          so.geop
+        ), 
+        coalesce(
+          MakePoint(:xschun, :yschun, :epsg),
+          suu.geop,
+          su.geop
+        )
+      )
+    ELSE GeomFromWKB(:geom, :epsg)
+  END,
+  :untersuchtag, :untersucher, :wetter, :auftragsbezeichnung, :strasse, :bewertungsart,
+  :bewertungstag, :datenart, :max_ZD, :max_ZB, :max_ZS
+FROM
+  (SELECT :schoben AS schoben, :schunten AS schunten) AS ha
+  LEFT JOIN schaechte_untersucht AS suo ON qkan.suo.schnam = ha.schoben
+  LEFT JOIN schaechte_untersucht AS suu ON qkan.suu.schnam = ha.schunten
+  LEFT JOIN schaechte AS so ON qkan.so.schnam = ha.schoben
+  LEFT JOIN schaechte AS su ON qkan.su.schnam = ha.schunten;"
+
+database_insertdata_untersuchdat_haltung: "
+INSERT INTO qkan.untersuchdat_haltung
+  (untersuchhal, schoben, schunten, id, untersuchtag, bandnr, videozaehler, 
+    inspektionslaenge, station, timecode, video_offset, kuerzel, langtext, charakt1, charakt2, 
+    quantnr1, quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, foto_dateiname, 
+    film_dateiname, ordner_bild, ordner_video, ZD, ZB, ZS, createdat)
+SELECT
+  :untersuchhal, :schoben, :schunten, :id, :untersuchtag, :bandnr, :videozaehler, 
+  :inspektionslaenge , :station, :timecode, :video_offset, :kuerzel, :langtext, :charakt1, :charakt2, 
+  :quantnr1, :quantnr2, :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
+  :foto_dateiname, :film_dateiname, :ordner_bild, :ordner_video,
+  :ZD, :ZB, :ZS, coalesce(:createdat, CURRENT_TIMESTAMP);"
+
+database_insertdata_anschlussleitungen: "
+INSERT INTO qkan.anschlussleitungen
+  (leitnam, schoben, schunten,
+   hoehe, breite, laenge, aussendurchmesser,
+   sohleoben, sohleunten, baujahr, haltnam,
+   teilgebiet, 
+   entwart, material, profilauskleidung, innenmaterial, ks, anschlusstyp, 
+   simstatus, kommentar, createdat,  
+   geom)
+VALUES( 
+  :leitnam, :schoben, :schunten, 
+  CASE WHEN :hoehe > 20 THEN :hoehe ELSE :hoehe*1000. END, 
+  CASE WHEN :breite > 20 THEN :breite ELSE :breite*1000. END,
+  :laenge, :aussendurchmesser,
+  :sohleoben, :sohleunten, :baujahr, :haltnam,
+  :teilgebiet, 
+  coalesce(:entwart, 'Regenwasser'), :material, :profilauskleidung, :innenmaterial, coalesce(:ks, 1.5), 
+  :anschlusstyp, coalesce(:simstatus, 'vorhanden'), :kommentar, 
+  coalesce(:createdat, CURRENT_TIMESTAMP), 
+  CASE WHEN :geom IS NULL
+      THEN MakeLine(
+          MakePoint(:xschob, :yschob, :epsg), 
+          MakePoint(:xschun, :yschun, :epsg))
+      ELSE GeomFromWKB(:geom, :epsg)
+  END);"
+
+database_insertdata_anschlussleitungen_untersucht: "
+INSERT INTO qkan.anschlussleitungen_untersucht
+  (leitnam, bezugspunkt, untersuchrichtung, schoben, schunten,
+   hoehe, breite, laenge,
+   kommentar, createdat, baujahr,  
+   geom, untersuchtag, untersucher, wetter, auftragsbezeichnung, strasse, bewertungsart, bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
+SELECT 
+  :leitnam, :bezugspunkt, :untersuchrichtung, :schoben, :schunten, 
+  CASE WHEN :hoehe > 20 THEN :hoehe ELSE :hoehe*1000. END, 
+  CASE WHEN :breite > 20 THEN :breite ELSE :breite*1000. END,
+  :laenge, :kommentar, 
+  coalesce(:createdat, CURRENT_TIMESTAMP), :baujahr,
+  CASE WHEN :geom IS NULL
+    THEN
+      MakeLine(
+        coalesce(
+          MakePoint(:xschob, :yschob, :epsg),
+          suo.geop,
+          so.geop
+        ), 
+        coalesce(
+          MakePoint(:xschun, :yschun, :epsg),
+          suu.geop,
+          su.geop
+        )
+      )
+    ELSE GeomFromWKB(:geom, :epsg)
+  END, 
+  :untersuchtag, :untersucher, :wetter, :auftragsbezeichnung, :strasse, :bewertungsart,
+  :bewertungstag, :datenart, :max_ZD, :max_ZB, :max_ZS
+FROM
+  (SELECT :schoben AS schoben, :schunten AS schunten) AS ha
+  LEFT JOIN schaechte_untersucht AS suo ON qkan.suo.schnam = ha.schoben
+  LEFT JOIN schaechte_untersucht AS suu ON qkan.suu.schnam = ha.schunten
+  LEFT JOIN schaechte AS so ON qkan.so.schnam = ha.schoben
+  LEFT JOIN schaechte AS su ON qkan.su.schnam = ha.schunten;"
+
+database_insertdata_untersuchdat_anschlussleitung: "
+INSERT INTO qkan.untersuchdat_anschlussleitung
+  (untersuchleit, schoben, schunten, id, untersuchtag, bandnr, videozaehler, 
+    inspektionslaenge, station, timecode, video_offset, kuerzel, langtext, charakt1, charakt2, 
+    quantnr1, quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, foto_dateiname, 
+    film_dateiname, ordner_bild, ordner_video, ZD, ZB, ZS, createdat)
+SELECT
+  :untersuchleit, :schoben, :schunten, :id, :untersuchtag, :bandnr, :videozaehler, 
+  :inspektionslaenge , :station, :timecode, :video_offset, :kuerzel, :langtext, :charakt1, :charakt2, 
+  :quantnr1, :quantnr2, :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
+  :foto_dateiname, :film_dateiname, :ordner_bild, :ordner_video,
+  :ZD, :ZB, :ZS, coalesce(:createdat, CURRENT_TIMESTAMP);"
+
+database_insertdata_schaechte_untersucht: "
+INSERT INTO qkan.schaechte_untersucht
+  (schnam, durchm, bezugspunkt, id,
+   kommentar, createdat, baujahr,
+   geop, untersuchtag, untersucher, 
+   wetter, auftragsbezeichnung, strasse, bewertungsart, 
+   bewertungstag, datenart, max_ZD, max_ZB, max_ZS)
+SELECT
+  :schnam,
+  CASE WHEN :durchm > 200 THEN :durchm/1000. ELSE :durchm END, :bezugspunkt, :id,
+  :kommentar, coalesce(:createdat, CURRENT_TIMESTAMP), :baujahr,
+  CASE WHEN :geop IS NULL
+    THEN
+        sch.geop
+    ELSE GeomFromWKB(:geop, :epsg)
+  END,
+  :untersuchtag, :untersucher, 
+  :wetter, :auftragsbezeichnung, :strasse, :bewertungsart, 
+  :bewertungstag, :datenart, 
+  :max_ZD, :max_ZB, :max_ZS
+FROM
+  (SELECT :schnam AS schnam) AS val
+  LEFT JOIN schaechte AS sch ON qkan.val.schnam = sch.schnam;"
+
+database_insertdata_untersuchdat_schacht: "
+INSERT INTO qkan.untersuchdat_schacht
+  (untersuchsch, id, untersuchtag, bandnr, videozaehler, timecode, kuerzel, langtext, 
+    charakt1, charakt2, quantnr1, quantnr2, 
+    streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis, 
+    vertikale_lage, inspektionslaenge, bereich, 
+    foto_dateiname, ordner_bild, film_dateiname, ordner_video,
+    ZD, ZB, ZS, 
+    createdat)
+SELECT 
+  :untersuchsch, :id, :untersuchtag, :bandnr, :videozaehler, :timecode, :kuerzel, :langtext, 
+    :charakt1, :charakt2, :quantnr1, :quantnr2, 
+    :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
+    :vertikale_lage, :inspektionslaenge, :bereich, 
+    :foto_dateiname, :ordner_bild, :film_dateiname, :ordner_video,
+    :ZD, :ZB, :ZS, 
+    coalesce(:createdat, CURRENT_TIMESTAMP)
+FROM
+    schaechte AS sch
+    WHERE sch.schnam = :untersuchsch;"
+
+database_insertdata_tezg: "
+INSERT INTO qkan.tezg
+  (flnam, regenschreiber, schnam, befgrad, neigung, 
+    createdat, haltnam, neigkl, schwerpunktlaufzeit, 
+    teilgebiet, abflussparameter,
+    kommentar, geom)
+VALUES (
+:flnam, :regenschreiber, :schnam, :befgrad, :neigung, 
+    coalesce(:createdat, CURRENT_TIMESTAMP), :haltnam, :neigkl, 
+    :schwerpunktlaufzeit, :teilgebiet, 
+    :abflussparameter, :kommentar,
+GeomFromWKB(:geom, :epsg));"
+
+database_insertdata_fotos: "
+INSERT INTO qkan.fotos
+  (name, untersuchtag, objekt, datei, createdat)
+VALUES (
+:name, :untersuchtag, :objekt, :datei, 
+coalesce(:createdat, CURRENT_TIMESTAMP));"
+
+database_insertdata_videos: "
+INSERT INTO qkan.videos
+  (name, untersuchtag, objekt, datei, createdat)
+VALUES (
+:name, :untersuchtag, :objekt, :datei, 
+coalesce(:createdat, CURRENT_TIMESTAMP));"
+
+database_insertdata_flaechen: "
+INSERT INTO qkan.flaechen
+  (flnam, haltnam, schnam, neigkl, neigung, 
+  teilgebiet, regenschreiber, abflussparameter, 
+  aufteilen, kommentar, createdat, 
+  geom)
+VALUES (
+:flnam, :haltnam, :schnam, :neigkl, :neigung, 
+:teilgebiet, :regenschreiber, :abflussparameter, 
+:aufteilen, :kommentar, 
+coalesce(:createdat, CURRENT_TIMESTAMP),
+GeomFromWKB(:geom, :epsg));"
+
+database_insertdata_teilgebiete: "
+INSERT INTO qkan.teilgebiete
+  (tgnam, kommentar, createdat, geom)
+VALUES (
+    :tgnam, :kommentar, 
+    coalesce(:createdat, CURRENT_TIMESTAMP),
+    GeomFromWKB(:geom, :epsg));"
+
+database_insertdata_geometry_columns: "
+SELECT f_geometry_column, geometry_type, srid, 
+        coord_dimension, spatial_index_enabled
+FROM geometry_columns WHERE f_table_name = ?"
+
 database_getversion: "
 SELECT value
-FROM qkan.info
+FROM info
 WHERE subject = 'version'"
+
+database_update_info: "
+UPDATE info SET value = ? WHERE subject = 'version'"
+
+database_insertversion: "
+INSERT INTO qkan.info (subject, value) Values ('version', '1.9.9');"
+
+database_pragma: "
+PRAGMA table_info({tabnam});"
+
+database_foreign_key_off: "
+PRAGMA {=OFF;"
+
+database_create_table: "
+CREATE TABLE IF NOT EXISTS qkan.{tabnam} ({attr_text_new});"
+
+database_create_temp_table: "
+CREATE TABLE IF NOT EXISTS qkan.{tabnam}_t ({attr_text_new});"
+
+database_delete: "
+DELETE FROM {tabnam}_t"
+
+database_in_both: "
+INSERT INTO qkan.{tabnam} ({attr_text_both})
+SELECT {attr_text_both}
+FROM {tabnam}_t;"
+
+database_in_both_t: "
+INSERT INTO qkan.{tabnam}_t ({attr_text_both})
+SELECT {attr_text_both}
+FROM {tabnam};"
+
+database_drop_table: "
+DROP TABLE {tabnam};"
+
+database_drop_table_t: "
+DROP TABLE {tabnam}_t;"
+
+database_foreign_check: "
+PRAGMA foreign_key_check;"
+
+database_foreign_on: "
+PRAGMA {{=ON;"
+
+database_insert_into: "
+INSERT INTO qkan.{reftable} ({attr_name}, {attr_key}, {attr_bem})
+VALUES (?, ?, ?);"
+
+database_insert_short: "
+INSERT INTO qkan.{reftable} ({attr_name}, {attr_key}, {attr_short}, {attr_bem})
+VALUES (?, ?, ?, ?);"
+
+database_get_bezeichnung: "
+SELECT bezeichnung FROM {tabnam}"
+
+database_set_bezeichnung: "
+UPDATE {tabnam} SET bezeichnung = :qkan_bez WHERE bezeichnung = :bezeichnung"
+
+database_create_sel_haltungen: "
+CREATE TABLE IF NOT EXISTS qkan.sel_haltungen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY);"
+
+database_create_sel_schaechte: "
+CREATE TABLE IF NOT EXISTS qkan.sel_schaechte (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY);"
+
+database_create_sel_flaechen: "
+CREATE TABLE IF NOT EXISTS qkan.sel_flaechen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY);"
+
+database_insert_sel_haltungen: "
+INSERT INTO qkan.sel_haltungen (pk) VALUES (:pk);"
+
+database_insert_sel_schaechte: "
+INSERT INTO qkan.sel_schaechte (pk) VALUES (:pk);"
+
+database_insert_sel_flaechen: "
+INSERT INTO qkan.sel_flaechen (pk) VALUES (:pk);"
+
+database_clear_sel_haltungen: "
+DELETE FROM sel_haltungen"
+
+database_clear_sel_schaechte: "
+DELETE FROM sel_schaechte"
+
+database_clear_sel_flaechen: "
+DELETE FROM sel_flaechen"
+
+database_count_sel_haltungen: "
+SELECT count() FROM sel_haltungen"
+
+database_count_sel_schaechte: "
+SELECT count() FROM sel_schaechte"
+
+database_count_sel_flaechen: "
+SELECT count() FROM sel_flaechen"
+
+database_count_haltungen_all: "
+SELECT count() FROM haltungen"
+
+database_count_schaechte_all: "
+SELECT count() FROM schaechte"
+
+database_count_flaechen_all: "
+SELECT count() FROM flaechen"
+
+database_checknames: "
+SELECT {attr}
+    FROM {tab}
+    WHERE {attr} IS NULL or trim({attr}) = ''"
+
+database_correct_names: "
+UPDATE {tab}
+    SET {attr} = printf('{prefix}%d', ROWID)
+    WHERE {attr} IS NULL or trim({attr}) = ''"
+
+database_checkmultiple: "
+SELECT {attr}, count(*) AS anzahl
+    FROM {tab}
+    GROUP BY {attr}
+    HAVING anzahl > 1 OR {attr} IS NULL"
+
+database_correct_multiple: "
+WITH doppelte AS (
+    SELECT {attr}, count(*) AS anzahl
+    FROM {tab}
+    GROUP BY {attr}
+    HAVING anzahl > 1 OR {attr} IS NULL
+)
+UPDATE {tab}
+SET {attr} = printf('{prefix}%d', ROWID)
+WHERE {attr} IN (SELECT {attr} FROM doppelte);"
+
+database_checkflaechenbilanz: "
+WITH flintersect AS (
+    SELECT fl.flnam AS finam, 
+           CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN area(fl.geom) 
+           ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3))) 
+           END AS flaeche
+    FROM linkfl AS lf
+    INNER JOIN flaechen AS fl
+    ON qkan.lf.flnam = fl.flnam
+    LEFT JOIN tezg AS tg
+    ON qkan.lf.tezgnam = tg.flnam)
+SELECT fa.flnam, fi.finam, sum(fi.flaeche) AS fl_int, 
+       AREA(fa.geom) AS fl_ori, sum(fi.flaeche) - AREA(fa.geom) AS diff
+FROM flaechen AS fa
+LEFT JOIN flintersect AS fi
+ON fa.flnam = fi.finam
+GROUP BY fa.flnam
+HAVING ABS(sum(fi.flaeche) - AREA(fa.geom)) > 2"
+
+database_checktezgbilanz: "
+WITH flintersect AS (
+    SELECT tg.flnam AS finam, 
+           CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN area(fl.geom) 
+           ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3))) 
+           END AS flaeche
+    FROM linkfl AS lf
+    INNER JOIN flaechen AS fl
+    ON qkan.lf.flnam = fl.flnam
+    LEFT JOIN tezg AS tg
+    ON qkan.lf.tezgnam = tg.flnam)
+SELECT tg.flnam, fi.finam, sum(fi.flaeche) AS fl_int, 
+       AREA(tg.geom) AS fl_ori, sum(fi.flaeche) - AREA(tg.geom) AS diff
+FROM tezg AS tg
+LEFT JOIN flintersect AS fi
+ON tg.flnam = fi.finam
+GROUP BY tg.flnam
+HAVING ABS(sum(fi.flaeche) - AREA(tg.geom)) > 2"
+
+database_knotentyp_anf: "
+UPDATE schaechte SET knotentyp = 'Anfangsschacht' WHERE schaechte.schnam IN
+(SELECT t_sch.schnam
+FROM schaechte AS t_sch 
+LEFT JOIN haltungen AS t_hob
+ON t_sch.schnam = t_hob.schoben
+LEFT JOIN haltungen AS t_hun
+ON t_sch.schnam = t_hun.schunten
+WHERE t_hun.pk IS NULL);"
+
+database_knotentyp_end: "
+UPDATE schaechte SET knotentyp = 'Endschacht' WHERE schaechte.schnam IN
+(SELECT t_sch.schnam
+FROM schaechte AS t_sch 
+JOIN haltungen AS t_hob                 /* nur Schaechte mit Haltung oben */
+ON t_sch.schnam = t_hob.schunten
+LEFT JOIN haltungen AS t_hun
+ON t_sch.schnam = t_hun.schoben
+WHERE t_hun.pk IS NULL);"
+
+database_knotentyp_hoch: "
+UPDATE schaechte SET knotentyp = 'Hochpunkt' WHERE schaechte.schnam IN
+( SELECT t_sch.schnam
+  FROM schaechte AS t_sch 
+  JOIN haltungen AS t_hob
+  ON qkan.t_sch.schnam = t_hob.schunten
+  JOIN haltungen AS t_hun
+  ON qkan.t_sch.schnam = t_hun.schoben
+  JOIN schaechte AS t_sun
+  ON qkan.t_sun.schnam = t_hun.schunten
+  JOIN schaechte AS t_sob
+  ON qkan.t_sob.schnam = t_hob.schunten
+  WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)>ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
+        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)>ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
+
+database_knotentyp_tief: "
+UPDATE schaechte SET knotentyp = 'Tiefpunkt' WHERE schaechte.schnam IN
+( SELECT t_sch.schnam
+  FROM schaechte AS t_sch 
+  JOIN haltungen AS t_hob
+  ON qkan.t_sch.schnam = t_hob.schunten
+  JOIN haltungen AS t_hun
+  ON qkan.t_sch.schnam = t_hun.schoben
+  JOIN schaechte AS t_sun
+  ON qkan.t_sun.schnam = t_hun.schunten
+  JOIN schaechte AS t_sob
+  ON qkan.t_sob.schnam = t_hob.schunten
+  WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)<ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
+        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)<ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
+
+database_knotentyp_zweig: "
+UPDATE schaechte SET knotentyp = 'Verzweigung' WHERE schaechte.schnam IN
+( SELECT t_sch.schnam
+  FROM schaechte AS t_sch 
+  JOIN haltungen AS t_hun
+  ON qkan.t_sch.schnam = t_hun.schoben
+  GROUP BY t_sch.pk
+  HAVING count(*) > 1);"
+
+database_knotentyp_einzel: "
+UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
+( SELECT t_sch.schnam 
+  FROM schaechte AS t_sch 
+  LEFT JOIN haltungen AS t_hun
+  ON qkan.t_sch.schnam = t_hun.schoben
+  LEFT JOIN haltungen AS t_hob
+  ON qkan.t_sch.schnam = t_hob.schunten
+  WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL);"
+
