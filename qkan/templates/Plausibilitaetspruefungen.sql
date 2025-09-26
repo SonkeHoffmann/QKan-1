@@ -373,7 +373,7 @@ SELECT
 	WHERE 
     ABS(haltungen_untersucht.laenge - haltungen.laenge) * 100.0 / ((haltungen_untersucht.laenge + haltungen.laenge) / 2.0) > 5
 	GROUP BY haltungen_untersucht.haltnam',
- 'Einzelschäden_Haltungen', 'pk'),
+ 'Zustand_Haltungen_gesamt', 'pk'),
 
 ('Zustandsklassen', 'Haltungsname mehrfach', 'Fehler', 9,
     'SELECT pk AS objid, ''Haltungsname doppelt'' AS bemerkung
