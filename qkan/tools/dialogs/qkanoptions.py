@@ -12,6 +12,7 @@ from qgis.PyQt.QtWidgets import (
     QLineEdit,
     QPushButton,
     QRadioButton,
+    QCheckBox,
     QWidget,
 )
 
@@ -51,6 +52,9 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     rb_postgis: QRadioButton
     rb_spatialite: QRadioButton
 
+    cb_trigger_fang_schacht: QCheckBox
+    cb_trigger_referenztabellen: QCheckBox
+
     tf_fangradius: QLineEdit
     tf_abstand_zustandstexte: QLineEdit
     tf_abstand_zustandsbloecke: QLineEdit
@@ -84,6 +88,7 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         self.pb_selectfotopath.clicked.connect(self.fotopath)
         self.pb_selectvideopath.clicked.connect(self.videopath)
 
+        self.button_box.helpRequested.connect(self.click_help)
 
     def click_reset_fangradius(self) -> None:
         self.tf_fangradius.setText("0.1")
@@ -253,3 +258,10 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             self.tf_videopath.setText(ordner)
             #self.default_dir = os.path.dirname(ordner)
             QKan.config.videopath = ordner
+
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+
+        help_file = "https://qkan.eu/QKan_Daten.html#automatische-ubernahme-von-haltungsdaten-aus-schachten"
+        os.startfile(help_file)

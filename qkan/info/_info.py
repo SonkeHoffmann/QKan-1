@@ -2184,7 +2184,7 @@ class Info:
 
             for i in data.keys():
                 if i not in ['None', 63, '63']:
-                    sql = f"""select count(*) from anschlussleitung_untersucht LEFT JOIN anschlussleitungen a ON a.leitnam = anschlussleitungen_untersucht.leitnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_where_leit}"""
+                    sql = f"""select count(*) from anschlussleitungen_untersucht LEFT JOIN anschlussleitungen a ON a.leitnam = anschlussleitungen_untersucht.leitnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_where_leit}"""
 
                     if not self.db_qkan.sql(sql):
                         return

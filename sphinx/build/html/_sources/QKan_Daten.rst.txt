@@ -41,3 +41,64 @@ können. Um selbst ergänzte Plausibilitätsprüfungen davon auszunehmen reicht 
 eine andere als die vorgegebenen Bezeichnungen zu verwenden, z. B. "Netzstruktur, ergänzt", da nur die von QKan 
 vorgegebenen Standardgruppen (z. B. "Geoobjekte", "HYSTEM-EXTRAN", "Netzstruktur") von den Aktualisierungen 
 betroffen sind (siehe auch Abbildung oben: "Plausibilitätsprüfungen"). 
+
+.. _trigger_haltungen:
+
+Automatische Übernahme von Haltungsdaten aus Schächten
+------------------------------------------------------
+
+QKan bietet die Möglichkeit, bei der Neuerstellung oder Bearbeitung von Haltungen im Lageplan 
+Schachtbezeichnungen und/oder Sohlhöhen automatisch zu übernehmen, wenn ein Ende auf einen Schacht fängt. 
+Bei den Sohlhöhen geschieht dies nur, wenn das Feld vorher leer (NULL) ist. 
+
+Die Funktion kann über das Menü  :guilabel:`QKan` >  :guilabel:`Allgemein` >  :guilabel:`Optionen` in der 
+Karteikarte  :guilabel:`Autom. Datenübernahme` aktiviert werden. 
+
+Voraussetzung ist weiterhin, dass die QGIS-Fangfunktion aktiviert ist. 
+
+
+Referenztabellen
+----------------
+
+Diese Tabellen dienen im wesentlichen dazu, einheitliche Bezeichnungen für Attribute zu verwenden, wie z. B. 
+Profile, ("Kreis", oder "Kreisprofil").
+
+In QKan müssen die Bezeichnungen in folgenden Bereichen miteinander korrespondieren: 
+
+- Attribute in den Datentabellen 
+- Bezeichnungen in den Referenztabellen
+- Werte in der Symoblisierung der Layer, wenn kategorisierte Symboldarstellungen ausgewählt wurde
+  (siehe Abbildung)
+
+.. image:: ./QKan_Bilder/layereigenschaften_symbolisierung.png
+
+Fehler in den Referenztabellen erkennt man daran, dass in den Datentabellen Attribute mit Klammern 
+gekennzeichnet sind (z. B. "(durchlässig)". Das bedeutet, dass entweder diese Bezeichnung in der 
+zugehörigen Referenztabelle fehlt oder falsch geschrieben ist. 
+
+Trigger zu Referenztabellen
+---------------------------
+
+QKan verfügt bei den Referenztabellen über einen sehr praktischen internen Mechanismus (sogenannte "Trigger"), 
+wodurch Änderungen von Bezeichnungen in Referenztabellen automatisch in den Datentabellen nachvollzogen werden. 
+Dabei ist zu **beachten**, dass die Änderungen in den Datentabellen erst ausgeführt werden, **nachdem** die 
+Referenztabelle gespeichert wurde. Außerdem darf sich die Datentabelle **nicht im Bearbeitungsmodus** 
+befinden. Das liegt daran, dass die Trigger die Änderungen in der Datenbank (\*.sqlite) vornehmen, und deshalb erst 
+aktiv werden können, wenn sie von QGIS durch das Speichern in die Datenbank geschrieben worden sind.
+
++---------------------+------------------------------------+
+| Referenztabelle(n)  | Datentabellen                      |
++---------------------+------------------------------------+
+| Profile             | Haltungen,                         |
+|                     | Anschlussleitungen                 |
++---------------------+------------------------------------+
+| Entwässerungsarten, | Haltungen, Hausanschlussleitungen, |
+| Planungsstatus,     | Schächte, Auslässe, Speicher,      |
+| Material            | alle Sonderelemente                |
++---------------------+------------------------------------+
+| Abflussparameter    | Einzelflächen, Haltungsflächen     |
++---------------------+------------------------------------+
+
+Die Funktion kann über das Menü  :guilabel:`QKan` >  :guilabel:`Allgemein` >  :guilabel:`Optionen` in der 
+Karteikarte  :guilabel:`Autom. Datenübernahme` aktiviert werden. 
+

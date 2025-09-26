@@ -1,26 +1,3 @@
-qgsadapt_zoom: "
-SELECT
-    min(x) AS xmin,
-    min(y) AS ymin,
-    max(x) AS xmax,
-    max(y) AS ymax
-FROM (
-    SELECT x(coalesce(geop, centroid(geom))) AS x, 
-           y(coalesce(geop, centroid(geom))) AS y
-    FROM schaechte
-    UNION 
-    SELECT x(centroid(geom)) AS x, 
-           y(centroid(geom)) AS y
-    FROM haltungen
-)"
-
-qgsadapt_proj: "
-SELECT srid
-FROM geom_cols_ref_sys
-WHERE Lower(f_table_name) = Lower('schaechte')
-AND Lower(f_geometry_column) = Lower('geom')"
-
-
 tools_knotentyp_anf: "
 UPDATE schaechte SET knotentyp = 'Anfangsschacht' WHERE schaechte.schnam IN
 (SELECT t_sch.schnam
@@ -46,13 +23,13 @@ UPDATE schaechte SET knotentyp = 'Hochpunkt' WHERE schaechte.schnam IN
 ( SELECT t_sch.schnam
   FROM schaechte AS t_sch 
   JOIN haltungen AS t_hob
-  ON t_sch.schnam = t_hob.schunten
+  ON qkan.t_sch.schnam = t_hob.schunten
   JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
+  ON qkan.t_sch.schnam = t_hun.schoben
   JOIN schaechte AS t_sun
-  ON t_sun.schnam = t_hun.schunten
+  ON qkan.t_sun.schnam = t_hun.schunten
   JOIN schaechte AS t_sob
-  ON t_sob.schnam = t_hob.schunten
+  ON qkan.t_sob.schnam = t_hob.schunten
   WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)>ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
         ifnull(t_hun.sohleoben,t_sch.sohlhoehe)>ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
 
@@ -61,13 +38,13 @@ UPDATE schaechte SET knotentyp = 'Tiefpunkt' WHERE schaechte.schnam IN
 ( SELECT t_sch.schnam
   FROM schaechte AS t_sch 
   JOIN haltungen AS t_hob
-  ON t_sch.schnam = t_hob.schunten
+  ON qkan.t_sch.schnam = t_hob.schunten
   JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
+  ON qkan.t_sch.schnam = t_hun.schoben
   JOIN schaechte AS t_sun
-  ON t_sun.schnam = t_hun.schunten
+  ON qkan.t_sun.schnam = t_hun.schunten
   JOIN schaechte AS t_sob
-  ON t_sob.schnam = t_hob.schunten
+  ON qkan.t_sob.schnam = t_hob.schunten
   WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)<ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
         ifnull(t_hun.sohleoben,t_sch.sohlhoehe)<ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
 
@@ -76,7 +53,7 @@ UPDATE schaechte SET knotentyp = 'Verzweigung' WHERE schaechte.schnam IN
 ( SELECT t_sch.schnam
   FROM schaechte AS t_sch 
   JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
+  ON qkan.t_sch.schnam = t_hun.schoben
   GROUP BY t_sch.pk
   HAVING count(*) > 1);"
 
@@ -85,15 +62,15 @@ UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
 ( SELECT t_sch.schnam 
   FROM schaechte AS t_sch 
   LEFT JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
+  ON qkan.t_sch.schnam = t_hun.schoben
   LEFT JOIN haltungen AS t_hob
-  ON t_sch.schnam = t_hob.schunten
-  WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL)"
+  ON qkan.t_sch.schnam = t_hob.schunten
+  WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL);"
 
 # Datenuebernahme aus Schaechten
-tools_create_trigger_haltungen_new: "
+tools_haltungen_trigger_new: "
 CREATE TRIGGER IF NOT EXISTS trig_new_hal
-AFTER INSERT ON haltungen
+AFTER INSERT ON qkan.haltungen
 BEGIN
     UPDATE haltungen 
     SET haltnam = (
@@ -112,8 +89,8 @@ BEGIN
     UPDATE haltungen SET
     (schoben, sohleoben) = (
         SELECT
-            coalesce(new.schoben, s.schnam) AS schoben, 
-            coalesce(new.sohleoben, s.sohlhoehe) AS sohleoben
+            coalesce(new.schnam, s.schnam) AS schoben, 
+            coalesce(new.sohleoben, old.sohleoben, s.sohlhoehe) AS sohleoben
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
@@ -128,8 +105,8 @@ BEGIN
     UPDATE haltungen SET
     (schunten, sohleunten) = (
         SELECT
-            coalesce(new.schunten, s.schnam) AS schunten, 
-            coalesce(new.sohleunten, s.sohlhoehe) AS sohleunten
+            coalesce(new.schnam, s.schnam) AS schunten, 
+            coalesce(new.sohleunten, old.sohleunten, s.sohlhoehe) AS sohleunten
         FROM schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
         AND s.ROWID IN (
@@ -143,9 +120,9 @@ BEGIN
 END;"
 
 # Datenuebernahme aus Schaechten
-tools_create_trigger_haltungen_mod: "
+tools_haltungen_trigger_mod: "
 CREATE TRIGGER IF NOT EXISTS trig_mod_hal
-AFTER UPDATE OF geom ON haltungen
+AFTER UPDATE OF geom ON qkan.haltungen
 BEGIN
     UPDATE haltungen
     SET (schoben, sohleoben) = 
@@ -181,8 +158,8 @@ BEGIN
 END;"
 
 # Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_profile: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON profile
+tools_trigger_profile: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON qkan.profile
 BEGIN
     UPDATE haltungen
     SET profilnam = new.profilnam
@@ -193,8 +170,8 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_entwaesserungsarten: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON entwaesserungsarten
+tools_trigger_entwaesserungsarten: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON qkan.entwaesserungsarten
 BEGIN
     UPDATE haltungen
     SET entwart = new.bezeichnung
@@ -208,8 +185,8 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_simulationsstatus: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON simulationsstatus
+tools_trigger_simulationsstatus: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON qkan.simulationsstatus
 BEGIN
     UPDATE haltungen
     SET simstatus = new.bezeichnung
@@ -223,8 +200,8 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_material: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON material
+tools_trigger_material: "
+CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON qkan.material
 BEGIN
     UPDATE haltungen
     SET material = new.bezeichnung
@@ -238,7 +215,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Detailtabelle nachführen
-tools_create_trigger_abflussparameter: "
+tools_trigger_abflussparameter: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON abflussparameter
 BEGIN
     UPDATE flaechen
@@ -248,29 +225,6 @@ BEGIN
     SET abflussparameter = new.apnam
     WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
 END;"
-
-tools_drop_trigger_haltungen_new: "
-DROP TRIGGER IF EXISTS trig_new_hal;"
-
-tools_drop_trigger_haltungen_mod: "
-DROP TRIGGER IF EXISTS trig_mod_hal;"
-
-tools_drop_trigger_profile: "
-DROP TRIGGER IF EXISTS trig_ref_profile;"
-
-tools_drop_trigger_entwaesserungsarten: "
-DROP TRIGGER IF EXISTS trig_ref_entwart;"
-
-tools_drop_trigger_simulationsstatus: "
-DROP TRIGGER IF EXISTS trig_ref_simstatus;"
-
-tools_drop_trigger_material: "
-DROP TRIGGER IF EXISTS trig_ref_material;"
-
-tools_drop_trigger_abflussparameter: "
-DROP TRIGGER IF EXISTS trig_ref_abflussparameter;"
-
-# Check der Trigger
 
 tools_list_triggers_ref: "
 SELECT name FROM sqlite_master WHERE type = 'trigger' AND substr(name, 1, 9) = 'trig_ref_';"

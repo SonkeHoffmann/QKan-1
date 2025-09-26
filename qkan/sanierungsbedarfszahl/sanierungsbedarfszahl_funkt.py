@@ -3063,7 +3063,7 @@ class SanierungsbedarfszahlFunkt:
 
         layerFields = QgsFields()
         writer = QgsVectorFileWriter(atlas_path, 'UTF-8', layerFields, QgsWkbTypes.Point,
-                                     QgsCoordinateReferenceSystem(crs), 'ESRI Shapefile')
+                                     QgsCoordinateReferenceSystem.fromEpsgId(crs), 'ESRI Shapefile')
 
         for i in points:
             # liste mit allen punkten!!!

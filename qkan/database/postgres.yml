@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen (
     schunten TEXT,                                  /* join schaechte.schnam */
     hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
     breite NUMERIC(4,0),                            /* Profilbreite (mm) */
-    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslï¿½nge (m) */
     aussendurchmesser NUMERIC(4,0),
-    sohleoben NUMERIC(7,3),                         /* Sohlhöhe oben (m) */
-    sohleunten NUMERIC(7,3),                        /* Sohlhöhe unten (m) */
+    sohleoben NUMERIC(7,3),                         /* Sohlhï¿½he oben (m) */
+    sohleunten NUMERIC(7,3),                        /* Sohlhï¿½he unten (m) */
     baujahr INT,
     eigentum TEXT,                                  /* join eigentum.name */
     teilgebiet TEXT,                                /* join teilgebiet.tgnam */
-    strasse TEXT,                                   /* für ISYBAU benötigt */
+    strasse TEXT,                                   /* fï¿½r ISYBAU benï¿½tigt */
     profilnam TEXT DEFAULT 'Kreisquerschnitt',      /* join profile.profilnam */
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
     material TEXT,                                  /* join material.bezeichnung */
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen (
     ks NUMERIC(7,4) DEFAULT 1.5,                    /* abs. Rauheit (mm, Prandtl-Colebrook) */
     haltungstyp TEXT DEFAULT 'Haltung',             /* join haltungstypen.bezeichnung */
     simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
-    rwanschluss INTEGER DEFAULT 1,                  /* soll bei TEZG-Erstellung berücksichtigt werden */
+    rwanschluss INTEGER DEFAULT 1,                  /* soll bei TEZG-Erstellung berï¿½cksichtigt werden */
     druckdicht INTEGER DEFAULT 0,                   /* Druckleitung */
     xschob NUMERIC(11,3),
     yschob NUMERIC(11,3),
@@ -45,96 +45,6 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen (
 database_createspatialindex_haltungen_geom: "
 CREATE INDEX idx_haltungen_geom ON qkan.haltungen USING GIST(geom);"
 
-# Datenuebernahme aus Schaechten -- aktuell deaktiviert
-database_haltungen_trig_new_hal: "
-CREATE TRIGGER IF NOT EXISTS trig_new_hal
-AFTER INSERT ON qkan.haltungen
-BEGIN
-    UPDATE haltungen 
-    SET haltnam = (
-        SELECT coalesce(new.haltnam, s.schnam || '.1') AS haltnam
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = new.pk AND (haltnam = '' OR haltnam IS NULL);
-
-    UPDATE haltungen SET
-    (schoben, sohleoben) = (
-        SELECT
-            coalesce(new.schnam, s.schnam) AS schoben, 
-            coalesce(new.sohleoben, old.sohleoben, s.sohlhoehe) AS sohleoben
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
-
-    UPDATE haltungen SET
-    (schunten, sohleunten) = (
-        SELECT
-            coalesce(new.schnam, s.schnam) AS schunten, 
-            coalesce(new.sohleunten, old.sohleunten, s.sohlhoehe) AS sohleunten
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, -1))
-    )
-    WHERE pk = new.pk AND (schunten = '' OR schunten IS NULL);
-END;"
-
-# Datenuebernahme aus Schaechten -- aktuell deaktiviert
-database_haltungen_trig_mod_hal: "
-CREATE TRIGGER IF NOT EXISTS trig_mod_hal
-AFTER UPDATE OF geom ON qkan.haltungen
-BEGIN
-    UPDATE haltungen
-    SET (schoben, sohleoben) = 
-    (   SELECT
-            coalesce(s.schnam, OLD.schoben),
-            coalesce(OLD.sohleoben, NEW.sohleoben, s.sohlhoehe)
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = old.pk;
-
-    UPDATE haltungen
-    SET (schunten, sohleunten) = 
-    (   SELECT 
-            coalesce(s.schnam, OLD.schunten),
-            coalesce(OLD.sohleunten, NEW.sohleunten, s.sohlhoehe)
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, -1))
-    )
-    WHERE pk = old.pk;
-END;"
-
 database_create_haltungen_untersucht: "
 CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht(
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -144,7 +54,7 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht(
     schunten TEXT,                                  /* join schaechte.schnam */
     hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
     breite NUMERIC(4,0),                            /* Profilbreite (mm) */
-    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslï¿½nge (m) */
     baujahr INTEGER,
     id INTEGER,                                     /* absolute Nummer der Inspektion */
     untersuchtag TEXT,
@@ -220,17 +130,17 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen (
     schunten TEXT,                                  /* join schaechte.schnam */
     hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
     breite NUMERIC(4,0),                            /* Profilbreite (mm) */
-    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslï¿½nge (m) */
     aussendurchmesser NUMERIC(4,0),
-    sohleoben NUMERIC(7,3),                         /* Sohlhöhe oben (m) */
-    sohleunten NUMERIC(7,3),                        /* Sohlhöhe unten (m) */
+    sohleoben NUMERIC(7,3),                         /* Sohlhï¿½he oben (m) */
+    sohleunten NUMERIC(7,3),                        /* Sohlhï¿½he unten (m) */
     baujahr INTEGER,
     haltnam TEXT,                                   /* Anschluss an Haltung */
-    urstation NUMERIC(7,3),                         /* Anschlussposition gegen Fließrichtung */
+    urstation NUMERIC(7,3),                         /* Anschlussposition gegen Flieï¿½richtung */
     ursprung TEXT,                                  /* Adresse oder Objektbezeichnung */
     anschlusstyp TEXT,
     teilgebiet TEXT,                                /* join teilgebiet.tgnam */
-    strasse TEXT,                                   /* für ISYBAU benötigt */
+    strasse TEXT,                                   /* fï¿½r ISYBAU benï¿½tigt */
     profilnam TEXT DEFAULT 'Kreisquerschnitt',      /* join profile.profilnam */
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
     material TEXT,                                  /* join material.bezeichnung */
@@ -258,7 +168,7 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen_untersucht(
     schunten TEXT,                                  /* join schaechte.schnam */
     hoehe NUMERIC(4,0),                             /* Profilhoehe (mm) */
     breite NUMERIC(4,0),                            /* Profilbreite (mm) */
-    laenge NUMERIC(7,3),                            /* abweichende Haltungslänge (m) */
+    laenge NUMERIC(7,3),                            /* abweichende Haltungslï¿½nge (m) */
     baujahr INTEGER,
     id INTEGER,                                     /* absolute Nummer der Inspektion */
     untersuchtag TEXT,
@@ -425,7 +335,7 @@ CREATE INDEX idx_untersuchdat_schacht_geom ON qkan.untersuchdat_schacht USING GI
 
 # Einzugsgebiete 
 # Entsprechen in HYSTEM-EXTRAN 7.x den Siedlungstypen
-# "flaeche" wird nur für den Import benötigt, wenn keine Flächenobjekte vorhanden sind
+# "flaeche" wird nur fï¿½r den Import benï¿½tigt, wenn keine Flï¿½chenobjekte vorhanden sind
 # Verwendung:
 # Spezifische Verbrauchsdaten in Verbindung mit "einwohner"
 
@@ -434,7 +344,7 @@ CREATE TABLE IF NOT EXISTS qkan.einzugsgebiete (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     tgnam TEXT,
     ewdichte NUMERIC(6,2),                  /* ewdichte (EW/ha) */
-    wverbrauch NUMERIC(4,1),                /* wverbrauch (l/(EW·d)) */
+    wverbrauch NUMERIC(4,1),                /* wverbrauch (l/(EWï¿½d)) */
     stdmittel NUMERIC(4,2),                 /* stdmittel (h/d) */
     fremdwas NUMERIC(4,1),                  /* fremdwas (%) */
     kommentar TEXT,
@@ -444,8 +354,8 @@ CREATE TABLE IF NOT EXISTS qkan.einzugsgebiete (
 database_createspatialindex_einzugsgebiete_geom: "
 CREATE INDEX idx_einzugsgebiete_geom ON qkan.einzugsgebiete USING GIST(geom);"
 
-# Teilgebiete: Auswahl von Objekten in verschiedenen Tabellen für verschiedene 
-# Aufgaben, z. B. automatische Verknüpfung von befestigten Flächen und direkten 
+# Teilgebiete: Auswahl von Objekten in verschiedenen Tabellen fï¿½r verschiedene 
+# Aufgaben, z. B. automatische Verknï¿½pfung von befestigten Flï¿½chen und direkten 
 # Einleitungen.
 database_create_teilgebiete: "
 CREATE TABLE IF NOT EXISTS qkan.teilgebiete (
@@ -477,10 +387,10 @@ CREATE TABLE IF NOT EXISTS qkan.flaechen (
 database_createspatialindex_flaechen_geom: "
 CREATE INDEX idx_flaechen_geom ON qkan.flaechen USING GIST(geom);"
 
-# Anbindung Flächen
-# Die Tabelle linkfl verwaltet die Anbindung von Flächen an Haltungen. Diese Anbindung
-# wird ausschließlich grafisch verwaltet und beim Export direkt verwendet.
-# Flächen, bei denen das Attribut "aufteilen" den Wert 'ja' hat, werden mit dem
+# Anbindung Flï¿½chen
+# Die Tabelle linkfl verwaltet die Anbindung von Flï¿½chen an Haltungen. Diese Anbindung
+# wird ausschlieï¿½lich grafisch verwaltet und beim Export direkt verwendet.
+# Flï¿½chen, bei denen das Attribut "aufteilen" den Wert 'ja' hat, werden mit dem
 # Werkzeug "QKan_Link_Flaechen" mit allen durch die Verschneidung mit tezg entstehenden
 # Anteilen zugeordnet.
 
@@ -512,9 +422,9 @@ database_createspatialindex_linkfl_glink: "
 CREATE INDEX idx_linkfl_glink ON qkan.linkfl USING GIST(glink);"
 
 # Anbindung Direkteinleitungen:
-# Die Tabelle linksw verwaltet die Anbindung von Gebäuden an Haltungen. Diese Anbindung
-# wird anschließend in das Feld haltnam eingetragen. Der Export erfolgt allerdings anhand
-# der grafischen Verknüpfungen dieser Tabelle.
+# Die Tabelle linksw verwaltet die Anbindung von Gebï¿½uden an Haltungen. Diese Anbindung
+# wird anschlieï¿½end in das Feld haltnam eingetragen. Der Export erfolgt allerdings anhand
+# der grafischen Verknï¿½pfungen dieser Tabelle.
 
 database_create_linksw: "
 CREATE TABLE IF NOT EXISTS qkan.linksw (
@@ -545,7 +455,7 @@ CREATE TABLE IF NOT EXISTS qkan.tezg (
     neigkl INTEGER DEFAULT 1,           /* Werte [1-5], als Vorgabe fuer automatisch erzeugte unbef Flaechen */
     neigung NUMERIC(4,1),               /* absolute Neigung (%) */
     befgrad NUMERIC(4,3),               /* (-) Befestigungsgrad absolut, nur optional fuer SWMM und HE6 */
-    schwerpunktlaufzeit NUMERIC(4,1),   /* nur, wenn nur Haltungsflächen aber keine Flächen eingelesen werden */
+    schwerpunktlaufzeit NUMERIC(4,1),   /* nur, wenn nur Haltungsflï¿½chen aber keine Flï¿½chen eingelesen werden */
     regenschreiber TEXT,                /* Regenschreiber beziehen sich auf Zieldaten */
     teilgebiet TEXT,                    /* join teilgebiet.tgnam */
     abflussparameter TEXT,              /* als Vorgabe fuer automatisch erzeugte unbef Flaechen */
@@ -557,7 +467,7 @@ database_createspatialindex_tezg_geom: "
 CREATE INDEX idx_tezg_geom ON qkan.tezg USING GIST(geom);"
 
 # Direkte Einleitungen:
-# Erfasst alle Direkteinleitungen mit festem SW-Zufluss (m³/a)
+# Erfasst alle Direkteinleitungen mit festem SW-Zufluss (mï¿½/a)
 # Die Zuordnung zum Teilgebiet dient nur der Auswahl
 
 database_create_einleit: "
@@ -578,7 +488,7 @@ database_createspatialindex_einleit_geom: "
 CREATE INDEX idx_einleit_geom ON qkan.einleit USING GIST(geom);"
 
 # Einleitungen aus Aussengebieten 
-# Erfasst alle Außengebiete
+# Erfasst alle Auï¿½engebiete
 # Die Zuordnung zum Teilgebiet dient nur der Auswahl
 
 database_create_aussengebiete: "
@@ -601,9 +511,9 @@ database_createspatialindex_aussengebiete_geom: "
 CREATE INDEX idx_aussengebiete_geom ON qkan.aussengebiete USING GIST(geom);"
 
 # Anbindung Aussengebiete 
-# Die Tabelle linkageb verwaltet die Anbindung von Aussengebieten an Schächte. Diese Anbindung
-# wird anschließend in das Feld schnam eingetragen. Der Export erfolgt allerdings anhand
-# der grafischen Verknüpfungen dieser Tabelle.
+# Die Tabelle linkageb verwaltet die Anbindung von Aussengebieten an Schï¿½chte. Diese Anbindung
+# wird anschlieï¿½end in das Feld schnam eingetragen. Der Export erfolgt allerdings anhand
+# der grafischen Verknï¿½pfungen dieser Tabelle.
 
 database_create_linkageb: "
 CREATE TABLE IF NOT EXISTS qkan.linkageb (
@@ -628,21 +538,6 @@ CREATE TABLE IF NOT EXISTS qkan.simulationsstatus (
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT);"
 
-# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_simulationsstatus: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON qkan.simulationsstatus
-                BEGIN
-                    UPDATE haltungen
-                    SET simstatus = new.bezeichnung
-                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-                    UPDATE schaechte
-                    SET simstatus = new.bezeichnung
-                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-                    UPDATE anschlussleitungen
-                    SET simstatus = new.bezeichnung
-                    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-                END;"
-
 database_create_material: "
 CREATE TABLE IF NOT EXISTS qkan.material (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -652,21 +547,6 @@ CREATE TABLE IF NOT EXISTS qkan.material (
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT);"
-
-# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_material: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON qkan.material
-BEGIN
-    UPDATE haltungen
-    SET material = new.bezeichnung
-    WHERE material = old.bezeichnung AND material IS NOT NULL;
-    UPDATE schaechte
-    SET material = new.bezeichnung
-    WHERE material = old.bezeichnung AND material IS NOT NULL;
-    UPDATE anschlussleitungen
-    SET material = new.bezeichnung
-    WHERE material = old.bezeichnung AND material IS NOT NULL;
-END;"
 
 database_create_auslasstypen: "
 CREATE TABLE IF NOT EXISTS qkan.auslasstypen (
@@ -712,10 +592,10 @@ database_insert_flaechentypen: "
 INSERT INTO qkan.flaechentypen (
 bezeichnung, he_nr)
 Values 
-    ('Gebäude', 0),
-    ('Straße', 1),
-    ('Grünfläche', 2),
-    ('Gewässer', 3);"
+    ('Gebï¿½ude', 0),
+    ('Straï¿½e', 1),
+    ('Grï¿½nflï¿½che', 2),
+    ('Gewï¿½sser', 3);"
 
 database_create_bodenklassen: "
 CREATE TABLE IF NOT EXISTS qkan.bodenklassen (
@@ -783,8 +663,8 @@ CREATE TABLE IF NOT EXISTS qkan.eigentum (
     name TEXT, 
     kommentar TEXT);"
 
-# Hilfstabelle für den DYNA-Export
-# TODO: als temporäre Tabelle in das Export-Modul verschieben
+# Hilfstabelle fï¿½r den DYNA-Export
+# TODO: als temporï¿½re Tabelle in das Export-Modul verschieben
 database_create_dynahal: "
 CREATE TABLE IF NOT EXISTS qkan.dynahal (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -800,12 +680,12 @@ CREATE TABLE IF NOT EXISTS qkan.dynahal (
     anzunob INTEGER);"
 
 # Tabelle Gruppen:
-# Bearbeitungen, die auf Auswahlen basieren, verwenden ausschließlich die
+# Bearbeitungen, die auf Auswahlen basieren, verwenden ausschlieï¿½lich die
 # Tabelle "Teilgebiete". Diese Zuordnung ist sozusagen aktiv, im Gegensatz
 # zu inaktiven Zuordnungen, die in der Tabelle "gruppen" gespeichert werden.
-# Mit einem plugin "Zuordnung zu Teilgebieten" können gespeicherte
+# Mit einem plugin "Zuordnung zu Teilgebieten" kï¿½nnen gespeicherte
 # Zuordnungen gespeichert und geladen werden. Dabei werden die
-# Zuordnungen für folgende Tabellen verwaltet:
+# Zuordnungen fï¿½r folgende Tabellen verwaltet:
 #  - "haltungen"
 #  - "schaechte"
 #  - "flaechen"
@@ -828,7 +708,7 @@ database_create_profile: "
 CREATE TABLE IF NOT EXISTS qkan.profile (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     profilnam TEXT,
-    kuerzel TEXT,                       /* nur für Beschriftung */
+    kuerzel TEXT,                       /* nur fï¿½r Beschriftung */
     he_nr INTEGER,                      /* HYSTEM-EXTRAN */
     mu_nr INTEGER,
     kp_key TEXT,                        /* DYNA / Kanal++ */
@@ -838,23 +718,11 @@ CREATE TABLE IF NOT EXISTS qkan.profile (
     kommentar TEXT
 );"
 
-# Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_profile: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON qkan.profile
-                BEGIN
-                    UPDATE haltungen
-                    SET profilnam = new.profilnam
-                    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
-                    UPDATE anschlussleitungen
-                    SET profilnam = new.profilnam
-                    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
-                END;"
-
 database_create_entwaesserungsarten: "
 CREATE TABLE IF NOT EXISTS qkan.entwaesserungsarten (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     bezeichnung TEXT,                   /* eindeutige QKan-Bezeichnung  */
-    kuerzel TEXT,                       /* nur für Beschriftung */
+    kuerzel TEXT,                       /* nur fï¿½r Beschriftung */
     he_nr INTEGER,                      /* HYSTEM-EXTRAN */
     kp_nr INTEGER,                      /* DYNA / Kanal++ */
     isybau TEXT,                        /* BFR Abwasser */
@@ -862,21 +730,6 @@ CREATE TABLE IF NOT EXISTS qkan.entwaesserungsarten (
     m145 TEXT,                          /* DWA M145 */
     bemerkung TEXT
 );"
-
-# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_haltungen_trig_update_entwaesserungsarten: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON qkan.entwaesserungsarten
-                BEGIN
-                    UPDATE haltungen
-                    SET entwart = new.bezeichnung
-                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-                    UPDATE schaechte
-                    SET entwart = new.bezeichnung
-                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-                    UPDATE anschlussleitungen
-                    SET entwart = new.bezeichnung
-                    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-                END;"
 
 database_create_haltungstypen: "
 CREATE TABLE IF NOT EXISTS qkan.haltungstypen(
@@ -897,7 +750,7 @@ VALUES
     ('Pumpe', NULL),
     ('Wehr', NULL);"
 
-# Tabelle Untersuchungsrichtung wird nur für das Nachschlagefeld benötigt
+# Tabelle Untersuchungsrichtung wird nur fï¿½r das Nachschlagefeld benï¿½tigt
 database_create_untersuchrichtung: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchrichtung (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -912,8 +765,8 @@ database_insert_untersuchrichtung: "
 INSERT INTO qkan.untersuchrichtung (
 kuerzel, bezeichnung, bemerkung)
 VALUES
-    (NULL, 'in Fließrichtung', 'automatisch hinzugefügt'),
-    (NULL, 'gegen Fließrichtung', 'automatisch hinzugefügt');"
+    (NULL, 'in Flieï¿½richtung', 'automatisch hinzugefï¿½gt'),
+    (NULL, 'gegen Flieï¿½richtung', 'automatisch hinzugefï¿½gt');"
 
 database_create_wetter: "
 CREATE TABLE IF NOT EXISTS qkan.wetter (
@@ -968,7 +821,7 @@ VALUES
     ('Online Wasserstandsdifferenz', 4, 4),
     ('Ideal', 5, 5);"
 
-# Abfragen für Plausibilitätsprüfungen
+# Abfragen fï¿½r Plausibilitï¿½tsprï¿½fungen
 database_create_pruefsql: "
 CREATE TABLE IF NOT EXISTS qkan.pruefsql (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -981,7 +834,7 @@ CREATE TABLE IF NOT EXISTS qkan.pruefsql (
     attrname TEXT,                      /* Objektsuche Attribut zur Objektidentifikation, */
     createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
-# Ergebnisse der Plausibilitätsprüfungen
+# Ergebnisse der Plausibilitï¿½tsprï¿½fungen
 database_create_pruefliste: "
 CREATE TABLE IF NOT EXISTS qkan.pruefliste (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -993,7 +846,7 @@ CREATE TABLE IF NOT EXISTS qkan.pruefliste (
     objname TEXT,                       /* Objektsuche Objektname */
     createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
 
-# Referenztabelle für Plausi Zustandsklassen
+# Referenztabelle fï¿½r Plausi Zustandsklassen
 database_create_reflist_zustand: "
 CREATE TABLE IF NOT EXISTS qkan.reflist_zustand (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1068,26 +921,26 @@ INSERT INTO qkan.symbolkatalog (bezeichnung, gruppe, kommentar) VALUES
 ('PW vorh', 'ABK NRW', NULL),
 ('RRB gepl', 'ABK NRW', NULL),
 ('RRB vorh', 'ABK NRW', NULL),
-('RÜ gepl', 'ABK NRW', NULL),
-('RÜ vorh', 'ABK NRW', NULL),
-('RÜB gepl', 'ABK NRW', NULL),
-('RÜB vorh', 'ABK NRW', NULL),
+('Rï¿½ gepl', 'ABK NRW', NULL),
+('Rï¿½ vorh', 'ABK NRW', NULL),
+('Rï¿½B gepl', 'ABK NRW', NULL),
+('Rï¿½B vorh', 'ABK NRW', NULL),
 ('SW Einl in Gew gepl', 'ABK NRW', NULL),
 ('SW Einl in Gew vorh', 'ABK NRW', NULL),
 ('SW Einl in GW gepl', 'ABK NRW', NULL),
 ('SW Einl in GW vorh', 'ABK NRW', NULL),
-('Übergabe gepl', 'ABK NRW', NULL),
-('Übergabe vorh', 'ABK NRW', NULL),
-('Übernahme gepl', 'ABK NRW', NULL),
-('Übernahme vorh', 'ABK NRW', NULL),
+('ï¿½bergabe gepl', 'ABK NRW', NULL),
+('ï¿½bergabe vorh', 'ABK NRW', NULL),
+('ï¿½bernahme gepl', 'ABK NRW', NULL),
+('ï¿½bernahme vorh', 'ABK NRW', NULL),
 ('VSA gepl', 'ABK NRW', NULL),
 ('VSA vorh', 'ABK NRW', NULL),
 ('wegfallend', 'ABK NRW', NULL),
-('Abflusslose Grube', 'Entwässerung', NULL),
-('Be-/Entlüftungsschacht', 'Entwässerung', NULL),
-('Molchschacht', 'Entwässerung', NULL),
-('Strassenablauf', 'Entwässerung', NULL),
-('Vakuumstation', 'Entwässerung', NULL);"
+('Abflusslose Grube', 'Entwï¿½sserung', NULL),
+('Be-/Entlï¿½ftungsschacht', 'Entwï¿½sserung', NULL),
+('Molchschacht', 'Entwï¿½sserung', NULL),
+('Strassenablauf', 'Entwï¿½sserung', NULL),
+('Vakuumstation', 'Entwï¿½sserung', NULL);"
 
 database_createview_untersuchdat_aktuell: "
 CREATE VIEW qkan.v_untersuchdat_hal_last AS
@@ -1413,7 +1266,7 @@ UPDATE info SET value = ? WHERE subject = 'version'"
 database_insertversion: "
 INSERT INTO qkan.info (subject, value) Values ('version', '1.9.9');"
 
-database_pragma: "
+database_tableinfo: "
 PRAGMA table_info({tabnam});"
 
 database_foreign_key_off: "
@@ -1576,73 +1429,3 @@ LEFT JOIN flintersect AS fi
 ON tg.flnam = fi.finam
 GROUP BY tg.flnam
 HAVING ABS(sum(fi.flaeche) - AREA(tg.geom)) > 2"
-
-database_knotentyp_anf: "
-UPDATE schaechte SET knotentyp = 'Anfangsschacht' WHERE schaechte.schnam IN
-(SELECT t_sch.schnam
-FROM schaechte AS t_sch 
-LEFT JOIN haltungen AS t_hob
-ON t_sch.schnam = t_hob.schoben
-LEFT JOIN haltungen AS t_hun
-ON t_sch.schnam = t_hun.schunten
-WHERE t_hun.pk IS NULL);"
-
-database_knotentyp_end: "
-UPDATE schaechte SET knotentyp = 'Endschacht' WHERE schaechte.schnam IN
-(SELECT t_sch.schnam
-FROM schaechte AS t_sch 
-JOIN haltungen AS t_hob                 /* nur Schaechte mit Haltung oben */
-ON t_sch.schnam = t_hob.schunten
-LEFT JOIN haltungen AS t_hun
-ON t_sch.schnam = t_hun.schoben
-WHERE t_hun.pk IS NULL);"
-
-database_knotentyp_hoch: "
-UPDATE schaechte SET knotentyp = 'Hochpunkt' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam
-  FROM schaechte AS t_sch 
-  JOIN haltungen AS t_hob
-  ON qkan.t_sch.schnam = t_hob.schunten
-  JOIN haltungen AS t_hun
-  ON qkan.t_sch.schnam = t_hun.schoben
-  JOIN schaechte AS t_sun
-  ON qkan.t_sun.schnam = t_hun.schunten
-  JOIN schaechte AS t_sob
-  ON qkan.t_sob.schnam = t_hob.schunten
-  WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)>ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
-        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)>ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
-
-database_knotentyp_tief: "
-UPDATE schaechte SET knotentyp = 'Tiefpunkt' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam
-  FROM schaechte AS t_sch 
-  JOIN haltungen AS t_hob
-  ON qkan.t_sch.schnam = t_hob.schunten
-  JOIN haltungen AS t_hun
-  ON qkan.t_sch.schnam = t_hun.schoben
-  JOIN schaechte AS t_sun
-  ON qkan.t_sun.schnam = t_hun.schunten
-  JOIN schaechte AS t_sob
-  ON qkan.t_sob.schnam = t_hob.schunten
-  WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)<ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
-        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)<ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
-
-database_knotentyp_zweig: "
-UPDATE schaechte SET knotentyp = 'Verzweigung' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam
-  FROM schaechte AS t_sch 
-  JOIN haltungen AS t_hun
-  ON qkan.t_sch.schnam = t_hun.schoben
-  GROUP BY t_sch.pk
-  HAVING count(*) > 1);"
-
-database_knotentyp_einzel: "
-UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam 
-  FROM schaechte AS t_sch 
-  LEFT JOIN haltungen AS t_hun
-  ON qkan.t_sch.schnam = t_hun.schoben
-  LEFT JOIN haltungen AS t_hob
-  ON qkan.t_sch.schnam = t_hob.schunten
-  WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL);"
-

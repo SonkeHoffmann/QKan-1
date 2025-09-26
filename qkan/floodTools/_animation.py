@@ -88,7 +88,7 @@ class FloodanimationTask:
                 self.tabnam_velo,
                 "ogr"
             )
-            vlayer.setCrs(QgsCoordinateReferenceSystem(self.epsg))
+            vlayer.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(self.epsg))
             QgsProject.instance().addMapLayer(vlayer)
 
             o_save_options = QgsVectorFileWriter.SaveVectorOptions()
@@ -121,7 +121,7 @@ class FloodanimationTask:
                 self.tabnam_wlevel,
                 "ogr"
             )
-            vlayer.setCrs(QgsCoordinateReferenceSystem(self.epsg))
+            vlayer.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(self.epsg))
             QgsProject.instance().addMapLayer(vlayer)
 
             o_save_options = QgsVectorFileWriter.SaveVectorOptions()
@@ -289,29 +289,29 @@ class FloodanimationTask:
                                                level=Qgis.MessageLevel.Critical)
                 return False
 
-        canvas = iface.mapCanvas()
-        # canvas = QgsMapCanvas()
-
-        # set frame duration
-        timeController = canvas.temporalController()
-        intervall = QgsInterval()
-        intervall.setMinutes(interval * 1440)
-        timeController.setFrameDuration(intervall)
-
-        # set frame rate
-        timeController.setFramesPerSecond(0.5)
-
-        # set time range
-        timerange = QgsTemporalUtils.calculateTemporalRangeForProject(QgsProject.instance())
-        if timerange.isInfinite():
-            db.logger.error(f'Die Ergebnisdaten enthalten keine Zeitschritte')
-            iface.messageBar().pushMessage("Datenfehler", "Eine Ergebnistabelle enthält keine Zeitschritte. "
-                                                          "Möglicherweise wurden bei der Ergebnisausgabe nicht "
-                                                          "alle Zeitschrittausgaben aktiviert.",
-                                           level=Qgis.MessageLevel.Warning)
-            return False
-
-        timeController.setTemporalExtents(timerange)
+        # canvas = iface.mapCanvas()
+        # # canvas = QgsMapCanvas()
+        #
+        # # set frame duration
+        # timeController = canvas.temporalController()
+        # intervall = QgsInterval()
+        # intervall.setMinutes(interval * 1440)
+        # timeController.setFrameDuration(intervall)
+        #
+        # # set frame rate
+        # timeController.setFramesPerSecond(0.5)
+        #
+        # # set time range
+        # timerange = QgsTemporalUtils.calculateTemporalRangeForProject(QgsProject.instance())
+        # if timerange.isInfinite():
+        #     db.logger.error(f'Die Ergebnisdaten enthalten keine Zeitschritte')
+        #     iface.messageBar().pushMessage("Datenfehler", "Eine Ergebnistabelle enthält keine Zeitschritte. "
+        #                                                   "Möglicherweise wurden bei der Ergebnisausgabe nicht "
+        #                                                   "alle Zeitschrittausgaben aktiviert.",
+        #                                    level=Qgis.MessageLevel.Warning)
+        #     return False
+        #
+        # timeController.setTemporalExtents(timerange)
 
         # set navigation mode to 'animated'
         timeController.setNavigationMode(1)

@@ -114,7 +114,7 @@ class SurfaceTools(QKanPlugin):
             # Start der Verarbeitung
 
             liste_hal_entw = list_selected_items(self.voronoi_dlg.lw_hal_entw)
-            liste_teilgebiete: List[str] = list_selected_items(
+            liste_teilgebiete: list[str] = list_selected_items(
                 self.voronoi_dlg.lw_teilgebiete
             )
             self.log.debug(f"Modul {__name__}: liste_hal_entw = {liste_hal_entw}")

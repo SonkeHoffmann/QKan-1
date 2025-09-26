@@ -596,10 +596,16 @@ Das Beispielprojektes Adorf zeigt, wie aus Kanaldaten und Flurstücksdaten ein B
 erstellt werden kann. Dazu finden Sie hier neben einer Kurzanleitung und dem Kanalnetz mehrere Zwischenschritte 
 für den Fall, dass eine Funktion nicht erfolgreich nachvollzogen werden kann. 
 
-- `Download Arbeitsanleitung <https://fh-aachen.sciebo.de/s/CeeqeaHnyCTAYC2>`_
+`Downloads Arbeitsanleitung, Kanalnetz und Zwischenzustände während der Bearbeitung <https://fh-aachen.sciebo.de/s/Qi4B3dgF9z6kbkp>`_
 
-- `Download Kanalnetz <https://fh-aachen.sciebo.de/s/dddfw23xmfnnxXB>`_
 
-- `Download Zwischenzustand "step_1" <https://fh-aachen.sciebo.de/s/6MqeyRbJw6x9KPC>`_
+Beispielprojekt Zustandsklassifizierung
+---------------------------------------
 
-- `Download Zwischenzustand "step_2" <https://fh-aachen.sciebo.de/s/XR3HtHsFxHGNAy4>`_
+Das Beispielprojekt enthält einen Datensatz mit Stamm- und Zustandsdaten um an diesem die Zustandsklassifizierung 
+sowie die Substanzklassifizierung durchzuführen. Des Weiteren werden eine Anleitung und die Ergebnisdaten 
+bereitgestellt.
+
+`Downloads zum Beispielprojekt Zustandsklassifizierung <https://fh-aachen.sciebo.de/s/TDJrk8GkG7ZkBbH>`_
+
+

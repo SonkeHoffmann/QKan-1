@@ -528,7 +528,7 @@ Haltungen pro Strang:</source>
     </message>
     <message>
         <location filename="../tools/application.py" line="74"/>
-        <source>Allgemeine Optionen</source>
+        <source>Optionen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

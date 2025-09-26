@@ -40,7 +40,7 @@ from .k_qgsadapt import qgsadapt
 from .k_runoffparams import setRunoffparams
 from .k_befahrung import setbefahrung
 
-from ..utils import get_logger
+from ..utils import get_logger, QkanDbError
 
 logger = get_logger("QKan.tools.application")
 
@@ -85,7 +85,7 @@ class QKanTools(QKanPlugin):
         icon_qkanoptions_path = ":/plugins/qkan/tools/res/icon_qkanoptions.png"
         QKan.instance.add_action(
             icon_qkanoptions_path,
-            text=self.tr("Allgemeine Optionen"),
+            text=self.tr("Optionen"),
             callback=self.run_qkanoptions,
             parent=self.iface.mainWindow(),
         )
@@ -139,13 +139,13 @@ class QKanTools(QKanPlugin):
             parent=self.iface.mainWindow(),
         )
 
-        icon_befahrung = ":/plugins/qkan/tools/res/icon_befahrung.png"
-        QKan.instance.add_action(
-            icon_befahrung,
-            text=self.tr("Inspektionsdaten anpassen"),
-            callback=self.run_befahrung,
-            parent=self.iface.mainWindow(),
-        )
+        # icon_befahrung = ":/plugins/qkan/tools/res/icon_befahrung.png"
+        # QKan.instance.add_action(
+        #     icon_befahrung,
+        #     text=self.tr("Inspektionsdaten anpassen"),
+        #     callback=self.run_befahrung,
+        #     parent=self.iface.mainWindow(),
+        # )
 
         icon_help_path = ":/plugins/qkan/tools/res/icon_help.png"
         QKan.instance.add_action(
@@ -175,7 +175,7 @@ class QKanTools(QKanPlugin):
 
         # Falls eine Datenbank angebunden ist, wird diese zunächst in das Formular eingetragen.
         get_database_QKan(silent=True)
-        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
+        self.database_name = QKan.config.database.qkan
 
         if self.database_name is not None and self.database_name != '':
             self.default_dir = os.path.dirname(
@@ -229,7 +229,7 @@ class QKanTools(QKanPlugin):
                     "{self.database_name}",
                     N/A,
                     "{project_file}",
-                    epsg = {epsg}, 
+                    epsg = {QKan.config.epsg}, 
                 )"""
             )
 
@@ -252,7 +252,7 @@ class QKanTools(QKanPlugin):
                     db_qkan,
                     project_file,
                     project_template,
-                    epsg=epsg,
+                    epsg=QKan.config.epsg,
                 )
 
             # ------------------------------------------------------------------------------
@@ -300,16 +300,13 @@ class QKanTools(QKanPlugin):
         self.dlgop.tf_max_loops.setText(str(QKan.config.max_loops))
 
         # Optionen zum Typ der QKan-Datenbank
-        datenbanktyp = QKan.config.database.type
-
-        if datenbanktyp == enums.QKanDBChoice.SPATIALITE:
+        if QKan.config.database.type == enums.QKanDBChoice.SPATIALITE:
             self.dlgop.rb_spatialite.setChecked(True)
-        # elif datenbanktyp == enums.QKanDBChoice.POSTGIS:
+        # elif QKan.config.database.type == enums.QKanDBChoice.POSTGIS:
         # self.dlgop.rb_postgis.setChecked(True)
 
-        epsg = QKan.config.epsg
         # noinspection PyCallByClass,PyArgumentList
-        self.dlgop.qsw_epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(epsg))
+        self.dlgop.qsw_epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
 
         self.dlgop.tf_logeditor.setText(QKan.config.tools.logeditor)
 
@@ -317,6 +314,38 @@ class QKanTools(QKanPlugin):
         status_logeditor = QKan.config.tools.logeditor == ""
         self.dlgop.tf_logeditor.setEnabled(status_logeditor)
 
+        # Check Triggers
+        with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+            if not db_qkan.connected:
+                self.log.error(f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                )
+                raise QkanDbError
+
+            db_qkan.loadmodule('tools')
+
+            # Test Trigger Referenztabellen
+            sql = 'tools_list_triggers_ref'
+            if not db_qkan.sqlyml(
+                sql,
+                sql,
+            ):
+                self.log.error_data('Trigger für Referenztabellen konnte nicht gelesen werden')
+                raise QkanDbError
+
+            data = db_qkan.fetchall()
+            self.dlgop.cb_trigger_referenztabellen.setChecked(len(data) > 2)
+
+            # Test Trigger Fang auf Schacht bei Neuerstellung oder Bearbeitung einer Haltung
+            sql = 'tools_check_triggers_fang_schacht'
+            if not db_qkan.sqlyml(
+                sql,
+                sql,
+            ):
+                self.log.error_data('Trigger für Schachtfang konnte nicht gelesen werden')
+                raise QkanDbError
+
+            data = db_qkan.fetchall()
+            self.dlgop.cb_trigger_fang_schacht.setChecked(len(data) >= 2)
 
         # show the dialog
         self.dlgop.show()
@@ -328,48 +357,76 @@ class QKanTools(QKanPlugin):
 
             # Inhalte aus Formular lesen --------------------------------------------------------------
 
-            fangradius: float = float(self.dlgop.tf_fangradius.text())
-            abstand_zustandstexte: float = float(self.dlgop.tf_abstand_zustandstexte.text())
-            abstand_zustandsbloecke: float = float(self.dlgop.tf_abstand_zustandsbloecke.text())
-            abstand_knoten_anf: float = float(self.dlgop.tf_abstand_knoten_anf.text())
-            abstand_knoten_1: float = float(self.dlgop.tf_abstand_knoten_1.text())
-            abstand_knoten_2: float = float(self.dlgop.tf_abstand_knoten_2.text())
-            abstand_knoten_end: float = float(self.dlgop.tf_abstand_knoten_end.text())
-            mindestflaeche: float = float(self.dlgop.tf_mindestflaeche.text())
-            max_loops: int = int(self.dlgop.tf_max_loops.text())
-            logeditor: str = self.dlgop.tf_logeditor.text().strip()
+            QKan.config.fangradius = float(self.dlgop.tf_fangradius.text())
+            QKan.config.zustand.abstand_zustandstexte = float(self.dlgop.tf_abstand_zustandstexte.text())
+            QKan.config.zustand.abstand_zustandsbloecke = float(self.dlgop.tf_abstand_zustandsbloecke.text())
+            QKan.config.zustand.abstand_knoten_anf = float(self.dlgop.tf_abstand_knoten_anf.text())
+            QKan.config.zustand.abstand_knoten_1 = float(self.dlgop.tf_abstand_knoten_1.text())
+            QKan.config.zustand.abstand_knoten_2 = float(self.dlgop.tf_abstand_knoten_2.text())
+            QKan.config.zustand.abstand_knoten_end = float(self.dlgop.tf_abstand_knoten_end.text())
+            QKan.config.max_loops = int(self.dlgop.tf_max_loops.text())
+            QKan.config.mindestflaeche = float(self.dlgop.tf_mindestflaeche.text())
+            QKan.config.logeditor = self.dlgop.tf_logeditor.text().strip()
 
-            fotopath: str = self.dlgop.tf_fotopath.text().strip()
-            videopath: str = self.dlgop.tf_videopath.text().strip()
+            QKan.config.fotopath = self.dlgop.tf_fotopath.text().strip()
+            QKan.config.videopath = self.dlgop.tf_videopath.text().strip()
 
             if self.dlgop.rb_spatialite.isChecked():
-                datenbanktyp = enums.QKanDBChoice.SPATIALITE
+                QKan.config.database.type = enums.QKanDBChoice.SPATIALITE
             # elif self.dlgop.rb_postgis.isChecked():
-            # datenbanktyp = enums.QKanDBChoice.POSTGIS
+            # QKan.config.database.type = enums.QKanDBChoice.POSTGIS
             else:
                 fehlermeldung(
                     "tools.application.run",
-                    f"Fehlerhafte Option: \ndatenbanktyp = {datenbanktyp}",
+                    f"Fehlerhafte Option: \ndatenbanktyp = {QKan.config.database.type}",
                 )
-            epsg = int(self.dlgop.qsw_epsg.crs().postgisSrid())
+            QKan.config.epsg = int(self.dlgop.qsw_epsg.crs().postgisSrid())
 
-            QKan.config.database.type = datenbanktyp
-            if epsg:
-                QKan.config.epsg = epsg
-            QKan.config.fangradius = fangradius
-            QKan.config.zustand.abstand_zustandstexte = abstand_zustandstexte
-            QKan.config.zustand.abstand_zustandsbloecke = abstand_zustandsbloecke
-            QKan.config.zustand.abstand_knoten_anf = abstand_knoten_anf
-            QKan.config.zustand.abstand_knoten_1 = abstand_knoten_1
-            QKan.config.zustand.abstand_knoten_2 = abstand_knoten_2
-            QKan.config.zustand.abstand_knoten_end = abstand_knoten_end
-            QKan.config.max_loops = max_loops
-            QKan.config.mindestflaeche = mindestflaeche
-            QKan.config.tools.logeditor = logeditor
-            QKan.config.fotopath = fotopath
-            QKan.config.videopath = videopath
             QKan.config.save()
 
+            # Set/Drop Triggers
+            with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+                if not db_qkan.connected:
+                    self.log.error(f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                    )
+                    raise QkanDbError
+
+                db_qkan.loadmodule('tools')
+
+                # Trigger Referenztabellen
+                triggerlist = [
+                    'profile', 'entwaesserungsarten', 'simulationsstatus', 'material', 'abflussparameter']
+
+                for trigger in triggerlist:
+                    if self.dlgop.cb_trigger_referenztabellen.isChecked():
+                        sql = f'tools_create_trigger_{trigger}'
+                    else:
+                        sql = f'tools_drop_trigger_{trigger}'
+
+                    if not db_qkan.sqlyml(
+                        sql,
+                        sql,
+                    ):
+                        self.log.error_data(f'Trigger für Referenztabelle tools_create_trigger_{trigger} '
+                                            f'konnte nicht erzeugt werden')
+                        raise QkanDbError
+
+                # Trigger Fang auf Schacht bei Neuerstellung oder Bearbeitung einer Haltung
+                for trigger in ['new', 'mod']:
+                    if self.dlgop.cb_trigger_fang_schacht.isChecked():
+                        sql = f'tools_create_trigger_haltungen_{trigger}'
+                    else:
+                        sql = f'tools_drop_trigger_haltungen_{trigger}'
+
+                    if not db_qkan.sqlyml(
+                        sql,
+                        sql,
+                    ):
+                        self.log.error_data(f'Trigger für Schachtfang tools_haltungen_trigger_{trigger} '
+                                            'konnte nicht erzeugt werden')
+                        raise QkanDbError
+
+                db_qkan.commit()
 
     def run_runoffparams(self) -> None:
         """Berechnen und Eintragen der Oberflächenabflussparameter in die Tabelle flaechen"""
@@ -390,7 +447,7 @@ class QKanTools(QKanPlugin):
         # json-Datei übernommen.
 
         get_database_QKan()
-        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
+        database_qkan = QKan.config.database.qkan
         if not database_qkan:
             self.log.error(
                 "tools.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
@@ -600,7 +657,7 @@ class QKanTools(QKanPlugin):
 
         # Falls eine Datenbank angebunden ist, wird diese zunächst in das Formular eingetragen.
         get_database_QKan(silent=True)
-        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
+        self.database_name = QKan.config.database.qkan
 
         if self.database_name is not None and self.database_name != '':
             self.default_dir = os.path.dirname(
@@ -774,7 +831,7 @@ class QKanTools(QKanPlugin):
 
         # Falls eine Datenbank angebunden ist, wird diese zunächst in das Formular eingetragen.
         get_database_QKan(silent=True)
-        self.database_name, epsg = QKan.config.database.qkan, QKan.config.epsg
+        self.database_name = QKan.config.database.qkan
 
         if self.database_name is not None and self.database_name != '':
             self.default_dir = os.path.dirname(
@@ -940,5 +997,3 @@ class QKanTools(QKanPlugin):
                 setbefahrung(
                     db_qkan,
                 )
-
-

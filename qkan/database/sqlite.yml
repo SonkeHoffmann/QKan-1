@@ -49,96 +49,6 @@ SELECT AddGeometryColumn('haltungen', 'geom', :epsg, 'LINESTRING', 2);"
 database_createspatialindex_haltungen_geom: "
 SELECT CreateSpatialIndex('haltungen', 'geom');"
 
-# Datenuebernahme aus Schaechten -- aktuell deaktiviert
-database_haltungen_trig_new_hal: "
-CREATE TRIGGER IF NOT EXISTS trig_new_hal
-AFTER INSERT ON haltungen
-BEGIN
-    UPDATE haltungen 
-    SET haltnam = (
-        SELECT coalesce(new.haltnam, s.schnam || '.1') AS haltnam
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = new.pk AND (haltnam = '' OR haltnam IS NULL);
-
-    UPDATE haltungen SET
-    (schoben, sohleoben) = (
-        SELECT
-            coalesce(new.schnam, s.schnam) AS schoben, 
-            coalesce(new.sohleoben, old.sohleoben, s.sohlhoehe) AS sohleoben
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
-
-    UPDATE haltungen SET
-    (schunten, sohleunten) = (
-        SELECT
-            coalesce(new.schnam, s.schnam) AS schunten, 
-            coalesce(new.sohleunten, old.sohleunten, s.sohlhoehe) AS sohleunten
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, -1))
-    )
-    WHERE pk = new.pk AND (schunten = '' OR schunten IS NULL);
-END;"
-
-# Datenuebernahme aus Schaechten -- aktuell deaktiviert
-database_haltungen_trig_mod_hal: "
-CREATE TRIGGER IF NOT EXISTS trig_mod_hal
-AFTER UPDATE OF geom ON haltungen
-BEGIN
-    UPDATE haltungen
-    SET (schoben, sohleoben) = 
-    (   SELECT
-            coalesce(s.schnam, OLD.schoben),
-            coalesce(OLD.sohleoben, NEW.sohleoben, s.sohlhoehe)
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = old.pk;
-
-    UPDATE haltungen
-    SET (schunten, sohleunten) = 
-    (   SELECT 
-            coalesce(s.schnam, OLD.schunten),
-            coalesce(OLD.sohleunten, NEW.sohleunten, s.sohlhoehe)
-        FROM schaechte AS s
-        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
-        AND s.ROWID IN (
-            SELECT ROWID
-            FROM SpatialIndex
-            WHERE f_table_name = 'schaechte'
-                AND F_geometry_column = 'geop'
-                AND search_frame = ST_PointN(new.geom, -1))
-    )
-    WHERE pk = old.pk;
-END;"
-
 database_create_haltungen_untersucht: "
 CREATE TABLE haltungen_untersucht(
     pk INTEGER PRIMARY KEY,
@@ -704,23 +614,8 @@ CREATE TABLE simulationsstatus (
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT);"
 
-# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_trigger_simulationsstatus: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON simulationsstatus
-BEGIN
-    UPDATE haltungen
-    SET simstatus = new.bezeichnung
-    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-    UPDATE schaechte
-    SET simstatus = new.bezeichnung
-    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-    UPDATE anschlussleitungen
-    SET simstatus = new.bezeichnung
-    WHERE simstatus = old.bezeichnung AND simstatus IS NOT NULL;
-END;"
-
 database_create_material: "
-CREATE TABLE material (
+CREATE TABLE IF NOT EXISTS material (
     pk INTEGER PRIMARY KEY, 
     bezeichnung TEXT,
     kuerzel TEXT,
@@ -728,21 +623,6 @@ CREATE TABLE material (
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT);"
-
-# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_trigger_material: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON material
-BEGIN
-    UPDATE haltungen
-    SET material = new.bezeichnung
-    WHERE material = old.bezeichnung AND material IS NOT NULL;
-    UPDATE schaechte
-    SET material = new.bezeichnung
-    WHERE material = old.bezeichnung AND material IS NOT NULL;
-    UPDATE anschlussleitungen
-    SET material = new.bezeichnung
-    WHERE material = old.bezeichnung AND material IS NOT NULL;
-END;"
 
 database_create_auslasstypen: "
 CREATE TABLE auslasstypen (
@@ -777,18 +657,6 @@ CREATE TABLE abflussparameter (
     flaechentyp TEXT,                       /* JOIN TO flaechentypen.bezeichnung */
     kommentar TEXT, 
     createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
-
-# Änderungen an der Bezeichnung in der Detailtabelle nachführen
-database_trigger_abflussparameter: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON abflussparameter
-BEGIN
-    UPDATE flaechen
-    SET abflussparameter = new.apnam
-    WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
-    UPDATE tezg
-    SET abflussparameter = new.apnam
-    WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
-END;"
 
 database_create_flaechentypen: "
 CREATE TABLE IF NOT EXISTS flaechentypen (
@@ -926,18 +794,6 @@ CREATE TABLE profile (
     kommentar TEXT
 );"
 
-# Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
-database_trigger_profile: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON profile
-BEGIN
-    UPDATE haltungen
-    SET profilnam = new.profilnam
-    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
-    UPDATE anschlussleitungen
-    SET profilnam = new.profilnam
-    WHERE profilnam = old.profilnam AND profilnam IS NOT NULL;
-END;"
-
 database_create_entwaesserungsarten: "
 CREATE TABLE entwaesserungsarten (
     pk INTEGER PRIMARY KEY, 
@@ -950,21 +806,6 @@ CREATE TABLE entwaesserungsarten (
     m145 TEXT,                          /* DWA M145 */
     bemerkung TEXT
 );"
-
-# Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-database_trigger_entwaesserungsarten: "
-CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON entwaesserungsarten
-BEGIN
-    UPDATE haltungen
-    SET entwart = new.bezeichnung
-    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-    UPDATE schaechte
-    SET entwart = new.bezeichnung
-    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-    UPDATE anschlussleitungen
-    SET entwart = new.bezeichnung
-    WHERE entwart = old.bezeichnung AND entwart IS NOT NULL;
-END;"
 
 database_create_haltungstypen: "
 CREATE TABLE haltungstypen(
@@ -1502,7 +1343,7 @@ UPDATE info SET value = ? WHERE subject = 'version'"
 database_insertversion: "
 INSERT INTO info (subject, value) Values ('version', '1.9.9');"
 
-database_pragma: "
+database_tableinfo: "
 PRAGMA table_info({tabnam});"
 
 database_foreign_key_off: "
@@ -1662,72 +1503,3 @@ LEFT JOIN flintersect AS fi
 ON tg.flnam = fi.finam
 GROUP BY tg.flnam
 HAVING ABS(sum(fi.flaeche) - AREA(tg.geom)) > 2"
-
-database_knotentyp_anf: "
-UPDATE schaechte SET knotentyp = 'Anfangsschacht' WHERE schaechte.schnam IN
-(SELECT t_sch.schnam
-FROM schaechte AS t_sch 
-LEFT JOIN haltungen AS t_hob
-ON t_sch.schnam = t_hob.schoben
-LEFT JOIN haltungen AS t_hun
-ON t_sch.schnam = t_hun.schunten
-WHERE t_hun.pk IS NULL);"
-
-database_knotentyp_end: "
-UPDATE schaechte SET knotentyp = 'Endschacht' WHERE schaechte.schnam IN
-(SELECT t_sch.schnam
-FROM schaechte AS t_sch 
-JOIN haltungen AS t_hob                 /* nur Schaechte mit Haltung oben */
-ON t_sch.schnam = t_hob.schunten
-LEFT JOIN haltungen AS t_hun
-ON t_sch.schnam = t_hun.schoben
-WHERE t_hun.pk IS NULL);"
-
-database_knotentyp_hoch: "
-UPDATE schaechte SET knotentyp = 'Hochpunkt' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam
-  FROM schaechte AS t_sch 
-  JOIN haltungen AS t_hob
-  ON t_sch.schnam = t_hob.schunten
-  JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
-  JOIN schaechte AS t_sun
-  ON t_sun.schnam = t_hun.schunten
-  JOIN schaechte AS t_sob
-  ON t_sob.schnam = t_hob.schunten
-  WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)>ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
-        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)>ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
-
-database_knotentyp_tief: "
-UPDATE schaechte SET knotentyp = 'Tiefpunkt' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam
-  FROM schaechte AS t_sch 
-  JOIN haltungen AS t_hob
-  ON t_sch.schnam = t_hob.schunten
-  JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
-  JOIN schaechte AS t_sun
-  ON t_sun.schnam = t_hun.schunten
-  JOIN schaechte AS t_sob
-  ON t_sob.schnam = t_hob.schunten
-  WHERE ifnull(t_hob.sohleunten,t_sch.sohlhoehe)<ifnull(t_hob.sohleoben,t_sob.sohlhoehe) AND 
-        ifnull(t_hun.sohleoben,t_sch.sohlhoehe)<ifnull(t_hun.sohleunten,t_sun.sohlhoehe));"
-
-database_knotentyp_zweig: "
-UPDATE schaechte SET knotentyp = 'Verzweigung' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam
-  FROM schaechte AS t_sch 
-  JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
-  GROUP BY t_sch.pk
-  HAVING count(*) > 1);"
-
-database_knotentyp_einzel: "
-UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
-( SELECT t_sch.schnam 
-  FROM schaechte AS t_sch 
-  LEFT JOIN haltungen AS t_hun
-  ON t_sch.schnam = t_hun.schoben
-  LEFT JOIN haltungen AS t_hob
-  ON t_sch.schnam = t_hob.schunten
-  WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL)"

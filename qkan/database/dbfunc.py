@@ -557,7 +557,7 @@ class DBConnection:
         """Gibt Spaltenliste zurück."""
 
         if not self.sqlyml(
-            'database_pragma',
+            'database_tableinfo',
             f"dbqkan.DBConnection.attrlist fuer {tabnam}",
             replacefun=lambda sqltext: sqltext.format(tabnam=tabnam)
         ):
@@ -1421,7 +1421,7 @@ class DBConnection:
         # Benutzerdefinierte Felder müssen übernommen werden
 
         if not self.sqlyml(
-            'database_pragma',
+            'database_tableinfo',
             "dbqkan.DBConnection.alter_table (1)",
             replacefun=lambda sqltext: sqltext.format(tabnam=tabnam)
         ):

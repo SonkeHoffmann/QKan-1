@@ -226,7 +226,7 @@ class QKan:
             flood2D = self.menu.addMenu("Überflutung")
             info = self.menu.addMenu("Info")
 
-            safe_add_action(allgemein, "Allgemeine Optionen")
+            safe_add_action(allgemein, "Optionen")
             safe_add_action(allgemein, "QKan-Projekt aktualisieren")
             safe_add_action(allgemein, "QKan-Projektdatei übertragen")
 

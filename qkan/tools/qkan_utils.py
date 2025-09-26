@@ -497,27 +497,27 @@ def eval_node_types(db_qkan: "DBConnection") -> None:
 
     # -- Anfangsschächte: Schächte ohne Haltung oben
     db_qkan.loadmodule('database')
-    if not db_qkan.sqlyml('database_knotentyp_anf', "importkanaldaten_he (39)"):
+    if not db_qkan.sqlyml('tools_knotentyp_anf', "importkanaldaten_he (39)"):
         return
 
     # -- Endschächte: Schächte ohne Haltung unten
-    if not db_qkan.sqlyml('database_knotentyp_end', "importkanaldaten_he (40)"):
+    if not db_qkan.sqlyml('tools_knotentyp_end', "importkanaldaten_he (40)"):
         return
 
     # -- Hochpunkt:
-    if not db_qkan.sqlyml('database_knotentyp_hoch', "importkanaldaten_he (41)"):
+    if not db_qkan.sqlyml('tools_knotentyp_hoch', "importkanaldaten_he (41)"):
         return
 
     # -- Tiefpunkt:
-    if not db_qkan.sqlyml('database_knotentyp_tief', "importkanaldaten_he (42)"):
+    if not db_qkan.sqlyml('tools_knotentyp_tief', "importkanaldaten_he (42)"):
         return
 
     # -- Verzweigung:
-    if not db_qkan.sqlyml('database_knotentyp_zweig', "importkanaldaten_he (43)"):
+    if not db_qkan.sqlyml('tools_knotentyp_zweig', "importkanaldaten_he (43)"):
         return
 
     # -- Einzelschacht:
-    if not db_qkan.sqlyml('database_knotentyp_einzel', "importkanaldaten_he (44)"):
+    if not db_qkan.sqlyml('tools_knotentyp_einzel', "importkanaldaten_he (44)"):
         return
 
     db_qkan.commit()
