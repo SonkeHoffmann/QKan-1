@@ -569,7 +569,7 @@ class Info:
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
 
             if len(labels)>1:
-                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
+                label = [str(baujahr) if (baujahr is not None and baujahr % 50 == 0)  else str(baujahr) for baujahr in labels]
                 new_plot.set_xticklabels(label)
             else:
                 new_plot.set_xticklabels(labels)
@@ -664,7 +664,11 @@ class Info:
             new_plot.set_position([box.x0 + 0.1, box.y0, box.width * 0.85, box.height * 0.9])
 
             if len(labels)>1:
-                label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
+                label = [
+                    str(baujahr) if (baujahr is not None and baujahr != 'sonstige' and baujahr % 50 == 0)
+                    else "" if baujahr is not None
+                    else "None"
+                    for baujahr in labels]
                 new_plot.set_xticklabels(label)
             else:
                 new_plot.set_xticklabels(labels)
@@ -2275,7 +2279,7 @@ class Info:
                 )
 
                 sql = f"""
-                                                 select kuerzel,count(*) from untersuchdat_anschlussleitungen_bewertung LEFT JOIN anschlussleitungen a ON a.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where_leit} group by kuerzel
+                                                 select kuerzel,count(*) from untersuchdat_anschlussleitung_bewertung LEFT JOIN anschlussleitungen a ON a.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit {self.abfrage_where_leit} group by kuerzel
                                             """
 
                 self._barplot(
@@ -2290,7 +2294,7 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_9.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen a ON a.leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit {self.abfrage_where_leit}"""
+                sql = f"""select DISTINCT objektklasse_gesamt from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen a ON a.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit {self.abfrage_where_leit}"""
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -2303,7 +2307,7 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen a ON a .leitnam = untersuchdat_anschlussleitungen_bewertung.untersuchleit WHERE objektklasse_gesamt = {i}  {self.abfrage_where_leit} """
+                        sql = f"""select count(*) from anslchussleitungen_untersucht_bewertung LEFT JOIN anschlussleitungen a ON a .leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit WHERE objektklasse_gesamt = {i}  {self.abfrage_where_leit} """
 
                         if not self.db_qkan.sql(sql):
                             return

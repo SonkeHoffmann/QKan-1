@@ -5927,7 +5927,7 @@ class Subkans_funkt:
                                                                                substanz_haltung_bewertung.untersuchtag
                                                                            FROM substanz_haltung_bewertung, haltungen
                                                                            WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
-                                                                           AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
+                                                                           AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='C')) 
                                                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                                        """
@@ -5971,7 +5971,7 @@ class Subkans_funkt:
                                                                                haltungen.createdat
                                                                            FROM substanz_haltung_bewertung, haltungen
                                                                            WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
-                                                                           AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
+                                                                           AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A') OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='C')) 
                                                                            AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
                                                                            AND Zustandsklasse_ges IN (0,1,2,3,4)
                                                                        """

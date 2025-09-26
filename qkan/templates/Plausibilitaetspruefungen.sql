@@ -400,7 +400,7 @@ SELECT
 ('Zustandsklassen', 'Fehlende Angabe des Streckenschadens', 'Fehler', 9,
     'SELECT pk AS objid, ''Fehlende Angabe des Streckenschadens'' AS bemerkung
     FROM Untersuchdat_haltung
-    WHERE (streckenschaden IS "not found" or streckenschaden IS NULL) and streckenschaden_lfdnr IS NOT 0',
+    WHERE (streckenschaden IS "not found" or streckenschaden IS NULL) and streckenschaden_lfdnr IS NOT NULL',
  'Einzelschäden_Haltungen', 'pk'),
  
  ('Zustandsklassen', 'Fehlende Angabe vom Ende des Streckenschadens', 'Fehler', 9,

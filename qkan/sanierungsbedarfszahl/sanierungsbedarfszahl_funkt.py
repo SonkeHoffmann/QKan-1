@@ -40,7 +40,7 @@ class SanierungsbedarfszahlFunkt:
         self.crs = epsg
         self.db_format = db_format
         self.formsDir = os.path.join(pluginDirectory("qkan"), "forms")
-        self.qmlDir = os.path.join(pluginDirectory("qkan"), "templates/qml")
+        self.qmlDir = os.path.join(pluginDirectory("qkan"), "sanierungsbedarfszahl")
 
         self.haltung = False
         self.leitung = False
@@ -772,8 +772,11 @@ class SanierungsbedarfszahlFunkt:
                 ueberdeck = attr[40]
                 boden = attr[41]
 
-                if baujahr <= 1965 or baujahr == 0:
-                    r_d1 = 1
+                if baujahr is not None:
+                    if baujahr <= 1965 or baujahr == 0:
+                        r_d1 = 1
+                    else:
+                        r_d1 = 0
                 else:
                     r_d1 = 0
 
@@ -907,28 +910,6 @@ class SanierungsbedarfszahlFunkt:
         uri = QgsDataSourceUri()
         uri.setDatabase(db_x)
         schema = ''
-        table = 'untersuchdat_haltung_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-        except:
-            pass
-
-        qmlpath = os.path.join(self.qmlDir, 'res/untersuchdat_haltung_bewertung_dwa.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_haltung_bewertung_dwa.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
         table = 'haltungen_untersucht_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
@@ -940,13 +921,37 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/haltungen_untersucht_bewertung_dwa.qml')
+        qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
         editFormConfig.setUiForm(os.path.join(self.formsDir, 'haltungen_untersucht_bewertung_dwa.ui'))
         vlayer.setEditFormConfig(editFormConfig)
         QgsProject.instance().addMapLayer(vlayer)
+
+        uri = QgsDataSourceUri()
+        uri.setDatabase(db_x)
+        schema = ''
+        table = 'untersuchdat_haltung_bewertung'
+        geom_column = 'geom'
+        uri.setDataSource(schema, table, geom_column)
+        untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
+        vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
+        x = QgsProject.instance()
+        try:
+            x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
+        except:
+            pass
+
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml')
+        vlayer.loadNamedStyle(qmlpath)
+        # Adapt path to forms directory
+        editFormConfig = vlayer.editFormConfig()
+        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_haltung_bewertung_dwa.ui'))
+        vlayer.setEditFormConfig(editFormConfig)
+        QgsProject.instance().addMapLayer(vlayer)
+
+
 
     def sanierungszahl_dwa_leitung(self):
         db = self.db
@@ -1373,7 +1378,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/untersuchdat_anschlussleitung_bewertung.qml')
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -1395,7 +1400,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/anschlussleitungen_untersucht_bewertung_dwa.qml')
+        qmlpath = os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -1731,7 +1736,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/untersuchdat_schacht_bewertung_dwa.qml')
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -1754,7 +1759,7 @@ class SanierungsbedarfszahlFunkt:
             pass
 
 
-        qmlpath = os.path.join(self.qmlDir, 'res/schaechte_untersucht_bewertung_dwa.qml')
+        qmlpath = os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -2160,7 +2165,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/untersuchdat_haltung_bewertung_isy.qml')
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -2183,7 +2188,7 @@ class SanierungsbedarfszahlFunkt:
             pass
 
 
-        qmlpath = os.path.join(self.qmlDir, 'res/haltungen_untersucht_bewertung_isy.qml')
+        qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -2581,7 +2586,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/untersuchdat_anschlussleitung_bewertung_isy.qml')
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -2603,7 +2608,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/anschlussleitungen_untersucht_bewertung_isy.qml')
+        qmlpath = os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -2936,7 +2941,7 @@ class SanierungsbedarfszahlFunkt:
             pass
 
 
-        qmlpath = os.path.join(self.qmlDir, 'res/untersuchdat_schacht_bewertung_isy.qml')
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -2958,7 +2963,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        qmlpath = os.path.join(self.qmlDir, 'res/schaechte_untersucht_bewertung_isy.qml')
+        qmlpath = os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
