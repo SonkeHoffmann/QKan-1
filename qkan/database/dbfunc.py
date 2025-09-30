@@ -9,7 +9,7 @@ import os
 import shutil
 import sqlite3
 import packaging.version
-from typing import Any, List, Optional, Union, cast, Dict, Tuple
+from typing import Any, List, Optional, Union, cast, Dict, Tuple, Callable
 from fnmatch import fnmatch
 
 from qgis.core import Qgis, QgsProject
@@ -151,6 +151,7 @@ class DBConnection:
             try:
                 with open(sqlfilename) as fr:
                     QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+                logger.debug(f'{self.__class__.__name__}: SQL-Liste aus Datei {sqlfilename=} geladen')
             except:
                 logger.error_code(f'{self.__class__.__name__}: '
                                   f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden')
@@ -183,6 +184,7 @@ class DBConnection:
         # noch nicht gelesen
 
         self.loadmodule('database')
+        self.loadmodule('tools')
 
         # Load existing database
         if self.dbtype == enums.QKanDBChoice.SPATIALITE:
@@ -474,13 +476,13 @@ class DBConnection:
 
                 tablis = [
                     "profile",
-                    "entwaesserungsarten",
-                    "simulationsstatus",
+                    "entwart",
+                    "simstatus",
                     "material",
                     "abflussparameter",
                 ]
                 for tabnam in tablis:
-                    sqlnam = f"database_trigger_{tabnam}"
+                    sqlnam = f"tools_create_trig_ref_{tabnam}"
                     if not self.sqlyml(
                             sqlnam=sqlnam,
                             stmt_category=sqlnam,
@@ -1370,6 +1372,9 @@ class DBConnection:
         tabnam: str,
         attributes_new: List[str],
         attributes_del: List[str] = None,
+        geo_attrchange: str = None,
+        geo_newtype: str = None,
+        geo_modfun: str = None,
     ) -> bool:
         """Changes attribute columns in QKan tables except geom columns.
 
@@ -1379,21 +1384,34 @@ class DBConnection:
                                 Alle übrigen Attribute aus der alten Tabelle, die nicht entfernt werden sollen,
                                 werden zufällig sortiert dahinter angeordnet übernommen.
         :attributes_del:        zu entfernende Attribute
+        :geoattr_change:        Geometrieattribut, dessen Type geändert werden soll
+        :geonewtype:            neuer Geotyp
+        :geomodfun:             SQL-Expression zur Konvertierung der Geometrieobjekte
 
         Ändert die Tabelle so, dass sie die Attribute aus attributesNew in der gegebenen
         Reihenfolge sowie die in der bestehenden Tabelle vom Benutzer hinzugefügten Attribute
         enthält. Nur falls attributesDel Attribute enthält, werden diese nicht übernommen.
+        Weiterhin kann der Type eines Geometrieattributs geändert werden. Dabei muss eine Konvertierungsfunktion
+        als SQL-Expression angegeben werden,
+        z. B. (geo_modfun = 'CastToMultiLineString(LinesFromRings(geom)) AS geom'
 
         example:
-        alter_table('flaechen',
-            [   'flnam TEXT',
-                'haltnam TEXT',
-                'neu1 REAL',
-                'neu2 TEXT                              /* Kommentar */',
-                "simstatus TEXT DEFAULT 'vorhanden'",
-                'teilgebiet TEXT                        /* Kommentar */',
-                "createdat TEXT DEFAULT CURRENT_TIMESTAMP"]
-            ['entfernen1', 'entfernen2'])
+        alter_table(
+            tabnam=         'flaechen',
+            attributes_new= [
+               'flnam TEXT',
+               'haltnam TEXT',
+               'neu1 REAL',
+               'neu2 TEXT                              /* Kommentar */',
+               "simstatus TEXT DEFAULT 'vorhanden'",
+               'teilgebiet TEXT                        /* Kommentar */',
+               "createdat TEXT DEFAULT CURRENT_TIMESTAMP"
+            ],
+            attributes_del= ['entfernen1', 'entfernen2'],
+            geo_attrchange= 'geom',
+            geo_newtype=    'MULTILINESTRING',
+            geo_modfun=     'CastToMultiLineString(LinesFromRings(geom)) AS geom',
+            )
         """
 
         # Attributlisten
@@ -1407,7 +1425,7 @@ class DBConnection:
 
         # - attrPk:string enthält den Namen des Primärschlüssels
 
-        geo_type = [
+        geo_types = [
             None,
             "POINT",
             "LINESTRING",
@@ -1441,41 +1459,71 @@ class DBConnection:
                 if el[5] == 0
             ]
         )
-        attr_set_old = set(attr_dict_old.keys())
+        attrs_old = attr_dict_old.keys()
 
-        attr_set_del = set(attributes_del) if attributes_del is not None else set([])
+        attrs_del = attributes_del if attributes_del is not None else []
 
         # Geometrieattribute
         if not self.sqlyml(
-            'database_insertdata_geometry_columns',
+            'database_tableinfo_geometry_columns',
             "dbqkan.DBConnection.alter_table (2)",
             parameters=(tabnam,),
         ):
             return False
         data = self.fetchall()
         attr_dict_geo = dict(
-            [(el[0], [el[0], el[2], geo_type[el[1]], el[3]]) for el in data]
+            [
+                (
+                    el[0],
+                    [
+                        el[0],
+                        geo_types[el[1]],
+                        el[2],
+                        el[3]]
+                ) for el in data]
         )
-        attr_set_geo = set(attr_dict_geo.keys())
 
-        attr_set_new = {el.strip().split(" ", maxsplit=1)[0] for el in attributes_new}
+        attrs_geo = list(attr_dict_geo.keys())
+
+        attrs_new = [el.strip().split(" ", maxsplit=1)[0] for el in attributes_new]
 
         # Hinzufügen der Benutzerattribute
-        attr_set_new |= attr_set_old
+        # attr_set_new |= attr_set_old
+        attrs_new += [el for el in attrs_old if el not in attrs_new]
+
         # Entfernen von Primärschlüssel, Geoattributen und zu Löschenden Attributen
-        attr_set_new -= {attr_pk}
-        attr_set_new -= attr_set_geo
-        attr_set_new -= attr_set_del
+        attrs_new = [el for el in attrs_new if el not in attrs_del + [attr_pk] + attrs_geo]
 
         # Attribute zur Datenübertragung zwischen alter und neuer Tabelle.
-        attr_set_both = set(attr_set_old) & set(attr_set_new)
-        attr_set_both |= {attr_pk}
-        attr_set_both |= attr_set_geo
+        # attr_set_both = set(attr_set_old) & set(attr_set_new)
+        attrs_both = [el for el in attrs_old if el in attrs_new]
 
-        attr_text_both = ', '.join(attr_set_both) + '\n'
-        logger.debug(f"dbqkan.DBConnection.alter_table - attr_text_new:{attr_text_both}")
+        # Austausch des zu ändernden Geoobjekts durch Umwandlungsausdruck geo_modfun
+        attrs_geo_mod = attrs_geo.copy()
+        if geo_attrchange is not None:
+            # Alten durch neuen Geometrietyp ersetzen
+            attr_dict_geo[geo_attrchange][1] = geo_newtype
+            # Zu änderndes Geoobjekt durch Expression ersetzen
+            attrs_geo_mod = attrs_geo.copy()
+            posgeo = attrs_geo_mod.index(geo_attrchange)
+            attrs_geo_mod[posgeo] = geo_modfun
 
-        # Zusammenstellen aller Attribute. Begonnen wird mit dem Primärschlüssel
+        # ------------------------------------------------------------------
+        # Zusammenstellen der Parameter für die SQL-Abfragen
+
+        # Datenübertragung
+        attr_text_both = ', '.join(attrs_both + attrs_geo) + '\n'
+        logger.debug(f"dbqkan.DBConnection.alter_table - {attr_text_both=}")
+
+        # Falls notwendig, Quelle für Datenübertragung mit Typumwandlung
+        if geo_attrchange is None:
+            attr_text_source = attr_text_both
+        else:
+            attr_text_source = ', '.join(attrs_both + attrs_geo_mod) + '\n'
+        logger.debug(f"dbqkan.DBConnection.alter_table - {attr_text_source=}")
+
+        # Parameter für Create-Anweisung
+        # Primärschlüssel
         attr_dict_new = {attr_pk: f"{attr_pk} INTEGER PRIMARY KEY"}
         # Zusammenstellen aller Attribute in der neuen Tabelle inkl. Benutzerattributen
         for el in attributes_new:
@@ -1483,21 +1531,23 @@ class DBConnection:
             typ = el.strip()
             attr_dict_new[attr] = typ
         # Hinzufügen aller Attribute der bisherigen Tabelle (dies umfasst auch die Benutzerattribute)
-        for attr in attr_set_old:
+        for attr in attrs_old:
             if attr not in attr_dict_new:
                 attr_dict_new[attr] = attr_dict_old[attr]
         # Entfernen der zu entfernenden Attribute:
-        for attr in attr_set_del:
+        for attr in attrs_del:
             if attr in attr_dict_new:
                 del attr_dict_new[attr]
         # Zur Sicherheit: Entfernen aller Geoattribute
-        for attr in attr_set_geo:
+        for attr in attrs_geo:
             if attr in attr_dict_new:
                 del attr_dict_new[attr]
 
+        logger.debug(f'{attr_dict_new=}')
+
         # Attribute der neuen Tabelle als String für SQL-Anweisung
-        attr_text_new = "\n,".join(attr_dict_new.values())+"\n"
-        logger.debug(f"dbqkan.DBConnection.alter_table - attr_text_new:{attr_text_new}")
+        attr_text_create = "\n,".join(attr_dict_new.values())+"\n"
+        logger.debug(f"dbqkan.DBConnection.alter_table - {attr_text_create=}")
 
         # 0. Foreign key constraint deaktivieren
         if not self.sqlyml(
@@ -1506,20 +1556,23 @@ class DBConnection:
         ):
             return False
 
+        # ------------------------------------------------------------------
+        # Transfer ausführen
+
         # 2.1. Temporäre Hilfstabelle erstellen
 
         if not self.sqlyml(
             'database_create_temp_table',
             "dbqkan.DBConnection.alter_table (6)",
-            replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_new=attr_text_new)
+            replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_create=attr_text_create)
         ):
             logger.error_code(
                 f'{self.__class__.__name__}: '
                 f'Fehler in SQL=database_create_temp_table')
 
         # 2.2. Geo-Attribute in Tabelle ergänzen
-        for attr in attr_set_geo:
-            gnam, epsg, geotype, nccords = attr_dict_geo[attr]
+        for attr in attrs_geo:
+            gnam, geotype, epsg, nccords = attr_dict_geo[attr]
             if not self.sqlyml(
                 'database_altertable_addgeometrycolumn',
                 "dbqkan.DBConnection.alter_table (7)",
@@ -1537,14 +1590,18 @@ class DBConnection:
 
         # 4. Daten aus Originaltabelle übertragen, dabei nur gemeinsame Attribute berücksichtigen
         if not self.sqlyml(
-            sqlnam='database_in_both_t',
+            sqlnam='database_transfer_t',
             stmt_category="dbqkan.DBConnection.alter_table (9)",
-            replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_both=attr_text_both)
+            replacefun=lambda sqltext: sqltext.format(
+                tabnam=tabnam,
+                attr_text_aim=   attr_text_both,
+                attr_text_source=attr_text_source,
+            )
         ):
             return False
 
         # 5.1. Löschen der Geoobjektattribute
-        for attr in attr_set_geo:
+        for attr in attrs_geo:
             if not self.sqlyml(
                 'database_altertable_discardgeometrycolumn',
                 "dbqkan.DBConnection.alter_table (10)",
@@ -1564,13 +1621,13 @@ class DBConnection:
         if not self.sqlyml(
             'database_create_table',
             "dbqkan.DBConnection.alter_table (12)",
-            replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_new=attr_text_new)
+            replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_create=attr_text_create)
         ):
             return False
 
         # 6.2. Geo-Attribute in Tabelle ergänzen und Indizes erstellen
-        for attr in attr_set_geo:
-            gnam, epsg, geotype, nccords = attr_dict_geo[attr]
+        for attr in attrs_geo:
+            gnam, geotype, epsg, nccords = attr_dict_geo[attr]
             if not self.sqlyml(
                 'database_altertable_addgeometrycolumn',
                 "dbqkan.DBConnection.alter_table (13)",
@@ -1587,14 +1644,14 @@ class DBConnection:
 
         # 7. Daten aus Hilfstabelle übertragen, dabei nur gemeinsame Attribute berücksichtigen
         if not self.sqlyml(
-            'database_in_both',
+            'database_transfer',
             "dbqkan.DBConnection.alter_table (15)",
             replacefun=lambda sqltext: sqltext.format(tabnam=tabnam, attr_text_both=attr_text_both)
         ):
             return False
 
         # 8.1. Löschen der Geoobjektattribute der Hilfstabelle
-        for attr in attr_set_geo:
+        for attr in attrs_geo:
             if not self.sqlyml(
                 'database_altertable_discardgeometrycolumn',
                 "dbqkan.DBConnection.alter_table (16)",

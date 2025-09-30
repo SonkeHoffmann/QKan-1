@@ -40,7 +40,7 @@ from .k_qgsadapt import qgsadapt
 from .k_runoffparams import setRunoffparams
 from .k_befahrung import setbefahrung
 
-from ..utils import get_logger, QkanDbError
+from ..utils import get_logger, QkanError, QkanDbError
 
 logger = get_logger("QKan.tools.application")
 
@@ -344,8 +344,18 @@ class QKanTools(QKanPlugin):
                 self.log.error_data('Trigger für Schachtfang konnte nicht gelesen werden')
                 raise QkanDbError
 
-            data = db_qkan.fetchall()
-            self.dlgop.cb_trigger_fang_schacht.setChecked(len(data) >= 2)
+            data = [el[0] for el in db_qkan.fetchall()]
+            if len(data) >= 1:
+                self.dlgop.cb_trigger_fang_schacht.setChecked(True)
+                # Trigger Fang auf Schacht bei Bearbeitung einer Haltung, scheint nicht zu funktionieren ...
+                # if 'trig_mod_hal_all' in data:
+                #     self.dlgop.rb_trigger_fang_schacht_all.setChecked(True)
+                # elif 'trig_mod_hal_nul' in data:
+                #     self.dlgop.rb_trigger_fang_schacht_nul.setChecked(True)
+                # else:
+                #     self.log.error_code('Option Datenübernahme bei Fang Schacht fehlerhaft\n'
+                #                         f'{data=}')
+                #     raise QkanError
 
         # show the dialog
         self.dlgop.show()
@@ -395,13 +405,13 @@ class QKanTools(QKanPlugin):
 
                 # Trigger Referenztabellen
                 triggerlist = [
-                    'profile', 'entwaesserungsarten', 'simulationsstatus', 'material', 'abflussparameter']
+                    'profile', 'entwart', 'simstatus', 'material', 'abflussparameter']
 
                 for trigger in triggerlist:
                     if self.dlgop.cb_trigger_referenztabellen.isChecked():
-                        sql = f'tools_create_trigger_{trigger}'
+                        sql = f'tools_create_trig_ref_{trigger}'
                     else:
-                        sql = f'tools_drop_trigger_{trigger}'
+                        sql = f'tools_drop_trig_ref_{trigger}'
 
                     if not db_qkan.sqlyml(
                         sql,
@@ -411,20 +421,34 @@ class QKanTools(QKanPlugin):
                                             f'konnte nicht erzeugt werden')
                         raise QkanDbError
 
-                # Trigger Fang auf Schacht bei Neuerstellung oder Bearbeitung einer Haltung
-                for trigger in ['new', 'mod']:
-                    if self.dlgop.cb_trigger_fang_schacht.isChecked():
-                        sql = f'tools_create_trigger_haltungen_{trigger}'
-                    else:
-                        sql = f'tools_drop_trigger_haltungen_{trigger}'
+                # Trigger Fang auf Schacht bei Neuerstellung einer Haltung
+                if self.dlgop.cb_trigger_fang_schacht.isChecked():
+                    sql = f'tools_create_trig_new_hal'
+                else:
+                    sql = f'tools_drop_trig_new_hal'
+                if not db_qkan.sqlyml(
+                    sql,
+                    sql,
+                ):
+                    self.log.error_data(f'Trigger für Schachtfang bei neuer Haltunge konnte nicht geändert werden')
+                    raise QkanDbError
 
-                    if not db_qkan.sqlyml(
-                        sql,
-                        sql,
-                    ):
-                        self.log.error_data(f'Trigger für Schachtfang tools_haltungen_trigger_{trigger} '
-                                            'konnte nicht erzeugt werden')
-                        raise QkanDbError
+                # Trigger Fang auf Schacht bei Bearbeitung einer Haltung, scheint nicht zu funktionieren ...
+                # sqllis = ['tools_drop_trig_mod_hal_nul', 'tools_drop_trig_mod_hal_all']
+                # if self.dlgop.cb_trigger_fang_schacht.isChecked():
+                #     if self.dlgop.rb_trigger_fang_schacht_all.isChecked():
+                #         sqllis.append(f'tools_create_trig_mod_hal_all')
+                #     elif self.dlgop.rb_trigger_fang_schacht_nul.isChecked():
+                #         sqllis.append(f'tools_create_trig_mod_hal_nul')
+                # else:
+                #     pass                # nur Trigger löschen
+                # for sql in sqllis:
+                #     if not db_qkan.sqlyml(
+                #         sql,
+                #         sql,
+                #     ):
+                #         self.log.error_data(f'Trigger für Schachtfang bei Haltungsänderung konnte nicht geändert werden')
+                #         raise QkanDbError
 
                 db_qkan.commit()
 
@@ -907,6 +931,7 @@ class QKanTools(QKanPlugin):
                 fehlende_layer_ergaenzen=False,
                 anpassen_auswahl=enums.SelectedLayers.ALL,
             )
+            project.readPath(project_file)
 
 
     def run_help(self) -> None:

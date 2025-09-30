@@ -158,7 +158,7 @@ BEGIN
 END;"
 
 # Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
-tools_trigger_profile: "
+tools_trig_ref_profile: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON qkan.profile
 BEGIN
     UPDATE haltungen
@@ -170,7 +170,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_trigger_entwaesserungsarten: "
+tools_trig_ref_entwart: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON qkan.entwaesserungsarten
 BEGIN
     UPDATE haltungen
@@ -185,7 +185,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_trigger_simulationsstatus: "
+tools_trig_ref_simstatus: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON qkan.simulationsstatus
 BEGIN
     UPDATE haltungen
@@ -200,7 +200,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_trigger_material: "
+tools_trig_ref_material: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON qkan.material
 BEGIN
     UPDATE haltungen
@@ -215,7 +215,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Detailtabelle nachführen
-tools_trigger_abflussparameter: "
+tools_trig_ref_abflussparameter: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON abflussparameter
 BEGIN
     UPDATE flaechen

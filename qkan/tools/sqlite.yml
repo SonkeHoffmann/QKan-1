@@ -91,14 +91,17 @@ UPDATE schaechte SET knotentyp = 'Einzelschacht' WHERE schaechte.schnam IN
   WHERE t_hun.pk IS NULL AND t_hob.pk IS NULL)"
 
 # Datenuebernahme aus Schaechten
-tools_create_trigger_haltungen_new: "
+tools_create_trig_new_hal: "
 CREATE TRIGGER IF NOT EXISTS trig_new_hal
 AFTER INSERT ON haltungen
 BEGIN
     UPDATE haltungen 
-    SET haltnam = (
-        SELECT coalesce(new.haltnam, s.schnam || '.1') AS haltnam
-        FROM schaechte AS s
+    SET haltnam = q.haltnam 
+    FROM (
+        SELECT
+            coalesce(new.haltnam, s.schnam || '.1') AS haltnam
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
             SELECT ROWID
@@ -106,15 +109,17 @@ BEGIN
             WHERE f_table_name = 'schaechte'
                 AND F_geometry_column = 'geop'
                 AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = new.pk AND (haltnam = '' OR haltnam IS NULL);
+    ) AS q
+    WHERE pk = new.pk;
 
     UPDATE haltungen SET
-    (schoben, sohleoben) = (
+    (schoben, sohleoben) = (q.schoben, q.sohleoben)
+    FROM (
         SELECT
             coalesce(new.schoben, s.schnam) AS schoben, 
             coalesce(new.sohleoben, s.sohlhoehe) AS sohleoben
-        FROM schaechte AS s
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
             SELECT ROWID
@@ -122,15 +127,17 @@ BEGIN
             WHERE f_table_name = 'schaechte'
                 AND F_geometry_column = 'geop'
                 AND search_frame = ST_PointN(new.geom, 1))
-    )
-    WHERE pk = new.pk AND (schoben = '' OR schoben IS NULL);
+    ) AS q
+    WHERE pk = new.pk;
 
     UPDATE haltungen SET
-    (schunten, sohleunten) = (
+    (schunten, sohleunten) = (q.schunten, q.sohleunten)
+    FROM (
         SELECT
             coalesce(new.schunten, s.schnam) AS schunten, 
             coalesce(new.sohleunten, s.sohlhoehe) AS sohleunten
-        FROM schaechte AS s
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
         AND s.ROWID IN (
             SELECT ROWID
@@ -138,21 +145,65 @@ BEGIN
             WHERE f_table_name = 'schaechte'
                 AND F_geometry_column = 'geop'
                 AND search_frame = ST_PointN(new.geom, -1))
-    )
-    WHERE pk = new.pk AND (schunten = '' OR schunten IS NULL);
+    ) AS q
+    WHERE pk = new.pk;
 END;"
 
-# Datenuebernahme aus Schaechten
-tools_create_trigger_haltungen_mod: "
-CREATE TRIGGER IF NOT EXISTS trig_mod_hal
+# Datenuebernahme aus Schaechten, dabei Schacht nur, wenn leer
+tools_create_trig_mod_hal_nul: "
+CREATE TRIGGER IF NOT EXISTS trig_mod_hal_nul
 AFTER UPDATE OF geom ON haltungen
 BEGIN
     UPDATE haltungen
-    SET (schoben, sohleoben) = 
-    (   SELECT
-            coalesce(s.schnam, OLD.schoben),
-            coalesce(OLD.sohleoben, NEW.sohleoben, s.sohlhoehe)
-        FROM schaechte AS s
+    SET (schoben, sohleoben) = (coalesce(old.schnam, q.schnam), coalesce(old.sohleoben, q.sohlhoehe))
+    FROM (
+        SELECT
+            s.schnam,
+            s.sohlhoehe
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s ON TRUE
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = buffer(ST_PointN(new.geom, 1), 0.1))
+    ) AS q
+    WHERE pk = old.pk;
+
+    UPDATE haltungen
+    SET (schunten, sohleunten) = (coalesce(old.schnam, q.schnam), coalesce(old.sohleunten, q.sohlhoehe))
+    FROM (
+        SELECT
+            s.schnam,
+            s.sohlhoehe
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s ON TRUE
+        WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
+        AND s.ROWID IN (
+            SELECT ROWID
+            FROM SpatialIndex
+            WHERE f_table_name = 'schaechte'
+                AND F_geometry_column = 'geop'
+                AND search_frame = buffer(ST_PointN(new.geom, -1), 0.1))
+    ) AS q
+    WHERE pk = old.pk;
+END;"
+
+# Datenuebernahme aus Schaechten, dabei Schacht immer
+tools_create_trig_mod_hal_all: "
+CREATE TRIGGER IF NOT EXISTS trig_mod_hal_all
+AFTER UPDATE OF geom ON haltungen
+BEGIN
+    UPDATE haltungen
+    SET (schoben, sohleoben) = (coalesce(q.schnam, old.schoben), coalesce(old.sohleoben, q.sohlhoehe))
+    FROM (
+        SELECT
+            s.schnam,
+            s.sohlhoehe
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s ON TRUE
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, 1), 0.1)) = 1
         AND s.ROWID IN (
             SELECT ROWID
@@ -160,15 +211,17 @@ BEGIN
             WHERE f_table_name = 'schaechte'
                 AND F_geometry_column = 'geop'
                 AND search_frame = ST_PointN(new.geom, 1))
-    )
+    ) AS q
     WHERE pk = old.pk;
 
     UPDATE haltungen
-    SET (schunten, sohleunten) = 
-    (   SELECT 
-            coalesce(s.schnam, OLD.schunten),
-            coalesce(OLD.sohleunten, NEW.sohleunten, s.sohlhoehe)
-        FROM schaechte AS s
+    SET (schunten, sohleunten) = (coalesce(q.schnam, old.schunten), coalesce(NEW.sohleunten, old.sohleunten, q.sohlhoehe))
+    FROM (
+        SELECT
+            s.schnam,
+            s.sohlhoehe
+        FROM (SELECT 1) AS temp
+        LEFT JOIN schaechte AS s ON TRUE
         WHERE ST_Within(s.geop, buffer(ST_PointN(new.geom, -1), 0.1)) = 1
         AND s.ROWID IN (
             SELECT ROWID
@@ -176,12 +229,12 @@ BEGIN
             WHERE f_table_name = 'schaechte'
                 AND F_geometry_column = 'geop'
                 AND search_frame = ST_PointN(new.geom, -1))
-    )
+    ) AS q
     WHERE pk = old.pk;
 END;"
 
 # Änderungen an der Profilbezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_profile: "
+tools_create_trig_ref_profile: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_profile AFTER UPDATE OF profilnam ON profile
 BEGIN
     UPDATE haltungen
@@ -193,7 +246,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_entwaesserungsarten: "
+tools_create_trig_ref_entwart: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_entwart AFTER UPDATE OF bezeichnung ON entwaesserungsarten
 BEGIN
     UPDATE haltungen
@@ -208,7 +261,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_simulationsstatus: "
+tools_create_trig_ref_simstatus: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_simstatus AFTER UPDATE OF bezeichnung ON simulationsstatus
 BEGIN
     UPDATE haltungen
@@ -223,7 +276,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Referenztabelle in Haltungen nachführen
-tools_create_trigger_material: "
+tools_create_trig_ref_material: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_material AFTER UPDATE OF bezeichnung ON material
 BEGIN
     UPDATE haltungen
@@ -238,7 +291,7 @@ BEGIN
 END;"
 
 # Änderungen an der Bezeichnung in der Detailtabelle nachführen
-tools_create_trigger_abflussparameter: "
+tools_create_trig_ref_abflussparameter: "
 CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON abflussparameter
 BEGIN
     UPDATE flaechen
@@ -249,25 +302,28 @@ BEGIN
     WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
 END;"
 
-tools_drop_trigger_haltungen_new: "
+tools_drop_trig_new_hal: "
 DROP TRIGGER IF EXISTS trig_new_hal;"
 
-tools_drop_trigger_haltungen_mod: "
-DROP TRIGGER IF EXISTS trig_mod_hal;"
+tools_drop_trig_mod_hal_all: "
+DROP TRIGGER IF EXISTS trig_mod_hal_all;"
 
-tools_drop_trigger_profile: "
+tools_drop_trig_mod_hal_nul: "
+DROP TRIGGER IF EXISTS trig_mod_hal_nul;"
+
+tools_drop_trig_ref_profile: "
 DROP TRIGGER IF EXISTS trig_ref_profile;"
 
-tools_drop_trigger_entwaesserungsarten: "
+tools_drop_trig_ref_entwart: "
 DROP TRIGGER IF EXISTS trig_ref_entwart;"
 
-tools_drop_trigger_simulationsstatus: "
+tools_drop_trig_ref_simstatus: "
 DROP TRIGGER IF EXISTS trig_ref_simstatus;"
 
-tools_drop_trigger_material: "
+tools_drop_trig_ref_material: "
 DROP TRIGGER IF EXISTS trig_ref_material;"
 
-tools_drop_trigger_abflussparameter: "
+tools_drop_trig_ref_abflussparameter: "
 DROP TRIGGER IF EXISTS trig_ref_abflussparameter;"
 
 # Check der Trigger
@@ -278,4 +334,4 @@ SELECT name FROM sqlite_master WHERE type = 'trigger' AND substr(name, 1, 9) = '
 tools_check_triggers_fang_schacht: "
 SELECT name FROM sqlite_master
 WHERE type = 'trigger' 
-  AND name in ('trig_mod_hal', 'trig_new_hal');"
+  AND name in ('trig_mod_hal_all', 'trig_mod_hal_nul', 'trig_new_hal');"

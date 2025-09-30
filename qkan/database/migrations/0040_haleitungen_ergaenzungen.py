@@ -11,17 +11,23 @@ VERSION = "3.4.8"  # must be higher than previous one and correspond with qkan_d
 
 logger = get_logger("QKan.database.migrations.0040")
 
-
 def run(dbcon: DBConnection) -> bool:
     # Ergänzung einiger Felder in anschlussleitungen
 
+    dbcon.alter_table(
+        tabnam=         'schaechte',
+        attributes_new= [],
+        attributes_del= None,
+        geo_attrchange='geom',
+        geo_newtype=    'MULTILINESTRING',
+        geo_modfun=     'CastToMultiLineString(LinesFromRings(geom)) AS geom',
+    )
+
     sql_file = os.path.join(pluginDirectory("qkan"), 'database/migrations', '0040_sqlite.sql')
     try:
-        dbcon.executefile(sql_file,
-                          replacefun = lambda sqltext: sqltext.format(epsg=QKan.config.epsg)
-                          )
+        dbcon.executefile(sql_file)
     except BaseException as err:
-        logger.debug(f"Fehler in {__name__}.0040, {sql_file =}")
+        logger.error_code(f"Fehler {err} in {__name__}.0040, {sql_file =}")
         return False
 
     project = QgsProject.instance()

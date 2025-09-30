@@ -1327,7 +1327,7 @@ VALUES (
     coalesce(:createdat, CURRENT_TIMESTAMP),
     GeomFromWKB(:geom, :epsg));"
 
-database_insertdata_geometry_columns: "
+database_tableinfo_geometry_columns: "
 SELECT f_geometry_column, geometry_type, srid, 
         coord_dimension, spatial_index_enabled
 FROM geometry_columns WHERE f_table_name = ?"
@@ -1350,22 +1350,23 @@ database_foreign_key_off: "
 PRAGMA foreign_keys=OFF;"
 
 database_create_table: "
-CREATE TABLE {tabnam} ({attr_text_new});"
+CREATE TABLE {tabnam} ({attr_text_create});"
 
 database_create_temp_table: "
-CREATE TABLE IF NOT EXISTS {tabnam}_t ({attr_text_new});"
+CREATE TABLE IF NOT EXISTS {tabnam}_t ({attr_text_create});"
 
 database_delete: "
 DELETE FROM {tabnam}_t"
 
-database_in_both: "
+database_transfer: "
 INSERT INTO {tabnam} ({attr_text_both})
 SELECT {attr_text_both}
 FROM {tabnam}_t;"
 
-database_in_both_t: "
-INSERT INTO {tabnam}_t ({attr_text_both})
-SELECT {attr_text_both}
+# Falls Geometrietyp geändert wird, geschieht das beim Anlegen der temporären Tabelle
+database_transfer_t: "
+INSERT INTO {tabnam}_t ({attr_text_aim})
+SELECT {attr_text_source}
 FROM {tabnam};"
 
 database_drop_table: "

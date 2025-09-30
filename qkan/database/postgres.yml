@@ -1250,7 +1250,7 @@ VALUES (
     coalesce(:createdat, CURRENT_TIMESTAMP),
     GeomFromWKB(:geom, :epsg));"
 
-database_insertdata_geometry_columns: "
+database_tableinfo_geometry_columns: "
 SELECT f_geometry_column, geometry_type, srid, 
         coord_dimension, spatial_index_enabled
 FROM geometry_columns WHERE f_table_name = ?"
@@ -1273,20 +1273,20 @@ database_foreign_key_off: "
 PRAGMA {=OFF;"
 
 database_create_table: "
-CREATE TABLE IF NOT EXISTS qkan.{tabnam} ({attr_text_new});"
+CREATE TABLE IF NOT EXISTS qkan.{tabnam} ({attr_text_create});"
 
 database_create_temp_table: "
-CREATE TABLE IF NOT EXISTS qkan.{tabnam}_t ({attr_text_new});"
+CREATE TABLE IF NOT EXISTS qkan.{tabnam}_t ({attr_text_create});"
 
 database_delete: "
 DELETE FROM {tabnam}_t"
 
-database_in_both: "
+database_transfer: "
 INSERT INTO qkan.{tabnam} ({attr_text_both})
 SELECT {attr_text_both}
 FROM {tabnam}_t;"
 
-database_in_both_t: "
+database_transfer_t: "
 INSERT INTO qkan.{tabnam}_t ({attr_text_both})
 SELECT {attr_text_both}
 FROM {tabnam};"

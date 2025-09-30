@@ -53,6 +53,8 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     rb_spatialite: QRadioButton
 
     cb_trigger_fang_schacht: QCheckBox
+    rb_trigger_fang_schacht_nul: QRadioButton
+    rb_trigger_fang_schacht_all: QRadioButton
     cb_trigger_referenztabellen: QCheckBox
 
     tf_fangradius: QLineEdit
