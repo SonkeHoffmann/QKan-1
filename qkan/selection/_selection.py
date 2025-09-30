@@ -20,7 +20,7 @@ from qgis.utils import iface, spatialite_connect
 logger = get_logger("QKan.selection")
 
 
-class Selection:
+class Select:
     def __init__(self, db_qkan: DBConnection, check_cb):
         self.db_qkan = db_qkan
         self.check_cb = check_cb

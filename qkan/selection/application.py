@@ -7,7 +7,7 @@ from qkan.utils import get_logger
 from qkan.tools.qkan_utils import get_database_QKan
 logger = get_logger("QKan")
 
-from ._selection import Selection
+from ._selection import Select
 from .application_dialog import SelectionDialog
 
 # noinspection PyUnresolvedReferences
@@ -67,7 +67,7 @@ class Selection(QKanPlugin):
                 check_cb['cb9'] = self.select_dlg.radioButton_9.isChecked()
                 check_cb['cb10'] = self.select_dlg.radioButton_10.isChecked()
 
-                imp = Selection(
+                imp = Select(
                     db_qkan,
                     check_cb)
                 imp.run()

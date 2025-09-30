@@ -62,7 +62,6 @@ class Info:
             self.abfrage_where_halt = f"WHERE haltungen.pk IN (SELECT sel_haltungen.pk FROM sel_haltungen)"
             self.abfrage_and_sch = f"AND schaechte.pk IN (SELECT sel_schaechte.pk FROM sel_schaechte)"
             self.abfrage_where_sch = f"WHERE schaechte.pk IN (SELECT sel_schaechte.pk FROM sel_schaechte)"
-            #Todo: anschlussleitungen geht nicht!
 
             self.abfrage_and_leit = (f"JOIN haltungen h ON ST_Intersects(anschlussleitungen.geom, h.geom) OR "
                                      f"ST_Distance(anschlussleitungen.geom, h.geom) <= 1 where h.pk IN "

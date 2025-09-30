@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>260</height>
+    <width>857</width>
+    <height>285</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -37,7 +37,7 @@
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>DGM Daten automatisch herunterladen</string>
+        <string>DGM Daten automatierist herunterladen</string>
        </property>
       </widget>
      </item>
@@ -87,7 +87,7 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Speicherort der vorhandenen DGM Daten</string>
+        <string>Speicherort der vorhandenen DGM Daten (optional)</string>
        </property>
       </widget>
      </item>
