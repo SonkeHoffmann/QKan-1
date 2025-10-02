@@ -143,14 +143,14 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
         logger.addHandler(stream_handler)
 
     # inject our logger into global logger registry
-    acquire_lock = getattr(logging, "_acquireLock")
+    acquire_lock = getattr(logging, "_acquireLock", None)
     if acquire_lock is not None and callable(acquire_lock):
         acquire_lock()
     else:
         logger.error_code("logging is missing _acquireLock()")
 
     logging.Logger.manager.loggerDict["QKan"] = logger
-    release_lock = getattr(logging, "_releaseLock")
+    release_lock = getattr(logging, "_releaseLock", None)
     if release_lock is not None and callable(release_lock):
         release_lock()
     else:
