@@ -12,14 +12,3 @@ CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON 
 -- Ergänzen einiger Felder in Tabelle anschlussleitungen
 ALTER TABLE anschlussleitungen ADD COLUMN urstation REAL;                             /* Anschlussposition gegen Fließrichtung */
 ALTER TABLE anschlussleitungen ADD COLUMN ursprung TEXT;                                  /* Adresse oder Objektbezeichnung */
-
--- Ergänzen der Referenztabelle Material
-
-CREATE TABLE material (
-    pk INTEGER PRIMARY KEY, 
-    bezeichnung TEXT,
-    kuerzel TEXT,
-    isybau TEXT,                        /* BFR Abwasser */
-    m150 TEXT,                          /* DWA M150 */
-    m145 TEXT,                          /* DWA M145 */
-    kommentar TEXT);

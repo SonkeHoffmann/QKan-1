@@ -1,5 +1,5 @@
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanError
 from qkan.tools.qkan_utils import loadlayer
 from qgis.utils import pluginDirectory
 from qkan import QKan, enums
@@ -20,7 +20,7 @@ def run(dbcon: DBConnection) -> bool:
                           )
     except BaseException as err:
         logger.debug(f"Fehler in {__name__}.trigger reftables, {sql_file =}")
-        return False
+        raise QkanError
 
     sql = "ALTER TABLE haltungen ADD COLUMN rwanschluss INTEGER DEFAULT 0"
     if not dbcon.sql(sql, 'migration_0039 add rwanschluss'):
@@ -69,6 +69,7 @@ def run(dbcon: DBConnection) -> bool:
             f"Fehler bei Migration zu Version {VERSION}: "
             "Hinzufügen von Attribut rwanschluss in Tabelle haltungen fehlgeschlagen"
         )
+        raise QkanError
 
     logger.info('Attribut "rwanschluss" in Tabelle "haltungen" ergänzt')
 
@@ -113,12 +114,14 @@ def run(dbcon: DBConnection) -> bool:
             f"Fehler bei Migration zu Version {VERSION}: "
             "Hinzufügen von Attribut ordner_bild in Tabelle haltungen fehlgeschlagen"
         )
+        raise QkanError
 
     if not dbcon.sql("UPDATE untersuchdat_schacht SET ordner_bild = ordner"):
         logger.error(
             f"Fehler bei Migration zu Version {VERSION}: "
             "Übertragen von ordner zu ordner_bild in Tabelle untersuchdate_schacht fehlgeschlagen"
         )
+        raise QkanError
 
     dbcon.commit()
 
@@ -163,6 +166,7 @@ def run(dbcon: DBConnection) -> bool:
             f"Fehler bei Migration zu Version {VERSION}: "
             "Entfernen von Attribut ordner in Tabelle haltungen fehlgeschlagen"
         )
+        raise QkanError
 
     dbcon.commit()
 
@@ -195,7 +199,7 @@ def run(dbcon: DBConnection) -> bool:
                 f"Fehler bei Migration zu Version {VERSION}: "
                 "Einfügen der atkualisierten Layer fehlgeschlagen"
             )
-            return False
+            raise QkanError
 
     # Neue Tabelle Fotos
 
@@ -210,7 +214,7 @@ def run(dbcon: DBConnection) -> bool:
     if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
                           f"Neue Tabelle Fotos"):
         logger.error('Fehler in migration 0039')
-        raise Exception(f"{__name__}")
+        raise QkanError
 
     # Neue Tabelle Videos
 
@@ -225,7 +229,7 @@ def run(dbcon: DBConnection) -> bool:
     if not dbcon.sql(sql, f"migration 0039, Version {VERSION}: "
                           f"Neue Tabelle Fotos"):
         logger.error('Fehler in migration 0039')
-        raise Exception(f"{__name__}")
+        raise QkanError
 
 
     #TODO: Bestehende Daten aus den untersuchungen in die neuen Tabellen schreiben?
@@ -237,4 +241,4 @@ def run(dbcon: DBConnection) -> bool:
     #     logger.error('Fehler in migration 0039')
     #     raise Exception(f"{__name__}")
     #
-    # return True
+    return True

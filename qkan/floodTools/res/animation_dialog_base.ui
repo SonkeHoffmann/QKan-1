@@ -913,7 +913,7 @@
     <string>Auswahl der zu verarbeitenden Ergebnisdaten aus der HE-Berechnung</string>
    </property>
    <property name="title">
-    <string>Mike+ Version</string>
+    <string>Hystem-Extran-2D-Version:</string>
    </property>
    <property name="flat">
     <bool>false</bool>
@@ -939,7 +939,7 @@
      </font>
     </property>
     <property name="text">
-     <string>2023</string>
+     <string>bis 8.7</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -963,7 +963,7 @@
      </font>
     </property>
     <property name="text">
-     <string>2025</string>
+     <string>ab 8.8</string>
     </property>
    </widget>
   </widget>

@@ -1718,9 +1718,9 @@ class DBConnection:
         migrations = find_migrations(self.current_dbversion)
         for i, migration in enumerate(migrations):
             if not migration.run(self):
-                errormsg = "Fehler beim Ausführen des Datenbankupdates."
+                errormsg = f"Fehler beim Ausführen des Datenbankupdates {migration.name}."
                 logger.error(errormsg)
-                raise Exception(errormsg)
+                raise QkanAbortError(errormsg)
 
             if not self.sqlyml(
                 'database_update_info',

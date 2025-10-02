@@ -592,12 +592,14 @@ SELECT
     ag_he.Regenschreiber AS regenschreiber, 
     ag_he.Kommentar AS kommentar, 
     ag_he.LastModified AS createdat,
-    CastToMultiLineString(MakeCircle(
+    CastToMultiPolygon(
+        MakePolygon(
+            MakeCircle(
                 x(ag_he.Geometry),
                 y(ag_he.Geometry),
                 sqrt(ag_he.Gesamtflaeche), 
                 :epsg
-    )   ) AS geom
+    )   )   ) AS geom
 FROM he.Aussengebiet AS ag_he
 LEFT JOIN aussengebiete AS ag_qk
 ON ag_he.Name = ag_qk.gebnam
