@@ -45,6 +45,9 @@ class QgsFileDialog(QKanDBDialog, FORM_CLASS_filepath):  # type: ignore
         self.pushButton.clicked.connect(self.select_videopath)
         self.pushButton_2.clicked.connect(self.select_fotopath1)
         self.pushButton_3.clicked.connect(self.select_fotopath2)
+        self.pushButton_5.clicked.connect(self.select_videopath2)
+        self.pushButton_6.clicked.connect(self.select_fotopath3)
+        self.pushButton_7.clicked.connect(self.select_videopath3)
         self.button_box.helpRequested.connect(self.click_help)
 
     def click_help(self) -> None:
@@ -78,3 +81,29 @@ class QgsFileDialog(QKanDBDialog, FORM_CLASS_filepath):  # type: ignore
         if ordner_bild:
             self.lineEdit_3.setText(ordner_bild)
 
+    def select_videopath2(self) -> None:
+
+        ordner_video = QFileDialog.getExistingDirectory(
+            self,
+            self.tr("Dateiname Film")
+        )
+        if ordner_video:
+            self.lineEdit_5.setText(ordner_video)
+
+    def select_videopath3(self) -> None:
+
+        ordner_video = QFileDialog.getExistingDirectory(
+            self,
+            self.tr("Dateiname Film")
+        )
+        if ordner_video:
+            self.lineEdit_7.setText(ordner_video)
+
+    def select_fotopath3(self) -> None:
+
+        ordner_bild = QFileDialog.getExistingDirectory(
+            self,
+            self.tr("Dateiname Foto")
+        )
+        if ordner_bild:
+            self.lineEdit_6.setText(ordner_bild)

@@ -10,6 +10,7 @@ from qgis.utils import iface, spatialite_connect, pluginDirectory
 import sqlite3
 import math
 import pandas as pd
+from qkan.database.qkan_utils import loadlayer
 
 
 class SanierungsbedarfszahlFunkt:
@@ -920,6 +921,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
@@ -942,6 +951,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
@@ -1377,14 +1394,24 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
 
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung.qml')
+
+
+        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltungen_bewertung.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_anschlussleitung_bewertung.ui'))
+        ui= editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_anschlussleitung_bewertung.ui'))
         vlayer.setEditFormConfig(editFormConfig)
         QgsProject.instance().addMapLayer(vlayer)
+
 
         uri = QgsDataSourceUri()
         uri.setDatabase(db_x)
@@ -1399,8 +1426,16 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
 
-        qmlpath = os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml')
+
+        qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
         # Adapt path to forms directory
         editFormConfig = vlayer.editFormConfig()
@@ -1735,6 +1770,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(Untersuchdat_schacht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml')
         vlayer.loadNamedStyle(qmlpath)
@@ -1757,6 +1800,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(schaechte_untersucht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
 
         qmlpath = os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml')
@@ -2164,6 +2215,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
@@ -2186,6 +2245,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
 
         qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml')
@@ -2585,6 +2652,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
@@ -2607,6 +2682,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
@@ -2939,6 +3022,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(Untersuchdat_schacht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
 
         qmlpath = os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_isy.qml')
@@ -2962,6 +3053,14 @@ class SanierungsbedarfszahlFunkt:
             x.removeMapLayer(x.mapLayersByName(schaechte_untersucht_bewertung)[0].id())
         except:
             pass
+        group = 'Ergebnisse'
+        layersRoot = QgsProject.instance().layerTreeRoot()
+        QgsProject.instance().addMapLayer(vlayer, False)
+        atcGroup = layersRoot.findGroup(group)
+        if atcGroup is None:
+            atcGroup = layersRoot.addGroup(group)
+        atcGroup.addLayer(vlayer)
+
 
         qmlpath = os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml')
         vlayer.loadNamedStyle(qmlpath)
