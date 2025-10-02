@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>940</width>
-    <height>361</height>
+    <width>1101</width>
+    <height>371</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -34,7 +34,7 @@
      <item>
       <widget class="QRadioButton" name="radioButton">
        <property name="text">
-        <string>Nur Haltunge auswählen</string>
+        <string>Nur Haltungen auswählen</string>
        </property>
       </widget>
      </item>
@@ -167,7 +167,7 @@
         <item>
          <widget class="QRadioButton" name="radioButton_8">
           <property name="text">
-           <string>Auswahl zwischen zwei Kreuzungspunkten (Kürzester Weg)</string>
+           <string>Auswahl zwischen zwei Schächten (Kürzester Weg)</string>
           </property>
          </widget>
         </item>

@@ -116,7 +116,7 @@ class NeigungTask:
         layer = QgsVectorLayer(self.zielordner_dmg+'/'+'neigung.shp', "neigung", "ogr")
 
         feldname = "neigkl"
-        ausdruck = 'if("_mean" <=1,1,if(1<"_mean" <=4,2, if(4<"_mean" <=10,3,if(10<"_mean" <=14,4,if("_mean">14,5,NULL)))))'
+        ausdruck = 'if( "_mean"<=1,1,if("_mean"<=4,2, if("_mean" <=10,3,if("_mean" <=14,4,if("_mean">14,5,NULL)))))'
 
         exp = QgsExpression(ausdruck)
         context = QgsExpressionContext()
@@ -146,6 +146,21 @@ class NeigungTask:
 
             neigung = temp_feat["neigkl"]
             target_layer.changeAttributeValue(db_feat.id(), target_layer.fields().indexFromName("neigkl"), neigung)
+
+        target_layer.commitChanges()
+
+        temp_layer = QgsVectorLayer(self.zielordner_dmg + '/' + 'neigung.shp', "neigung", "ogr")
+
+        target_layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
+        target_layer.startEditing()
+
+        for temp_feat in temp_layer.getFeatures():
+            fid = temp_feat.id()
+
+            db_feat = target_layer.getFeature(fid)
+
+            neigung = temp_feat["_mean"]
+            target_layer.changeAttributeValue(db_feat.id(), target_layer.fields().indexFromName("neigung"), neigung)
 
         target_layer.commitChanges()
 

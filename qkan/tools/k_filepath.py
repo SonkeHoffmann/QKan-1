@@ -52,25 +52,25 @@ def setfilepath(
 
                 #fotopath, bild_nam = attr[1]
 
+                if attr[1] is not None:
+                    bild_nam = os.path.basename(attr[1])
 
-                bild_nam = os.path.basename(attr[1])
+                    for root, dirs, files in os.walk(fotopath):
+                        for file in files:
+                            if file.lower() == bild_nam.lower():
+                                bild = Path(str(root) + '/' + str(bild_nam))
 
-                for root, dirs, files in os.walk(fotopath):
-                    for file in files:
-                        if file.lower() == bild_nam.lower():
-                            bild = Path(str(root) + '/' + str(bild_nam))
+                                rest = bild.relative_to(pfad_foto)
 
-                            rest = bild.relative_to(pfad_foto)
+                                # pfad in db erstzen
+                                sql = f"""Update untersuchdat_haltung set foto_dateiname = '{rest}'
+                                                    WHERE untersuchdat_haltung.pk = {attr[0]};"""
+                                #data = (str(rest), attr[0])
 
-                            # pfad in db erstzen
-                            sql = f"""Update untersuchdat_haltung set foto_dateiname = {sql}
-                                                WHERE untersuchdat_haltung.pk = {attr[0]};"""
-                            #data = (str(rest), attr[0])
-
-                            try:
-                                db.sql(sql)
-                            except BaseException as err:
-                                return False
+                                try:
+                                    db.sql(sql)
+                                except BaseException as err:
+                                    return False
 
             db.commit()
 
@@ -88,24 +88,26 @@ def setfilepath(
             for attr in db.fetchall():
                 #video_nam = attr[1]
 
-                video_nam = os.path.basename(attr[2])
+                if attr[2] is not None:
 
-                for root, dirs, files in os.walk(videopath):
-                    for file in files:
-                        if file.lower() == video_nam.lower():
-                            video = Path(str(root)+'/'+str(video_nam))
+                    video_nam = os.path.basename(attr[2])
 
-                            rest = video.relative_to(pfad_video)
+                    for root, dirs, files in os.walk(videopath):
+                        for file in files:
+                            if file.lower() == video_nam.lower():
+                                video = Path(str(root)+'/'+str(video_nam))
 
-                            # ordner_video in db ersetzen
-                            sql = f"""Update videos set datei = '{rest}'
-                                                    WHERE videos.pk =  {attr[0]};"""
-                            #data = (rest, attr[0])
+                                rest = video.relative_to(pfad_video)
 
-                            try:
-                                db.sql(sql)
-                            except BaseException as err:
-                                return False
+                                # ordner_video in db ersetzen
+                                sql = f"""Update videos set datei = '{rest}'
+                                                        WHERE videos.pk =  {attr[0]};"""
+                                #data = (rest, attr[0])
+
+                                try:
+                                    db.sql(sql)
+                                except BaseException as err:
+                                    return False
             db.commit()
 
     if ausw_leitung == True:
@@ -130,25 +132,26 @@ def setfilepath(
 
                 #fotopath, bild_nam = attr[1]
 
+                if attr[1] is not None:
 
-                bild_nam = os.path.basename(attr[1])
+                    bild_nam = os.path.basename(attr[1])
 
-                for root, dirs, files in os.walk(fotopath):
-                    for file in files:
-                        if file.lower() == bild_nam.lower():
-                            bild = Path(str(root) + '/' + str(bild_nam))
+                    for root, dirs, files in os.walk(fotopath):
+                        for file in files:
+                            if file.lower() == bild_nam.lower():
+                                bild = Path(str(root) + '/' + str(bild_nam))
 
-                            rest = bild.relative_to(pfad_foto)
+                                rest = bild.relative_to(pfad_foto)
 
-                            # pfad in db erstzen
-                            sql = f"""Update untersuchdat_haltung set foto_dateiname = '{rest}'
-                                                WHERE untersuchdat_haltung.pk = {attr[0]};"""
-                            #data = (str(rest), attr[0])
+                                # pfad in db erstzen
+                                sql = f"""Update untersuchdat_haltung set foto_dateiname = '{rest}'
+                                                    WHERE untersuchdat_haltung.pk = {attr[0]};"""
+                                #data = (str(rest), attr[0])
 
-                            try:
-                                db.sql(sql)
-                            except BaseException as err:
-                                return False
+                                try:
+                                    db.sql(sql)
+                                except BaseException as err:
+                                    return False
 
             db.commit()
 
@@ -166,29 +169,31 @@ def setfilepath(
             for attr in db.fetchall():
                 #video_nam = attr[1]
 
-                video_nam = os.path.basename(attr[2])
+                if attr[2] is not None:
+                    video_nam = os.path.basename(attr[2])
 
-                for root, dirs, files in os.walk(videopath):
-                    for file in files:
-                        if file.lower() == video_nam.lower():
-                            video = Path(str(root)+'/'+str(video_nam))
+                    for root, dirs, files in os.walk(videopath):
+                        for file in files:
+                            if file.lower() == video_nam.lower():
+                                video = Path(str(root)+'/'+str(video_nam))
 
-                            rest = video.relative_to(pfad_video)
+                                rest = video.relative_to(pfad_video)
 
-                            # ordner_video in db ersetzen
-                            sql = f"""Update videos set datei = '{rest}'
-                                                    WHERE videos.pk = {attr[0]};"""
-                            #data = (rest, attr[0])
+                                # ordner_video in db ersetzen
+                                sql = f"""Update videos set datei = '{rest}'
+                                                        WHERE videos.pk = {attr[0]};"""
+                                #data = (rest, attr[0])
 
-                            try:
-                                db.sql(sql)
-                            except BaseException as err:
-                                return False
+                                try:
+                                    db.sql(sql)
+                                except BaseException as err:
+                                    return False
             db.commit()
 
 
     if ausw_schacht == True:
         bild = ''
+        video = ''
         if fotopath_2 != "":
 
             #ordner und dateiname aus datenbank abfragen
@@ -204,28 +209,30 @@ def setfilepath(
             for attr in db.fetchall():
                 #bild_nam = attr[1]
 
-                bild_nam = os.path.basename(attr[1])
+                if attr[1] is not None:
 
-            iface.messageBar().pushMessage("Error",
-                                           "Name: " + str(bild_nam),
-                                           level=Qgis.MessageLevel.Critical)
+                    bild_nam = os.path.basename(attr[1])
 
-            for root, dirs, files in os.walk(fotopath_2):
-                for file in files:
-                    if file.lower() == bild_nam.lower():
-                        bild = Path(root+'/'+file)
+                    # iface.messageBar().pushMessage("Error",
+                    #                                "Name: " + str(bild_nam),
+                    #                                level=Qgis.MessageLevel.Critical)
 
-                        rest = bild.relative_to(pfad_foto)
+                    for root, dirs, files in os.walk(fotopath_2):
+                        for file in files:
+                            if file.lower() == bild_nam.lower():
+                                bild = Path(root+'/'+file)
 
-                        # pfad in db erstzen
-                        sql = f"""Update untersuchdat_schacht set foto_dateiname = '{rest}'
-                                            WHERE untersuchdat_schacht.pk = {attr[0]};"""
-                        #data = (rest, attr[0])
+                                rest = bild.relative_to(pfad_foto)
 
-                        try:
-                            db.sql(sql)
-                        except BaseException as err:
-                            return False
+                                # pfad in db erstzen
+                                sql = f"""Update untersuchdat_schacht set foto_dateiname = '{rest}'
+                                                    WHERE untersuchdat_schacht.pk = {attr[0]};"""
+                                #data = (rest, attr[0])
+
+                                try:
+                                    db.sql(sql)
+                                except BaseException as err:
+                                    return False
 
 
             db.commit()
@@ -243,22 +250,24 @@ def setfilepath(
             for attr in db.fetchall():
                 #video_nam = attr[1]
 
-                video_nam = os.path.basename(attr[2])
+                if attr[2] is not None:
 
-                for root, dirs, files in os.walk(videopath):
-                    for file in files:
-                        if file.lower() == video_nam.lower():
-                            video = Path(str(root)+'/'+str(video_nam))
+                    video_nam = os.path.basename(attr[2])
 
-                            rest = video.relative_to(pfad_video)
+                    for root, dirs, files in os.walk(videopath):
+                        for file in files:
+                            if file.lower() == video_nam.lower():
+                                video = Path(str(root)+'/'+str(video_nam))
 
-                            # ordner_video in db ersetzen
-                            sql = f"""Update videos set datei = '{rest}'
-                                                    WHERE videos.pk = {attr[0]};"""
-                            #data = (rest, attr[0])
+                                rest = video.relative_to(pfad_video)
 
-                            try:
-                                db.sql(sql)
-                            except BaseException as err:
-                                return False
+                                # ordner_video in db ersetzen
+                                sql = f"""Update videos set datei = '{rest}'
+                                                        WHERE videos.pk = {attr[0]};"""
+                                #data = (rest, attr[0])
+
+                                try:
+                                    db.sql(sql)
+                                except BaseException as err:
+                                    return False
             db.commit()
