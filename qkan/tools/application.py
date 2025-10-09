@@ -169,6 +169,18 @@ class QKanTools(QKanPlugin):
     def run_qgsadapt(self) -> None:
         """Erstellen einer Projektdatei aus einer Vorlage"""
 
+        # Prüfen, ob Projekt gespeichert und kein Layer bearbeitbar
+        project = QgsProject.instance()
+        if project.isDirty():
+            logger.error_user('Das Projekt wurde geändert. Bitte speichern oder neu laden!')
+            return
+        if len(lis := get_editable_layers()) > 0:
+            logger.error_user(f'Es darf kein Layer im Modus "bearbeitbar" sein! Bitte für '
+                              f'Layer {list(lis)[0]} umschalten'
+            )
+            return
+        currentProject = project.fileName()
+
         # Formularfelder setzen -------------------------------------------------------------------------
 
         # Formularfeld Datenbank
@@ -256,22 +268,17 @@ class QKanTools(QKanPlugin):
                 )
 
             # ------------------------------------------------------------------------------
-            # Abschluss: Ggfs. Protokoll schreiben
+            # Abschluss: Projektdatei neu laden
+
+            project.clear()
+            project.read(currentProject)  # read the new project file
 
             self.iface.mainWindow().statusBar().clearMessage()
             self.iface.messageBar().pushMessage(
             "Information",
-            "Projektdatei ist angepasst und muss neu geladen werden!",
+            "Projektdatei wurde angepasst und neu geladen.",
             level=Qgis.MessageLevel.Info,
             )
-
-            # Importiertes Projekt laden
-            # project = QgsProject.instance()
-            # canvas = QgsMapCanvas(None)
-            # bridge = QgsLayerTreeMapCanvasBridge(QgsProject.instance().layerTreeRoot(),
-            # canvas)  # synchronise the loaded project with the canvas
-            # project.read(QFileInfo(projectfile))  # read the new project file
-            # logger.debug(u'Geladene Projektdatei: {}   ({})'.format(project.fileName()))
 
     def run_qkanoptions(self) -> None:
         """Bearbeitung allgemeiner QKan-Optionen"""

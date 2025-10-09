@@ -8,7 +8,3 @@ CREATE TRIGGER IF NOT EXISTS trig_ref_abflussparameter AFTER UPDATE OF apnam ON 
                     SET abflussparameter = new.apnam
                     WHERE abflussparameter = old.apnam AND abflussparameter IS NOT NULL;
                 END;
-
--- Ergänzen einiger Felder in Tabelle anschlussleitungen
-ALTER TABLE anschlussleitungen ADD COLUMN urstation REAL;                             /* Anschlussposition gegen Fließrichtung */
-ALTER TABLE anschlussleitungen ADD COLUMN ursprung TEXT;                                  /* Adresse oder Objektbezeichnung */

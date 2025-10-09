@@ -1,16 +1,10 @@
 import os
-from qgis.core import (
-	Qgis,
-	QgsProject,
-	QgsVectorLayer,
-	QgsDataSourceUri,
-)
 from qgis.core import *
 from qgis.utils import iface, spatialite_connect, pluginDirectory
 import sqlite3
 import math
 import pandas as pd
-from qkan.database.qkan_utils import loadlayer
+from qkan.tools.qkan_utils import loadlayer
 
 
 class SanierungsbedarfszahlFunkt:

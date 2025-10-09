@@ -25,7 +25,7 @@ class Selection(QKanPlugin):
         icon_import = ":/plugins/qkan/selection/res/icon_selection.png"
         QKan.instance.add_action(
             icon_import,
-            text=self.tr("Selektion"),
+            text=self.tr("Auswahl erweitern"),
             callback=self.run,
             parent=self.iface.mainWindow(),
         )

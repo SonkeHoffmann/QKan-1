@@ -238,7 +238,7 @@ class QKan:
             safe_add_action(daten, "Tabellendaten aus Clipboard einfügen")
             safe_add_action(daten, "Tabellendaten aus Clipboard: Zuordnung anzeigen")
             safe_add_action(daten, "Längsschnitt")
-            safe_add_action(daten, "Selektion")
+            safe_add_action(daten, "Auswahl erweitern")
 
             safe_add_action(flaechen, "Erzeuge unbefestigte Flächen...")
             safe_add_action(flaechen, "Erzeuge Voronoiflächen zu Haltungen")
