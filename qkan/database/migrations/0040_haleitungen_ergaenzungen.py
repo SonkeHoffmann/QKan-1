@@ -2,11 +2,10 @@ import os
 
 from qgis.core import QgsProject, QgsEditorWidgetSetup
 
-import qkan.config
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
 from qgis.utils import pluginDirectory
-from qkan import QKan, enums
+from qkan import enums
 from qkan.tools.qkan_utils import loadlayer
 VERSION = "3.4.8"  # must be higher than previous one and correspond with qkan_database.py: __dbVersion__
 
@@ -113,6 +112,8 @@ def run(dbcon: DBConnection) -> bool:
                     ewsnew = QgsEditorWidgetSetup('ValueRelation', ewsconf)
                     layer.setEditorWidgetSetup(idx, ewsnew)
 
+                    logger.debug(f'Layer {layer.name()} geändert')
+
     reflayers = project.mapLayersByName(enums.LAYERBEZ.ABFLUSSTYPEN.value)
     if len(reflayers) != 1:
         logger.error_data('Entweder fehlt der Layer "Knotentypen oder es gibt mehr als einen Layer mit '
@@ -131,6 +132,8 @@ def run(dbcon: DBConnection) -> bool:
             ewsconf['Value'] = 'abflusstyp'
             ewsnew = QgsEditorWidgetSetup('ValueRelation', ewsconf)
             layer.setEditorWidgetSetup(idx, ewsnew)
+
+            logger.debug(f'Layer {layer.name()} geändert')
 
     project.write()
 
