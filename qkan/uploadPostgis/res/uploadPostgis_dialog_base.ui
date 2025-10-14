@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UploadPostgisDialogBase</class>
+ <widget class="QDialog" name="UploadPostgisDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>350</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>350</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Tahoma</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>QKan Upload - Server auswählen</string>
+  </property>
+  
+  <widget class="QLabel" name="label_title">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>460</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>PostGIS Server auswählen</string>
+   </property>
+  </widget>
+  
+  <widget class="QGroupBox" name="groupBox_server">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>460</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>PostGIS Server-Verbindung</string>
+   </property>
+   
+   <widget class="QListWidget" name="listWidget_servers">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>440</width>
+      <height>100</height>
+     </rect>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_new_connection">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>135</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Neue Verbindung</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_edit_connection">
+    <property name="geometry">
+     <rect>
+      <x>115</x>
+      <y>135</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Bearbeiten</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_delete_connection">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>135</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Löschen</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_test_connection">
+    <property name="geometry">
+     <rect>
+      <x>285</x>
+      <y>135</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Testen</string>
+    </property>
+   </widget>
+  </widget>
+  
+  <widget class="QPushButton" name="pb_next">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>250</y>
+     <width>340</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Datenbank für Upload auswählen</string>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  
+  <widget class="QDialogButtonBox" name="button_box">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>300</y>
+     <width>200</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>button_box</sender>
+   <signal>rejected()</signal>
+   <receiver>UploadPostgisDialogBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>250</x>
+     <y>366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>250</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_box</sender>
+   <signal>helpRequested()</signal>
+   <receiver>UploadPostgisDialogBase</receiver>
+   <slot>show_help()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>200</x>
+     <y>366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>250</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
