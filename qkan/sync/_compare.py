@@ -144,7 +144,7 @@ class CompareTask:
                     f'{layer_loc}.qml',
                     f'qkan_{table}.ui',
                     grouppath,
-                    ext_qkan_db=QKan.config.sync.ext,
+                    qkan_db=QKan.config.sync.ext,
                 )
 
         # Attributtabellen anzeigen

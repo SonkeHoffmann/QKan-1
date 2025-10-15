@@ -52,10 +52,10 @@ def dbAdapt(
     # ------------------------------------------------------------------------------
     # Datenbankverbindungen
 
-    if projectFile:
-        qkan_project.setFileName(projectFile)
-        qkan_project.setTitle("QKan Version {}".format(QKan.qgsVersion))
-        qkan_project.write()
+    # if projectFile is not None:
+    #     qkan_project.setFileName(projectFile)
+    #     qkan_project.setTitle("QKan Version {}".format(QKan.qgsVersion))
+    #     qkan_project.write()
 
     with DBConnection(
         dbname=qkanDB,

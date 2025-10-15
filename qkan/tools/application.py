@@ -916,29 +916,41 @@ class QKanTools(QKanPlugin):
                 )"""
             )
 
-            dbAdapt(
-                cast(str, self.database_name),
-                project_file,
-                project,
-                writeDbBackup,
-                writeQgsBackup,
-            )
+            # Öffnen der Datenbank, nur um die Aktualisierung durchzuführen.
+            with DBConnection(
+                    dbname=cast(str, self.database_name),
+                    qkan_db_update=True,
+                    writeDbBackup=writeDbBackup,
+                    writeQgsBackup=writeQgsBackup
+            ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
 
-            layersadapt(
-                database_QKan=cast(str, self.database_name),
-                projectTemplate=os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs"),
-                anpassen_ProjektMakros=True,
-                anpassen_svgPaths=False,
-                anpassen_Datenbankanbindung=False,
-                anpassen_Layerstile=True,
-                anpassen_Formulare=True,
-                anpassen_Projektionssystem=False,
-                aktualisieren_Schachttypen=False,
-                zoom_alles=False,
-                fehlende_layer_ergaenzen=False,
-                anpassen_auswahl=enums.SelectedLayers.ALL,
-            )
-            project.readPath(project_file)
+                if not dbQK.connected:
+                    errormsg = (
+                        "Fehler in k_qgsadapt: QKan-Datenbank {self.database_name}"
+                        f" wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                    )
+                    logger.error(errormsg)
+                    raise QkanDbError(f"{__name__}: {errormsg}")
+
+                dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
+
+            # layersadapt(
+            #     database_QKan=cast(str, self.database_name),
+            #     projectTemplate=os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs"),
+            #     anpassen_ProjektMakros=True,
+            #     anpassen_svgPaths=False,
+            #     anpassen_Datenbankanbindung=False,
+            #     anpassen_Layerstile=True,
+            #     anpassen_Formulare=True,
+            #     anpassen_Projektionssystem=False,
+            #     aktualisieren_Schachttypen=False,
+            #     zoom_alles=False,
+            #     fehlende_layer_ergaenzen=False,
+            #     anpassen_auswahl=enums.SelectedLayers.ALL,
+            # )
+            # QgsProject.instance().clear()
+            # QgsProject.instance().read()
+            # project.readPath(project_file)
 
 
     def run_help(self) -> None:

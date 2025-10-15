@@ -30,28 +30,32 @@ def initQKanProject():
         iface.messageBar().pushMessage("QKan ist nicht aktiviert!", level=Qgis.MessageLevel.Warning)
         return
 
-    try:
-        get_database_QKan(silent=True)
-        database_name = QKan.config.database.qkan
-        with DBConnection(dbname=database_name) as db_qkan:
-            is_actual = db_qkan.isCurrentDbVersion
-        if not is_actual:
-            qkt = QKanTools(QKan.instance.iface)
-            logger.warning(
-                "Versionskontrolle: "
-                "Die Datenbank muss aktualisiert werden!"
-            )
-            qkt.run_dbAdapt()
-    except ImportError:
-        import traceback
-
-        traceback.print_exc()
-        msg = "Diese Projektdatei wurde mit dem Programm QKan (Prof. Höttges, FH Aachen) erstellt."
-        QgsMessageLog.logMessage(
-            message=msg,
-            level=Qgis.MessageLevel.Info,
+    # try:
+    get_database_QKan(silent=True)
+    database_name = QKan.config.database.qkan
+    with DBConnection(dbname=database_name) as db_qkan:
+        is_actual = db_qkan.isCurrentDbVersion
+    if not is_actual:
+        # qkt = QKanTools(QKan.instance.iface)
+        logger.warning_user(
+            "Versionskontrolle: Die Datenbank muss aktualisiert werden!"
         )
-        QKan.instance.messageBar().pushMessage("Information", msg, level=Qgis.MessageLevel.Info)
+    #         # qkt.run_dbAdapt()
+    #         # iface = QKan.instance.iface
+    #         # iface.newProject(True)
+    #         # QgsProject.instance().clear()
+    #         # project.read(pname)
+    #
+    # except ImportError:
+    #     import traceback
+    #
+    #     traceback.print_exc()
+    #     msg = "Diese Projektdatei wurde mit dem Programm QKan (Prof. Höttges, FH Aachen) erstellt."
+    #     QgsMessageLog.logMessage(
+    #         message=msg,
+    #         level=Qgis.MessageLevel.Info,
+    #     )
+    #     QKan.instance.messageBar().pushMessage("Information", msg, level=Qgis.MessageLevel.Info)
 
     # Anpassen der Formularpfade
     projectTemplate = os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs")
@@ -71,10 +75,10 @@ def initQKanProject():
     )
 
     # Alias für hinzugefügtes Feld "rwanschluss", kann ab 1.2027 wieder entfernt werden
-    project = QgsProject.instance()
-    layers = project.mapLayersByName('Haltungen')
-    for layer in layers:
-        fields = layer.fields()
-        for i, field in enumerate(fields):
-            if field.name() == 'rwanschluss':
-                layer.setFieldAlias(i, 'hat RW-Anschlüsse')
+    # project = QgsProject.instance()
+    # layers = project.mapLayersByName('Haltungen')
+    # for layer in layers:
+    #     fields = layer.fields()
+    #     for i, field in enumerate(fields):
+    #         if field.name() == 'rwanschluss':
+    #             layer.setFieldAlias(i, 'hat RW-Anschlüsse')

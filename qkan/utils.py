@@ -8,6 +8,7 @@ from typing import Any, cast
 from qgis.core import QgsMessageLog, Qgis
 
 LOG_NOTICE = logging.INFO + 1
+LOG_WARNING = logging.WARNING + 1
 LOG_ERROR_CODE = logging.ERROR + 1
 LOG_ERROR_DATA = logging.ERROR + 2
 LOG_ERROR_USER = logging.ERROR + 3
@@ -36,6 +37,7 @@ def _translate_level(level: int) -> Qgis.MessageLevel:
         logging.NOTSET: Qgis.MessageLevel.NoLevel,
         # custom levels
         LOG_NOTICE: Qgis.MessageLevel.Info,
+        LOG_WARNING: Qgis.MessageLevel.Warning,
         LOG_ERROR_CODE: Qgis.MessageLevel.Critical,
         LOG_ERROR_DATA: Qgis.MessageLevel.Critical,
         LOG_ERROR_USER: Qgis.MessageLevel.Critical,
@@ -61,18 +63,22 @@ class QgisPanelLogger(StreamHandler):
             level=_translate_level(record.levelno),
         )
 
-        if record.levelno >= logging.INFO:
+        if record.levelno > logging.INFO:
             self.iface.openMessageLog()
             self.iface.messageBar().pushMessage(
                 "QKan",
                 msg,
                 level=_translate_level(record.levelno),
-                duration = 5
+                duration = 0
             )
 
 class QKanLogger(logging.Logger):
     def notice(self, msg: str, *args: Any, **kwargs: Any):
         self._log(LOG_NOTICE, msg, args, **kwargs)
+
+    def warning_user(self, msg: str, *args, **kwargs):
+        kwargs.setdefault("exc_info", True)
+        self._log(LOG_WARNING, msg, args, **kwargs)
 
     def error_user(self, msg: str, *args, **kwargs):
         kwargs.setdefault("exc_info", True)
@@ -111,6 +117,7 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
     # register custom logging levels
     for level, name in [
         (LOG_NOTICE, "NOTICE"),
+        (LOG_WARNING, "WARNING"),
         (LOG_ERROR_CODE, "ERROR_CODE"),
         (LOG_ERROR_DATA, "ERROR_DATA"),
         (LOG_ERROR_USER, "ERROR_USER"),

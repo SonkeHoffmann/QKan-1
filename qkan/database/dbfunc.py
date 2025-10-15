@@ -234,11 +234,15 @@ class DBConnection:
 
                         self.upgrade_database()
                     else:
-                        logger.info(
-                            f"Projekt muss aktualisiert werden. Die QKan-Version der "
+                        logger.debug(
                             f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
                             f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} überein und muss aktualisiert werden!"
                         )
+                        # logger.info(
+                        #     f"Projekt muss aktualisiert werden. Die QKan-Version der "
+                        #     f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
+                        #     f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} überein und muss aktualisiert werden!"
+                        # )
                         self.consl.close()
                         self.connected = False
 
@@ -1360,9 +1364,9 @@ class DBConnection:
         self.isCurrentDbVersion = (self.actDbVersion <= self.current_dbversion)
 
         # Warnung, falls geladene Datenbank neuer als die Datenbankversion zu diesem QKan-Plugin ist.
-        if self.actDbVersion > self.current_dbversion:
-            logger.warning("Die QKan-Version ist älter als die QKan-Datenbank. "
-                           "Bitte führen Sie ein Upgrade des QKan-Plugins aus")
+        # if self.actDbVersion > self.current_dbversion:
+        #     logger.warning("Die QKan-Version ist älter als die QKan-Datenbank. "
+        #                    "Bitte führen Sie ein Upgrade des QKan-Plugins aus")
 
 
     # Ändern der Attribute einer Tabelle
@@ -1727,7 +1731,8 @@ class DBConnection:
                 "dbqkan.DBConnection.version (aktuell)",
                 parameters=(str(migration.version),),
             ):
-                return False
+                logger.error_code("Versionsnummer konnte nicht aktualisiert werden!")
+                raise QkanAbortError
 
             # Update progress bar
             progress_bar.setValue(100 // len(migrations) * (i + 1))
@@ -1735,10 +1740,10 @@ class DBConnection:
         self.commit()
 
         if self.reload:
-            logger.info(
-                "Achtung! Benutzerhinweis!\n" + \
-                "Die Datenbank wurde geändert. Bitte QGIS-Projekt nach dem Speichern neu laden...",
-            )
+            # logger.info(
+            #     "Achtung! Benutzerhinweis!\n" + \
+            #     "Die Datenbank wurde geändert. Bitte QGIS-Projekt nach dem Speichern neu laden...",
+            # )
             return False
 
         self.isCurrentDbVersion = True

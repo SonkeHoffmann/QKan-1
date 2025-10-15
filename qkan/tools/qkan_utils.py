@@ -8,9 +8,8 @@ from qgis.PyQt.QtCore import QStandardPaths
 from qgis.PyQt.QtWidgets import QListWidget
 from pathlib import Path
 
-from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsProviderRegistry, QgsDataSourceUri
+from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsDataSourceUri, QgsVectorLayer
 from qgis.utils import iface, pluginDirectory
-from qgis.core import QgsProject, QgsDataSourceUri, QgsVectorLayer
 from math import ceil
 from qkan import QKan, enums
 from ..utils import get_logger, QkanError
@@ -252,7 +251,7 @@ def set_qkanlayer_dbname(oldsource: str, newdb: str) -> str:
 
 
 def get_database_QKan(silent: bool = False) -> None:
-    """Ermittlung der aktuellen Datenbank aus den geladenen Layern"""
+    """Ermittlung der aktuellen Datenbank aus den geladenen Layern. Ergebnisse werden in QKan.config gespeichert"""
 
     # noinspection PyArgumentList
 
@@ -651,9 +650,9 @@ def loadlayer(
         geom_column,
         qmlfile,
         uifile,
-        group: Union[List, str],
+        group: Union[List, str] = 'QKan',
         gpos=0,
-        ext_qkan_db: str = None
+        qkan_db: str = None
 ) -> bool:
     """Lädt einen Layer aus einer qml-Datei in eine bestimmte Gruppe an eine bestimmte Position
     :layerbez:              Bezeichnung des Layers
@@ -677,12 +676,15 @@ def loadlayer(
     :gpos:                  Index der Position innerhalb der Gruppe
     :type gpos:             int
 
-    :ext_qkan_db:           andere als die Standard-QKan-DB
-    :type ext_qkan_db:      str
+    :qkan_db:           andere als die Standard-QKan-DB
+    :type qkan_db:      str
 
     :returns:               bool
     """
 
+    project = QgsProject.instance()
+
+    # Gruppen, deren Layer in QKan exklusiv sichtbar sein sollen
     exclusive_groups = [
         enums.LAYERBEZ.SYNC_GROUP_SYNCHRONISATION.value,
         enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
@@ -690,19 +692,19 @@ def loadlayer(
         enums.LAYERBEZ.SYNC_GROUP_ANSCHLUSSLEITUNGEN.value,
     ]
 
+    dlayers = project.mapLayersByName(layerbez)
+    for dlayer in dlayers:
+        project.removeMapLayer(project.mapLayersByName(dlayer))
+
     uri = QgsDataSourceUri()
-    if ext_qkan_db is None:
+    if qkan_db is None:
         uri.setDatabase(QKan.config.database.qkan)
     else:
-        uri.setDatabase(ext_qkan_db)
+        uri.setDatabase(qkan_db)
+    logger.debug(f'{uri=}')
     schema = ''
     uri.setDataSource(schema, table, geom_column)
     layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
-    x = QgsProject.instance()
-    try:
-        x.removeMapLayer(x.mapLayersByName(layerbez)[0].id())
-    except:
-        pass
 
     templatepath = os.path.join(pluginDirectory("qkan"), "templates")
     qmlpath = os.path.join(templatepath, "qml", qmlfile)
@@ -719,15 +721,15 @@ def loadlayer(
     editFormConfig = layer.editFormConfig()
     editFormConfig.setUiForm(os.path.join(formsDir, uifile))
     layer.setEditFormConfig(editFormConfig)
-    QgsProject.instance().addMapLayer(layer, False)
+    project.addMapLayer(layer, False)
 
-    layersRoot = QgsProject.instance().layerTreeRoot()
+    layersRoot = project.layerTreeRoot()
     if isinstance(group, str):
         logger.debug(f"Einfache Gruppe: {group}")
         actGroup = layersRoot.findGroup(group)
         if actGroup is None:
             actGroup = layersRoot.addGroup(group)
-            actGroup.insertLayer(gpos, layer)
+        actGroup.insertLayer(gpos, layer)
     elif isinstance(group, List):
         logger.debug((f"Verkettete Gruppe..."))
         actGroup = layersRoot           # Start ist root
