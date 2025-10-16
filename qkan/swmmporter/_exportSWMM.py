@@ -57,6 +57,15 @@ class ExportTask:
                     db_qkan
                 ),
             )
+            # i would recommend raising an exception here (or in the fehlermeldung function) otherwise
+            # the process will keep running and eventually crash       
+        if not self.ergfileSwmm:
+            fehlermeldung(
+                "Fehler in Input-Datein:\n",
+                "Es wurde keine Datei unter 'Ergebnisdatei:SWMM (*.INP):' angegeben!"
+            )
+            # i would recommend raising an exception here (or in the fehlermeldung function) otherwise
+            # the process will keep running and eventually crash
 
     def __del__(self) -> None:
         self.db_qkan.sql("SELECT RecoverSpatialIndex()")
@@ -1513,9 +1522,11 @@ class ExportTask:
 
                 for i in liste:
                     while x + 2 <= len(liste) and x < len(liste) - 2:
-
-                        xsch = float(liste[x])
-                        ysch = float(liste[x + 1])
+                        # the prevous process (stripping tripel brackets)
+                        # doesn't handle all cases (i.e. double brackets)
+                        # so its safer to just strip every bracket individually
+                        xsch = float(liste[x].strip("(").strip(")"))
+                        ysch = float(liste[x + 1].strip("(").strip(")"))
                         x += 2
 
                         dataver += f"{name:<16s} {xsch:<18.3f} {ysch:<18.3f}\n"
