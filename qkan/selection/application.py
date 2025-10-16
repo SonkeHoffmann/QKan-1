@@ -2,6 +2,7 @@ from qgis.gui import QgisInterface
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
+from qkan.utils import QkanAbortError
 
 from qkan.utils import get_logger
 from qkan.tools.qkan_utils import get_database_QKan
@@ -65,4 +66,8 @@ class Selection(QKanPlugin):
                 imp = Select(
                     db_qkan,
                     check_cb, auswahl)
-                imp.run()
+                try:
+                    imp.run()
+                except QkanAbortError as e:
+                    logger.error("Fehler bei Tool Auswahl erweitern/Netzverfolgung: %s", e)
+

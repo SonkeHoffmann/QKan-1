@@ -56,10 +56,10 @@ class Neigung(QKanPlugin):
                     return False
 
                 check_cb = {}
-                check_cb['cb1'] = self.neigung_dlg.radioButton.isChecked()
-                check_cb['cb2'] = self.neigung_dlg.radioButton_2.isChecked()
+                check_cb['cb1'] = self.neigung_dlg.dgm_automatisch.isChecked()
+                check_cb['cb2'] = self.neigung_dlg.dgm_manuell.isChecked()
 
-                imp = NeigungTask(self.neigung_dlg.lineEdit_3.text(), self.neigung_dlg.lineEdit.text(), self.neigung_dlg.lineEdit_2.text(),
-                    db_qkan, check_cb, self.neigung_dlg.lineEdit_4.text()
+                imp = NeigungTask(self.neigung_dlg.url_dgm_daten.text(), self.neigung_dlg.speicher_neigung.text(), self.neigung_dlg.speicher_dgm.text(),
+                    db_qkan, check_cb, epsg
                     )
                 imp.run()
