@@ -25,7 +25,7 @@ class Selection(QKanPlugin):
         icon_import = ":/plugins/qkan/selection/res/icon_selection.png"
         QKan.instance.add_action(
             icon_import,
-            text=self.tr("Auswahl erweitern"),
+            text=self.tr("Auswahl erweitern / Netzverfolgung"),
             callback=self.run,
             parent=self.iface.mainWindow(),
         )
@@ -56,18 +56,13 @@ class Selection(QKanPlugin):
                     return False
 
                 check_cb = {}
-                check_cb['cb1'] = self.select_dlg.radioButton.isChecked()
-                check_cb['cb2'] = self.select_dlg.radioButton_2.isChecked()
-                check_cb['cb3'] = self.select_dlg.radioButton_4.isChecked()
-                check_cb['cb4'] = self.select_dlg.radioButton_5.isChecked()
-                check_cb['cb5'] = self.select_dlg.radioButton_6.isChecked()
-                check_cb['cb6'] = self.select_dlg.radioButton_7.isChecked()
-                check_cb['cb7'] = self.select_dlg.radioButton_8.isChecked()
-                check_cb['cb8'] = self.select_dlg.radioButton_3.isChecked()
-                check_cb['cb9'] = self.select_dlg.radioButton_9.isChecked()
-                check_cb['cb10'] = self.select_dlg.radioButton_10.isChecked()
+                check_cb['cb_Haltung'] = self.select_dlg.cb_selectHaltungen.isChecked()
+                check_cb['cb_Schaechte'] = self.select_dlg.cb_selectSchaechte.isChecked()
+                check_cb['cb_Flaechen'] = self.select_dlg.cb_selectFlaechen.isChecked()
+
+                auswahl = self.select_dlg.geklickter_button
 
                 imp = Select(
                     db_qkan,
-                    check_cb)
+                    check_cb, auswahl)
                 imp.run()
