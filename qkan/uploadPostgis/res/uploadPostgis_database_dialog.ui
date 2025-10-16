@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UploadPostgisDatabaseDialogBase</class>
+ <widget class="QDialog" name="UploadPostgisDatabaseDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>550</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Tahoma</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>QKan Datenbank Upload</string>
+  </property>
+  
+  <widget class="QLabel" name="label_title">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>560</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Datenbank für Upload auswählen</string>
+   </property>
+  </widget>
+  
+  <widget class="QLabel" name="label_server_info">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>55</y>
+     <width>560</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>9</pointsize>
+     <style>italic</style>
+    </font>
+   </property>
+   <property name="text">
+    <string>Verbunden mit Server: [Server wird hier angezeigt]</string>
+   </property>
+  </widget>
+  
+  <widget class="QGroupBox" name="groupBox_source_database">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>85</y>
+     <width>560</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>QKan postgres-Quelldatenbank</string>
+   </property>
+   
+   <widget class="QLineEdit" name="le_database_file">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>440</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="placeholderText">
+     <string>Pfad zur QKan postgres-Quelldatenbank...</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_select_database">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>25</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Auswählen...</string>
+    </property>
+   </widget>
+  </widget>
+  
+  <widget class="QGroupBox" name="groupBox_database">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>180</y>
+     <width>560</width>
+     <height>280</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>PostGIS Zieldatenbank</string>
+   </property>
+   
+   <widget class="QListWidget" name="listWidget_databases">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>540</width>
+      <height>180</height>
+     </rect>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_refresh_databases">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>215</y>
+      <width>120</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Liste aktualisieren</string>
+    </property>
+   </widget>
+   
+   <widget class="QCheckBox" name="cb_create_new_database">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>220</y>
+      <width>200</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Neue Datenbank erstellen</string>
+    </property>
+   </widget>
+   
+   <widget class="QLineEdit" name="le_new_database_name">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>218</y>
+      <width>190</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="placeholderText">
+     <string>Name der neuen Datenbank</string>
+    </property>
+   </widget>
+   
+   <widget class="QCheckBox" name="cb_overwrite_existing">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>250</y>
+      <width>250</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Bestehende Tabellen überschreiben</string>
+    </property>
+   </widget>
+  </widget>
+  
+  <widget class="QPushButton" name="pb_help">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>490</y>
+     <width>80</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Hilfe</string>
+   </property>
+  </widget>
+  
+  <widget class="QPushButton" name="pb_cancel">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>490</y>
+     <width>80</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Abbrechen</string>
+   </property>
+  </widget>
+  
+  <widget class="QPushButton" name="pb_upload">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>490</y>
+     <width>80</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Upload</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
