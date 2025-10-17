@@ -82,13 +82,13 @@ Team
  - Jörg Höttges
  - Yannick Linke
  - Nora Blase
- - Friederike Kimmich
  - Maja Lange
 
 Ehemalige
 ---------
 
  - Leon Ochsenfeld
+ - Friederike Kimmich
 
 Weitere Quellen
 ---------------
