@@ -1,7 +1,7 @@
 from qgis.utils import spatialite_connect
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanAbortError
 
 from qkan.laengsschnitt.dijkstra import Netz, find_route
 from qkan.tools.qkan_utils import get_qkanlayer_attributes
@@ -214,6 +214,12 @@ class Select:
             selected = layer.selectedFeatures()
             x = len(selected)
 
+            if table not in ['schaechte', 'haltungen']:
+                msg = (
+                    f"Es wurde keine Auswahl getroffen!"
+                )
+                raise QkanAbortError(msg)
+
             if x > 1:
                 logger.error_user(
                     "Bedienerfehler: "
@@ -299,6 +305,12 @@ class Select:
             selected = layer.selectedFeatures()
             x = len(selected)
 
+            if table not in ['schaechte', 'haltungen']:
+                msg = (
+                    f"Es wurde keine Auswahl getroffen!"
+                )
+                raise QkanAbortError(msg)
+
             if x > 1:
                 logger.error_user(
                     "Bedienerfehler: "
@@ -310,7 +322,7 @@ class Select:
                     ziel = feature['Schachtname']
 
                 self.db_qkan.sql("""
-                                                SELECT haltnam, schoben, schunten, laenge
+                                                SELECT haltnam, schoben, schunten, coalesce(laenge,ST_LENGTH(geom))
                                                 FROM haltungen
                                             """)
                 netz = self.db_qkan.fetchall()
@@ -387,6 +399,12 @@ class Select:
             selected = layer.selectedFeatures()
             x = len(selected)
 
+            if table not in ['schaechte', 'haltungen']:
+                msg = (
+                    f"Es wurde keine Auswahl getroffen!"
+                )
+                raise QkanAbortError(msg)
+
             if x > 1 or x is None:
                 logger.error_user(
                     "Bedienerfehler: "
@@ -398,7 +416,7 @@ class Select:
                    ziel = feature['Schachtname']
 
                 self.db_qkan.sql("""
-                        SELECT haltnam, schoben, schunten, laenge
+                        SELECT haltnam, schoben, schunten, coalesce(laenge,ST_LENGTH(geom))
                         FROM haltungen
                     """)
                 netz = self.db_qkan.fetchall()
@@ -681,12 +699,12 @@ class Select:
             # selektierte elemente anzeigen
             self.selected = layer.selectedFeatures()
 
-            if not self.selected:
-                logger.error_user(
-                    "Bedienerfehler: "
-                    'Es wurde keine Auswahl getroffen!'
+
+            if table not in ['schaechte', 'haltungen']:
+                msg = (
+                    f"Es wurde keine Auswahl getroffen!"
                 )
-                return
+                raise QkanAbortError(msg)
 
             for i in self.selected:
                 attrs = i["pk"]
@@ -695,9 +713,6 @@ class Select:
             liste = []
             liste2 = []
 
-            if table not in ['schaechte', 'haltungen']:
-                iface.messageBar().pushMessage("Fehler", 'Bitte Haltungen oder Schächte wählen', level=Qgis.MessageLevel.Critical)
-                return
 
             if table == 'schaechte':
                 for f in self.selected:

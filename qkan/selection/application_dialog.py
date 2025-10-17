@@ -46,11 +46,11 @@ class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
     cb_selectFlaechen: QCheckBox
     cb_selectHaltungen: QCheckBox
     cb_selectSchaechte: QCheckBox
-    pushButton: QPushButton
-    pushButton_2: QPushButton
-    pushButton_3: QPushButton
-    pushButton_4: QPushButton
-    pushButton_5: QPushButton
+    obj_oberhalb: QPushButton
+    obj_innerhalb: QPushButton
+    obj_unterhalb: QPushButton
+    obj_zwischen: QPushButton
+    fliessweg: QPushButton
 
 
 
@@ -64,11 +64,11 @@ class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
         self.geklickter_button = None
 
         # Signale verbinden
-        self.pushButton_2.clicked.connect(lambda: self.button_clicked("Teilgebiet"))
-        self.pushButton_3.clicked.connect(lambda: self.button_clicked("unterhalb"))
-        self.pushButton_4.clicked.connect(lambda: self.button_clicked("kuerzester"))
-        self.pushButton.clicked.connect(lambda: self.button_clicked("oberhalb"))
-        self.pushButton_5.clicked.connect(lambda: self.button_clicked("Fliessweg"))
+        self.obj_innerhalb.clicked.connect(lambda: self.button_clicked("Teilgebiet"))
+        self.obj_unterhalb.clicked.connect(lambda: self.button_clicked("unterhalb"))
+        self.obj_zwischen.clicked.connect(lambda: self.button_clicked("kuerzester"))
+        self.obj_oberhalb.clicked.connect(lambda: self.button_clicked("oberhalb"))
+        self.fliessweg.clicked.connect(lambda: self.button_clicked("Fliessweg"))
 
     def button_clicked(self, name):
         self.geklickter_button = name
