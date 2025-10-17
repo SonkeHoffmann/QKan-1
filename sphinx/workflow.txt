@@ -1,3 +1,7 @@
+Datei conf.py aktualisieren:
+    - Version
+    - copyright gggs. aktualisieren
+
 Änderungen von Riki mit Total Commander synchronisieren:
 c:\FHAC\hoettges\Kanalprogramme\QKan\sphinx\source <-> c:\FHAC\hoettges\HiWis\Kimmich, Friederike\QKan_Doku\Sphinx\source\
 
