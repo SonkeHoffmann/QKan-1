@@ -1,0 +1,31 @@
+# SQL-Statements für SQLite-Analyse im uploadPostgis-Modul
+
+# Alle relevanten Tabellen auflisten
+uploadPostgis_get_all_tables: "
+SELECT name FROM sqlite_master 
+WHERE type='table' AND name NOT LIKE 'sqlite_%' 
+AND name NOT LIKE 'geometry_columns'
+AND name NOT LIKE 'spatial_ref_sys'
+AND name NOT LIKE 'spatialite_history'
+AND name NOT LIKE 'sql_statements_log'
+AND name NOT LIKE 'idx_%'
+AND name NOT LIKE 'SpatialIndex'
+ORDER BY name"
+
+# Spalteninfo für eine Tabelle
+uploadPostgis_get_table_columns: "
+PRAGMA table_info({table_name})"
+
+# Anzahl Datensätze in einer Tabelle
+uploadPostgis_count_records: "
+SELECT COUNT(*) FROM {table_name}"
+
+# Alle Daten einer Tabelle
+uploadPostgis_select_all_data: "
+SELECT * FROM {table_name}"
+
+# Geometrie-Informationen für eine Tabelle
+uploadPostgis_get_geometry_info: "
+SELECT f_geometry_column, type, coord_dimension, srid
+FROM geometry_columns
+WHERE f_table_name = '{table_name}'"
