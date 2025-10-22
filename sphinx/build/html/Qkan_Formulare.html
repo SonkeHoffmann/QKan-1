@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulare &mdash; QKan 3.3.1 Dokumentation</title>
+  <title>Formulare &mdash; QKan 3.4.8 Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=8209df7b" />
 
@@ -38,7 +38,7 @@
             QKan
           </a>
               <div class="version">
-                3.2
+                3.4.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,8 +73,9 @@
 <li class="toctree-l2"><a class="reference internal" href="QKan_Formulare_Allgemein.html">Allgemein</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html">Verwaltung</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Hystem_Extran.html">Hystem-Extran</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML-Importe</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_DYNA.html">DYNA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Mike.html">Mike+</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html">SWMM</a></li>
@@ -87,6 +88,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Tabellen.html">QKan-Tabellen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 </ul>
 
         </div>
@@ -118,19 +120,25 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Formulare_Allgemein.html">Allgemein</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Formulare_Allgemein.html#projektdatei-anpassen">Projektdatei anpassen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Formulare_Allgemein.html#qkan-projekt-aktualisieren">QKan-Projekt aktualisieren</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Formulare_Allgemein.html#projektdatei-auf-andere-datenbank-ubertragen">Projektdatei auf andere Datenbank übertragen</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Verwaltung.html">Verwaltung</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html#datenbank-aktualisieren">Datenbank aktualisieren</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html#neue-datenbank-erstellen">Neue Datenbank erstellen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html#dateipfade-suchen">Dateipfade suchen</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Daten.html">Daten</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html#plausibilitatsprufung">Plausibilitätsprüfung</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html#automatische-ubernahme-von-haltungsdaten-aus-schachten">Automatische Übernahme von Haltungsdaten aus Schächten</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html#referenztabellen">Referenztabellen</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html#trigger-zu-referenztabellen">Trigger zu Referenztabellen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html#auswahl-erweitern-netzverfolgung">Auswahl erweitern / Netzverfolgung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html#langsschnitt">Längsschnitt</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Synchro.html#vergleich-mit-einem-anderen-qkan-projekt">Vergleich mit einem anderen QKan-Projekt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Synchro.html#synchronisation-mit-anderem-qkan-projekt">Synchronisation mit anderem QKan-Projekt</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Hystem_Extran.html">Hystem-Extran</a><ul>
@@ -139,8 +147,8 @@
 <li class="toctree-l2"><a class="reference internal" href="QKan_Hystem_Extran.html#ergebnisse-aus-hystem-extran-8">Ergebnisse aus HYSTEM-EXTRAN 8</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="QKan_XML.html">XML</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html#import-aus-dwa-xml">Import aus DWA-XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_XML.html">XML-Importe</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html#import-aus-dwa-m150">Import aus DWA-M150</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_XML.html#import-aus-isybau-xml">Import aus ISYBAU-XML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_XML.html#export-nach-isybau-xml">Export nach ISYBAU-XML</a></li>
 </ul>
@@ -157,6 +165,7 @@
 <li class="toctree-l1"><a class="reference internal" href="QKan_SWMM.html">SWMM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html#import-aus-swmm-datei">Import aus SWMM-Datei</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html#export-in-swmm-datei">Export in SWMM-Datei</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html#ergebnis-import-aus-swmm">Ergebnis Import aus SWMM</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_STRAKAT.html">STRAKAT</a><ul>
@@ -173,6 +182,7 @@
 <li class="toctree-l2"><a class="reference internal" href="QKan_Flaechenverarbeitung.html#verknupfungslinien-von-flachen-zu-haltungen-erstellen">Verknüpfungslinien von Flächen zu Haltungen erstellen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Flaechenverarbeitung.html#berechnung-von-oberflachenabflussparametern">Berechnung von Oberflächenabflussparametern</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Flaechenverarbeitung.html#verknupfungen-bereinigen">Verknüpfungen bereinigen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Flaechenverarbeitung.html#neigungsklasse-ermitteln">Neigungsklasse ermitteln</a></li>
 </ul>
 </li>
 </ul>
@@ -207,7 +217,7 @@ in der Auswahltabelle angeklickt wird, wird die Auswahl automatisch aktiviert</p
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017 - 2022, Hoettges.</p>
+    <p>&#169; Copyright 2017 - 2025, Hoettges.</p>
   </div>
 
   Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem

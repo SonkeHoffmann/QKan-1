@@ -4,8 +4,8 @@ loading pickled environment... done
 building [mo]: targets for 0 po files that are out of date
 writing output... 
 building [html]: targets for 1 source files that are out of date
-updating environment: 0 added, 1 changed, 0 removed
-reading sources... [100%] QKan_Daten
+updating environment: 0 added, 3 changed, 0 removed
+reading sources... [ 33%] QKan_Datenreading sources... [ 67%] QKan_Flaechenverarbeitungreading sources... [100%] QKan_XML
 looking for now-outdated files... none found
 pickling environment... done
 checking consistency... done
@@ -14,12 +14,12 @@ copying assets... copying downloadable files... [ 33%] _static/template_plugin.z
 copying static files... done
 copying extra files... done
 done
-writing output... [ 33%] QKan_Datenwriting output... [ 67%] QKan_Formularewriting output... [100%] index
+writing output... [ 20%] QKan_Datenwriting output... [ 40%] QKan_Flaechenverarbeitungwriting output... [ 60%] QKan_Formularewriting output... [ 80%] QKan_XMLwriting output... [100%] index
 generating indices... genindex done
 writing additional pages... search done
-copying images... [ 20%] QKan_Bilder/Tool_plausibilitaet.pngcopying images... [ 40%] QKan_Bilder/Formulare/plausibilitaet.pngcopying images... [ 60%] QKan_Bilder/tabelle_plausi.pngcopying images... [ 80%] QKan_Bilder/tabelle_fehler.pngcopying images... [100%] QKan_Bilder/layereigenschaften_symbolisierung.png
+copying images... [  3%] QKan_Bilder/Tool_plausibilitaet.pngcopying images... [  7%] QKan_Bilder/Formulare/plausibilitaet.pngcopying images... [ 10%] QKan_Bilder/tabelle_plausi.pngcopying images... [ 13%] QKan_Bilder/tabelle_fehler.pngcopying images... [ 17%] QKan_Bilder/Formulare/auswahl_netzverfolgung.pngcopying images... [ 20%] QKan_Bilder/Formulare/laengsschnitt.pngcopying images... [ 23%] QKan_Bilder/Tool_unbef_flaechen.pngcopying images... [ 27%] QKan_Bilder/Formulare/erz_unbef_fl.pngcopying images... [ 30%] QKan_Bilder/Tool_voronoiflaechen.pngcopying images... [ 33%] QKan_Bilder/Formulare/erz_haltungsfl.pngcopying images... [ 37%] QKan_Bilder/Tool_flaechenbereinigung.pngcopying images... [ 40%] QKan_Bilder/Formulare/flaechenbereinigung.pngcopying images... [ 43%] QKan_Bilder/Tool_elemente_tezg_zuordnen.pngcopying images... [ 47%] QKan_Bilder/Formulare/Zuordnung_zu_teilgebiet.pngcopying images... [ 50%] QKan_Bilder/Formulare/tgz_verwalten.pngcopying images... [ 53%] QKan_Bilder/Tool_tgz_verwalten.pngcopying images... [ 57%] QKan_Bilder/Tool_verknuepfung_direkteinleiter.pngcopying images... [ 60%] QKan_Bilder/Formulare/Verbindungslinien_einzel_hal.pngcopying images... [ 63%] QKan_Bilder/Tool_verknuepfungslinien_erstellen.pngcopying images... [ 67%] QKan_Bilder/Formulare/Verbindungslinien_fl_hal.pngcopying images... [ 70%] QKan_Bilder/Tool_oberflaechenabflussparameter.pngcopying images... [ 73%] QKan_Bilder/Oberflaechenabflussparameter/oberflaechenabflussparameter.pngcopying images... [ 77%] QKan_Bilder/Tool_verknuepfungen_ber.pngcopying images... [ 80%] QKan_Bilder/Formulare/verknuepfungen_ber.pngcopying images... [ 83%] QKan_Bilder/Formulare/neigungsklasse.pngcopying images... [ 87%] QKan_Bilder/Tool_import_dwa.pngcopying images... [ 90%] QKan_Bilder/Formulare/import_dwa_m150.pngcopying images... [ 93%] QKan_Bilder/M150_Knotenarten.pngcopying images... [ 97%] QKan_Bilder/Tool_export_isybau.pngcopying images... [100%] QKan_Bilder/Formulare/export_isybau.png
 dumping search index in German (code: de)... done
 dumping object inventory... done
-build succeeded, 2 warnings.
+build succeeded, 8 warnings.
 
 The HTML pages are in build\html.

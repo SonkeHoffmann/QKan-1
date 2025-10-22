@@ -7,7 +7,7 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import loadlayer, get_default_dir
+from qkan.tools.qkan_utils import loadLayer, get_default_dir
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 from qkan.utils import get_logger
@@ -160,7 +160,7 @@ class StrakatPorter(QKanPlugin):
 
         self.log.debug("Closed DB")
 
-        if not loadlayer(
+        if not loadLayer(
                 enums.LAYERBEZ.STRAKAT_SYMBOLE.value,
                 'symbole',
                 'geom',

@@ -644,7 +644,7 @@ def read_qml(qmlfiles: dict[str, str]):
                     l.loadNamedStyle(style_file)
                     l.triggerRepaint()
 
-def loadlayer(
+def loadLayer(
         layerbez,
         table,
         geom_column,

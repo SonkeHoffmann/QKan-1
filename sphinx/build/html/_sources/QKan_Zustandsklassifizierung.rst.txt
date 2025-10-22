@@ -10,16 +10,12 @@ werden um die Stammdaten und die Befahrungsdaten zu importieren. Mit Hilfe diese
 Zustandsklassen enthält.
 Um die Zustandsklassen nun zu ermitteln, muss über die Menüleiste in QGIS die Schaltfläche „QKan" geklickt werden. Dort kann das Plugin Zustandsklassen ausgewählt werden.
 
-.. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung1| image:: ./QKan_Bilder/Zustandsklassen/zustand1.png
-                             :width: 1.25 em
+.. image:: ./QKan_Bilder/Zustandsklassen/zustand1.png
 
 
 Daraufhin öffnet sich das im folgenden gezeigte Eingabefenster:
 
-.. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung2| image:: ./QKan_Bilder/Zustandsklassen/zustand2.png
-                             :width: 1.25 em
+.. image:: ./QKan_Bilder/Zustandsklassen/zustand2.png
 
 
 In dem Eingabefenster sind folgende Eingaben möglich:
@@ -40,16 +36,12 @@ Mit einem Klick auf OK wird das Plugin gestartet und eine Klassifizierung vorgen
 und neue Layer wurden dem Projekt zugefügt.
 Wenn die Klassifizierung nach DWA-M 149 durchgeführt wurde, werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.
 
-.. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung3| image:: ./QKan_Bilder/Zustandsklassen/zustand3.png
-                             :width: 1.25 em
+.. image:: ./QKan_Bilder/Zustandsklassen/zustand3.png
 
 
 Bei einer Klassifizierung nach ISYBAU werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.
 
-.. image:: ./QKan_Bilder/Formulare/zustandsklassen.png
-.. |Zustandsklassifizierung4| image:: ./QKan_Bilder/Zustandsklassen/zustand4.png
-                             :width: 1.25 em
+.. image:: ./QKan_Bilder/Zustandsklassen/zustand4.png
 
 
 
@@ -61,3 +53,5 @@ Einzelfallbetrachtung“ durchgeführt werden.
 
 Alternativ kann die Zustandsklassifizierung auch übersprungen werden und nur die Tabellen angelegt werden. Dabei werden schon vorhandene Klassifizierungen aus den Grundlagentabellen 
 übernommen.
+
+

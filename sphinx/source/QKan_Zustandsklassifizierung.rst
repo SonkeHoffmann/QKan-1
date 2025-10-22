@@ -1,8 +1,8 @@
 Zustandsklassifizierung
-====
+=======================
 
 Zustandsklassifizierung
----------------------
+-----------------------
 
 Um das Plugin Zustandsklassen zu nutzen, muss im Vorhinein eine Datenbank mit den notwendigen Informationen mit Hilfe des Plugins QKan erstellt werden. 
 Dafür muss das Plugin QKan heruntergeladen werden und im Plugin Ordner von QGIS gespeichert werden. Dann kann zum Beispiel die Funktion „Import aus ISYBAU-XML" genutzt 

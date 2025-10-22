@@ -234,9 +234,10 @@ class DBConnection:
 
                         self.upgrade_database()
                     else:
-                        logger.debug(
+                        logger.warning_user(
                             f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
-                            f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} überein und muss aktualisiert werden!"
+                            f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} "
+                            f"überein und muss aktualisiert werden!",
                         )
                         # logger.info(
                         #     f"Projekt muss aktualisiert werden. Die QKan-Version der "

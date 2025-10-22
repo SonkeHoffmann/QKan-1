@@ -211,7 +211,7 @@ class QKan:
         if self.menu:
             self.menu.clear()
             allgemein = self.menu.addMenu("Allgemein")
-            verwaltung = self.menu.addMenu("Verwaltung")
+            # verwaltung = self.menu.addMenu("Verwaltung")
             daten = self.menu.addMenu("Daten")
             sync = self.menu.addMenu("Synchronisation")
             hyex = self.menu.addMenu("Hystem-Extran")
@@ -229,10 +229,9 @@ class QKan:
             safe_add_action(allgemein, "Optionen")
             safe_add_action(allgemein, "QKan-Projekt aktualisieren")
             safe_add_action(allgemein, "QKan-Projektdatei übertragen")
-
-            safe_add_action(verwaltung, "QKan-Datenbank aktualisieren")
-            safe_add_action(verwaltung, "Neue QKan-Datenbank erstellen")
-            safe_add_action(verwaltung, "Dateipfade suchen")
+            safe_add_action(allgemein, "QKan-Datenbank aktualisieren")
+            safe_add_action(allgemein, "Neue QKan-Datenbank erstellen")
+            safe_add_action(allgemein, "Dateipfade suchen")
 
             safe_add_action(daten, "Plausibilitätsprüfungen")
             safe_add_action(daten, "Tabellendaten aus Clipboard einfügen")

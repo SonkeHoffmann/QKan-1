@@ -44,35 +44,46 @@ betroffen sind (siehe auch Abbildung oben: "Plausibilitätsprüfungen").
 
 
 .. index:: Auswahl erweitern / Netzverfolgung
+
 Auswahl erweitern / Netzverfolgung
 ----------------------------------
 
-Mit dem Tool |Tool_auswahl| :guilabel:`Auswahl erweitern/Netzverfolgung` kann auf verschiedene Arten eine Auswahl von Elementen im Kanalnetz erzeugt werden. Die ausgewählten Elemente werden 
+Mit dem Tool |Tool_auswahl| :guilabel:`Auswahl erweitern/Netzverfolgung` kann auf verschiedene Arten eine Auswahl 
+von Elementen im Kanalnetz erzeugt werden. Die ausgewählten Elemente werden 
 automatisch in den Datenbanktabellen sel_schaechte, sel_haltungen und sel_flaechen gespeichert.
 
 .. image:: ./QKan_Bilder/Formulare/auswahl_netzverfolgung.png
 .. |Tool_auswahl| image:: ./QKan_Bilder/Tool_auswahl.png
                              :width: 1.25 em
 
-Bei einer erneuten Auswahl werden die bestehenden Einträge in diesen Tabellen automatisch überschrieben, sodass immer nur die aktuell ausgewählten Elemente berücksichtigt werden.
+Bei einer erneuten Auswahl werden die bestehenden Einträge in diesen Tabellen automatisch überschrieben, sodass 
+immer nur die aktuell ausgewählten Elemente berücksichtigt werden.
 Auswahlmöglichkeiten im Detail
-1.	Kanalnetz oberhalb / unterhalb / längster Fließweg oberhalb
- - Für diese Auswahlmethoden muss mindestens ein Schacht im Kanalnetz ausgewählt werden.
- - Das Tool markiert automatisch alle Schächte, Haltungen und zugehörigen Flächen, die stromaufwärts oder stromabwärts vom ausgewählten Schacht liegen bzw. entlang des längsten 
-	Fließweges oberhalb.
-2.	Auswahl zwischen zwei Elementen
- - Hierfür können entweder zwei Schächte oder zwei Haltungen ausgewählt werden.
- - Das Tool wählt automatisch alle Elemente aus, die zwischen diesen beiden Punkten liegen, unabhängig davon, wie viele Haltungen dazwischen liegen.
-3.	Auswahl innerhalb von Teilgebieten
- - Um alle Elemente eines bestimmten Teilgebiets auszuwählen, muss das entsprechende Teilgebiet ausgewählt werden.
- - Das Tool markiert dann alle Schächte, Haltungen und Flächen, die zu diesem Teilgebiet gehören.
+
+1. Kanalnetz oberhalb / unterhalb / längster Fließweg oberhalb
+    - Für diese Auswahlmethoden muss mindestens ein Schacht im Kanalnetz ausgewählt werden.
+    - Das Tool markiert automatisch alle Schächte, Haltungen und zugehörigen Flächen, die stromaufwärts oder 
+      stromabwärts vom ausgewählten Schacht liegen bzw. entlang des längsten 
+      Fließweges oberhalb.
+
+2. Auswahl zwischen zwei Elementen
+    - Hierfür können entweder zwei Schächte oder zwei Haltungen ausgewählt werden.
+    - Das Tool wählt automatisch alle Elemente aus, die zwischen diesen beiden Punkten liegen, unabhängig davon, 
+      wie viele Haltungen dazwischen liegen.
+
+3. Auswahl innerhalb von Teilgebieten
+    - Um alle Elemente eines bestimmten Teilgebiets auszuwählen, muss das entsprechende Teilgebiet ausgewählt werden.
+    - Das Tool markiert dann alle Schächte, Haltungen und Flächen, die zu diesem Teilgebiet gehören.
+
 Hinweise
- - Jede Auswahl wird sofort in den Datenbanktabellen gespeichert, sodass nachfolgende Funktionen wie Längsschnitt, Substanzklassifizierung oder Export direkt auf dieser 
-	Auswahl arbeiten können.
- - Bei Änderungen an der Auswahl empfiehlt es sich, die Tabellen ggf. zu aktualisieren, um sicherzustellen, dass alle Analysen auf den aktuellen Elementen basieren.
+    - Jede Auswahl wird sofort in den Datenbanktabellen gespeichert, sodass nachfolgende Funktionen wie Längsschnitt, Substanzklassifizierung oder Export direkt auf dieser 
+      Auswahl arbeiten können.
+    - Bei Änderungen an der Auswahl empfiehlt es sich, die Tabellen ggf. zu aktualisieren, um sicherzustellen, dass 
+      alle Analysen auf den aktuellen Elementen basieren.
 
 
 .. index:: Längsschnitt
+
 Längsschnitt
 ------------
 Mit dem Tool |Tool_laengsschnitt| :guilabel:`Längsschnitt` lassen sich Längsschnitte des Kanalnetzes erzeugen.

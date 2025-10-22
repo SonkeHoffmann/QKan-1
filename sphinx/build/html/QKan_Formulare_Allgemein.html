@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Allgemein &mdash; QKan 3.3.1 Dokumentation</title>
+  <title>Allgemein &mdash; QKan 3.4.8 Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=8209df7b" />
 
@@ -38,7 +38,7 @@
             QKan
           </a>
               <div class="version">
-                3.2
+                3.4.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,7 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="QKan_Datenaustausch.html">Datenaustausch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_flaechen.html">Arbeiten mit Flächen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekte</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_qfield.html">QKan-Projekte auf dem Tablet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_edit.html">Erstellen und Bearbeiten von Kanalnetzen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Zustandsklassifizierung.html">Zustandsklassifizierung</a></li>
@@ -71,10 +71,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="QKan_Formulare.html">Formulare</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Allgemein</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#projektdatei-anpassen">Projektdatei anpassen</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qkan-projekt-aktualisieren">QKan-Projekt aktualisieren</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#auswahl-der-vorlage">Auswahl der Vorlage</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#layer-anpassen">Layer anpassen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qkan-layer">QKan-Layer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#auswertung-knotentypen">Auswertung Knotentypen</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#projektdatei-auf-andere-datenbank-ubertragen">Projektdatei auf andere Datenbank übertragen</a><ul>
@@ -87,8 +88,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html">Verwaltung</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Hystem_Extran.html">Hystem-Extran</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML-Importe</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_DYNA.html">DYNA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Mike.html">Mike+</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html">SWMM</a></li>
@@ -98,6 +100,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Tabellen.html">QKan-Tabellen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 </ul>
 
         </div>
@@ -127,13 +130,12 @@
              
   <section id="allgemein">
 <h1>Allgemein<a class="headerlink" href="#allgemein" title="Link to this heading"></a></h1>
-<section id="projektdatei-anpassen">
-<h2>Projektdatei anpassen<a class="headerlink" href="#projektdatei-anpassen" title="Link to this heading"></a></h2>
-<p>Mit der Funktion <a class="reference internal" href="_images/Tool_projekt_aktualisieren.png"><img alt="Tool_projekt_aktualisieren" src="_images/Tool_projekt_aktualisieren.png" style="width: 1.25em;" /></a> <span class="guilabel">QKan-Prejekt aktualisieren</span> können Projekte, die noch auf einer älteren QKan-Version basieren, auf den aktuellsten Stand gebracht werden.
-Neben Änderungen an der Datenbankstruktur sind dabei meistens auch Anpassungen an den Projektlayern notwendig. Dazu sollte in dem Formular
-unter der Überschrift „QKan-Datenbank“ die Option „auf aktuelle Version anpassen“ (4) gewählt werden. Es wird automatisch sichergestellt,
-dass die Wertbeziehungen (Überschrift „Layer anpassen“) aktualisiert werden. Weiterhin ist es empfehlenswert, unter der gleichen
-Überschrift auch die Option „Formularanbindungen auf QKan-Standard setzen“ aktiviert ist.</p>
+<section id="qkan-projekt-aktualisieren">
+<h2>QKan-Projekt aktualisieren<a class="headerlink" href="#qkan-projekt-aktualisieren" title="Link to this heading"></a></h2>
+<p>Mit der Funktion <a class="reference internal" href="_images/Tool_projekt_aktualisieren.png"><img alt="Tool_projekt_aktualisieren" src="_images/Tool_projekt_aktualisieren.png" style="width: 1.25em;" /></a> <span class="guilabel">QKan-Projekt aktualisieren</span> können Projekte, die noch auf einer älteren QKan-Version basieren, auf den aktuellsten Stand gebracht werden.
+Dabei werden die vorhandenen QKan-Layer in Ihrer Darstellung auf den aktuellen Standart gebracht. Layer die außerhalb von QKan in dem QGIS Projekt enthalten sind, werden nciht verändert.</p>
+<p>Unter der Überschrift „Layer anpassen“ kann die QKan-Datenbank gewählt werden. Des Weiteren kann das Projektionssystem der Layer anhand der Datenbank aktualisiert werden.
+Weiterhin ist es empfehlenswert, unter der gleichen Punkt auch die Option „Formularanbindungen auf QKan-Standard setzen“ zu aktivieren.</p>
 <img alt="_images/qkan_layersadapt.png" id="image-qkan-layersadapt" src="_images/qkan_layersadapt.png" />
 <section id="auswahl-der-vorlage">
 <h3>Auswahl der Vorlage<a class="headerlink" href="#auswahl-der-vorlage" title="Link to this heading"></a></h3>
@@ -150,6 +152,10 @@ der Regel aktiviert werden.</p>
 <h3>QKan-Layer<a class="headerlink" href="#qkan-layer" title="Link to this heading"></a></h3>
 <p>Unter dieser Überschrift kann ausgewählt werden, welche Layer bearbeitet werden sollen.</p>
 </section>
+<section id="auswertung-knotentypen">
+<h3>Auswertung Knotentypen<a class="headerlink" href="#auswertung-knotentypen" title="Link to this heading"></a></h3>
+<p>Mit diesem Punkt werden in der Tabelle Schächte Informationen zum Knotentyp ergänzt und in dem Layer Knotentyp dargestellt.</p>
+</section>
 </section>
 <section id="projektdatei-auf-andere-datenbank-ubertragen">
 <span id="index-0"></span><h2>Projektdatei auf andere Datenbank übertragen<a class="headerlink" href="#projektdatei-auf-andere-datenbank-ubertragen" title="Link to this heading"></a></h2>
@@ -159,7 +165,8 @@ ein anderes Projekt übertragen werden:</p>
 <img alt="_images/qkan_qgsAdapt.png" id="image-qkan-qgsadapt" src="_images/qkan_qgsAdapt.png" />
 <section id="qkan-datenbank">
 <h3>QKan-Datenbank<a class="headerlink" href="#qkan-datenbank" title="Link to this heading"></a></h3>
-<p>Hier wird die einzubindende QKan-Datenbank gewählt.</p>
+<p>Hier wird die einzubindende QKan-Datenbank gewählt.
+Um sicherzustellen, dass die Datenbank auf dem aktuellsten Stand ist, kann die Option „QKan Datenbank aktualisier“ gewählt werden.</p>
 </section>
 <section id="projektdatei-als-vorlage">
 <h3>Projektdatei als Vorlage<a class="headerlink" href="#projektdatei-als-vorlage" title="Link to this heading"></a></h3>
@@ -184,7 +191,7 @@ Projektdatei vorhanden, kann auch die QKan-Standardvorlage gewählt werden.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017 - 2022, Hoettges.</p>
+    <p>&#169; Copyright 2017 - 2025, Hoettges.</p>
   </div>
 
   Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem

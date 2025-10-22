@@ -2,7 +2,7 @@ Allgemein
 =========
 
 QKan-Projekt aktualisieren
----------------------
+--------------------------
 
 Mit der Funktion |Tool_projekt_aktualisieren| :guilabel:`QKan-Projekt aktualisieren` können Projekte, die noch auf einer älteren QKan-Version basieren, auf den aktuellsten Stand gebracht werden. 
 Dabei werden die vorhandenen QKan-Layer in Ihrer Darstellung auf den aktuellen Standart gebracht. Layer die außerhalb von QKan in dem QGIS Projekt enthalten sind, werden nciht verändert.

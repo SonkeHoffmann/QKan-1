@@ -1,6 +1,51 @@
 Datenaustausch
 ==============
 
+Datenaustausch mit XML-Dateien
+------------------------------
+
+Für den Datenaustausch von Kanalnetzdaten existieren zwei etablierte XML-Formate. Die DWA hat mit dem Merkblatt 
+DWA-M 150 "Datenaustauschformat für die Zustandserfassung von Entwässerungssystemen" im Jahr 2003 einen Standard 
+herausgegeben, der seitdem in der Praxis einige kleinere Anpassungen erfahren hat, so dass insbesondere 
+im Bereich der Kanalzustandserfassung mehrere Versionen existieren. Aktuell steht mit dem neuen Merkblatt DWA-M 145 
+eine überarbeitete und erweiterte Version zur Verfügung, deren Einführung in der Praxis sicherlich noch einige 
+Jahre in Anspruch nehmen wird. 
+
+Der Bund hat im Jahr 2006 die erste Version des ISYBAU-XML-Austauschformates veröffentlicht, das seitdem mit den 
+Versionen 2013, 2017 und 2024 mehrfach überarbeitet wurde. 
+
+.. _dwa-m-150:
+
+DWA-M 150
++++++++++
+
+Das Datenaustauschformat gemäß DWA-M M150 (kurz: *M150*) umfasst je nach Bedarf Kanalstammdaten, Hausanschlussdaten 
+sowie Zustandsdaten. Beim Datenimport ist zu berücksichtigen, dass QKan anstelle von Schlüsselwerten (z. B. *RW* für 
+*Regenwasser*) in den Datentabellen (Haltungen, Schächte, etc.) die Langbezeichnungen verwendet. Hintergrund ist, dass 
+der Anwender die Tabellen auch direkt in der QGIS-Ansicht *Attributtabellen* bearbeiten kann. 
+
+Die Schlüsselwerte für den Datenaustausch sind in der QKan-Gruppe *Referenztabellen* zu finden. Die Schlüsselwerte 
+der DWA-M 150 befinden sich in der entsprechenden Spalte. 
+    
+Referenztabellen
+++++++++++++++++
+
+Folgende Referenztabellen sind für den Datenimport relevant, um Schlüsselwerte aus der zu importierenden XML-Datei den entsprechenden 
+Attributen von QKan zuzuordnen:
+
+- Entwässerungsarten
+- Profile
+- Material
+- Planungsstatus
+- Wetter
+- Knotenarten
+
+Baufachliche Richtlinien Abwasser (vormals ISYBAU)
+--------------------------------------------------
+
+(Dieses Kapitel befindet sich noch in der Erstellung)
+
+
 Import von Kanaldaten aus einfachen Tabellen
 --------------------------------------------
 

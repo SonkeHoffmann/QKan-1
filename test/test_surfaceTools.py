@@ -6,7 +6,7 @@ from qgis.testing import unittest
 
 from qkan import QKan
 from qkan.surfaceTools.surfaceTool import SurfaceTask
-from qkan.tools.k_dbAdapt import dbAdapt
+from qkan.database.dbfunc import DBConnection
 
 
 # Fuer einen Test mit PyCharm Workingdir auf C:\Users\...\default\python\plugins einstellen (d. h. "\test" löschen)
@@ -22,7 +22,22 @@ class TestCutOverlaps(QgisTest):
     def test_cut(self) -> None:
         QKan.config.database.qkan = str(BASE_WORK / "itwh.sqlite")
         database_qkan = QKan.config.database.qkan
-        dbAdapt(qkanDB=database_qkan,)
+
+        with DBConnection(
+                dbname=database_qkan,
+                qkan_db_update=True,
+                writeDbBackup=False,
+                writeQgsBackup=False,
+        ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
+
+            if not dbQK.connected:
+                errormsg = (
+                    "Fehler in k_qgsadapt:\n"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                )
+                raise Exception(f"{__name__}: {errormsg}")
+
+            dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
 
         # obj = SurfaceTools(iface())
         # obj.connectQKanDB(QKan.config.database.qkan)
