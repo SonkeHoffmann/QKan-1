@@ -6,8 +6,7 @@ from qgis.testing import unittest
 
 from qkan import QKan
 from qkan.m150porter.application import M150Porter
-from qkan.tools.k_dbAdapt import dbAdapt
-
+from qkan.database.dbfunc import DBConnection
 
 # Fuer einen Test mit PyCharm Workingdir auf C:\Users\...\default\python\plugins einstellen (d. h. "\test" löschen)
 class TestM150QKan(QgisTest):
@@ -16,15 +15,18 @@ class TestM150QKan(QgisTest):
         super().setUpClass()
 
         # Extract files
-        with ZipFile(BASE_DATA / "test_m150Import.zip") as z:
+        with ZipFile(BASE_DATA / "test_m150Import_kanalprofi.zip") as z:
             z.extractall(BASE_WORK)
 
     def test_import(self) -> None:
-        QKan.config.database.qkan = str(BASE_WORK / "alsdorf.sqlite")
-        QKan.config.xml.import_file = str(BASE_WORK / "Alsdorf_Test_mit Zustand_25832.xml")
+        QKan.config.database.qkan = str(BASE_WORK / "HKuSuHA.sqlite")
+        QKan.config.xml.import_file = str(BASE_WORK / "M150_2_Z_2010_HKuSuHA_tags.xml")
+        # QKan.config.database.qkan = str(BASE_WORK / "alsdorf.sqlite")
+        # QKan.config.xml.import_file = str(BASE_WORK / "Alsdorf_Test_mit Zustand_25832.xml")
         # QKan.config.database.qkan = str(BASE_WORK / "lemgo.sqlite")
         # QKan.config.xml.import_file = str(BASE_WORK / "Lemgo_test_DWA-M_150.XML")
-        QKan.config.project.file = str(BASE_WORK / "plan.qgs")
+        # QKan.config.project.file = str(BASE_WORK / "plan.qgs")
+        QKan.config.project.file = str(BASE_WORK / "HKuSuHA.qgs")
         QKan.config.epsg = 25832
 
         imp = M150Porter(iface())
@@ -50,9 +52,21 @@ class TestQKanM150(QgisTest):
         QKan.config.database.qkan = str(BASE_WORK / "nette.sqlite")
         QKan.config.xml.export_file = str(BASE_WORK / "nette.xml")
 
-        dbAdapt(
-            qkanDB=QKan.config.database.qkan,
-        )
+        with DBConnection(
+                dbname=QKan.config.database.qkan,
+                qkan_db_update=True,
+                writeDbBackup=False,
+                writeQgsBackup=False,
+        ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
+
+            if not dbQK.connected:
+                errormsg = (
+                    "Fehler in k_qgsadapt:\n"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                )
+                raise Exception(f"{__name__}: {errormsg}")
+
+            dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
 
         QKan.config.check_export.schaechte = True
         QKan.config.check_export.auslaesse = True

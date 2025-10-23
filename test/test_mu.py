@@ -6,7 +6,6 @@ from qgis.testing import unittest
 
 from qkan import QKan
 from qkan.muporter.application import MuPorter
-from qkan.tools.k_dbAdapt import dbAdapt
 
 
 # Fuer einen Test mit PyCharm Workingdir auf C:\Users\...\default\python\plugins einstellen (d. h. "\test" löschen)
@@ -56,7 +55,21 @@ class TestQKanMU_not_ready_to_run(QgisTest):
         # project.read(project_file)
         # LOGGER.debug("Geladene Projektdatei: %s", project.fileName())
 
-        dbAdapt(qkanDB=QKan.config.mu.database)
+        with DBConnection(
+                dbname=QKan.config.database.qkan,
+                qkan_db_update=True,
+                writeDbBackup=False,
+                writeQgsBackup=False,
+        ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
+
+            if not dbQK.connected:
+                errormsg = (
+                    "Fehler in k_qgsadapt:\n"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                )
+                raise Exception(f"{__name__}: {errormsg}")
+
+            dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
 
         QKan.config.check_export.schaechte = True
         QKan.config.check_export.auslaesse = False

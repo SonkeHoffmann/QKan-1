@@ -77,19 +77,19 @@ class QKanLogger(logging.Logger):
         self._log(LOG_NOTICE, msg, args, **kwargs)
 
     def warning_user(self, msg: str, *args, **kwargs):
-        kwargs.setdefault("exc_info", True)
+        # kwargs.setdefault("exc_info", 'True')
         self._log(LOG_WARNING, msg, args, **kwargs)
 
     def error_user(self, msg: str, *args, **kwargs):
-        kwargs.setdefault("exc_info", True)
+        # kwargs.setdefault("exc_info", True)
         self._log(LOG_ERROR_USER, msg, args, **kwargs)
 
     def error_data(self, msg: str, *args, **kwargs):
-        kwargs.setdefault("exc_info", True)
+        # kwargs.setdefault("exc_info", True)
         self._log(LOG_ERROR_DATA, msg, args, **kwargs)
 
     def error_code(self, msg: str, *args, **kwargs):
-        kwargs.setdefault("exc_info", True)
+        # kwargs.setdefault("exc_info", True)
         self._log(LOG_ERROR_CODE, msg, args, **kwargs)
 
 

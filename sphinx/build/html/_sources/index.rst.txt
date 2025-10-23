@@ -35,6 +35,7 @@
     
     QKan_Formulare
     QKan_Tabellen
+    QKan_Synchro
 
 
 Register und Tabellen

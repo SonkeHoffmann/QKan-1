@@ -1,6 +1,6 @@
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger, QkanError
-from qkan.tools.qkan_utils import loadlayer
+from qkan.tools.qkan_utils import loadLayer
 from qgis.utils import pluginDirectory
 from qkan import QKan, enums
 import os
@@ -187,7 +187,7 @@ def run(dbcon: DBConnection) -> bool:
     ]
 
     for layerconf in layerconfs:
-        if not loadlayer(
+        if not loadLayer(
                 layerconf['layerbez'],
                 layerconf['table'],
                 layerconf['geom_column'],

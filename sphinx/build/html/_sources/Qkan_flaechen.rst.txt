@@ -274,6 +274,8 @@ durch einen erneuten Rechtsklick auf die gewählt Linie aufgehoben werden.
                              :width: 1.25 em
 
 
+.. _createlinksw:
+
 Erzeugung von Anbindungen zwischen Einzeleinleitern und Haltungen
 -----------------------------------------------------------------
 

@@ -35,11 +35,11 @@ def initQKanProject():
     database_name = QKan.config.database.qkan
     with DBConnection(dbname=database_name) as db_qkan:
         is_actual = db_qkan.isCurrentDbVersion
-    if not is_actual:
+    # if not is_actual:
         # qkt = QKanTools(QKan.instance.iface)
-        logger.warning_user(
-            "Versionskontrolle: Die Datenbank muss aktualisiert werden!"
-        )
+        # logger.warning_user(
+        #     "Versionskontrolle: Die Datenbank muss aktualisiert werden!"
+        # )
     #         # qkt.run_dbAdapt()
     #         # iface = QKan.instance.iface
     #         # iface.newProject(True)

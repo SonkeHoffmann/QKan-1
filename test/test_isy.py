@@ -7,7 +7,7 @@ from qgis.testing import unittest
 
 from qkan import QKan
 from qkan.isyporter.application import IsyPorter
-from qkan.tools.k_dbAdapt import dbAdapt
+from qkan.database.dbfunc import DBConnection
 
 
 # Fuer einen Test mit PyCharm Workingdir auf C:\Users\...\default\python\plugins einstellen (d. h. "\test" löschen)
@@ -51,9 +51,21 @@ class TestQKanISY(QgisTest):
         QKan.config.database.qkan = str(BASE_WORK / "nette.sqlite")
         QKan.config.xml.export_file = str(BASE_WORK / "nette.xml")
 
-        dbAdapt(
-            qkanDB=QKan.config.database.qkan,
-        )
+        with DBConnection(
+                dbname=QKan.config.database.qkan,
+                qkan_db_update=True,
+                writeDbBackup=False,
+                writeQgsBackup=False,
+        ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
+
+            if not dbQK.connected:
+                errormsg = (
+                    "Fehler in k_qgsadapt:\n"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                )
+                raise Exception(f"{__name__}: {errormsg}")
+
+            dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
 
         QKan.config.check_export.schaechte = True
         QKan.config.check_export.auslaesse = True
