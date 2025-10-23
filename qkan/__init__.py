@@ -43,7 +43,7 @@ PLUGIN_LIST = [
     "tools.application.QKanTools",
     "selection.application.Selection",
     "neigung.application.Neigung",
-    "uploadpostgis.application.Uploadpostgis",
+    "uploadPostgis.application.UploadPostgis",
     "sync.application.Synchronisation",
     "info.application.Infos",
 ]

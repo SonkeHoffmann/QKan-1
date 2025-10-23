@@ -1,8 +1,9 @@
 from qgis.core import Qgis
 from qgis.gui import QgisInterface
 
-from qkan import QKan, get_default_dir
+from qkan import QKan
 from qkan.plugin import QKanPlugin
+from qkan.tools.qkan_utils import get_default_dir
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.uploadPostgis.application")
@@ -11,6 +12,7 @@ from ._uploadPostgis import UploadPostgisTask
 from .application_dialog import UploadPostgisDialog
 
 # noinspection PyUnresolvedReferences
+from . import resources  # noqa: F401
 
 
 class UploadPostgis(QKanPlugin):
