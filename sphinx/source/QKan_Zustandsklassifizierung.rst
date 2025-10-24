@@ -37,6 +37,7 @@ und neue Layer wurden dem Projekt zugefügt.
 Wenn die Klassifizierung nach DWA-M 149 durchgeführt wurde, werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.
 
 .. image:: ./QKan_Bilder/Zustandsklassen/zustand3.png
+                             :scale: 70%
 
 
 Bei einer Klassifizierung nach ISYBAU werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.

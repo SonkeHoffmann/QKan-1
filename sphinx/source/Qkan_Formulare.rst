@@ -5,7 +5,6 @@ Formulare
     :maxdepth: 2
     
     QKan_Formulare_Allgemein
-    QKan_Verwaltung
     QKan_Daten
     QKan_Synchro
     QKan_Hystem_Extran
@@ -15,6 +14,10 @@ Formulare
     QKan_SWMM
     QKan_STRAKAT
     QKan_Flaechenverarbeitung
+    QKan_Zustandsbewertung
+    QKan_Substanzbewertung
+    QKan_Ueberflutung
+   
    
    
 Allgemeine Funktionselemente in Formularen

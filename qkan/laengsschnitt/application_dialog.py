@@ -78,6 +78,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         super().__init__(default_dir, tr, parent)
 
         # Attach events
+        self.buttonBox.helpRequested.connect(self.click_help)
         self.pushButton.clicked.connect(self.export_cad)
         self.pushButton_2.clicked.connect(self.refresh)
         self.checkBox.stateChanged.connect(self.check)
@@ -224,3 +225,9 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.db_erg = self.lineEdit_4.text()
         self.stop_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl,
                            self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
+
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Daten.html#langsschnitt"
+        os.startfile(help_file)
