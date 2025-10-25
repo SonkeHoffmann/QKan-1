@@ -70,7 +70,8 @@ def run(dbcon: DBConnection) -> bool:
         geom_column='geop',
         qmlfile="HA-Schächte.qml",
         uifile="qkan_anschlussschaechte.ui",
-        group=grouppath
+        group=grouppath,
+        gpos=4,
     )
 
     layers = project.mapLayersByName(enums.LAYERBEZ.ANSCHLUSSSCHAECHTE.value)         # können mehrere sein, auch wenn's nicht gewollt ist ...

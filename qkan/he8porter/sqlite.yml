@@ -25,31 +25,31 @@ WHERE ? NOT IN (SELECT bezeichnung FROM pumpentypen)"
 he8_insert_simulationsstatus: "
 INSERT INTO simulationsstatus (bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, isybau, m150, m145, kommentar)
 SELECT
-    :bezeichnung, :kuerzel, :he_nr, :mu_nr, :kp_nr, 
+    :bezeichnung, :kuerzel, :he_nr, :mu_nr, :kp_nr,
     :isybau, :m150, :m145, :kommentar
 WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM simulationsstatus)"
 
 he8_insert_schaechte: "
 INSERT INTO schaechte (
-    schnam, xsch, ysch, 
-    sohlhoehe, deckelhoehe, 
-    durchm, 
-    druckdicht, 
-    entwart, schachttyp, simstatus, 
+    schnam, xsch, ysch,
+    sohlhoehe, deckelhoehe,
+    durchm,
+    druckdicht,
+    entwart, schachttyp, simstatus,
     kommentar, createdat, geop, geom
 )
-SELECT 
+SELECT
     sh.Name AS schnam,
-    x(sh.Geometry) AS xsch, 
-    y(sh.Geometry) AS ysch, 
-    sh.Sohlhoehe AS sohlhoehe, 
-    sh.Deckelhoehe AS deckelhoehe, 
-    sh.Durchmesser/1000. AS durchm, 
-    sh.Druckdichterdeckel AS druckdicht, 
-    ea.bezeichnung AS entwart, 
+    x(sh.Geometry) AS xsch,
+    y(sh.Geometry) AS ysch,
+    sh.Sohlhoehe AS sohlhoehe,
+    sh.Deckelhoehe AS deckelhoehe,
+    sh.Durchmesser/1000. AS durchm,
+    sh.Druckdichterdeckel AS druckdicht,
+    ea.bezeichnung AS entwart,
     'Schacht' AS schachttyp,
-    si.bezeichnung AS simstatus, 
-    sh.Kommentar AS kommentar, 
+    si.bezeichnung AS simstatus,
+    sh.Kommentar AS kommentar,
     sh.Lastmodified AS createdat,
     SetSRID(sh.Geometry, :epsg) AS geop,
     CastToMultiLineString(MakeCircle(x(sh.Geometry),
@@ -58,9 +58,9 @@ SELECT
                                               :epsg)
     ) AS geom
 FROM he.Schacht AS sh
-LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea 
+LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea
 ON ea.he_nr = sh.Kanalart
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = sh.Planungsstatus
 LEFT JOIN schaechte AS sq
 ON sh.Name = sq.schnam
@@ -68,20 +68,20 @@ WHERE sq.pk IS NULL"
 
 he8_insert_auslaesse: "
 INSERT INTO schaechte (
-    schnam, xsch, ysch, 
-    sohlhoehe, deckelhoehe, 
-    schachttyp, simstatus, 
+    schnam, xsch, ysch,
+    sohlhoehe, deckelhoehe,
+    schachttyp, simstatus,
     kommentar, createdat, geop, geom
 )
-SELECT 
+SELECT
     sh.Name AS schnam,
-    x(sh.Geometry) AS xsch, 
-    y(sh.Geometry) AS ysch, 
-    sh.Sohlhoehe AS sohlhoehe, 
-    sh.Gelaendehoehe AS deckelhoehe, 
+    x(sh.Geometry) AS xsch,
+    y(sh.Geometry) AS ysch,
+    sh.Sohlhoehe AS sohlhoehe,
+    sh.Gelaendehoehe AS deckelhoehe,
     'Auslass' AS schachttyp,
     si.bezeichnung AS simstatus,
-    sh.Kommentar AS kommentar, 
+    sh.Kommentar AS kommentar,
     sh.Lastmodified AS createdat,
     SetSRID(sh.Geometry, :epsg) AS geop,
     CastToMultiLineString(MakeCircle(x(sh.Geometry),
@@ -98,20 +98,20 @@ WHERE sq.pk IS NULL"
 
 he8_insert_speicher: "
 INSERT INTO schaechte (
-    schnam, xsch, ysch, 
-    sohlhoehe, deckelhoehe, 
-    schachttyp, simstatus, 
+    schnam, xsch, ysch,
+    sohlhoehe, deckelhoehe,
+    schachttyp, simstatus,
     kommentar, createdat, geop, geom
 )
-SELECT 
+SELECT
     sh.Name AS schnam,
-    x(sh.Geometry) AS xsch, 
-    y(sh.Geometry) AS ysch, 
-    sh.Sohlhoehe AS sohlhoehe, 
-    sh.Gelaendehoehe AS deckelhoehe, 
+    x(sh.Geometry) AS xsch,
+    y(sh.Geometry) AS ysch,
+    sh.Sohlhoehe AS sohlhoehe,
+    sh.Gelaendehoehe AS deckelhoehe,
     'Speicher' AS schachttyp,
     si.bezeichnung AS simstatus,
-    sh.Kommentar AS kommentar, 
+    sh.Kommentar AS kommentar,
     sh.Lastmodified AS createdat,
     SetSRID(sh.Geometry, :epsg) AS geop,
     CastToMultiLineString(MakeCircle(x(sh.Geometry),
@@ -128,40 +128,40 @@ WHERE sq.pk IS NULL"
 
 he8_insert_haltungen: "
 INSERT INTO haltungen (
-    haltnam, schoben, schunten, 
-    hoehe, breite, laenge, 
+    haltnam, schoben, schunten,
+    hoehe, breite, laenge,
     sohleoben, sohleunten,
     haltungstyp,
-    profilnam, entwart, 
-    ks, simstatus,  
-    kommentar, createdat, 
+    profilnam, entwart,
+    ks, simstatus,
+    kommentar, createdat,
     geom
 )
-SELECT 
-    ro.Name AS haltnam, 
-    ro.Schachtoben AS schoben, 
-    ro.Schachtunten AS schunten, 
-    IIF(ro.Geometrie1>20, ro.Geometrie1, ro.Geometrie1*1000.) AS hoehe, 
-    IIF(ro.Geometrie2>20, ro.Geometrie2, ro.Geometrie2*1000.) AS breite, 
-    ro.Laenge AS laenge, 
-    ro.SohlhoeheOben AS sohleoben, 
-    ro.SohlhoeheUnten AS sohleunten, 
-    'Haltung' AS haltungstyp, 
-    CASE WHEN ro.Profiltyp = 68 
-         THEN ro.Sonderprofilbezeichnung 
-         ELSE pr.profilnam END AS profilnam, 
-    ea.bezeichnung AS entwart, 
-    ro.Rauigkeitsbeiwert AS ks, 
+SELECT
+    ro.Name AS haltnam,
+    ro.Schachtoben AS schoben,
+    ro.Schachtunten AS schunten,
+    IIF(ro.Geometrie1>20, ro.Geometrie1, ro.Geometrie1*1000.) AS hoehe,
+    IIF(ro.Geometrie2>20, ro.Geometrie2, ro.Geometrie2*1000.) AS breite,
+    ro.Laenge AS laenge,
+    ro.SohlhoeheOben AS sohleoben,
+    ro.SohlhoeheUnten AS sohleunten,
+    'Haltung' AS haltungstyp,
+    CASE WHEN ro.Profiltyp = 68
+         THEN ro.Sonderprofilbezeichnung
+         ELSE pr.profilnam END AS profilnam,
+    ea.bezeichnung AS entwart,
+    ro.Rauigkeitsbeiwert AS ks,
     si.bezeichnung AS simstatus,
-    ro.Kommentar AS kommentar, 
-    ro.Lastmodified AS createdat, 
+    ro.Kommentar AS kommentar,
+    ro.Lastmodified AS createdat,
     SetSRID(ro.Geometry, :epsg) AS geom
 FROM he.Rohr AS ro
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON ro.Profiltyp = pr.he_nr
-LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea 
+LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea
 ON ea.he_nr = ro.Kanalart
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = ro.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = ro.Name
@@ -174,25 +174,25 @@ INSERT INTO haltungen (
     sohleoben, sohleunten,
     haltungstyp,
     simstatus,
-    kommentar, createdat, 
+    kommentar, createdat,
     geom)
-SELECT 
+SELECT
     we.Name AS haltnam,
-    we.Schachtoben AS schoben, 
-    we.Schachtunten AS schunten,              
-    IIF(we.Geometrie1>20, we.Geometrie1, we.Geometrie1*1000.) AS hoehe, 
+    we.Schachtoben AS schoben,
+    we.Schachtunten AS schunten,
+    IIF(we.Geometrie1>20, we.Geometrie1, we.Geometrie1*1000.) AS hoehe,
     IIF(we.Geometrie2>20, we.Geometrie2, we.Geometrie2*1000.) AS breite,
-    we.Schwellenhoehe AS sohleoben, 
-    we.Schwellenhoehe AS sohleunten, 
-    'Wehr' AS haltungstyp, 
-    si.bezeichnung AS simstatus, 
-    we.Kommentar AS kommentar, 
+    we.Schwellenhoehe AS sohleoben,
+    we.Schwellenhoehe AS sohleunten,
+    'Wehr' AS haltungstyp,
+    si.bezeichnung AS simstatus,
+    we.Kommentar AS kommentar,
     we.Lastmodified AS createdat,
     SetSrid(we.Geometry, :epsg) AS geom
 FROM he.Wehr AS we
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON we.Profiltyp = pr.he_nr
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = we.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = we.Name
@@ -202,22 +202,22 @@ he8_insert_pumpen: "
 INSERT INTO haltungen (
     haltnam, schoben, schunten,
     hoehe,
-    haltungstyp, 
+    haltungstyp,
     simstatus,
-    kommentar, createdat, 
+    kommentar, createdat,
     geom)
-SELECT 
+SELECT
     pu.Name AS haltnam,
-    pu.Schachtoben AS schoben, 
+    pu.Schachtoben AS schoben,
     pu.Schachtunten AS schunten,
-    0.3 AS hoehe,                   /* nur fuer Laengsschnitt */ 
-    'Pumpe' AS haltungstyp, 
-    si.bezeichnung AS simstatus, 
-    pu.Kommentar AS kommentar, 
+    0.3 AS hoehe,                   /* nur fuer Laengsschnitt */
+    'Pumpe' AS haltungstyp,
+    si.bezeichnung AS simstatus,
+    pu.Kommentar AS kommentar,
     pu.Lastmodified AS createdat,
     SetSrid(pu.Geometry, :epsg) AS geom
 FROM he.Pumpe AS pu
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = pu.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = pu.Name
@@ -227,22 +227,22 @@ he8_insert_drosseln: "
 INSERT INTO haltungen (
     haltnam, schoben, schunten,
     hoehe,
-    haltungstyp, 
+    haltungstyp,
     simstatus,
-    kommentar, createdat, 
+    kommentar, createdat,
     geom)
-SELECT 
+SELECT
     dr.Name AS haltnam,
-    dr.Schachtoben AS schoben, 
-    dr.Schachtunten AS schunten, 
-    dr.Sohlabstand AS hoehe, 
-    'Drossel' AS haltungstyp, 
-    si.bezeichnung AS simstatus, 
-    dr.Kommentar AS kommentar, 
+    dr.Schachtoben AS schoben,
+    dr.Schachtunten AS schunten,
+    dr.Sohlabstand AS hoehe,
+    'Drossel' AS haltungstyp,
+    si.bezeichnung AS simstatus,
+    dr.Kommentar AS kommentar,
     dr.Lastmodified AS createdat,
     SetSrid(dr.Geometry, :epsg) AS geom
 FROM he.Drossel AS dr
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = dr.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = dr.Name
@@ -257,28 +257,28 @@ INSERT INTO haltungen (
     profilnam,
     haltungstyp,
     simstatus,
-    kommentar, createdat, 
+    kommentar, createdat,
     geom
 )
-SELECT 
+SELECT
     sr.Name AS haltnam,
-    sr.Schachtoben AS schoben, 
-    sr.Schachtunten AS schunten, 
+    sr.Schachtoben AS schoben,
+    sr.Schachtunten AS schunten,
     sr.Anfangsstellung AS sohleoben,
     sr.Anfangsstellung AS sohleunten,
     round(sr.MaximaleHubHoehe - sr.Anfangsstellung, 4) AS hoehe,
-    sr.Geometrie2 AS breite, 
-    sr.Verluste AS ks, 
-    pr.profilnam AS profilnam, 
-    'Schieber' AS haltungstyp, 
-    si.bezeichnung AS simstatus, 
-    sr.Kommentar AS kommentar, 
+    sr.Geometrie2 AS breite,
+    sr.Verluste AS ks,
+    pr.profilnam AS profilnam,
+    'Schieber' AS haltungstyp,
+    si.bezeichnung AS simstatus,
+    sr.Kommentar AS kommentar,
     sr.Lastmodified AS createdat,
     SetSrid(sr.Geometry, :epsg) AS geom
 FROM he.Schieber AS sr
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON sr.Profiltyp = pr.he_nr
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = sr.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = sr.Name
@@ -286,38 +286,38 @@ WHERE ha.pk IS NULL"
 
 he8_insert_qregler: "
 INSERT INTO haltungen (
-    haltnam, schoben, schunten, 
-    hoehe, breite, laenge, 
+    haltnam, schoben, schunten,
+    hoehe, breite, laenge,
     sohleoben, sohleunten,
     profilnam, entwart, ks,
-    haltungstyp, 
-    simstatus,  
-    kommentar, createdat, 
+    haltungstyp,
+    simstatus,
+    kommentar, createdat,
     geom
 )
-SELECT 
-    qr.Name AS haltnam, 
-    qr.Schachtoben AS schoben, 
-    qr.Schachtunten AS schunten, 
-    IIF(qr.Geometrie1>20, qr.Geometrie1, qr.Geometrie1*1000.) AS hoehe, 
-    IIF(qr.Geometrie2>20, qr.Geometrie2, qr.Geometrie2*1000.) AS breite, 
-    qr.Laenge AS laenge, 
-    qr.SohlhoeheOben AS sohleoben, 
-    qr.SohlhoeheUnten AS sohleunten, 
-    pr.profilnam AS profilnam, 
-    ea.bezeichnung AS entwart, 
-    qr.Rauigkeitsbeiwert AS ks, 
-    'Q-Regler' AS haltungstyp, 
+SELECT
+    qr.Name AS haltnam,
+    qr.Schachtoben AS schoben,
+    qr.Schachtunten AS schunten,
+    IIF(qr.Geometrie1>20, qr.Geometrie1, qr.Geometrie1*1000.) AS hoehe,
+    IIF(qr.Geometrie2>20, qr.Geometrie2, qr.Geometrie2*1000.) AS breite,
+    qr.Laenge AS laenge,
+    qr.SohlhoeheOben AS sohleoben,
+    qr.SohlhoeheUnten AS sohleunten,
+    pr.profilnam AS profilnam,
+    ea.bezeichnung AS entwart,
+    qr.Rauigkeitsbeiwert AS ks,
+    'Q-Regler' AS haltungstyp,
     si.bezeichnung AS simstatus,
-    qr.Kommentar AS kommentar, 
-    qr.Lastmodified AS createdat, 
+    qr.Kommentar AS kommentar,
+    qr.Lastmodified AS createdat,
     SetSrid(qr.Geometry, :epsg) AS geom
 FROM he.qRegler AS qr
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON qr.Profiltyp = pr.he_nr
-LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea 
+LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea
 ON ea.he_nr = qr.Kanalart
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = qr.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = qr.Name
@@ -325,16 +325,16 @@ WHERE ha.pk IS NULL"
 
 he8_insert_hregler: "
 INSERT INTO haltungen (
-    haltnam, schoben, schunten, 
-    hoehe, breite, laenge, 
+    haltnam, schoben, schunten,
+    hoehe, breite, laenge,
     sohleoben, sohleunten,
     profilnam, entwart, ks,
     haltungstyp,
     simstatus,
-    kommentar, createdat, 
+    kommentar, createdat,
     geom
 )
-SELECT 
+SELECT
     hr.Name AS haltnam,
     hr.Schachtoben AS schoben,
     hr.Schachtunten AS schunten,
@@ -354,9 +354,9 @@ SELECT
 FROM he.hRegler AS hr
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON hr.Profiltyp = pr.he_nr
-LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea 
+LEFT JOIN (SELECT he_nr, bezeichnung FROM entwaesserungsarten GROUP BY he_nr) AS ea
 ON ea.he_nr = hr.Kanalart
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = hr.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = hr.Name
@@ -370,55 +370,55 @@ INSERT INTO haltungen (
     ks,
     profilnam,
     haltungstyp,
-    simstatus,  
-    kommentar, createdat, 
+    simstatus,
+    kommentar, createdat,
     geom
 )
-SELECT 
-    gs.Name AS haltnam, 
-    gs.Schachtoben AS schoben, 
+SELECT
+    gs.Name AS haltnam,
+    gs.Schachtoben AS schoben,
     gs.Schachtunten AS schunten,
-    gs.HoeheUnterkante AS sohleoben, 
-    gs.HoeheUnterkante AS sohleunten, 
+    gs.HoeheUnterkante AS sohleoben,
+    gs.HoeheUnterkante AS sohleunten,
     IIF(gs.Geometrie1>20, gs.Geometrie1, gs.Geometrie1*1000.) AS hoehe,
     IIF(gs.Geometrie2>20, gs.Geometrie2, gs.Geometrie2*1000.) AS breite,
     gs.Auslassbeiwert AS ks,
     pr.profilnam AS profilnam,
-    'GrundSeitenauslass' AS haltungstyp, 
+    'GrundSeitenauslass' AS haltungstyp,
     si.bezeichnung AS simstatus,
-    gs.Kommentar AS kommentar, 
-    gs.Lastmodified AS createdat, 
+    gs.Kommentar AS kommentar,
+    gs.Lastmodified AS createdat,
     SetSRID(gs.Geometry, :epsg) AS geom
 FROM he.grundseitenauslass AS gs
 LEFT JOIN (SELECT he_nr, profilnam FROM profile WHERE he_nr <> 68 GROUP BY he_nr) AS pr
 ON gs.Profiltyp = pr.he_nr
-LEFT JOIN simulationsstatus AS si 
+LEFT JOIN simulationsstatus AS si
 ON si.he_nr = gs.Planungsstatus
 LEFT JOIN haltungen AS ha
 ON ha.haltnam = gs.Name
 WHERE ha.pk IS NULL"
 
-he8_insert_flaechen: " 
-INSERT INTO flaechen ( 
-    flnam, haltnam, neigkl, regenschreiber, 
+he8_insert_flaechen: "
+INSERT INTO flaechen (
+    flnam, haltnam, neigkl, regenschreiber,
     abflussparameter, aufteilen, kommentar, createdat, geom
-) 
+)
 SELECT
-    fl.Name AS flnam, 
-    fl.Haltung AS haltnam, 
-    fl.Neigungsklasse AS neigkl, 
-    fl.Regenschreiber AS regenschreiber, 
+    fl.Name AS flnam,
+    fl.Haltung AS haltnam,
+    fl.Neigungsklasse AS neigkl,
+    fl.Regenschreiber AS regenschreiber,
     fl.Parametersatz AS abflussparameter,
-    false AS aufteilen, 
-    fl.Kommentar AS kommentar, 
-    fl.Lastmodified AS createdat, 
+    false AS aufteilen,
+    fl.Kommentar AS kommentar,
+    fl.Lastmodified AS createdat,
     SetSRID(fl.Geometry, :epsg) AS geom
 FROM he.Flaeche AS fl"
 
 he8_insert_linkfl: "
 INSERT INTO linkfl (
-    flnam, 
-    haltnam, 
+    flnam,
+    haltnam,
     abflusstyp,
     speicherzahl,
     speicherkonst,
@@ -433,12 +433,12 @@ SELECT
     fl.AnzahlSpeicher           AS speicherzahl,
     fl.Speicherkonstante        AS speicherkonst,
     fl.LaengsteFliesszeitKanal  AS fliesszeitkanal,
-    CASE fl.BerechnungSpeicherkonstante 
+    CASE fl.BerechnungSpeicherkonstante
         WHEN 1 THEN fl.FliesszeitOberflaeche
         WHEN 2 THEN fl.Schwerpunktlaufzeit
-        ELSE 0. END             AS fliesszeitflaeche,  
+        ELSE 0. END             AS fliesszeitflaeche,
     SetSRID(MakeLine(
-        PointOnSurface(Buffer(fl.Geometry, -1.1*(:fangradius))), 
+        PointOnSurface(Buffer(fl.Geometry, -1.1*(:fangradius))),
         Centroid(ro.Geometry)
         ),  :epsg)              AS link
     FROM he.Rohr AS ro
@@ -450,22 +450,22 @@ SELECT
 
 he8_insert_abflussparameter_all: "
 INSERT INTO abflussparameter (
-    apnam, anfangsabflussbeiwert, endabflussbeiwert, 
-    benetzungsverlust, muldenverlust, 
-    benetzung_startwert, mulden_startwert, 
-    bodenklasse, kommentar, createdat 
+    apnam, anfangsabflussbeiwert, endabflussbeiwert,
+    benetzungsverlust, muldenverlust,
+    benetzung_startwert, mulden_startwert,
+    bodenklasse, kommentar, createdat
 )
-SELECT 
-    ap_he.name AS apnam, 
+SELECT
+    ap_he.name AS apnam,
     ap_he.AbflussbeiwertAnfang AS anfangsabflussbeiwert,
     ap_he.AbflussbeiwertEnde AS endabflussbeiwert,
-    ap_he.Benetzungsverlust AS benetzungsverlust, 
+    ap_he.Benetzungsverlust AS benetzungsverlust,
     ap_he.Muldenverlust AS muldenverlust,
-    ap_he.BenetzungSpeicherStart AS benetzung_startwert, 
-    ap_he.MuldenauffuellgradStart AS mulden_startwert, 
+    ap_he.BenetzungSpeicherStart AS benetzung_startwert,
+    ap_he.MuldenauffuellgradStart AS mulden_startwert,
     ap_he.Bodenklasse AS bodenklasse,
-    ap_he.Kommentar AS kommentar, 
-    ap_he.Lastmodified AS createdat 
+    ap_he.Kommentar AS kommentar,
+    ap_he.Lastmodified AS createdat
 FROM he.AbflussParameter AS ap_he
 LEFT JOIN   abflussparameter as ap_qk   ON ap_he.Name = ap_qk.apnam
 WHERE ap_qk.pk IS NULL
@@ -473,22 +473,22 @@ GROUP BY ap_he.Name"
 
 he8_insert_abflussparameter_filtered: "
 INSERT INTO abflussparameter (
-    apnam, anfangsabflussbeiwert, endabflussbeiwert, 
-    benetzungsverlust, muldenverlust, 
-    benetzung_startwert, mulden_startwert, 
-    bodenklasse, kommentar, createdat 
+    apnam, anfangsabflussbeiwert, endabflussbeiwert,
+    benetzungsverlust, muldenverlust,
+    benetzung_startwert, mulden_startwert,
+    bodenklasse, kommentar, createdat
 )
-SELECT 
-    ap_he.name AS apnam, 
+SELECT
+    ap_he.name AS apnam,
     ap_he.AbflussbeiwertAnfang AS anfangsabflussbeiwert,
     ap_he.AbflussbeiwertEnde AS endabflussbeiwert,
-    ap_he.Benetzungsverlust AS benetzungsverlust, 
+    ap_he.Benetzungsverlust AS benetzungsverlust,
     ap_he.Muldenverlust AS muldenverlust,
-    ap_he.BenetzungSpeicherStart AS benetzung_startwert, 
-    ap_he.MuldenauffuellgradStart AS mulden_startwert, 
+    ap_he.BenetzungSpeicherStart AS benetzung_startwert,
+    ap_he.MuldenauffuellgradStart AS mulden_startwert,
     ap_he.Bodenklasse AS bodenklasse,
-    ap_he.Kommentar AS kommentar, 
-    ap_he.Lastmodified AS createdat 
+    ap_he.Kommentar AS kommentar,
+    ap_he.Lastmodified AS createdat
 FROM he.AbflussParameter AS ap_he
 LEFT JOIN   abflussparameter as ap_qk   ON ap_he.Name = ap_qk.apnam
 INNER JOIN  he.Flaeche AS fl_he         ON fl_he.Parametersatz = ap_he.Name
@@ -497,20 +497,20 @@ GROUP BY ap_he.Name"
 
 he8_insert_bodenklasse_all: "
 INSERT INTO bodenklassen (
-    bknam, infiltrationsrateanfang, infiltrationsrateende, 
-    infiltrationsratestart, rueckgangskonstante, 
-    regenerationskonstante, saettigungswassergehalt, 
+    bknam, infiltrationsrateanfang, infiltrationsrateende,
+    infiltrationsratestart, rueckgangskonstante,
+    regenerationskonstante, saettigungswassergehalt,
     kommentar, createdat
 )
 SELECT
-    bk_he.Name AS bknam, 
-    bk_he.InfiltrationsrateAnfang AS infiltrationsrateanfang, 
-    bk_he.InfiltrationsrateEnde AS infiltrationsrateende, 
-    bk_he.InfiltrationsrateStart AS infiltrationsratestart, 
-    bk_he.Rueckgangskonstante AS rueckgangskonstante, 
-    bk_he.Regenerationskonstante AS regenerationskonstante, 
-    bk_he.Saettigungswassergehalt AS saettigungswassergehalt, 
-    bk_he.Kommentar AS kommentar, 
+    bk_he.Name AS bknam,
+    bk_he.InfiltrationsrateAnfang AS infiltrationsrateanfang,
+    bk_he.InfiltrationsrateEnde AS infiltrationsrateende,
+    bk_he.InfiltrationsrateStart AS infiltrationsratestart,
+    bk_he.Rueckgangskonstante AS rueckgangskonstante,
+    bk_he.Regenerationskonstante AS regenerationskonstante,
+    bk_he.Saettigungswassergehalt AS saettigungswassergehalt,
+    bk_he.Kommentar AS kommentar,
     bk_he.LastModified AS createdat
 FROM he.Bodenklasse AS bk_he
 LEFT JOIN bodenklassen AS bk_qk         ON bk_he.Name = bk_qk.bknam
@@ -519,20 +519,20 @@ GROUP BY bk_he.Name"
 
 he8_insert_bodenklasse_filtered: "
 INSERT INTO bodenklassen (
-    bknam, infiltrationsrateanfang, infiltrationsrateende, 
-    infiltrationsratestart, rueckgangskonstante, 
-    regenerationskonstante, saettigungswassergehalt, 
+    bknam, infiltrationsrateanfang, infiltrationsrateende,
+    infiltrationsratestart, rueckgangskonstante,
+    regenerationskonstante, saettigungswassergehalt,
     kommentar, createdat
 )
 SELECT
-    bk_he.Name AS bknam, 
-    bk_he.InfiltrationsrateAnfang AS infiltrationsrateanfang, 
-    bk_he.InfiltrationsrateEnde AS infiltrationsrateende, 
-    bk_he.InfiltrationsrateStart AS infiltrationsratestart, 
-    bk_he.Rueckgangskonstante AS rueckgangskonstante, 
-    bk_he.Regenerationskonstante AS regenerationskonstante, 
-    bk_he.Saettigungswassergehalt AS saettigungswassergehalt, 
-    bk_he.Kommentar AS kommentar, 
+    bk_he.Name AS bknam,
+    bk_he.InfiltrationsrateAnfang AS infiltrationsrateanfang,
+    bk_he.InfiltrationsrateEnde AS infiltrationsrateende,
+    bk_he.InfiltrationsrateStart AS infiltrationsratestart,
+    bk_he.Rueckgangskonstante AS rueckgangskonstante,
+    bk_he.Regenerationskonstante AS regenerationskonstante,
+    bk_he.Saettigungswassergehalt AS saettigungswassergehalt,
+    bk_he.Kommentar AS kommentar,
     bk_he.LastModified AS createdat
 FROM he.Bodenklasse AS bk_he
 LEFT JOIN bodenklassen AS bk_qk         ON bk_he.Name = bk_qk.bknam
@@ -542,7 +542,7 @@ GROUP BY bk_he.Name"
 
 he8_insert_profiles_all: "
 INSERT INTO profile (
-    profilnam, 
+    profilnam,
     he_nr)
 SELECT
     pr_he.Name,
@@ -555,7 +555,7 @@ GROUP BY pr_he.Name"
 
 he8_insert_profiles_filtered: "
 INSERT INTO profile (
-    profilnam, 
+    profilnam,
     he_nr)
 SELECT
     pr_he.Name,
@@ -574,30 +574,30 @@ GROUP BY pr_he.Name"
 
 he8_insert_aussengebiete: "
 INSERT INTO aussengebiete (
-    gebnam, schnam, 
-    hoeheob, hoeheun, 
-    fliessweg, basisabfluss, 
+    gebnam, schnam,
+    hoeheob, hoeheun,
+    fliessweg, basisabfluss,
     cn, regenschreiber,
-    kommentar, createdat, 
-    geom 
+    kommentar, createdat,
+    geom
 )
 SELECT
-    ag_he.Name AS gebnam, 
-    ag_he.Schacht AS schnam, 
-    ag_he.HoeheOben AS hoeheob, 
-    ag_he.HoeheUnten AS hoeheun, 
-    ag_he.FliessLaenge AS fliessweg, 
-    ag_he.BasisZufluss AS basisabfluss, 
-    ag_he.CNMittelwert AS cn, 
-    ag_he.Regenschreiber AS regenschreiber, 
-    ag_he.Kommentar AS kommentar, 
+    ag_he.Name AS gebnam,
+    ag_he.Schacht AS schnam,
+    ag_he.HoeheOben AS hoeheob,
+    ag_he.HoeheUnten AS hoeheun,
+    ag_he.FliessLaenge AS fliessweg,
+    ag_he.BasisZufluss AS basisabfluss,
+    ag_he.CNMittelwert AS cn,
+    ag_he.Regenschreiber AS regenschreiber,
+    ag_he.Kommentar AS kommentar,
     ag_he.LastModified AS createdat,
     CastToMultiPolygon(
         MakePolygon(
             MakeCircle(
                 x(ag_he.Geometry),
                 y(ag_he.Geometry),
-                sqrt(ag_he.Gesamtflaeche), 
+                sqrt(ag_he.Gesamtflaeche),
                 :epsg
     )   )   ) AS geom
 FROM he.Aussengebiet AS ag_he
@@ -607,8 +607,8 @@ WHERE ag_qk.pk IS NULL"
 
 he8_insert_direkteinleiter: "
 INSERT INTO einleit (
-    elnam, haltnam, 
-    zufluss, ew, 
+    elnam, haltnam,
+    zufluss, ew,
     einzugsgebiet,
     kommentar, createdat,
     geom
@@ -632,8 +632,8 @@ he8_insert_einzugsgebiete: "
 INSERT INTO einzugsgebiete (
     tgnam, ewdichte, wverbrauch, stdmittel,
     fremdwas, kommentar, createdat
-) 
-SELECT 
+)
+SELECT
     eg_he.Name AS tgnam,
     eg_he.Einwohnerdichte AS ewdichte,
     eg_he.Wasserverbrauch AS wverbrauch,
@@ -654,11 +654,11 @@ INSERT INTO tezg (
     geom
 )
 SELECT
-    eg_he.Name AS flnam, 
-    eg_he.Haltung AS haltnam, 
+    eg_he.Name AS flnam,
+    eg_he.Haltung AS haltnam,
     'unbefestigt' AS abflussparameter,
-    eg_he.Kommentar AS kommentar, 
-    eg_he.LastModified AS createdat, 
+    eg_he.Kommentar AS kommentar,
+    eg_he.LastModified AS createdat,
     SetSRID(eg_he.Geometry, :epsg) AS geom
 FROM he.GipsEinzugsflaeche AS eg_he
 LEFT JOIN tezg AS eg_qk
@@ -670,16 +670,16 @@ WHERE (
 
 he8_insert_haltungsflaechen_teilfl: "
 INSERT INTO einleit (
-    elnam, haltnam, 
-    zufluss, ew, 
+    elnam, haltnam,
+    zufluss, ew,
     einzugsgebiet,
     kommentar, createdat,
     geom
 )
 SELECT
-    eg_he.Name                              AS elnam, 
-    eg_he.Haltung                           AS haltnam, 
-    area(eg_he.Geometry)/10000. 
+    eg_he.Name                              AS elnam,
+    eg_he.Haltung                           AS haltnam,
+    area(eg_he.Geometry)/10000.
         * coalesce(te_he.Einwohnerdichte, 100)
         * coalesce(te_he.Wasserverbrauch, 130)
         * ( 24. / coalesce(te_he.Stundenmittel, 12)
@@ -688,8 +688,8 @@ SELECT
     area(eg_he.Geometry)/10000. * te_he.Einwohnerdichte
                                             AS ew,
     eg_he.Name                              AS einzugsgebiet,
-    eg_he.Kommentar                         AS kommentar, 
-    eg_he.LastModified                      AS createdat, 
+    eg_he.Kommentar                         AS kommentar,
+    eg_he.LastModified                      AS createdat,
     SetSRID(eg_he.Geometry, :epsg)    AS geom
 FROM he.GipsEinzugsflaeche      AS eg_he
 LEFT JOIN he.Teileinzugsgebiet  AS te_he
@@ -702,9 +702,9 @@ he8_count_sel_haltungen: "
 SELECT count() AS anz
 FROM haltungen AS ha
 JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
-JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
@@ -715,9 +715,9 @@ WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
 he8_count_haltungen_all: "
 SELECT count() AS anz
 FROM haltungen AS ha
-JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
 WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
@@ -756,7 +756,7 @@ UPDATE he.Itwh$ProgInfo SET NextId = ?"
 
 he8_update_schaechte_all: "
 UPDATE he.Schacht SET (
-    Deckelhoehe, 
+    Deckelhoehe,
     Sohlhoehe,
     Gelaendehoehe,
     Art,
@@ -764,10 +764,10 @@ UPDATE he.Schacht SET (
     Durchmesser, Geometry
 ) =
 (
-    qk.deckelhoehe, 
+    qk.deckelhoehe,
     qk.sohlhoehe,
     qk.gelaendehoehe,
-    qk.art, 
+    qk.art,
     qk.planungsstatus,
     qk.lastmodified,
     qk.durchmesser,
@@ -778,11 +778,11 @@ FROM (
         schaechte.schnam AS schnam,
         schaechte.deckelhoehe AS deckelhoehe,
         schaechte.sohlhoehe AS sohlhoehe,
-        coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe, 
-        1 AS art, 
-        st.he_nr AS planungsstatus, 
+        coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
+        1 AS art,
+        st.he_nr AS planungsstatus,
         coalesce(schaechte.createdat, datetime('now'))
-                                AS lastmodified, 
+                                AS lastmodified,
         schaechte.durchm*1000. AS durchmesser,
         SetSRID(schaechte.geop, -1) AS geometry
     FROM schaechte
@@ -795,17 +795,17 @@ WHERE he.Schacht.Name = qk.schnam"
 
 he8_update_sel_schaechte: "
 UPDATE he.Schacht SET (
-    Deckelhoehe, 
+    Deckelhoehe,
     Sohlhoehe,
     Gelaendehoehe,
     Art,
     Planungsstatus, LastModified,
     Durchmesser, Geometry) =
 (
-    qk.deckelhoehe, 
+    qk.deckelhoehe,
     qk.sohlhoehe,
     qk.gelaendehoehe,
-    qk.art, 
+    qk.art,
     qk.planungsstatus,
     qk.lastmodified,
     qk.durchmesser,
@@ -816,11 +816,11 @@ FROM (
         schaechte.schnam AS schnam,
         schaechte.deckelhoehe AS deckelhoehe,
         schaechte.sohlhoehe AS sohlhoehe,
-        coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe, 
-        1 AS art, 
-        coalesce(st.he_nr, 1) AS planungsstatus, 
+        coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
+        1 AS art,
+        coalesce(st.he_nr, 1) AS planungsstatus,
         coalesce(schaechte.createdat, datetime('now'))
-                                AS lastmodified, 
+                                AS lastmodified,
         schaechte.durchm*1000. AS durchmesser,
         SetSRID(schaechte.geop, -1) AS geometry
     FROM schaechte
@@ -834,18 +834,18 @@ WHERE he.Schacht.Name = qk.schnam"
 he8_append_schaechte_all: "
 INSERT INTO he.Schacht (
     Id,
-    Name, Deckelhoehe, Sohlhoehe, 
+    Name, Deckelhoehe, Sohlhoehe,
     Gelaendehoehe, Art,
     Planungsstatus, LastModified, Durchmesser, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id, 
-    schaechte.schnam AS name, 
-    coalesce(schaechte.deckelhoehe, 0.0) AS deckelhoehe, 
+    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id,
+    schaechte.schnam AS name,
+    coalesce(schaechte.deckelhoehe, 0.0) AS deckelhoehe,
     coalesce(schaechte.sohlhoehe, 0.0) AS sohlhoehe,
-    coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe, 
-    1 AS art, 
-    coalesce(st.he_nr, 1) AS planungsstatus, 
-    coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+    coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
+    1 AS art,
+    coalesce(st.he_nr, 1) AS planungsstatus,
+    coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
     coalesce(schaechte.durchm, 0.0)*1000. AS durchmesser,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
@@ -857,18 +857,18 @@ WHERE sh.Name IS NULL
 he8_append_sel_schaechte: "
 INSERT INTO he.Schacht (
     Id,
-    Name, Deckelhoehe, Sohlhoehe, 
+    Name, Deckelhoehe, Sohlhoehe,
     Gelaendehoehe, Art,
     Planungsstatus, LastModified, Durchmesser, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id, 
-    schaechte.schnam AS name, 
-    coalesce(schaechte.deckelhoehe, 0.0) AS deckelhoehe, 
+    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id,
+    schaechte.schnam AS name,
+    coalesce(schaechte.deckelhoehe, 0.0) AS deckelhoehe,
     coalesce(schaechte.sohlhoehe, 0.0) AS sohlhoehe,
-    coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe, 
-    1 AS art, 
-    coalesce(st.he_nr, 1) AS planungsstatus, 
-    coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+    coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
+    1 AS art,
+    coalesce(st.he_nr, 1) AS planungsstatus,
+    coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
     coalesce(schaechte.durchm, 0.0)*1000. AS durchmesser,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
@@ -881,7 +881,7 @@ WHERE sh.Name IS NULL
 he8_update_speicher_all: "
 UPDATE he.Speicherschacht
 SET (
-    Sohlhoehe, Gelaendehoehe, 
+    Sohlhoehe, Gelaendehoehe,
     Scheitelhoehe,
     Planungsstatus,
     LastModified, Kommentar, Geometry
@@ -898,11 +898,11 @@ SET (
 FROM (
     SELECT
         schaechte.schnam AS schnam,
-        schaechte.sohlhoehe AS sohlhoehe, 
+        schaechte.sohlhoehe AS sohlhoehe,
         coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
         schaechte.deckelhoehe AS scheitelhoehe,
-        coalesce(st.he_nr, 1) AS planungsstatus, 
-        coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+        coalesce(st.he_nr, 1) AS planungsstatus,
+        coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS geometry
     FROM schaechte
@@ -916,7 +916,7 @@ WHERE he.Speicherschacht.Name = qk.schnam"
 he8_update_speicher_sel: "
 UPDATE he.Speicherschacht
 SET (
-    Sohlhoehe, Gelaendehoehe, 
+    Sohlhoehe, Gelaendehoehe,
     Scheitelhoehe,
     Planungsstatus,
     LastModified, Kommentar, Geometry
@@ -933,11 +933,11 @@ SET (
 FROM (
     SELECT
         schaechte.schnam AS schnam,
-        schaechte.sohlhoehe AS sohlhoehe, 
+        schaechte.sohlhoehe AS sohlhoehe,
         coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
         schaechte.deckelhoehe AS scheitelhoehe,
-        coalesce(st.he_nr, 1) AS planungsstatus, 
-        coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+        coalesce(st.he_nr, 1) AS planungsstatus,
+        coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS geometry
     FROM schaechte
@@ -956,23 +956,23 @@ INSERT INTO he.Speicherschacht (
     Planungsstatus,
     LastModified, Kommentar, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id, 
-    schaechte.schnam AS name, 
-    1 AS typ, 
-    schaechte.sohlhoehe AS sohlhoehe, 
+    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id,
+    schaechte.schnam AS name,
+    1 AS typ,
+    schaechte.sohlhoehe AS sohlhoehe,
     coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
-    1 AS art, 
-    2 AS anzahlkanten, 
+    1 AS art,
+    2 AS anzahlkanten,
     schaechte.deckelhoehe AS scheitelhoehe,
     schaechte.deckelhoehe AS hoehevollfuellung,
-    st.he_nr AS planungsstatus, 
-    coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+    st.he_nr AS planungsstatus,
+    coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
 JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
 JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
-WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Speicherschacht) and 
+WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Speicherschacht) and
       schaechte.schachttyp = 'Speicher'
   AND st.he_nr IS NOT NULL"
 
@@ -984,36 +984,36 @@ INSERT INTO he.Speicherschacht (
     Planungsstatus,
     LastModified, Kommentar, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id, 
-    schaechte.schnam AS name, 
-    1 AS typ, 
-    schaechte.sohlhoehe AS sohlhoehe, 
+    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS Id,
+    schaechte.schnam AS name,
+    1 AS typ,
+    schaechte.sohlhoehe AS sohlhoehe,
     coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
-    1 AS art, 
-    2 AS anzahlkanten, 
+    1 AS art,
+    2 AS anzahlkanten,
     schaechte.deckelhoehe AS scheitelhoehe,
     schaechte.deckelhoehe AS hoehevollfuellung,
-    st.he_nr AS planungsstatus, 
-    coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+    st.he_nr AS planungsstatus,
+    coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS geometry
 FROM schaechte
 JOIN simulationsstatus AS st
 ON schaechte.simstatus = st.bezeichnung
-WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Speicherschacht) and 
+WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Speicherschacht) and
       schaechte.schachttyp = 'Speicher'
   AND st.he_nr IS NOT NULL"
 
 he8_update_auslaesse_all: "
 UPDATE he.Auslass
 SET (
-    Sohlhoehe, Gelaendehoehe, 
+    Sohlhoehe, Gelaendehoehe,
     Scheitelhoehe,
     Planungsstatus,
     LastModified, Kommentar, Geometry
-) = 
+) =
 (
-    qk.Sohlhoehe, qk.Gelaendehoehe, 
+    qk.Sohlhoehe, qk.Gelaendehoehe,
     qk.Scheitelhoehe,
     qk.Planungsstatus,
     qk.LastModified, qk.Kommentar, qk.Geometry
@@ -1021,11 +1021,11 @@ SET (
 FROM (
     SELECT
         schaechte.schnam AS schnam,
-        schaechte.sohlhoehe AS sohlhoehe, 
+        schaechte.sohlhoehe AS sohlhoehe,
         coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
         schaechte.deckelhoehe AS scheitelhoehe,
-        st.he_nr AS planungsstatus, 
-        coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+        st.he_nr AS planungsstatus,
+        coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS Geometry
     FROM schaechte
@@ -1038,13 +1038,13 @@ WHERE he.Auslass.Name = qk.schnam"
 he8_update_auslaesse_sel: "
 UPDATE he.Auslass
 SET (
-    Sohlhoehe, Gelaendehoehe, 
+    Sohlhoehe, Gelaendehoehe,
     Scheitelhoehe,
     Planungsstatus,
     LastModified, Kommentar, Geometry
-) = 
+) =
 (
-    qk.Sohlhoehe, qk.Gelaendehoehe, 
+    qk.Sohlhoehe, qk.Gelaendehoehe,
     qk.Scheitelhoehe,
     qk.Planungsstatus,
     qk.LastModified, qk.Kommentar, qk.Geometry
@@ -1052,11 +1052,11 @@ SET (
 FROM (
     SELECT
         schaechte.schnam AS schnam,
-        schaechte.sohlhoehe AS sohlhoehe, 
+        schaechte.sohlhoehe AS sohlhoehe,
         coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
         schaechte.deckelhoehe AS scheitelhoehe,
-        st.he_nr AS planungsstatus, 
-        coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+        st.he_nr AS planungsstatus,
+        coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
         schaechte.kommentar AS kommentar,
         SetSrid(schaechte.geop, -1) AS Geometry
     FROM schaechte
@@ -1071,26 +1071,26 @@ he8_append_auslaesse_all: "
 INSERT INTO he.Auslass (
     Id, Name, Typ, Sohlhoehe,
     Gelaendehoehe, Art, AnzahlKanten,
-    Scheitelhoehe, 
+    Scheitelhoehe,
     Planungsstatus,
     LastModified, Kommentar, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS id, 
-    schaechte.schnam AS name, 
-    1 AS typ, 
-    schaechte.sohlhoehe AS sohlhoehe, 
+    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS id,
+    schaechte.schnam AS name,
+    1 AS typ,
+    schaechte.sohlhoehe AS sohlhoehe,
     coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
-    1 AS art, 
-    2 AS anzahlkanten, 
+    1 AS art,
+    2 AS anzahlkanten,
     schaechte.deckelhoehe AS scheitelhoehe,
-    st.he_nr AS planungsstatus, 
-    coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+    st.he_nr AS planungsstatus,
+    coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS Geometry
 FROM schaechte
 JOIN simulationsstatus AS st
 ON schaechte.simstatus = st.bezeichnung
-WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Auslass) and 
+WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Auslass) and
       schaechte.schachttyp = 'Auslass'
   AND st.he_nr IS NOT NULL"
 
@@ -1098,26 +1098,26 @@ he8_append_auslaesse_sel: "
 INSERT INTO he.Auslass (
     Id, Name, Typ, Sohlhoehe,
     Gelaendehoehe, Art, AnzahlKanten,
-    Scheitelhoehe, 
+    Scheitelhoehe,
     Planungsstatus,
     LastModified, Kommentar, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS id, 
-    schaechte.schnam AS name, 
-    1 AS typ, 
-    schaechte.sohlhoehe AS sohlhoehe, 
+    :nr0 + row_number() OVER (ORDER BY schaechte.schnam) AS id,
+    schaechte.schnam AS name,
+    1 AS typ,
+    schaechte.sohlhoehe AS sohlhoehe,
     coalesce(schaechte.deckelhoehe, 0.0) AS gelaendehoehe,
-    1 AS art, 
-    2 AS anzahlkanten, 
+    1 AS art,
+    2 AS anzahlkanten,
     schaechte.deckelhoehe AS scheitelhoehe,
-    st.he_nr AS planungsstatus, 
-    coalesce(schaechte.createdat, datetime('now')) AS lastmodified, 
+    st.he_nr AS planungsstatus,
+    coalesce(schaechte.createdat, datetime('now')) AS lastmodified,
     schaechte.kommentar AS kommentar,
     SetSrid(schaechte.geop, -1) AS Geometry
 FROM schaechte
 JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
 JOIN simulationsstatus AS st ON schaechte.simstatus = st.bezeichnung
-WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Auslass) and 
+WHERE schaechte.schnam NOT IN (SELECT Name FROM he.Auslass) and
       schaechte.schachttyp = 'Auslass'
   AND st.he_nr IS NOT NULL"
 
@@ -1125,38 +1125,38 @@ he8_update_haltungen_all: "
 UPDATE he.Rohr
 SET (
     SchachtOben, SchachtUnten,
-    Laenge, 
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
+    SohlhoeheUnten,
     Profiltyp, Sonderprofilbezeichnung,
-    Geometrie1, Geometrie2, 
+    Geometrie1, Geometrie2,
     Kanalart,
     Rauigkeitsbeiwert, Anzahl,
     RauhigkeitAnzeige,
     Kommentar,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 ) =
 (
     qk.SchachtOben, qk.SchachtUnten,
-    qk.Laenge, 
+    qk.Laenge,
     qk.SohlhoeheOben,
-    qk.SohlhoeheUnten, 
+    qk.SohlhoeheUnten,
     qk.Profiltyp, qk.Sonderprofilbezeichnung,
-    qk.Geometrie1, qk.Geometrie2, 
+    qk.Geometrie1, qk.Geometrie2,
     qk.Kanalart,
     qk.Rauigkeitsbeiwert, qk.Anzahl,
     qk.RauhigkeitAnzeige,
     qk.Kommentar,
-    qk.LastModified, 
-    qk.Materialart, 
-    qk.Einzugsgebiet, 
-    qk.KonstanterZuflussTezg, 
-    qk.BefestigteFlaeche, 
+    qk.LastModified,
+    qk.Materialart,
+    qk.Einzugsgebiet,
+    qk.KonstanterZuflussTezg,
+    qk.BefestigteFlaeche,
     qk.UnbefestigteFlaeche, qk.Geometry
 )
 FROM (
@@ -1166,29 +1166,29 @@ FROM (
         coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
         coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-        coalesce(pf.he_nr, 68) AS Profiltyp, 
+        coalesce(pf.he_nr, 68) AS Profiltyp,
         CASE WHEN coalesce(pf.he_nr, 68) = 68 THEN ha.profilnam
         ELSE NULL
-        END                       AS Sonderprofilbezeichnung, 
-        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+        END                       AS Sonderprofilbezeichnung,
+        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1,
         coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
         ea.he_nr AS Kanalart,
-        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
+        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
         ha.kommentar AS Kommentar,
-        coalesce(ha.createdat, datetime('now')) AS LastModified, 
-        28 AS Materialart, 
-        0 AS Einzugsgebiet, 
-        0 AS KonstanterZuflussTezg, 
-        0 AS BefestigteFlaeche, 
+        coalesce(ha.createdat, datetime('now')) AS LastModified,
+        28 AS Materialart,
+        0 AS Einzugsgebiet,
+        0 AS KonstanterZuflussTezg,
+        0 AS BefestigteFlaeche,
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
     JOIN schaechte AS sob ON ha.schoben = sob.schnam
     JOIN schaechte AS sun ON ha.schunten = sun.schnam
-    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
     ON ha.profilnam = pf.profilnam
-    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
     ON ha.entwart = ea.bezeichnung
     JOIN simulationsstatus AS st ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
@@ -1202,38 +1202,38 @@ he8_update_sel_haltungen: "
 UPDATE he.Rohr
 SET (
     SchachtOben, SchachtUnten,
-    Laenge, 
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
+    SohlhoeheUnten,
     Profiltyp, Sonderprofilbezeichnung,
-    Geometrie1, Geometrie2, 
+    Geometrie1, Geometrie2,
     Kanalart,
     Rauigkeitsbeiwert, Anzahl,
     RauhigkeitAnzeige,
     Kommentar,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 ) =
 (
     qk.SchachtOben, qk.SchachtUnten,
-    qk.Laenge, 
+    qk.Laenge,
     qk.SohlhoeheOben,
-    qk.SohlhoeheUnten, 
+    qk.SohlhoeheUnten,
     qk.Profiltyp, qk.Sonderprofilbezeichnung,
-    qk.Geometrie1, qk.Geometrie2, 
+    qk.Geometrie1, qk.Geometrie2,
     qk.Kanalart,
     qk.Rauigkeitsbeiwert, qk.Anzahl,
     qk.RauhigkeitAnzeige,
     qk.Kommentar,
-    qk.LastModified, 
-    qk.Materialart, 
-    qk.Einzugsgebiet, 
-    qk.KonstanterZuflussTezg, 
-    qk.BefestigteFlaeche, 
+    qk.LastModified,
+    qk.Materialart,
+    qk.Einzugsgebiet,
+    qk.KonstanterZuflussTezg,
+    qk.BefestigteFlaeche,
     qk.UnbefestigteFlaeche, qk.Geometry
 )
 FROM (
@@ -1243,30 +1243,30 @@ FROM (
         coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
         coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
-        coalesce(pf.he_nr, 68) AS Profiltyp, 
+        coalesce(pf.he_nr, 68) AS Profiltyp,
         CASE WHEN coalesce(pf.he_nr, 68) = 68 THEN ha.profilnam
         ELSE NULL
-        END                       AS Sonderprofilbezeichnung, 
-        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+        END                       AS Sonderprofilbezeichnung,
+        coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1,
         coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
         ea.he_nr AS Kanalart,
-        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
+        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
         ha.kommentar AS Kommentar,
-        coalesce(ha.createdat, datetime('now')) AS LastModified, 
-        28 AS Materialart, 
-        0 AS Einzugsgebiet, 
-        0 AS KonstanterZuflussTezg, 
-        0 AS BefestigteFlaeche, 
+        coalesce(ha.createdat, datetime('now')) AS LastModified,
+        28 AS Materialart,
+        0 AS Einzugsgebiet,
+        0 AS KonstanterZuflussTezg,
+        0 AS BefestigteFlaeche,
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
     JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
     JOIN schaechte AS sob               ON ha.schoben = sob.schnam
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
-    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf 
+    JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                         ON ha.entwart = ea.bezeichnung
     JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp IS NULL or ha.haltungstyp = 'Haltung'
@@ -1278,26 +1278,26 @@ WHERE he.Rohr.Name = qk.haltnam"
 
 he8_append_haltungen_all: "
 INSERT INTO he.Rohr (
-    Id, 
-    Name, SchachtOben, SchachtUnten, 
-    Laenge, 
+    Id,
+    Name, SchachtOben, SchachtUnten,
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Profiltyp, Sonderprofilbezeichnung, 
-    Geometrie1, Geometrie2, 
-    Kanalart, 
-    Rauigkeitsbeiwert, Anzahl, 
-    Rauigkeitsansatz, 
+    SohlhoeheUnten,
+    Profiltyp, Sonderprofilbezeichnung,
+    Geometrie1, Geometrie2,
+    Kanalart,
+    Rauigkeitsbeiwert, Anzahl,
+    Rauigkeitsansatz,
     RauhigkeitAnzeige,
     Kommentar,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name, ha.schoben AS SchachtOben, ha.schunten AS SchachtUnten,
     coalesce(ha.laenge, glength(ha.geom),0) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe,0) AS SohlhoeheOben,
@@ -1306,15 +1306,15 @@ SELECT
     CASE WHEN coalesce(pf.he_nr, 68) = 68 THEN ha.profilnam
     ELSE NULL
     END
-    AS Sonderprofilbezeichnung, 
-    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+    AS Sonderprofilbezeichnung,
+    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1,
     coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
     ea.he_nr AS Kanalart,
-    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
-    1 AS Rauigkeitsansatz, 
+    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
+    1 AS Rauigkeitsansatz,
     coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
     ha.kommentar AS Kommentar,
-    coalesce(ha.createdat, datetime('now')) AS LastModified, 
+    coalesce(ha.createdat, datetime('now')) AS LastModified,
     28 AS Materialart,
     0 AS Einzugsgebiet,
     0 AS KonstanterZuflussTezg,
@@ -1326,10 +1326,10 @@ JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
-WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr) 
+WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr)
   AND (ha.haltungstyp IS NULL OR ha.haltungstyp = 'Haltung')
   AND st.he_nr IS NOT NULL
   AND pf.he_nr IS NOT NULL
@@ -1337,26 +1337,26 @@ WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr)
 
 he8_append_sel_haltungen: "
 INSERT INTO he.Rohr (
-    Id, 
-    Name, SchachtOben, SchachtUnten, 
-    Laenge, 
+    Id,
+    Name, SchachtOben, SchachtUnten,
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Profiltyp, Sonderprofilbezeichnung, 
-    Geometrie1, Geometrie2, 
-    Kanalart, 
-    Rauigkeitsbeiwert, Anzahl, 
-    Rauigkeitsansatz, 
+    SohlhoeheUnten,
+    Profiltyp, Sonderprofilbezeichnung,
+    Geometrie1, Geometrie2,
+    Kanalart,
+    Rauigkeitsbeiwert, Anzahl,
+    Rauigkeitsansatz,
     RauhigkeitAnzeige,
     Kommentar,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name, ha.schoben AS SchachtOben, ha.schunten AS SchachtUnten,
     coalesce(ha.laenge, glength(ha.geom),0) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe,0) AS SohlhoeheOben,
@@ -1365,15 +1365,15 @@ SELECT
     CASE WHEN coalesce(pf.he_nr, 68) = 68 THEN ha.profilnam
     ELSE NULL
     END
-    AS Sonderprofilbezeichnung, 
-    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1, 
+    AS Sonderprofilbezeichnung,
+    coalesce(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe), 0) AS Geometrie1,
     coalesce(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),0) AS Geometrie2,
     ea.he_nr AS Kanalart,
-    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
-    1 AS Rauigkeitsansatz, 
+    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
+    1 AS Rauigkeitsansatz,
     coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
     ha.kommentar AS Kommentar,
-    coalesce(ha.createdat, datetime('now')) AS LastModified, 
+    coalesce(ha.createdat, datetime('now')) AS LastModified,
     28 AS Materialart,
     0 AS Einzugsgebiet,
     0 AS KonstanterZuflussTezg,
@@ -1386,10 +1386,10 @@ JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
-WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr) 
+WHERE ha.haltnam NOT IN (SELECT Name FROM he.Rohr)
   AND (ha.haltungstyp IS NULL OR ha.haltungstyp = 'Haltung')
   AND st.he_nr IS NOT NULL
   AND pf.he_nr IS NOT NULL
@@ -1403,7 +1403,7 @@ DELETE FROM flupdate"
 
 he8_flupdate_mitversch_all: "
 INSERT INTO flupdate (flnam)
-SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam 
+SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam
 FROM linkfl AS lf
 INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
 INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
@@ -1414,7 +1414,7 @@ LEFT JOIN tezg AS tg                ON lf.tezgnam = tg.flnam"
 
 he8_flupdate_mitversch_sel: "
 INSERT INTO flupdate (flnam)
-SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam 
+SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam
 FROM linkfl AS lf
 INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
 INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
@@ -1426,7 +1426,7 @@ LEFT JOIN tezg AS tg                ON lf.tezgnam = tg.flnam"
 
 he8_flupdate_ohneversch_all: "
 INSERT INTO flupdate (flnam)
-SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam 
+SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam
 FROM linkfl AS lf
 INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
 INNER JOIN haltungen AS ha          ON lf.haltnam = ha.haltnam
@@ -1436,7 +1436,7 @@ LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung"
 
 he8_flupdate_ohneversch_sel: "
 INSERT INTO flupdate (flnam)
-SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam 
+SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam
 FROM linkfl AS lf
 INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
 INNER JOIN sel_flaechen AS selfl    ON selfl.pk = fl.pk
@@ -1447,21 +1447,21 @@ LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung"
 
 he8_update_flaechen_mitversch_all: "
 WITH flintersect AS (
-    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN area(fl.geom)/10000. 
-        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000. 
-        END AS flaeche, 
+        CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN area(fl.geom)/10000.
+        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000.
+        END AS flaeche,
         fl.regenschreiber AS regenschreiber,
-        coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN fl.geom
-        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)) 
+        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3))
         END AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
@@ -1472,42 +1472,42 @@ WITH flintersect AS (
     LEFT JOIN tezg AS tg                ON lf.tezgnam = tg.flnam)
 UPDATE he.Flaeche
 SET (
-    Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, 
+    Parametersatz, Neigungsklasse,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry
-) = 
+) =
 (
-    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp, 
+    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp,
     qk.BerechnungSpeicherkonstante, qk.Typ, qk.AnzahlSpeicher,
-    qk.Speicherkonstante, 
+    qk.Speicherkonstante,
     qk.Schwerpunktlaufzeit,
     qk.FliesszeitOberflaeche, qk.LaengsteFliesszeitKanal,
-    qk.Parametersatz, qk.Neigungsklasse, 
+    qk.Parametersatz, qk.Neigungsklasse,
     qk.LastModified,
-    qk.Kommentar, 
+    qk.Kommentar,
     qk.Geometry
 )
 FROM
-(   SELECT 
-        flnam, 
-        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-        flaechentypnr AS Flaechentyp, 
-        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-        COALESCE(typbef,0) AS Typ, 
-        COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-        COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-        coalesce(createdat, datetime('now')) AS lastmodified, 
-        kommentar AS Kommentar, 
+(   SELECT
+        flnam,
+        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+        flaechentypnr AS Flaechentyp,
+        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+        COALESCE(typbef,0) AS Typ,
+        COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+        COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+        coalesce(createdat, datetime('now')) AS lastmodified,
+        kommentar AS Kommentar,
         SetSrid(geom, -1) AS Geometry
   FROM flintersect AS fi
   WHERE flaeche * 10000. > ? and flaeche IS NOT NULL
@@ -1516,21 +1516,21 @@ WHERE he.Flaeche.Name = qk.flnam"
 
 he8_update_flaechen_mitversch_sel: "
 WITH flintersect AS (
-    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN area(fl.geom)/10000. 
-        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000. 
-        END AS flaeche, 
+        CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN area(fl.geom)/10000.
+        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000.
+        END AS flaeche,
         fl.regenschreiber AS regenschreiber,
-        coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN fl.geom
-        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)) 
+        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3))
         END AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
@@ -1542,42 +1542,42 @@ WITH flintersect AS (
     LEFT JOIN tezg AS tg                ON lf.tezgnam = tg.flnam)
 UPDATE he.Flaeche
 SET (
-    Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, 
+    Parametersatz, Neigungsklasse,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry
-) = 
+) =
 (
-    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp, 
+    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp,
     qk.BerechnungSpeicherkonstante, qk.Typ, qk.AnzahlSpeicher,
-    qk.Speicherkonstante, 
+    qk.Speicherkonstante,
     qk.Schwerpunktlaufzeit,
     qk.FliesszeitOberflaeche, qk.LaengsteFliesszeitKanal,
-    qk.Parametersatz, qk.Neigungsklasse, 
+    qk.Parametersatz, qk.Neigungsklasse,
     qk.LastModified,
-    qk.Kommentar, 
+    qk.Kommentar,
     qk.Geometry
 )
 FROM
-(   SELECT 
-        flnam, 
-        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-        flaechentypnr AS Flaechentyp, 
-        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-        COALESCE(typbef,0) AS Typ, 
-        COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-        COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-        coalesce(createdat, datetime('now')) AS lastmodified, 
-        kommentar AS Kommentar, 
+(   SELECT
+        flnam,
+        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+        flaechentypnr AS Flaechentyp,
+        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+        COALESCE(typbef,0) AS Typ,
+        COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+        COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+        coalesce(createdat, datetime('now')) AS lastmodified,
+        kommentar AS Kommentar,
         SetSrid(geom, -1) AS Geometry
   FROM flintersect AS fi
   WHERE flaeche * 10000. > ? and flaeche IS NOT NULL
@@ -1586,15 +1586,15 @@ WHERE he.Flaeche.Name = qk.flnam"
 
 he8_update_flaechen_ohneversch_all: "
 WITH flintersect AS (
-    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000.0 AS flaeche, 
+        area(fl.geom)/10000.0 AS flaeche,
         fl.regenschreiber AS regenschreiber,
-        coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         fl.geom AS geom
@@ -1606,42 +1606,42 @@ WITH flintersect AS (
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung)
 UPDATE he.Flaeche
 SET (
-    Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, 
+    Parametersatz, Neigungsklasse,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry
-) = 
+) =
 (
-    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp, 
+    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp,
     qk.BerechnungSpeicherkonstante, qk.Typ, qk.AnzahlSpeicher,
-    qk.Speicherkonstante, 
+    qk.Speicherkonstante,
     qk.Schwerpunktlaufzeit,
     qk.FliesszeitOberflaeche, qk.LaengsteFliesszeitKanal,
-    qk.Parametersatz, qk.Neigungsklasse, 
+    qk.Parametersatz, qk.Neigungsklasse,
     qk.LastModified,
-    qk.Kommentar, 
+    qk.Kommentar,
     qk.Geometry
 )
 FROM
-(   SELECT 
-        flnam, 
-        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-        flaechentypnr AS Flaechentyp, 
-        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-        COALESCE(typbef,0) AS Typ, 
-        COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-        COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-        coalesce(createdat, datetime('now')) AS lastmodified, 
-        kommentar AS Kommentar, 
+(   SELECT
+        flnam,
+        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+        flaechentypnr AS Flaechentyp,
+        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+        COALESCE(typbef,0) AS Typ,
+        COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+        COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+        coalesce(createdat, datetime('now')) AS lastmodified,
+        kommentar AS Kommentar,
         SetSrid(geom, -1) AS Geometry
   FROM flintersect AS fi
   WHERE flaeche * 10000. > ? and flaeche IS NOT NULL
@@ -1650,15 +1650,15 @@ WHERE he.Flaeche.Name = qk.flnam"
 
 he8_update_flaechen_ohneversch_sel: "
 WITH flintersect AS (
-    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+    SELECT substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000.0 AS flaeche, 
+        area(fl.geom)/10000.0 AS flaeche,
         fl.regenschreiber AS regenschreiber,
-        coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         fl.geom AS geom
@@ -1671,42 +1671,42 @@ WITH flintersect AS (
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung)
 UPDATE he.Flaeche
 SET (
-    Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, 
+    Parametersatz, Neigungsklasse,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry
-) = 
+) =
 (
-    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp, 
+    qk.Haltung, qk.Groesse, qk.Regenschreiber, qk.Flaechentyp,
     qk.BerechnungSpeicherkonstante, qk.Typ, qk.AnzahlSpeicher,
-    qk.Speicherkonstante, 
+    qk.Speicherkonstante,
     qk.Schwerpunktlaufzeit,
     qk.FliesszeitOberflaeche, qk.LaengsteFliesszeitKanal,
-    qk.Parametersatz, qk.Neigungsklasse, 
+    qk.Parametersatz, qk.Neigungsklasse,
     qk.LastModified,
-    qk.Kommentar, 
+    qk.Kommentar,
     qk.Geometry
 )
 FROM
-(   SELECT 
-        flnam, 
-        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-        flaechentypnr AS Flaechentyp, 
-        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-        COALESCE(typbef,0) AS Typ, 
-        COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-        COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-        coalesce(createdat, datetime('now')) AS lastmodified, 
-        kommentar AS Kommentar, 
+(   SELECT
+        flnam,
+        haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+        flaechentypnr AS Flaechentyp,
+        COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+        COALESCE(typbef,0) AS Typ,
+        COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+        COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+        COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+        COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+        COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+        abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+        coalesce(createdat, datetime('now')) AS lastmodified,
+        kommentar AS Kommentar,
         SetSrid(geom, -1) AS Geometry
   FROM flintersect AS fi
   WHERE flaeche * 10000. > ? and flaeche IS NOT NULL
@@ -1716,23 +1716,23 @@ WHERE he.Flaeche.Name = qk.flnam"
 he8_append_flaechen_mitversch_all: "
 WITH flintersect AS (
     SELECT
-        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id, 
-        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id,
+        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL
-        THEN area(fl.geom)/10000. 
-        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000. 
-        END AS flaeche, 
-        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        THEN area(fl.geom)/10000.
+        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000.
+        END AS flaeche,
+        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL
         THEN fl.geom
-        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)) 
+        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3))
         END AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
@@ -1742,32 +1742,32 @@ WITH flintersect AS (
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung
     LEFT JOIN tezg AS tg                ON lf.tezgnam = tg.flnam)
 INSERT INTO he.Flaeche (
-    id, 
-    Name, Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    id,
+    Name, Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, ZuordnUnabhEZG, 
-    IstPolygonalflaeche, ZuordnungGesperrt, 
+    Parametersatz, Neigungsklasse, ZuordnUnabhEZG,
+    IstPolygonalflaeche, ZuordnungGesperrt,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
-    id AS id, 
-    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-    flaechentypnr AS Flaechentyp, 
-    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-    COALESCE(typbef,0) AS Typ, 
-    COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-    COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG, 
-    coalesce(createdat, datetime('now')) AS lastmodified, 
-    kommentar AS Kommentar, 
+SELECT
+    id AS id,
+    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+    flaechentypnr AS Flaechentyp,
+    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+    COALESCE(typbef,0) AS Typ,
+    COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+    COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG,
+    coalesce(createdat, datetime('now')) AS lastmodified,
+    kommentar AS Kommentar,
     SetSrid(geom, -1) AS Geometry
 FROM flintersect AS fi
 WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Flaeche))"
@@ -1775,23 +1775,23 @@ WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Fl
 he8_append_flaechen_mitversch_sel: "
 WITH flintersect AS (
     SELECT
-        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id, 
-        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id,
+        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL
-        THEN area(fl.geom)/10000.0 
-        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000.0 
-        END AS flaeche, 
-        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        THEN area(fl.geom)/10000.0
+        ELSE area(CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)))/10000.0
+        END AS flaeche,
+        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL
         THEN fl.geom
-        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3)) 
+        ELSE CastToMultiPolygon(CollectionExtract(intersection(fl.geom,tg.geom),3))
         END AS geom
     FROM linkfl AS lf
     INNER JOIN flaechen AS fl           ON lf.flnam = fl.flnam
@@ -1803,32 +1803,32 @@ WITH flintersect AS (
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung
     LEFT JOIN tezg AS tg                ON lf.tezgnam = tg.flnam)
 INSERT INTO he.Flaeche (
-    id, 
-    Name, Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    id,
+    Name, Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, ZuordnUnabhEZG, 
-    IstPolygonalflaeche, ZuordnungGesperrt, 
+    Parametersatz, Neigungsklasse, ZuordnUnabhEZG,
+    IstPolygonalflaeche, ZuordnungGesperrt,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
-    id AS id, 
-    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-    flaechentypnr AS Flaechentyp, 
-    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-    COALESCE(typbef,0) AS Typ, 
-    COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-    COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG, 
-    coalesce(createdat, datetime('now')) AS lastmodified, 
-    kommentar AS Kommentar, 
+SELECT
+    id AS id,
+    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+    flaechentypnr AS Flaechentyp,
+    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+    COALESCE(typbef,0) AS Typ,
+    COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+    COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG,
+    coalesce(createdat, datetime('now')) AS lastmodified,
+    kommentar AS Kommentar,
     SetSrid(geom, -1) AS Geometry
 FROM flintersect AS fi
 WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Flaeche))"
@@ -1836,15 +1836,15 @@ WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Fl
 he8_append_flaechen_ohneversch_all: "
 WITH flintersect AS (
     SELECT
-        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id, 
-        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id,
+        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000.0 AS flaeche, 
-        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        area(fl.geom)/10000.0 AS flaeche,
+        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         fl.geom AS geom
@@ -1855,32 +1855,32 @@ WITH flintersect AS (
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung)
 INSERT INTO he.Flaeche (
-    id, 
-    Name, Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    id,
+    Name, Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, ZuordnUnabhEZG, 
-    IstPolygonalflaeche, ZuordnungGesperrt, 
+    Parametersatz, Neigungsklasse, ZuordnUnabhEZG,
+    IstPolygonalflaeche, ZuordnungGesperrt,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
-    id AS id, 
-    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-    flaechentypnr AS Flaechentyp, 
-    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-    COALESCE(typbef,0) AS Typ, 
-    COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-    COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG, 
-    coalesce(createdat, datetime('now')) AS lastmodified, 
-    kommentar AS Kommentar, 
+SELECT
+    id AS id,
+    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+    flaechentypnr AS Flaechentyp,
+    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+    COALESCE(typbef,0) AS Typ,
+    COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+    COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG,
+    coalesce(createdat, datetime('now')) AS lastmodified,
+    kommentar AS Kommentar,
     SetSrid(geom, -1) AS Geometry
 FROM flintersect AS fi
 WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Flaeche))"
@@ -1888,15 +1888,15 @@ WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Fl
 he8_append_flaechen_ohneversch_sel: "
 WITH flintersect AS (
     SELECT
-        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id, 
-        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam, 
+        :nr0 + row_number() OVER (ORDER BY lf.flnam) AS Id,
+        substr(printf('%s-%d', fl.flnam, lf.pk),1,30) AS flnam,
         ha.haltnam AS haltnam, fl.neigkl AS neigkl,
-        at.he_nr AS abflusstyp, 
-        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef, 
+        at.he_nr AS abflusstyp,
+        CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS typbef,
         coalesce(lf.speicherzahl, 2) AS speicherzahl, coalesce(lf.speicherkonst, 0) AS speicherkonst,
         lf.fliesszeitflaeche AS fliesszeitflaeche, lf.fliesszeitkanal AS fliesszeitkanal,
-        area(fl.geom)/10000.0 AS flaeche, 
-        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr, 
+        area(fl.geom)/10000.0 AS flaeche,
+        fl.regenschreiber AS regenschreiber, coalesce(ft.he_nr, 0) AS flaechentypnr,
         fl.abflussparameter AS abflussparameter, fl.createdat AS createdat,
         fl.kommentar AS kommentar,
         fl.geom AS geom
@@ -1909,75 +1909,75 @@ WITH flintersect AS (
     LEFT JOIN abflussparameter AS ap    ON fl.abflussparameter = ap.apnam
     LEFT JOIN flaechentypen AS ft       ON ap.flaechentyp = ft.bezeichnung)
 INSERT INTO he.Flaeche (
-    id, 
-    Name, Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    id,
+    Name, Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, ZuordnUnabhEZG, 
-    IstPolygonalflaeche, ZuordnungGesperrt, 
+    Parametersatz, Neigungsklasse, ZuordnUnabhEZG,
+    IstPolygonalflaeche, ZuordnungGesperrt,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
-    id AS id, 
-    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber, 
-    flaechentypnr AS Flaechentyp, 
-    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante, 
-    COALESCE(typbef,0) AS Typ, 
-    COALESCE(speicherzahl,3) AS AnzahlSpeicher, 
-    COALESCE(speicherkonst, 0.0) AS Speicherkonstante, 
-    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit, 
-    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche, 
-    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal, 
-    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse, 
-    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG, 
-    coalesce(createdat, datetime('now')) AS lastmodified, 
-    kommentar AS Kommentar, 
+SELECT
+    id AS id,
+    flnam AS Name, haltnam AS Haltung, flaeche AS Groesse, regenschreiber AS Regenschreiber,
+    flaechentypnr AS Flaechentyp,
+    COALESCE(abflusstyp, 2) AS BerechnungSpeicherkonstante,
+    COALESCE(typbef,0) AS Typ,
+    COALESCE(speicherzahl,3) AS AnzahlSpeicher,
+    COALESCE(speicherkonst, 0.0) AS Speicherkonstante,
+    COALESCE(fliesszeitflaeche, 0.0) AS Schwerpunktlaufzeit,
+    COALESCE(fliesszeitflaeche,0.0) AS FliesszeitOberflaeche,
+    COALESCE(fliesszeitkanal,0.0) AS LaengsteFliesszeitKanal,
+    abflussparameter AS Parametersatz, coalesce(neigkl, 1) AS Neigungsklasse,
+    1 AS IstPolygonalflaeche, 1 AS ZuordnungGesperrt, 0 AS ZuordnUnabhEZG,
+    coalesce(createdat, datetime('now')) AS lastmodified,
+    kommentar AS Kommentar,
     SetSrid(geom, -1) AS Geometry
 FROM flintersect AS fi
 WHERE flaeche*10000. > :mindestflaeche and (flnam NOT IN (SELECT Name FROM he.Flaeche))"
 
 he8_check_tezghf_parameters: "
 INSERT INTO abflussparameter (
-    apnam, anfangsabflussbeiwert, endabflussbeiwert, benetzungsverlust, muldenverlust, 
+    apnam, anfangsabflussbeiwert, endabflussbeiwert, benetzungsverlust, muldenverlust,
     benetzung_startwert, mulden_startwert, bodenklasse, kommentar)
 SELECT
     column1 AS apnam, column2 AS anfangsabflussbeiwert, column3 AS endabflussbeiwert,
     column4 AS benetzungsverlust, column5 AS muldenverlust, column6 AS benetzung_startwert,
     column7 AS mulden_startwert, column8 AS bodenklasse, column9 AS kommentar
-FROM (VALUES 
+FROM (VALUES
 	('unbefestigt', 0.5, 0.5, 3, 5, 0.0, 0.0, 'LehmLoess', 'QKan-Vorgabe ergänzt für Export Befestigungsgrade'),
 	('befestigt', 1.0, 1.0, 0.3, 0.5, 0.0, 0.0, NULL, 'QKan-Vorgabe ergänzt für Export Befestigungsgrade'))
 WHERE apnam NOT IN (SELECT apnam FROM abflussparameter)"
 
 he8_append_tezghf_all: "
 INSERT INTO he.Flaeche (
-    id, 
-    Name, Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    id,
+    Name, Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, ZuordnUnabhEZG, 
-    IstPolygonalflaeche, ZuordnungGesperrt, 
+    Parametersatz, Neigungsklasse, ZuordnUnabhEZG,
+    IstPolygonalflaeche, ZuordnungGesperrt,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
-    :nr0 + row_number() OVER (ORDER BY tg.flnam) AS Id, 
+SELECT
+    :nr0 + row_number() OVER (ORDER BY tg.flnam) AS Id,
     CASE WHEN tb.bef = 0
       THEN printf('%s_b', tg.flnam)
-      ELSE printf('%s_u', tg.flnam) 
-    END                                                             AS Name, 
-    tg.haltnam                                                      AS Haltung, 
-    area(tg.geom)/10000.0*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse, 
-    tg.regenschreiber                                               AS Regenschreiber, 
-    coalesce(ft.he_nr, 0)                                           AS Flaechentyp, 
-    2                                                               AS BerechnungSpeicherkonstante, 
-    tb.bef                                                          AS Typ, 
-    2                                                               AS AnzahlSpeicher, 
+      ELSE printf('%s_u', tg.flnam)
+    END                                                             AS Name,
+    tg.haltnam                                                      AS Haltung,
+    area(tg.geom)/10000.0*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse,
+    tg.regenschreiber                                               AS Regenschreiber,
+    coalesce(ft.he_nr, 0)                                           AS Flaechentyp,
+    2                                                               AS BerechnungSpeicherkonstante,
+    tb.bef                                                          AS Typ,
+    2                                                               AS AnzahlSpeicher,
     0.                                                              AS Speicherkonstante,           /* nicht verwendet */
     coalesce(tg.schwerpunktlaufzeit/60., 0.)                        AS Schwerpunktlaufzeit,
     0.                                                              AS FliesszeitOberflaeche,       /* nicht verwendet */
@@ -1985,13 +1985,13 @@ SELECT
     CASE WHEN tb.bef = 0
       THEN 'befestigt'
       ELSE 'unbefestigt'
-    END                                                             AS Parametersatz, 
-    coalesce(tg.neigkl, 1)                                          AS Neigungsklasse, 
+    END                                                             AS Parametersatz,
+    coalesce(tg.neigkl, 1)                                          AS Neigungsklasse,
     1                                                               AS IstPolygonalflaeche,
     1                                                               AS ZuordnungGesperrt,
-    0                                                               AS ZuordnUnabhEZG, 
-    coalesce(tg.createdat, datetime('now'))                         AS lastmodified, 
-    tg.kommentar                                                    AS Kommentar, 
+    0                                                               AS ZuordnUnabhEZG,
+    coalesce(tg.createdat, datetime('now'))                         AS lastmodified,
+    tg.kommentar                                                    AS Kommentar,
     SetSrid(tg.geom, -1)                                            AS Geometry
 FROM tezg AS tg
 LEFT JOIN he.Flaeche AS fh
@@ -2003,30 +2003,30 @@ ON fh.Name = tg.flnam
 
 he8_append_tezghf_sel: "
 INSERT INTO he.Flaeche (
-    id, 
-    Name, Haltung, Groesse, Regenschreiber, Flaechentyp, 
+    id,
+    Name, Haltung, Groesse, Regenschreiber, Flaechentyp,
     BerechnungSpeicherkonstante, Typ, AnzahlSpeicher,
-    Speicherkonstante, 
+    Speicherkonstante,
     Schwerpunktlaufzeit,
     FliesszeitOberflaeche, LaengsteFliesszeitKanal,
-    Parametersatz, Neigungsklasse, ZuordnUnabhEZG, 
-    IstPolygonalflaeche, ZuordnungGesperrt, 
+    Parametersatz, Neigungsklasse, ZuordnUnabhEZG,
+    IstPolygonalflaeche, ZuordnungGesperrt,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
-    :nr0 + row_number() OVER (ORDER BY tg.flnam) AS Id, 
+SELECT
+    :nr0 + row_number() OVER (ORDER BY tg.flnam) AS Id,
     CASE WHEN tb.bef = 0
       THEN printf('%s_b', tg.flnam)
-      ELSE printf('%s_u', tg.flnam) 
-    END                                                             AS Name, 
-    tg.haltnam                                                      AS Haltung, 
-    area(tg.geom)/10000.0*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse, 
-    tg.regenschreiber                                               AS Regenschreiber, 
-    coalesce(ft.he_nr, 0)                                           AS Flaechentyp, 
-    2                                                               AS BerechnungSpeicherkonstante, 
-    tb.bef                                                          AS Typ, 
-    2                                                               AS AnzahlSpeicher, 
+      ELSE printf('%s_u', tg.flnam)
+    END                                                             AS Name,
+    tg.haltnam                                                      AS Haltung,
+    area(tg.geom)/10000.0*abs(tb.bef - coalesce(tg.befgrad, 0)/100.) AS Groesse,
+    tg.regenschreiber                                               AS Regenschreiber,
+    coalesce(ft.he_nr, 0)                                           AS Flaechentyp,
+    2                                                               AS BerechnungSpeicherkonstante,
+    tb.bef                                                          AS Typ,
+    2                                                               AS AnzahlSpeicher,
     0.                                                              AS Speicherkonstante,           /* nicht verwendet */
     coalesce(tg.schwerpunktlaufzeit/60., 0.)                        AS Schwerpunktlaufzeit,
     0.                                                              AS FliesszeitOberflaeche,       /* nicht verwendet */
@@ -2034,13 +2034,13 @@ SELECT
     CASE WHEN tb.bef = 0
       THEN 'befestigt'
       ELSE 'unbefestigt'
-    END                                                             AS Parametersatz, 
-    coalesce(tg.neigkl, 1)                                          AS Neigungsklasse, 
+    END                                                             AS Parametersatz,
+    coalesce(tg.neigkl, 1)                                          AS Neigungsklasse,
     1                                                               AS IstPolygonalflaeche,
     1                                                               AS ZuordnungGesperrt,
-    0                                                               AS ZuordnUnabhEZG, 
-    coalesce(tg.createdat, datetime('now'))                         AS lastmodified, 
-    tg.kommentar                                                    AS Kommentar, 
+    0                                                               AS ZuordnUnabhEZG,
+    coalesce(tg.createdat, datetime('now'))                         AS lastmodified,
+    tg.kommentar                                                    AS Kommentar,
     SetSrid(tg.geom, -1)                                            AS Geometry
 FROM tezg AS tg
 JOIN haltungen      AS hal ON hal.haltnam = tg.haltnam
@@ -2054,45 +2054,45 @@ ON fh.Name = tg.flnam
 
 he8_append_tezg_all: "
 INSERT INTO he.GipsEinzugsflaeche (
-    id, 
+    id,
     Name, Haltung,
     IsEinzugsflaeche,
     IsHaltungsflaeche,
-    IsTwEinzugsflaeche, 
+    IsTwEinzugsflaeche,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
+SELECT
     tg.rowid + :id0 AS id,
     tg.flnam AS Name,
     tg.haltnam AS Haltung,
     0 AS IsEinzugsflaeche,
     1 AS IsHaltungflaeche,
-    0 AS IsTwEinzugsflaeche, 
-    coalesce(tg.createdat, datetime('now')) AS lastmodified, 
-    tg.kommentar AS Kommentar, 
+    0 AS IsTwEinzugsflaeche,
+    coalesce(tg.createdat, datetime('now')) AS lastmodified,
+    tg.kommentar AS Kommentar,
     SetSrid(CastToMultiPolygon(tg.geom), -1) AS Geometry
 FROM tezg AS tg"
 
 he8_append_tezg_sel: "
 INSERT INTO he.GipsEinzugsflaeche (
-    id, 
+    id,
     Name, Haltung,
     IsEinzugsflaeche,
     IsHaltungsflaeche,
-    IsTwEinzugsflaeche, 
+    IsTwEinzugsflaeche,
     LastModified,
-    Kommentar, 
+    Kommentar,
     Geometry)
-SELECT 
+SELECT
     tg.rowid + :id0 AS id,
     tg.flnam AS Name,
     tg.haltnam AS Haltung,
     0 AS IsEinzugsflaeche,
     1 AS IsHaltungflaeche,
-    0 AS IsTwEinzugsflaeche, 
-    coalesce(tg.createdat, datetime('now')) AS lastmodified, 
-    tg.kommentar AS Kommentar, 
+    0 AS IsTwEinzugsflaeche,
+    coalesce(tg.createdat, datetime('now')) AS lastmodified,
+    tg.kommentar AS Kommentar,
     SetSrid(CastToMultiPolygon(tg.geom), -1) AS Geometry
 FROM tezg AS tg
 JOIN haltungen      AS hal ON hal.haltnam = tg.haltnam
@@ -2101,14 +2101,14 @@ JOIN sel_haltungen  AS sel ON sel.pk = hal.pk"
 he8_append_pumpen_all: "
 INSERT INTO he.Pumpe (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
-    Planungsstatus, 
+    Planungsstatus,
     Kommentar, LastModified,
-    Geometry 
-) 
+    Geometry
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2125,14 +2125,14 @@ WHERE ha.haltungstyp = 'Pumpe'
 he8_append_pumpen_sel: "
 INSERT INTO he.Pumpe (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
-    Planungsstatus, 
+    Planungsstatus,
     Kommentar, LastModified,
-    Geometry 
-) 
+    Geometry
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2150,16 +2150,16 @@ WHERE ha.haltungstyp = 'Pumpe'
 he8_update_pumpen_all: "
 UPDATE he.Pumpe
 SET (
-    SchachtOben, SchachtUnten, 
-    Planungsstatus, 
+    SchachtOben, SchachtUnten,
+    Planungsstatus,
     Kommentar, LastModified,
-    Geometry 
-) = 
+    Geometry
+) =
 (
-    qk.SchachtOben, qk.SchachtUnten, 
-    qk.Planungsstatus, 
+    qk.SchachtOben, qk.SchachtUnten,
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
-    qk.Geometry 
+    qk.Geometry
 )
 FROM (
     SELECT
@@ -2180,16 +2180,16 @@ WHERE he.Pumpe.Name = qk.haltnam"
 he8_update_pumpen_sel: "
 UPDATE he.Pumpe
 SET (
-    SchachtOben, SchachtUnten, 
-    Planungsstatus, 
+    SchachtOben, SchachtUnten,
+    Planungsstatus,
     Kommentar, LastModified,
-    Geometry 
-) = 
+    Geometry
+) =
 (
-    qk.SchachtOben, qk.SchachtUnten, 
-    qk.Planungsstatus, 
+    qk.SchachtOben, qk.SchachtUnten,
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
-    qk.Geometry 
+    qk.Geometry
 )
 FROM (
     SELECT
@@ -2211,15 +2211,15 @@ WHERE he.Pumpe.Name = qk.haltnam"
 he8_append_wehre_all: "
 INSERT INTO he.Wehr (
     Id,
-    Name, 
-    SchachtOben, SchachtUnten, 
-    Ueberfallbeiwert, 
-    Planungsstatus, 
+    Name,
+    SchachtOben, SchachtUnten,
+    Ueberfallbeiwert,
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2237,15 +2237,15 @@ WHERE ha.haltungstyp = 'Wehr'
 he8_append_wehre_sel: "
 INSERT INTO he.Wehr (
     Id,
-    Name, 
-    SchachtOben, SchachtUnten, 
-    Ueberfallbeiwert, 
-    Planungsstatus, 
+    Name,
+    SchachtOben, SchachtUnten,
+    Ueberfallbeiwert,
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2264,21 +2264,21 @@ WHERE ha.haltungstyp = 'Wehr'
 he8_update_wehre_all: "
 UPDATE he.Wehr
 SET (
-    SchachtOben, SchachtUnten, 
-    Ueberfallbeiwert, 
-    Planungsstatus, 
+    SchachtOben, SchachtUnten,
+    Ueberfallbeiwert,
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
 ) =
-(   qk.SchachtOben, qk.SchachtUnten, 
-    qk.Ueberfallbeiwert, 
-    qk.Planungsstatus, 
+(   qk.SchachtOben, qk.SchachtUnten,
+    qk.Ueberfallbeiwert,
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
 FROM (
     SELECT
-        ha.haltnam AS haltnam, 
+        ha.haltnam AS haltnam,
         ha.schoben AS SchachtOben,
         ha.schunten AS SchachtUnten,
         wehre.uebeiwert AS Ueberfallbeiwert,
@@ -2296,21 +2296,21 @@ WHERE he.Wehr.Name = qk.haltnam"
 he8_update_wehre_sel: "
 UPDATE he.Wehr
 SET (
-    SchachtOben, SchachtUnten, 
-    Ueberfallbeiwert, 
-    Planungsstatus, 
+    SchachtOben, SchachtUnten,
+    Ueberfallbeiwert,
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
 ) =
-(   qk.SchachtOben, qk.SchachtUnten, 
-    qk.Ueberfallbeiwert, 
-    qk.Planungsstatus, 
+(   qk.SchachtOben, qk.SchachtUnten,
+    qk.Ueberfallbeiwert,
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
 FROM (
     SELECT
-        ha.haltnam AS haltnam, 
+        ha.haltnam AS haltnam,
         ha.schoben AS SchachtOben,
         ha.schunten AS SchachtUnten,
         wehre.uebeiwert AS Ueberfallbeiwert,
@@ -2329,14 +2329,14 @@ WHERE he.Wehr.Name = qk.haltnam"
 he8_append_drosseln_all: "
 INSERT INTO he.Drossel (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
     Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2353,14 +2353,14 @@ WHERE ha.haltungstyp = 'Drossel'
 he8_append_drosseln_sel: "
 INSERT INTO he.Drossel (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
     Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2378,13 +2378,13 @@ WHERE ha.haltungstyp = 'Drossel'
 he8_update_drosseln_all: "
 UPDATE he.Drossel
 SET (
-    SchachtOben, SchachtUnten, 
-    Planungsstatus, 
+    SchachtOben, SchachtUnten,
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) = 
-(   qk.SchachtOben, qk.SchachtUnten, 
-    qk.Planungsstatus, 
+) =
+(   qk.SchachtOben, qk.SchachtUnten,
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
@@ -2407,13 +2407,13 @@ WHERE he.Drossel.Name = qk.haltnam"
 he8_update_drosseln_sel: "
 UPDATE he.Drossel
 SET (
-    SchachtOben, SchachtUnten, 
-    Planungsstatus, 
+    SchachtOben, SchachtUnten,
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) = 
-(   qk.SchachtOben, qk.SchachtUnten, 
-    qk.Planungsstatus, 
+) =
+(   qk.SchachtOben, qk.SchachtUnten,
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
@@ -2437,9 +2437,9 @@ WHERE he.Drossel.Name = qk.haltnam"
 he8_append_schieber_all: "
 INSERT INTO he.Schieber (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
-    Anfangsstellung, 
+    Anfangsstellung,
     MaximaleHubhoehe,
     Geometrie2,
     Verluste,
@@ -2447,9 +2447,9 @@ INSERT INTO he.Schieber (
     Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2473,9 +2473,9 @@ WHERE ha.haltungstyp = 'Schieber'
 he8_append_schieber_sel: "
 INSERT INTO he.Schieber (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
-    Anfangsstellung, 
+    Anfangsstellung,
     MaximaleHubhoehe,
     Geometrie2,
     Verluste,
@@ -2483,9 +2483,9 @@ INSERT INTO he.Schieber (
     Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2510,23 +2510,23 @@ WHERE ha.haltungstyp = 'Schieber'
 he8_update_schieber_all: "
 UPDATE he.Schieber
 SET (
-    SchachtOben, SchachtUnten, 
-    Anfangsstellung, 
+    SchachtOben, SchachtUnten,
+    Anfangsstellung,
     MaximaleHubhoehe,
     Geometrie2,
     Verluste,
     Profiltyp,
-    Planungsstatus, 
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) = 
-(   qk.SchachtOben, qk.SchachtUnten, 
-    qk.Anfangsstellung, 
+) =
+(   qk.SchachtOben, qk.SchachtUnten,
+    qk.Anfangsstellung,
     qk.MaximaleHubhoehe,
     qk.Geometrie2,
     qk.Verluste,
     qk.Profiltyp,
-    qk.Planungsstatus, 
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
@@ -2556,23 +2556,23 @@ WHERE he.Schieber.Name = qk.haltnam"
 he8_update_schieber_sel: "
 UPDATE he.Schieber
 SET (
-    SchachtOben, SchachtUnten, 
-    Anfangsstellung, 
+    SchachtOben, SchachtUnten,
+    Anfangsstellung,
     MaximaleHubhoehe,
     Geometrie2,
     Verluste,
     Profiltyp,
-    Planungsstatus, 
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) = 
-(   qk.SchachtOben, qk.SchachtUnten, 
-    qk.Anfangsstellung, 
+) =
+(   qk.SchachtOben, qk.SchachtUnten,
+    qk.Anfangsstellung,
     qk.MaximaleHubhoehe,
     qk.Geometrie2,
     qk.Verluste,
     qk.Profiltyp,
-    qk.Planungsstatus, 
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
@@ -2603,7 +2603,7 @@ WHERE he.Schieber.Name = qk.haltnam"
 he8_append_grundseitenauslaesse_all: "
 INSERT INTO he.GrundSeitenauslass (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
     HoeheUnterkante,
     Geometrie2,
@@ -2612,9 +2612,9 @@ INSERT INTO he.GrundSeitenauslass (
     Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2638,7 +2638,7 @@ WHERE ha.haltungstyp = 'GrundSeitenauslass'
 he8_append_grundseitenauslaesse_sel: "
 INSERT INTO he.GrundSeitenauslass (
     Id,
-    Name, 
+    Name,
     SchachtOben, SchachtUnten,
     HoeheUnterkante,
     Geometrie2,
@@ -2647,9 +2647,9 @@ INSERT INTO he.GrundSeitenauslass (
     Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) 
+)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name,
     ha.schoben AS SchachtOben,
     ha.schunten AS SchachtUnten,
@@ -2673,21 +2673,21 @@ WHERE ha.haltungstyp = 'GrundSeitenauslass'
 he8_update_grundseitenauslaesse_all: "
 UPDATE he.GrundSeitenauslass
 SET (
-    SchachtOben, SchachtUnten, 
+    SchachtOben, SchachtUnten,
     HoeheUnterkante,
     Geometrie2,
     Auslassbeiwert,
     Profiltyp,
-    Planungsstatus, 
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) = 
-(   qk.SchachtOben, qk.SchachtUnten, 
+) =
+(   qk.SchachtOben, qk.SchachtUnten,
     qk.HoeheUnterkante,
     qk.Geometrie2,
     qk.Auslassbeiwert,
     qk.Profiltyp,
-    qk.Planungsstatus, 
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
@@ -2716,21 +2716,21 @@ WHERE he.GrundSeitenauslass.Name = qk.haltnam"
 he8_update_grundseitenauslaesse_sel: "
 UPDATE he.GrundSeitenauslass
 SET (
-    SchachtOben, SchachtUnten, 
+    SchachtOben, SchachtUnten,
     HoeheUnterkante,
     Geometrie2,
     Auslassbeiwert,
     Profiltyp,
-    Planungsstatus, 
+    Planungsstatus,
     Kommentar, LastModified,
     Geometry
-) = 
-(   qk.SchachtOben, qk.SchachtUnten, 
+) =
+(   qk.SchachtOben, qk.SchachtUnten,
     qk.HoeheUnterkante,
     qk.Geometrie2,
     qk.Auslassbeiwert,
     qk.Profiltyp,
-    qk.Planungsstatus, 
+    qk.Planungsstatus,
     qk.Kommentar, qk.LastModified,
     qk.Geometry
 )
@@ -2759,37 +2759,37 @@ WHERE he.GrundSeitenauslass.Name = qk.haltnam"
 
 he8_append_qregler_all: "
 INSERT INTO he.QRegler (
-    Id, 
-    Name, SchachtOben, SchachtUnten, 
-    Laenge, 
+    Id,
+    Name, SchachtOben, SchachtUnten,
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
-    Kanalart, 
-    Rauigkeitsbeiwert, Anzahl, 
-    Rauigkeitsansatz, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
+    Kanalart,
+    Rauigkeitsbeiwert, Anzahl,
+    Rauigkeitsansatz,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 )
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name, ha.schoben AS SchachtOben, ha.schunten AS SchachtUnten,
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
     IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
-    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
-    1 AS Rauigkeitsansatz, 
+    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
+    1 AS Rauigkeitsansatz,
     coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
     pf.he_nr AS Profiltyp,
-    coalesce(ha.createdat, datetime('now')) AS LastModified, 
+    coalesce(ha.createdat, datetime('now')) AS LastModified,
     28 AS Materialart,
     0 AS Einzugsgebiet,
     0 AS KonstanterZuflussTezg,
@@ -2801,10 +2801,10 @@ JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
-WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler) 
+WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler)
   AND ha.haltungstyp = 'Q-Regler'
   AND st.he_nr IS NOT NULL
   AND pf.he_nr IS NOT NULL
@@ -2812,37 +2812,37 @@ WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler)
 
 he8_append_qregler_sel: "
 INSERT INTO he.QRegler (
-    Id, 
-    Name, SchachtOben, SchachtUnten, 
-    Laenge, 
+    Id,
+    Name, SchachtOben, SchachtUnten,
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
-    Kanalart, 
-    Rauigkeitsbeiwert, Anzahl, 
-    Rauigkeitsansatz, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
+    Kanalart,
+    Rauigkeitsbeiwert, Anzahl,
+    Rauigkeitsansatz,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 )
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name, ha.schoben AS SchachtOben, ha.schunten AS SchachtUnten,
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
     IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
-    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
-    1 AS Rauigkeitsansatz, 
+    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
+    1 AS Rauigkeitsansatz,
     coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
     pf.he_nr AS Profiltyp,
-    coalesce(ha.createdat, datetime('now')) AS LastModified, 
+    coalesce(ha.createdat, datetime('now')) AS LastModified,
     28 AS Materialart,
     0 AS Einzugsgebiet,
     0 AS KonstanterZuflussTezg,
@@ -2855,10 +2855,10 @@ JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
-WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler) 
+WHERE ha.haltnam NOT IN (SELECT Name FROM he.QRegler)
   AND ha.haltungstyp = 'Q-Regler'
   AND st.he_nr IS NOT NULL
   AND pf.he_nr IS NOT NULL
@@ -2868,35 +2868,35 @@ he8_update_qregler_all: "
 UPDATE he.QRegler
 SET (
     SchachtOben, SchachtUnten,
-    Laenge, 
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
     Kanalart,
     Rauigkeitsbeiwert, Anzahl,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 ) =
 (   qk.SchachtOben, qk.SchachtUnten,
-    qk.Laenge, 
+    qk.Laenge,
     qk.SohlhoeheOben,
-    qk.SohlhoeheUnten, 
-    qk.Geometrie1, qk.Geometrie2, 
+    qk.SohlhoeheUnten,
+    qk.Geometrie1, qk.Geometrie2,
     qk.Kanalart,
     qk.Rauigkeitsbeiwert, qk.Anzahl,
     qk.RauhigkeitAnzeige,
     qk.Profiltyp,
-    qk.LastModified, 
-    qk.Materialart, 
-    qk.Einzugsgebiet, 
-    qk.KonstanterZuflussTezg, 
-    qk.BefestigteFlaeche, 
+    qk.LastModified,
+    qk.Materialart,
+    qk.Einzugsgebiet,
+    qk.KonstanterZuflussTezg,
+    qk.BefestigteFlaeche,
     qk.UnbefestigteFlaeche, qk.Geometry
 )
 FROM
@@ -2908,14 +2908,14 @@ FROM
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
         IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
-        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
+        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
         pf.he_nr AS Profiltyp,
-        coalesce(ha.createdat, datetime('now')) AS LastModified, 
-        28 AS Materialart, 
-        0 AS Einzugsgebiet, 
-        0 AS KonstanterZuflussTezg, 
-        0 AS BefestigteFlaeche, 
+        coalesce(ha.createdat, datetime('now')) AS LastModified,
+        28 AS Materialart,
+        0 AS Einzugsgebiet,
+        0 AS KonstanterZuflussTezg,
+        0 AS BefestigteFlaeche,
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
@@ -2923,7 +2923,7 @@ FROM
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                         ON ha.entwart = ea.bezeichnung
     JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'Q-Regler'
@@ -2937,35 +2937,35 @@ he8_update_qregler_sel: "
 UPDATE he.QRegler
 SET (
     SchachtOben, SchachtUnten,
-    Laenge, 
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
     Kanalart,
     Rauigkeitsbeiwert, Anzahl,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 ) =
 (   qk.SchachtOben, qk.SchachtUnten,
-    qk.Laenge, 
+    qk.Laenge,
     qk.SohlhoeheOben,
-    qk.SohlhoeheUnten, 
-    qk.Geometrie1, qk.Geometrie2, 
+    qk.SohlhoeheUnten,
+    qk.Geometrie1, qk.Geometrie2,
     qk.Kanalart,
     qk.Rauigkeitsbeiwert, qk.Anzahl,
     qk.RauhigkeitAnzeige,
     qk.Profiltyp,
-    qk.LastModified, 
-    qk.Materialart, 
-    qk.Einzugsgebiet, 
-    qk.KonstanterZuflussTezg, 
-    qk.BefestigteFlaeche, 
+    qk.LastModified,
+    qk.Materialart,
+    qk.Einzugsgebiet,
+    qk.KonstanterZuflussTezg,
+    qk.BefestigteFlaeche,
     qk.UnbefestigteFlaeche, qk.Geometry
 )
 FROM
@@ -2977,14 +2977,14 @@ FROM
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
         IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
-        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
+        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
         pf.he_nr AS Profiltyp,
-        coalesce(ha.createdat, datetime('now')) AS LastModified, 
-        28 AS Materialart, 
-        0 AS Einzugsgebiet, 
-        0 AS KonstanterZuflussTezg, 
-        0 AS BefestigteFlaeche, 
+        coalesce(ha.createdat, datetime('now')) AS LastModified,
+        28 AS Materialart,
+        0 AS Einzugsgebiet,
+        0 AS KonstanterZuflussTezg,
+        0 AS BefestigteFlaeche,
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
@@ -2993,7 +2993,7 @@ FROM
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                         ON ha.entwart = ea.bezeichnung
     JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'Q-Regler'
@@ -3005,36 +3005,36 @@ WHERE he.QRegler.Name = qk.haltnam"
 
 he8_append_hregler_all: "
 INSERT INTO he.HRegler (
-    Id, 
-    Name, SchachtOben, SchachtUnten, 
-    Laenge, 
+    Id,
+    Name, SchachtOben, SchachtUnten,
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
-    Kanalart, 
-    Rauigkeitsbeiwert, Anzahl, 
-    Rauigkeitsansatz, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
+    Kanalart,
+    Rauigkeitsbeiwert, Anzahl,
+    Rauigkeitsansatz,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name, ha.schoben AS SchachtOben, ha.schunten AS SchachtUnten,
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
     IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
-    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
-    1 AS Rauigkeitsansatz, 
+    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
+    1 AS Rauigkeitsansatz,
     coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
     pf.he_nr AS Profiltyp,
-    coalesce(ha.createdat, datetime('now')) AS LastModified, 
+    coalesce(ha.createdat, datetime('now')) AS LastModified,
     28 AS Materialart,
     0 AS Einzugsgebiet,
     0 AS KonstanterZuflussTezg,
@@ -3046,10 +3046,10 @@ JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
-WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler) 
+WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler)
   AND ha.haltungstyp = 'H-Regler'
   AND st.he_nr IS NOT NULL
   AND pf.he_nr IS NOT NULL
@@ -3057,36 +3057,36 @@ WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler)
 
 he8_append_hregler_sel: "
 INSERT INTO he.HRegler (
-    Id, 
-    Name, SchachtOben, SchachtUnten, 
-    Laenge, 
+    Id,
+    Name, SchachtOben, SchachtUnten,
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
-    Kanalart, 
-    Rauigkeitsbeiwert, Anzahl, 
-    Rauigkeitsansatz, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
+    Kanalart,
+    Rauigkeitsbeiwert, Anzahl,
+    Rauigkeitsansatz,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry)
 SELECT
-    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id, 
+    :nr0 + row_number() OVER (ORDER BY ha.haltnam) AS Id,
     ha.haltnam AS Name, ha.schoben AS SchachtOben, ha.schunten AS SchachtUnten,
     coalesce(ha.laenge, glength(ha.geom)) AS Laenge,
     coalesce(ha.sohleoben,sob.sohlhoehe) AS SohlhoeheOben,
     coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
     IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
     ea.he_nr AS Kanalart,
-    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
-    1 AS Rauigkeitsansatz, 
+    coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
+    1 AS Rauigkeitsansatz,
     coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
     pf.he_nr AS Profiltyp,
-    coalesce(ha.createdat, datetime('now')) AS LastModified, 
+    coalesce(ha.createdat, datetime('now')) AS LastModified,
     28 AS Materialart,
     0 AS Einzugsgebiet,
     0 AS KonstanterZuflussTezg,
@@ -3099,10 +3099,10 @@ JOIN schaechte AS sob               ON ha.schoben = sob.schnam
 JOIN schaechte AS sun               ON ha.schunten = sun.schnam
 JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                     ON ha.entwart = ea.bezeichnung
 JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
-WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler) 
+WHERE ha.haltnam NOT IN (SELECT Name FROM he.HRegler)
   AND ha.haltungstyp = 'H-Regler'
   AND st.he_nr IS NOT NULL
   AND pf.he_nr IS NOT NULL
@@ -3112,35 +3112,35 @@ he8_update_hregler_all: "
 UPDATE he.HRegler
 SET (
     SchachtOben, SchachtUnten,
-    Laenge, 
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
     Kanalart,
     Rauigkeitsbeiwert, Anzahl,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 ) =
 (   qk.SchachtOben, qk.SchachtUnten,
-    qk.Laenge, 
+    qk.Laenge,
     qk.SohlhoeheOben,
-    qk.SohlhoeheUnten, 
-    qk.Geometrie1, qk.Geometrie2, 
+    qk.SohlhoeheUnten,
+    qk.Geometrie1, qk.Geometrie2,
     qk.Kanalart,
     qk.Rauigkeitsbeiwert, qk.Anzahl,
     qk.RauhigkeitAnzeige,
     qk.Profiltyp,
-    qk.LastModified, 
-    qk.Materialart, 
-    qk.Einzugsgebiet, 
-    qk.KonstanterZuflussTezg, 
-    qk.BefestigteFlaeche, 
+    qk.LastModified,
+    qk.Materialart,
+    qk.Einzugsgebiet,
+    qk.KonstanterZuflussTezg,
+    qk.BefestigteFlaeche,
     qk.UnbefestigteFlaeche, qk.Geometry
 )
 FROM
@@ -3152,14 +3152,14 @@ FROM
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
         IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
-        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
+        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
         pf.he_nr AS Profiltyp,
-        coalesce(ha.createdat, datetime('now')) AS LastModified, 
-        28 AS Materialart, 
-        0 AS Einzugsgebiet, 
-        0 AS KonstanterZuflussTezg, 
-        0 AS BefestigteFlaeche, 
+        coalesce(ha.createdat, datetime('now')) AS LastModified,
+        28 AS Materialart,
+        0 AS Einzugsgebiet,
+        0 AS KonstanterZuflussTezg,
+        0 AS BefestigteFlaeche,
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
@@ -3167,7 +3167,7 @@ FROM
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                         ON ha.entwart = ea.bezeichnung
     JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'H-Regler'
@@ -3181,35 +3181,35 @@ he8_update_hregler_sel: "
 UPDATE he.HRegler
 SET (
     SchachtOben, SchachtUnten,
-    Laenge, 
+    Laenge,
     SohlhoeheOben,
-    SohlhoeheUnten, 
-    Geometrie1, Geometrie2, 
+    SohlhoeheUnten,
+    Geometrie1, Geometrie2,
     Kanalart,
     Rauigkeitsbeiwert, Anzahl,
     RauhigkeitAnzeige,
     Profiltyp,
-    LastModified, 
-    Materialart, 
-    Einzugsgebiet, 
-    KonstanterZuflussTezg, 
-    BefestigteFlaeche, 
+    LastModified,
+    Materialart,
+    Einzugsgebiet,
+    KonstanterZuflussTezg,
+    BefestigteFlaeche,
     UnbefestigteFlaeche, Geometry
 ) =
 (   qk.SchachtOben, qk.SchachtUnten,
-    qk.Laenge, 
+    qk.Laenge,
     qk.SohlhoeheOben,
-    qk.SohlhoeheUnten, 
-    qk.Geometrie1, qk.Geometrie2, 
+    qk.SohlhoeheUnten,
+    qk.Geometrie1, qk.Geometrie2,
     qk.Kanalart,
     qk.Rauigkeitsbeiwert, qk.Anzahl,
     qk.RauhigkeitAnzeige,
     qk.Profiltyp,
-    qk.LastModified, 
-    qk.Materialart, 
-    qk.Einzugsgebiet, 
-    qk.KonstanterZuflussTezg, 
-    qk.BefestigteFlaeche, 
+    qk.LastModified,
+    qk.Materialart,
+    qk.Einzugsgebiet,
+    qk.KonstanterZuflussTezg,
+    qk.BefestigteFlaeche,
     qk.UnbefestigteFlaeche, qk.Geometry
 )
 FROM
@@ -3221,14 +3221,14 @@ FROM
         coalesce(ha.sohleunten,sun.sohlhoehe) AS SohlhoeheUnten,
         IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe) AS Geometrie1, IIF(ha.breite>20, ha.breite/1000.0, ha.breite) AS Geometrie2,
         ea.he_nr AS Kanalart,
-        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl, 
+        coalesce(ha.ks, 1.5) AS Rauigkeitsbeiwert, 1 AS Anzahl,
         coalesce(ha.ks, 1.5) AS RauhigkeitAnzeige,
         pf.he_nr AS Profiltyp,
-        coalesce(ha.createdat, datetime('now')) AS LastModified, 
-        28 AS Materialart, 
-        0 AS Einzugsgebiet, 
-        0 AS KonstanterZuflussTezg, 
-        0 AS BefestigteFlaeche, 
+        coalesce(ha.createdat, datetime('now')) AS LastModified,
+        28 AS Materialart,
+        0 AS Einzugsgebiet,
+        0 AS KonstanterZuflussTezg,
+        0 AS BefestigteFlaeche,
         0 AS UnbefestigteFlaeche,
         SetSrid(ha.geom, -1) AS Geometry
     FROM haltungen AS ha
@@ -3237,7 +3237,7 @@ FROM
     JOIN schaechte AS sun               ON ha.schunten = sun.schnam
     JOIN (SELECT profilnam, he_nr FROM profile GROUP BY profilnam) AS pf
                                         ON ha.profilnam = pf.profilnam
-    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+    JOIN (SELECT bezeichnung, he_nr FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
                                         ON ha.entwart = ea.bezeichnung
     JOIN simulationsstatus AS st   ON ha.simstatus = st.bezeichnung
     WHERE ha.haltungstyp = 'H-Regler'
@@ -3250,22 +3250,22 @@ WHERE he.HRegler.Name = qk.haltnam"
 he8_append_abflussparameter: "
 INSERT INTO he.AbflussParameter (
     Id,
-    Name, 
-    AbflussbeiwertAnfang, AbflussbeiwertEnde, 
-    Muldenverlust, Benetzungsverlust, 
-    BenetzungSpeicherStart, MuldenauffuellgradStart, 
-    Typ, 
-    Bodenklasse, 
+    Name,
+    AbflussbeiwertAnfang, AbflussbeiwertEnde,
+    Muldenverlust, Benetzungsverlust,
+    BenetzungSpeicherStart, MuldenauffuellgradStart,
+    Typ,
+    Bodenklasse,
     Kommentar, LastModified
     )
-SELECT 
-    :nr0 + row_number() OVER (ORDER BY ap.apnam) AS Id, 
+SELECT
+    :nr0 + row_number() OVER (ORDER BY ap.apnam) AS Id,
     ap.apnam,
     ap.anfangsabflussbeiwert, ap.endabflussbeiwert,
-    ap.muldenverlust, ap.benetzungsverlust, 
-    ap.benetzung_startwert, ap.mulden_startwert, 
+    ap.muldenverlust, ap.benetzungsverlust,
+    ap.benetzung_startwert, ap.mulden_startwert,
     CASE WHEN ap.bodenklasse IS NULL THEN 0 ELSE 1 END AS Typ,
-    ap.bodenklasse, 
+    ap.bodenklasse,
     ap.kommentar, ap.createdat
 FROM abflussparameter AS ap
 LEFT JOIN he.AbflussParameter AS ha     ON ha.Name = ap.apnam
@@ -3273,16 +3273,16 @@ WHERE ha.Name IS NULL"
 
 he8_append_bodenklassen: "
 INSERT INTO he.Bodenklasse (
-    Id, Name, 
-    InfiltrationsrateAnfang, InfiltrationsrateEnde, InfiltrationsrateStart, 
-    Rueckgangskonstante, Regenerationskonstante, Saettigungswassergehalt, 
+    Id, Name,
+    InfiltrationsrateAnfang, InfiltrationsrateEnde, InfiltrationsrateStart,
+    Rueckgangskonstante, Regenerationskonstante, Saettigungswassergehalt,
     Kommentar, LastModified
 )
-SELECT 
-    :nr0 + row_number() OVER (ORDER BY bk.bknam) AS Id, 
-    bk.bknam, 
-    bk.infiltrationsrateanfang, bk.infiltrationsrateende, bk.infiltrationsratestart, 
-    bk.rueckgangskonstante, bk.regenerationskonstante, bk.saettigungswassergehalt, 
+SELECT
+    :nr0 + row_number() OVER (ORDER BY bk.bknam) AS Id,
+    bk.bknam,
+    bk.infiltrationsrateanfang, bk.infiltrationsrateende, bk.infiltrationsratestart,
+    bk.rueckgangskonstante, bk.regenerationskonstante, bk.saettigungswassergehalt,
     bk.kommentar, bk.createdat
 FROM bodenklassen AS bk
 LEFT JOIN he.Bodenklasse AS hb  ON hb.Name = bk.bknam

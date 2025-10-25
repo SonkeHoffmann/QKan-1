@@ -141,7 +141,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.cb_selectedTgbs.setChecked(True)
         self.count_selection()
 
-    def count_selection(self) -> bool:
+    def count_selection(self):
         """ Zählung mit Herstellung der Datenbankverbindung
         """
         with DBConnection() as db_qkan:

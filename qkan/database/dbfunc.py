@@ -147,13 +147,19 @@ class DBConnection:
                 sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgres.yml')
             else:
                 logger.error_code(f'{self.__class__.__name__}: Datenbanktyp {QKan.dbtype} nicht zulässig!')
+                raise QkanDbError
 
             try:
                 with open(sqlfilename) as fr:
                     QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
                 logger.debug(f'{self.__class__.__name__}: SQL-Liste aus Datei {sqlfilename=} geladen')
-            except:
-                logger.error_code(f'{self.__class__.__name__}: '
+            except UnicodeDecodeError as err:
+                logger.error_code(f'{self.__class__.__name__}, Fehler {err}: '
+                                  f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden, '
+                                  f'weil sie nicht UTF-8-codiert ist. Bitte umwandeln')
+                raise QkanAbortError
+            except BaseException as err:
+                logger.error_code(f'{self.__class__.__name__}, Fehler {err}: '
                                   f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden')
                 raise QkanAbortError
 
@@ -235,9 +241,9 @@ class DBConnection:
                         self.upgrade_database()
                     else:
                         logger.warning_user(
-                            f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
-                            f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} "
-                            f"überein und muss aktualisiert werden!",
+                            f"\n\nDie Datenbank hat die Versionsnummer {self.current_dbversion.base_version}. und entspricht \n"
+                            f"nicht der aktuellen Versionsnummer {self.actDbVersion.base_version}. Bitte aktualisieren Sie "
+                            f'die Datenbank mit dem Menü "QKan-Datenbank aktualisieren"!\n\n',
                         )
                         # logger.info(
                         #     f"Projekt muss aktualisiert werden. Die QKan-Version der "

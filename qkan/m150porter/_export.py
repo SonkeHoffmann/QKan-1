@@ -244,6 +244,7 @@ class ExportTask:
                     "GP007": deckelhoehe,
                 },
             )
+
     def _export_schaechte(self) -> None:
         if not QKan.config.check_export.schaechte:
             return
@@ -718,6 +719,8 @@ class ExportTask:
         Export der Kanaldaten aus einer QKan-SpatiaLite-Datenbank und Schreiben in eine XML-Datei
         """
         iface = QKan.instance.iface
+
+        self.db_qkan.loadmodule("m150porter")
 
         # Create progress bar
         progress_bar = QProgressBar(iface.messageBar())

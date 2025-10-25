@@ -27,17 +27,22 @@ JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS
                                     ON ha.entwart = ea.bezeichnung
 JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
                                     ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
                                     ON ha.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+LEFT JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL)
+"
+
+m150_count_haltungen_all: "
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+                                    ON ha.entwart = ea.bezeichnung
+JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
+                                    ON ha.profilnam = pf.profilnam
 "
 
 m150_ex_haltungen_sel: "
@@ -70,17 +75,23 @@ JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS
                                     ON ha.entwart = ea.bezeichnung
 JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
                                     ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
                                     ON ha.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+LEFT JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL)
+"
+
+m150_count_haltungen_sel: "
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+                                    ON ha.entwart = ea.bezeichnung
+JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
+                                    ON ha.profilnam = pf.profilnam
 "
 
 m150_ex_wehre_all: "
@@ -192,7 +203,7 @@ JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
                                     ON ha.material = ma.bezeichnung
 JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL)
   AND pf.m150 IS NOT NULL
   AND ea.m150 IS NOT NULL
   AND ma.m150 IS NOT NULL
@@ -228,7 +239,7 @@ JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
                                     ON ha.material = ma.bezeichnung
 JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL)
   AND pf.m150 IS NOT NULL
   AND ea.m150 IS NOT NULL
   AND ma.m150 IS NOT NULL
@@ -254,6 +265,16 @@ JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS s
 WHERE sc.schachttyp = :schachttyp
 "
 
+m150_count_schaechte_all: "
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
+                                    ON sc.entwart = ea.bezeichnung
+JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+                                    ON sc.simstatus = si.bezeichnung
+WHERE sc.schachttyp <> 'Anschlusschacht'
+"
+
 m150_ex_schaechte_sel: "
 SELECT
     sc.schnam,
@@ -273,6 +294,16 @@ JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS
 JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON sc.simstatus = si.bezeichnung
 WHERE sc.schachttyp = :schachttyp
+"
+
+m150_count_schaechte_sel: "
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
+                                    ON sc.entwart = ea.bezeichnung
+JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+                                    ON sc.simstatus = si.bezeichnung
+WHERE sc.schachttyp <> 'Anschlusschacht'
 "
 
 m150_ex_anschlussleitungen_all: "
@@ -316,7 +347,7 @@ WHERE pf.m150 IS NOT NULL
   AND si.m150 IS NOT NULL
 "
 
-# Anschlussleitungen werden indirekt über Haltungen selektiert
+# Anschlussleitungen werden indirekt Ã¼ber Haltungen selektiert
 m150_ex_anschlussleitungen_sel: "
 WITH sel AS (
     SELECT al.pk
