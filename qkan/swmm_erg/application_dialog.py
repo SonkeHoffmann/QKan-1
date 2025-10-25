@@ -81,7 +81,6 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        #help_file = "https://qkan.eu/QKan_SWMM.html#import-aus-swmm-datei"
-        #os.startfile(help_file)
-        pass
+        help_file = "https://qkan.eu/QKan_SWMM.html#ergebnis-import-aus-swmm"
+        os.startfile(help_file)
 

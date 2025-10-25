@@ -599,13 +599,3 @@ für den Fall, dass eine Funktion nicht erfolgreich nachvollzogen werden kann.
 `Downloads Arbeitsanleitung, Kanalnetz und Zwischenzustände während der Bearbeitung <https://fh-aachen.sciebo.de/s/Qi4B3dgF9z6kbkp>`_
 
 
-Beispielprojekt Zustandsklassifizierung
----------------------------------------
-
-Das Beispielprojekt enthält einen Datensatz mit Stamm- und Zustandsdaten um an diesem die Zustandsklassifizierung 
-sowie die Substanzklassifizierung durchzuführen. Des Weiteren werden eine Anleitung und die Ergebnisdaten 
-bereitgestellt.
-
-`Downloads zum Beispielprojekt Zustandsklassifizierung <https://fh-aachen.sciebo.de/s/TDJrk8GkG7ZkBbH>`_
-
-

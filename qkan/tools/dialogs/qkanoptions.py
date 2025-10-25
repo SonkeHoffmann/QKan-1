@@ -265,5 +265,5 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
 
-        help_file = "https://qkan.eu/QKan_Daten.html#automatische-ubernahme-von-haltungsdaten-aus-schachten"
+        help_file = "https://qkan.eu//QKan_Formulare_Allgemein.html"
         os.startfile(help_file)

@@ -70,6 +70,8 @@ class AnimationDialog(_Dialog, ANIMATION_CLASS):  # type: ignore
         # noinspection PyCallByClass,PyArgumentList
         super().__init__(default_dir, tr, parent)
 
+        self.button_box.helpRequested.connect(self.click_help)
+
         self.iface = iface
         # Attach events
         self.pb_import.clicked.connect(self.select_import)
@@ -135,3 +137,6 @@ class AnimationDialog(_Dialog, ANIMATION_CLASS):  # type: ignore
             self.tf_database.setText(filename)
             self.default_dir = os.path.dirname(filename)
 
+    def click_help(self) -> None:
+        help_file = "https://qkan.eu/QKan_Ueberflutung.html"
+        os.startfile(help_file)

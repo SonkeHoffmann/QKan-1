@@ -51,7 +51,7 @@ class QgsFileDialog(QKanDBDialog, FORM_CLASS_filepath):  # type: ignore
         self.button_box.helpRequested.connect(self.click_help)
 
     def click_help(self) -> None:
-        help_file = "https://qkan.eu//Qkan_Formulare.html#datenbank-aktualisieren"
+        help_file = "https://qkan.eu//QKan_Formulare_Allgemein.html#dateipfade-suchen"
         os.startfile(help_file)
 
     def select_videopath(self) -> None:
