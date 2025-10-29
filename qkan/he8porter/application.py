@@ -65,7 +65,6 @@ class He8Porter(QKanPlugin):
         """Anzeigen des Exportformulars und anschließender Start des Exports in eine HE8-Datenbank"""
 
         # noinspection PyArgumentList
-
         if not self.export_dlg.prepareDialog(self.iface):
             return
 

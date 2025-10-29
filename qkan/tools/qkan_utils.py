@@ -12,7 +12,7 @@ from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsDataSourceUri, QgsVect
 from qgis.utils import iface, pluginDirectory
 from math import ceil
 from qkan import QKan, enums
-from ..utils import get_logger, QkanError
+from ..utils import get_logger, QkanUserError
 
 if TYPE_CHECKING:
     from ..database.dbfunc import DBConnection
@@ -257,14 +257,12 @@ def get_database_QKan(silent: bool = False) -> None:
 
     project = QgsProject.instance()
     qkanlayers = [enums.LAYERBEZ.SCHAECHTE.value, enums.LAYERBEZ.HALTUNGEN.value, enums.LAYERBEZ.EINZELFLAECHEN.value]
-    layerobjects = None
     for lnam in qkanlayers:
         layerobjects = project.mapLayersByName(lnam)
         if len(layerobjects) > 0:
             break
     else:
-        logger.warning("Fehler: Es wurde noch kein QKan-Projekt geladen")
-        raise QkanError()
+        return
 
     layer = layerobjects[0]
     # only once for loaded project
@@ -778,3 +776,33 @@ def list_selected_items(list_widget: QListWidget) -> List[str]:
     """
 
     return [_.text() for _ in list_widget.selectedItems()]
+
+def zoomAll():
+    """
+    Zoomt Karte auf Schächte oder Haltungen
+    :return: None
+    """
+    canvas = iface.mapCanvas()
+    canvas.refreshAllLayers()
+
+    layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)
+    if len(layers) > 0:
+        layer = layers[0]
+        layer.updateExtents()
+        canvas.refreshAllLayers()
+        if not (10.0 < (breite := layer.extent().width()) < 100000.0):
+            logger.debug(f"Layer Schächte nicht gefunden oder {breite=} unplausibel")
+            layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)
+            if len(layers) > 0:
+                layer = layers[0]
+                layer.updateExtents()
+                canvas.refreshAllLayers()
+                if not (10.0 < (breite := layer.extent().width()) < 100000.0):
+                    logger.debug('Zoom nicht möglich, weil Zoombereich von Haltungslayer {breite=} ebenfalls unplausibel')
+                    return
+    else:
+        logger.debug('Layer Schächte und Haltungen sind nicht vorhanden. Möglicherweise wurde kein Projekt geladen')
+        return
+
+    canvas.setExtent(layer.extent())
+    canvas.refresh()

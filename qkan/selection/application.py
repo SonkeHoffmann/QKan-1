@@ -2,7 +2,7 @@ from qgis.gui import QgisInterface
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
-from qkan.utils import QkanAbortError
+from qkan.utils import QkanUserError, QkanAbortError
 
 from qkan.utils import get_logger
 from qkan.tools.qkan_utils import get_database_QKan
@@ -45,16 +45,19 @@ class Selection(QKanPlugin):
             get_database_QKan()
             database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
             if not database_qkan:
-                logger.error(
+                logger.error_data(
                     "selection.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
                 )
-                return
+                raise QkanAbortError
 
             with DBConnection(
                     dbname=database_qkan, epsg=epsg
             ) as db_qkan:
                 if not db_qkan.connected:
-                    return False
+                    logger.error_code(
+                        "selection.application: Datenbank konnte nicht geöffnet werden. Abbruch!"
+                    )
+                    raise QkanAbortError
 
                 check_cb = {}
                 check_cb['cb_Haltung'] = self.select_dlg.cb_selectHaltungen.isChecked()
@@ -68,6 +71,10 @@ class Selection(QKanPlugin):
                     check_cb, auswahl)
                 try:
                     imp.run()
-                except QkanAbortError as e:
-                    logger.error("Fehler bei Tool Auswahl erweitern/Netzverfolgung: %s", e)
+                except QkanUserError as e:
+                    # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+                    logger.debug(f"Anwenderfehler bei Tool Auswahl erweitern/Netzverfolgung: {e}")
+                except Exception as e:
+                    logger.error_code(f"Fehler bei Tool Auswahl erweitern/Netzverfolgung: {e}")
+                    raise QkanAbortError
 

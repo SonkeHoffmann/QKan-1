@@ -9,7 +9,7 @@ from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsCircle, QgsMul
 from qkan import QKan, enums
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger, QkanError
+from qkan.utils import get_logger, QkanError, QkanDbError
 from qkan.tools.k_xml import _get_float, _get_int
 from qkan.tools.k_schadenstexte import Schadenstexte
 
@@ -161,6 +161,10 @@ class Anschlussleitung(ClassObject):
     leitnam: str = ""
     schoben: str = ""
     schunten: str = ""
+    haltnam: str= ""
+    urstation: float = 0.0
+    ursprung: str= ""
+    inFliessrichtung: bool = True
     hoehe: float = 0.0
     breite: float = 0.0
     laenge: float = 0.0
@@ -223,7 +227,6 @@ class ImportTask(Schadenstexte):
         self.ordner_bild = ordner_bild
         self.ordner_video = ordner_video
 
-
         self.data_coice= data_choice
         if data_choice == "ISYBAU Daten":
             self.datenart = "ISYBAU"
@@ -243,6 +246,8 @@ class ImportTask(Schadenstexte):
         # self.mapper_bewertungsart: Dict[str, str] = {}
         # self.mapper_druckdicht: Dict[str, str] = {}
         self.mapper_bauwerkswart: Dict[str, str] = {}
+
+        db_qkan.loadmodule('m150porter')
 
         # Load XML
         self.xml = ElementTree.ElementTree()
@@ -428,7 +433,8 @@ class ImportTask(Schadenstexte):
 
         return geop_wkb , geom_wkb, sohlhoehe, deckelhoehe
 
-    def _get_HG_GO(self, block: ElementTree.Element, name: str) -> ([str, None], [str, None], [float, None], [float, None]):
+    def _get_HG_GO(self, block: ElementTree.Element, name: str, switchDirection: bool = False) \
+            -> ([str, None], [str, None], [float, None], [float, None], [float, None], [float, None]):
         """Liest Linienobjekte sowie Sohl- und Deckelhoehe aus einem HG/GO-Block
 
         - geom:          Haltungsobjekt als Linienobjekt
@@ -437,10 +443,13 @@ class ImportTask(Schadenstexte):
 
         :param block: <HG>-Element aus m150-Datei
         :param name:  Name des Knotenelementes, nur für Fehlermeldungen
+        :param switchDirection: Kehrt Polyonrichtung um
 
         """
         sohleoben = None
         sohleunten = None
+        schoben = None              # bei HA-Leitungen
+        schunten = None             # bei HA-Leitungen
         geom = None
         blocks_go = block.findall("GO")
         if len(blocks_go) == 0:
@@ -468,13 +477,19 @@ class ImportTask(Schadenstexte):
                 if geotyp in ('L', 'Poly'):
                     gplis.append([xp, yp])
 
-                # Sohlhöhe nur beim ersten Datensatz lesen
-                if not sohleoben:
-                    sohleoben = zp  # erste Sohlhöhe
-                sohleunten = zp  # letzte Sohlhöhe
+                if schoben is None:
+                    schoben = bl_gp.findtext('GP001')   # nur erste Stützstelle
+                schunten = bl_gp.findtext('GP001')      # letzte Stützstelle
+
+                if sohleoben is None:
+                    sohleoben = zp                      # erste Sohlhöhe
+                sohleunten = zp                         # letzte Sohlhöhe
 
             if geotyp in ('Poly', 'L'):
                 ptlis = [QgsPoint(x, y) for x, y in gplis]
+                if switchDirection:
+                    # Für Hausanschlüsse: Umkehren der Richtung
+                    ptlis.reverse()
                 geom = QgsGeometry.fromPolyline(ptlis)
                 if not geom:
                     logger.error(f'Fehler bei polyline: {ptlis}')
@@ -482,13 +497,13 @@ class ImportTask(Schadenstexte):
                 logger.warning(f'm150._get_HG_coords: geotyp unbekannt: {geotyp}')
                 continue
 
-        if geom:
+        if geom is not None:
             geom_wkb = geom.asWkb()
         else:
             geom_wkb = None
             logger.warning(f"M150-Import: Konnte keine Punktobjekte finden für Haltung {name}")
 
-        return geom_wkb, sohleoben, sohleunten
+        return geom_wkb, sohleoben, sohleunten, schoben, schunten
 
     def _get_HG_201(self, block: ElementTree.Element, name: str) -> ([str, None], [str, None], [float, None], [float, None]):
         """Liest Haltungsobjekte sowie Sohl- und Deckelhoehe aus den alten m150-Feldern KG201 ff.
@@ -1691,7 +1706,7 @@ class ImportTask(Schadenstexte):
                 hoehe = (_get_float(block, "HG307", 0.0))
                 breite = (_get_float(block, "HG306", 0.0))
 
-                geom, sohleoben, sohleunten = self._get_HG_GO(block, name)
+                geom, sohleoben, sohleunten, *_ = self._get_HG_GO(block, name)
                 if geom is None:
                     logger.warning(f'Kein Punktobjekt für Haltung "{name}" gefunden. Versuche alte M150-Felder HG201 ...')
                     geom, sohleoben, sohleunten = self._get_HG_201(block, name)
@@ -1824,7 +1839,7 @@ class ImportTask(Schadenstexte):
                 strasse = block.findtext("HG102", None)
                 kommentar = block.findtext("HG999", None)
 
-                geom, sohleoben, sohleunten = self._get_HG_GO(block, name)
+                geom, sohleoben, sohleunten, *_ = self._get_HG_GO(block, name)
                 if geom is None:
                     logger.warning(f'Kein Punktobjekt für Haltung_untersucht "{name}" gefunden. Versuche alte M150-Felder HG201 ...')
                     geom, sohleoben, sohleunten = self._get_HG_201(block, name)
@@ -2117,65 +2132,38 @@ class ImportTask(Schadenstexte):
             logger.debug(f"Anzahl Anschlussleitungen: {len(blocks)}")
 
             for block in blocks:
-                name = block.findtext("HG001", None)
-                if name is None:
-                    name = block.findtext("HG002", None)
+                leitnam = block.findtext("HG011", None)
 
-                baujahr = _get_int(block,"HG303", 0)
+                baujahr = _get_int(block,"HG303", None)
 
-                schoben = block.findtext("HG003", None)
-                schunten = block.findtext("HG004", None)
+                haltnam = block.findtext("HG001", None)
+                urstation = _get_float(block, "HG007", None)
+                inFliessrichtung = (block.findtext("HG008", None) != 'G')
 
-                laenge = _get_float(block, "HG310", 0.0)
+                laenge = _get_float(block, "HG310", None)
 
                 material = block.findtext("HG304", None)
 
                 profilnam = block.findtext("HG305", None)
-                hoehe = (_get_float(block, "HG307", 0.0))
-                breite = (_get_float(block, "HG306", 0.0))
+                hoehe = _get_float(block, "HG307", None)
+                breite = _get_float(block, "HG306", None)
 
-                geom, sohleoben, sohleunten = self._get_HG_GO(block, name)
+                geom, sohleoben, sohleunten, schoben, schunten = self._get_HG_GO(
+                    block,
+                    leitnam,
+                    QKan.config.xml.import_switchHA,
+                )
                 if geom is None:
-                    logger.warning(f'Kein Punktobjekt für Anschlussleitung "{name}" gefunden. Versuche alte M150-Felder HG201 ...')
-                    geom, sohleoben, sohleunten = self._get_HG_201(block, name)
-
-                # # Haltung mit beliebig vielen Stützstellen
-                #
-                # coords = []
-                #
-                # sohleoben = None
-                # sohleunten = None
-                #
-                # for _gp in block.findall("GO/GP"):
-                #
-                #     #Sohlhöhe nur beim ersten Datensatz lesen
-                #     if not sohleoben:
-                #         sohleoben = _get_float(_gp, "GP007", 0.0)  # erste Sohlhöhe
-                #
-                #     xsch = _get_float(_gp, "GP003")
-                #     if xsch is None:
-                #         xsch = _get_float(_gp, "GP005")
-                #     ysch = _get_float(_gp, "GP004")
-                #     if ysch is None:
-                #         ysch = _get_float(_gp, "GP006")
-                #
-                #     coords.append((xsch, ysch))
-                #
-                #     # Sohlhöhe bleibt der zuletzt gelesen Wert
-                #     sohleunten = _get_float(_gp, "GP007", 0.0)
-                #
-                # # Linienobjekt aus Punktobjekten
-                # if len(coords) > 0:
-                #     pts = [QgsPoint(x, y) for x, y in coords]
-                #     line = QgsGeometry.fromPolyline(pts)
-                #     geom = line.asWkb()
-                # else:
-                #     geom = None
+                    logger.warning(f'Kein Punktobjekt für Anschlussleitung "{leitnam}" gefunden. Versuche alte M150-Felder HG201 ...')
+                    geom, sohleoben, sohleunten = self._get_HG_201(block, leitnam)
 
                 yield Anschlussleitung(
-                    leitnam=name,
+                    leitnam=leitnam,
                     schoben=schoben,
                     schunten=schunten,
+                    haltnam=haltnam,
+                    urstation=urstation,
+                    inFliessrichtung=inFliessrichtung,
                     hoehe=hoehe,
                     breite=breite,
                     laenge=laenge,
@@ -2244,6 +2232,7 @@ class ImportTask(Schadenstexte):
 
             params = {'leitnam': anschlussleitung.leitnam,
                       'schoben': anschlussleitung.schoben, 'schunten': anschlussleitung.schunten,
+                      'haltnam': anschlussleitung.haltnam,
                       'hoehe': anschlussleitung.hoehe, 'breite': anschlussleitung.breite,
                       'laenge': anschlussleitung.laenge, 'material': material,
                       'sohleoben': anschlussleitung.sohleoben, 'sohleunten': anschlussleitung.sohleunten,
@@ -2259,8 +2248,25 @@ class ImportTask(Schadenstexte):
                     mute_logger=False,
                     parameters=params,
             ):
-                return
+                logger.error_data("Fehler beim Einfügen")
+                raise QkanDbError
 
+            if not anschlussleitung.inFliessrichtung:
+                if not self.db_qkan.sqlyml(
+                    sqlnam='m150_im_stationierung_umkehren',
+                    stmt_category='m150_im_stationierung_umkehren',
+                    parameters={'leitnam': anschlussleitung.leitnam}
+                ):
+                    logger.error_data("Fehler beim Einfügen")
+                    raise QkanDbError
+
+        # if QKan.config.xml.import_switchHA:
+        #     if not self.db_qkan.sqlyml(
+        #             sqlnam='m150_im_ha_umkehren',
+        #             stmt_category='m150_im_ha_umkehren',
+        #     ):
+        #         logger.error_data("Fehler bei Korrektur der Anschlussrichtung Hausanschlussleitungen")
+        #         raise QkanDbError
 
         self.db_qkan.commit()
 
@@ -2289,7 +2295,7 @@ class ImportTask(Schadenstexte):
                 strasse = block.findtext("HG102", None)
                 kommentar = block.findtext("HG999", None)
 
-                geom, sohleoben, sohleunten = self._get_HG_GO(block, name)
+                geom, sohleoben, sohleunten, *_ = self._get_HG_GO(block, name)
                 if geom is None:
                     logger.warning(f'Kein Punktobjekt für Anschlussleitung_untersucht "{name}" gefunden. Versuche alte M150-Felder HG201 ...')
                     geom, sohleoben, sohleunten = self._get_HG_201(block, name)

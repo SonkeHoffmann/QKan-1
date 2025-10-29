@@ -24,13 +24,9 @@ __author__ = "Joerg Hoettges"
 __date__ = "November 2024"
 __copyright__ = "(C) 2016-2024, Joerg Hoettges"
 
-from qkan.utils import get_logger, QkanAbortError, QkanDbError
+from qkan.utils import get_logger, QkanAbortError, QkanDbError, QkanUserError
 
 logger = get_logger("QKan.dbfunc")
-
-
-class DBConnectError(Exception):
-    """Raised when connecting to the database fails."""
 
 
 class DBConnection:
@@ -141,7 +137,10 @@ class DBConnection:
         # noch nicht gelesen
         if not QKan.dbtype or not QKan.sqls.get(module):
             QKan.dbtype = self.dbtype
-            if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
+            if QKan.dbtype is None:
+                logger.warning_user("Es wurde noch kein Projekt geladen!")
+                raise QkanUserError
+            elif QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
                 sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'sqlite.yml')
             elif QKan.dbtype == enums.QKanDBChoice.POSTGIS:
                 sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgres.yml')
@@ -178,8 +177,8 @@ class DBConnection:
             self.dbname = QKan.config.database.qkan
             self.dbtype = QKan.dbtype
             if not self.dbname:
-                logger.warning("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
-                raise DBConnectError()
+                logger.warning_user("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
+                raise QkanUserError
         else:
             self.dbtype = enums.QKanDBChoice.SPATIALITE
 
@@ -189,8 +188,11 @@ class DBConnection:
         # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
         # noch nicht gelesen
 
-        self.loadmodule('database')
-        self.loadmodule('tools')
+        try:
+            self.loadmodule('database')
+            self.loadmodule('tools')
+        except QkanUserError:
+            return
 
         # Load existing database
         if self.dbtype == enums.QKanDBChoice.SPATIALITE:
@@ -563,8 +565,10 @@ class DBConnection:
                 f"sqlite3-Fehler {err} in dbqkan.DBConnection: "
                 f"Verbindung zur Datenbank {self.dbname} konnte nicht geloest werden.\n"
             )
-            logger.error(fehlermeldung)
+            logger.debug(fehlermeldung)
             raise Exception(f"{self.__class__.__name__}: {fehlermeldung}")
+        except:
+            logger.debug('Fehler: Vermutlich ist kein Projekt geladen...')
 
     def attrlist(self, tabnam: str) -> Union[List[str]]:
         """Gibt Spaltenliste zurück."""

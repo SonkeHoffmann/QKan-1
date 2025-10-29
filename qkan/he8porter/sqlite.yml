@@ -698,7 +698,7 @@ ON eg_he.Name = eg_qk.flnam
 WHERE (IsTwEinzugsflaeche and :choice_tf)
     AND eg_qk.pk IS NULL"
 
-he8_count_sel_haltungen: "
+he8_count_haltungen_sel: "
 SELECT count() AS anz
 FROM haltungen AS ha
 JOIN sel_haltungen AS sel           ON sel.pk = ha.pk

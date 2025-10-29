@@ -1,7 +1,7 @@
 from qgis.utils import spatialite_connect
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger, QkanAbortError
+from qkan.utils import get_logger, QkanUserError
 
 from qkan.laengsschnitt.dijkstra import Netz, find_route
 from qkan.tools.qkan_utils import get_qkanlayer_attributes
@@ -218,7 +218,8 @@ class Select:
                 msg = (
                     f"Es wurde keine Auswahl getroffen!"
                 )
-                raise QkanAbortError(msg)
+                logger.warning_user(msg)
+                raise QkanUserError(msg)
 
             if x > 1:
                 logger.error_user(
@@ -309,7 +310,7 @@ class Select:
                 msg = (
                     f"Es wurde keine Auswahl getroffen!"
                 )
-                raise QkanAbortError(msg)
+                raise QkanUserError(msg)
 
             if x > 1:
                 logger.error_user(
@@ -322,18 +323,19 @@ class Select:
                     ziel = feature['Schachtname']
 
                 self.db_qkan.sql("""
-                                                SELECT haltnam, schoben, schunten, coalesce(laenge,ST_LENGTH(geom))
-                                                FROM haltungen
-                                            """)
+                    SELECT haltnam, schoben, schunten, coalesce(laenge,ST_LENGTH(geom))
+                    FROM haltungen""")
                 netz = self.db_qkan.fetchall()
 
                 self.db_qkan.sql("""
-                                                SELECT schnam
-                                                FROM schaechte WHERE schachttyp IN ('Schacht','Auslass') and schaechte.schnam NOT IN (select schoben from haltungen)""")
+                    SELECT schnam
+                    FROM schaechte
+                    WHERE schachttyp IN ('Schacht','Auslass', 'Speicher')
+                      AND schaechte.schnam NOT IN (select schoben from haltungen)"""
+                 )
                 startpunkte = []
                 for i in self.db_qkan.fetchall():
                     startpunkte.append(i[0])
-
 
                 dists, vorgaenger, haltungen = self.laengster_weg_unten(netz, ziel)
                 haltungen_ges = []
@@ -343,7 +345,6 @@ class Select:
                         pfad, pfad_haltungen = self.rekonstruier_pfad(start, ziel, vorgaenger, haltungen)
                         haltungen_ges.extend(pfad_haltungen)
                         schaechte_ges.extend(pfad)
-
 
                 layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)[0]
 
@@ -403,7 +404,7 @@ class Select:
                 msg = (
                     f"Es wurde keine Auswahl getroffen!"
                 )
-                raise QkanAbortError(msg)
+                raise QkanUserError(msg)
 
             if x > 1 or x is None:
                 logger.error_user(
@@ -704,7 +705,7 @@ class Select:
                 msg = (
                     f"Es wurde keine Auswahl getroffen!"
                 )
-                raise QkanAbortError(msg)
+                raise QkanUserError(msg)
 
             for i in self.selected:
                 attrs = i["pk"]
@@ -732,6 +733,9 @@ class Select:
 
             route = find_route(self.db_qkan, liste)
             liste = []
+            if route is None:
+                logger.warning_user("Zwischen den ausgewählten Objekten besteht keine Verbindung. Bitte Auswahl anpassen!")
+                raise QkanUserError
             for x in route[0]:
                 liste.append(x)
             liste2 = []
