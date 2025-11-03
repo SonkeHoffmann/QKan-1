@@ -58,6 +58,7 @@ class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
         self.select_ordner_dgm.clicked.connect(self.select_dgm_speicher)
 
         self.epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
+        self.button_box.helpRequested.connect(self.click_help)
 
 
     def select_dgm_ordner(self):
@@ -81,4 +82,9 @@ class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
 
         if filename:
             self.speicher_dgm.setText(filename)
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Flaechenverarbeitung.html#neigungsklasse-ermitteln"
+        os.startfile(help_file)
 

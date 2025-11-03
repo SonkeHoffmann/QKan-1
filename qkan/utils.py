@@ -26,6 +26,15 @@ class QkanDbError(QkanError):
     """Raised when a database error occurs"""
 
 
+class QkanUserError(QkanError):
+    """Raised when a User error occurs.
+
+    Vereinbarung:
+     - Meldung an den User direkt im Modul mit warning_user().
+     - keine Meldung an den User im aufrufenden Modul
+    """
+
+
 def _translate_level(level: int) -> Qgis.MessageLevel:
     """Translate logging level to Qgis logging level."""
     return {

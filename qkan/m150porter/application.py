@@ -9,7 +9,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import get_database_QKan
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
-from qkan.tools.qkan_utils import loadLayer
+from qkan.tools.qkan_utils import loadLayer, zoomAll
 
 from ._export import ExportTask
 from ._import import ImportTask
@@ -50,14 +50,21 @@ class M150Porter(QKanPlugin):
         self.import_dlg.close()
 
     def run_export(self) -> None:
+        """Anzeigen des Exportformulars und anschließender Start des Exports in eine M150-XML-Datei"""
+
+        # noinspection PyArgumentList
+        if not self.export_dlg.prepareDialog(self.iface):
+            return
+
+        # Formular anzeigen
         self.export_dlg.show()
 
         # Fill dialog with current info
-        get_database_QKan()
-        self.database_name = QKan.config.database.qkan
-        if self.database_name:
-            self.export_dlg.tf_database.setText(self.database_name)
-
+        # get_database_QKan()
+        # self.database_name = QKan.config.database.qkan
+        # if self.database_name:
+        #     self.export_dlg.tf_database.setText(self.database_name)
+        #
         if self.export_dlg.exec_():
             export_file = self.export_dlg.tf_export.text()
             self.database_name = self.export_dlg.tf_database.text()
@@ -87,11 +94,6 @@ class M150Porter(QKanPlugin):
             QKan.config.check_export.export_wehre = (
                 self.export_dlg.cb_export_wehre.isChecked()
             )
-
-            teilgebiete = [
-                _.text() for _ in self.export_dlg.lw_teilgebiete.selectedItems()
-            ]
-            QKan.config.selections.teilgebiete = teilgebiete
 
             QKan.config.save()
 
@@ -123,22 +125,14 @@ class M150Porter(QKanPlugin):
             # Read from form and save to config
             QKan.config.database.qkan = self.import_dlg.tf_database.text()
             QKan.config.project.file = self.import_dlg.tf_project.text()
-            #QKan.config.xml.richt_choice = self.import_dlg.comboBox.currentText()
             QKan.config.xml.data_choice = self.import_dlg.comboBox_2.currentText()
             QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text()
             QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text()
 
-            QKan.config.xml.import_stamm = (
-                self.import_dlg.checkBox.isChecked()
-            )
-
-            QKan.config.xml.import_haus = (
-                self.import_dlg.checkBox_2.isChecked()
-            )
-
-            QKan.config.xml.import_zustand = (
-                self.import_dlg.checkBox_3.isChecked()
-            )
+            QKan.config.xml.import_stamm = self.import_dlg.cb_impStamm.isChecked()
+            QKan.config.xml.import_zustand = self.import_dlg.cb_zustand.isChecked()
+            QKan.config.xml.import_haus = self.import_dlg.cb_impAnschluesse.isChecked()
+            QKan.config.xml.import_switchHA = self.import_dlg.cb_switchAnschluesse.isChecked()
 
             QKan.config.save()
 

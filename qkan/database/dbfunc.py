@@ -24,13 +24,9 @@ __author__ = "Joerg Hoettges"
 __date__ = "November 2024"
 __copyright__ = "(C) 2016-2024, Joerg Hoettges"
 
-from qkan.utils import get_logger, QkanAbortError, QkanDbError
+from qkan.utils import get_logger, QkanAbortError, QkanDbError, QkanUserError
 
 logger = get_logger("QKan.dbfunc")
-
-
-class DBConnectError(Exception):
-    """Raised when connecting to the database fails."""
 
 
 class DBConnection:
@@ -141,19 +137,28 @@ class DBConnection:
         # noch nicht gelesen
         if not QKan.dbtype or not QKan.sqls.get(module):
             QKan.dbtype = self.dbtype
-            if QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
+            if QKan.dbtype is None:
+                logger.warning_user("Es wurde noch kein Projekt geladen!")
+                raise QkanUserError
+            elif QKan.dbtype == enums.QKanDBChoice.SPATIALITE:
                 sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'sqlite.yml')
             elif QKan.dbtype == enums.QKanDBChoice.POSTGIS:
                 sqlfilename = os.path.join(pluginDirectory("qkan"), module, 'postgres.yml')
             else:
                 logger.error_code(f'{self.__class__.__name__}: Datenbanktyp {QKan.dbtype} nicht zulässig!')
+                raise QkanDbError
 
             try:
                 with open(sqlfilename) as fr:
                     QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
                 logger.debug(f'{self.__class__.__name__}: SQL-Liste aus Datei {sqlfilename=} geladen')
-            except:
-                logger.error_code(f'{self.__class__.__name__}: '
+            except UnicodeDecodeError as err:
+                logger.error_code(f'{self.__class__.__name__}, Fehler {err}: '
+                                  f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden, '
+                                  f'weil sie nicht UTF-8-codiert ist. Bitte umwandeln')
+                raise QkanAbortError
+            except BaseException as err:
+                logger.error_code(f'{self.__class__.__name__}, Fehler {err}: '
                                   f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden')
                 raise QkanAbortError
 
@@ -172,8 +177,8 @@ class DBConnection:
             self.dbname = QKan.config.database.qkan
             self.dbtype = QKan.dbtype
             if not self.dbname:
-                logger.warning("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
-                raise DBConnectError()
+                logger.warning_user("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
+                raise QkanUserError
         else:
             self.dbtype = enums.QKanDBChoice.SPATIALITE
 
@@ -183,8 +188,11 @@ class DBConnection:
         # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
         # noch nicht gelesen
 
-        self.loadmodule('database')
-        self.loadmodule('tools')
+        try:
+            self.loadmodule('database')
+            self.loadmodule('tools')
+        except QkanUserError:
+            return
 
         # Load existing database
         if self.dbtype == enums.QKanDBChoice.SPATIALITE:
@@ -235,9 +243,9 @@ class DBConnection:
                         self.upgrade_database()
                     else:
                         logger.warning_user(
-                            f"Datenbank {self.current_dbversion.base_version} stimmt nicht \n"
-                            f"mit der aktuellen QKan-Version {self.actDbVersion.base_version} "
-                            f"überein und muss aktualisiert werden!",
+                            f"\n\nDie Datenbank hat die Versionsnummer {self.current_dbversion.base_version}. und entspricht \n"
+                            f"nicht der aktuellen Versionsnummer {self.actDbVersion.base_version}. Bitte aktualisieren Sie "
+                            f'die Datenbank mit dem Menü "QKan-Datenbank aktualisieren"!\n\n',
                         )
                         # logger.info(
                         #     f"Projekt muss aktualisiert werden. Die QKan-Version der "
@@ -557,8 +565,10 @@ class DBConnection:
                 f"sqlite3-Fehler {err} in dbqkan.DBConnection: "
                 f"Verbindung zur Datenbank {self.dbname} konnte nicht geloest werden.\n"
             )
-            logger.error(fehlermeldung)
+            logger.debug(fehlermeldung)
             raise Exception(f"{self.__class__.__name__}: {fehlermeldung}")
+        except:
+            logger.debug('Fehler: Vermutlich ist kein Projekt geladen...')
 
     def attrlist(self, tabnam: str) -> Union[List[str]]:
         """Gibt Spaltenliste zurück."""

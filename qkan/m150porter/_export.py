@@ -6,12 +6,12 @@ from xml.dom import minidom
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from qgis.PyQt.QtWidgets import QProgressBar
-from qgis.core import Qgis
+from qgis.core import Qgis, QgsGeometry
 
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import fortschritt
-from qkan.utils import get_logger, QkanDbError
+from qkan.utils import get_logger, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.xml.export")
 
@@ -203,6 +203,7 @@ class ExportTask:
             schnam,
             deckelhoehe,
             sohlhoehe,
+            tiefe,
             durchm,
             entwart,
             baujahr,
@@ -216,7 +217,7 @@ class ExportTask:
                 abw,
                 {
                     "KG001": schnam,
-                    "KG211": deckelhoehe - sohlhoehe,
+                    "KG211": tiefe,
                     "KG302": entwart,
                     "KG303": baujahr,
                     "KG305": "A",
@@ -244,6 +245,7 @@ class ExportTask:
                     "GP007": deckelhoehe,
                 },
             )
+
     def _export_schaechte(self) -> None:
         if not QKan.config.check_export.schaechte:
             return
@@ -265,6 +267,7 @@ class ExportTask:
             schnam,
             deckelhoehe,
             sohlhoehe,
+            tiefe,
             durchm,
             entwart,
             baujahr,
@@ -278,7 +281,7 @@ class ExportTask:
                 abw,
                 {
                     "KG001": schnam,
-                    "KG211": deckelhoehe - sohlhoehe,
+                    "KG211": tiefe,
                     "KG302": entwart,
                     "KG303": baujahr,
                     "KG305": "S",
@@ -289,66 +292,6 @@ class ExportTask:
             )
 
             geo = SubElement(abw, "GO")
-            _create_children_text(
-                geo,
-                {
-                    "GO001": schnam,
-
-                },
-            )
-
-            _create_children_text(
-                SubElement(geo, "GP"),
-                {
-                    "GP001": schnam,
-                    "GP005": xsch,
-                    "GP006": ysch,
-                    "GP007": deckelhoehe,
-                },
-            )
-
-    def _export_schaechte_inspektion(self) -> None:
-        if not QKan.config.check_export.schaechte:
-            return
-
-        if QKan.config.selections.selectedObjects:
-            sqlnam = "m150_ex_schachtinspektionen_sel"
-        else:
-            sqlnam = "m150_ex_schachtinspektionen_all"
-
-        if not self.db_qkan.sqlyml(
-            sqlnam=sqlnam,
-            stmt_category=sqlnam,
-        ):
-            logger.error_code(f"{self.__class__.__name__}: Fehler in 'm150 Export Schachtinspektionen'")
-            raise QkanDbError
-
-        for (
-            schnam,
-            deckelhoehe,
-            sohlhoehe,
-            durchm,
-            entwart,
-            kommentar,
-            simstatus,
-            xsch,
-            ysch,
-        ) in self.db_qkan.fetchall():
-            abw = SubElement(self.root, "KG")
-            _create_children_text(
-                abw,
-                {
-                    "KG001": schnam,
-                    "KG211": deckelhoehe - sohlhoehe,
-                    "KG302": entwart,
-                    "KG305": "S",
-                    "KG309": durchm,
-                    "KG401": simstatus,
-                    "KG999": kommentar,
-                },
-            )
-
-            geo = SubElement(abw, "GO")                     # todo: Schacht- und Deckelhöhe als Punktobjekt
             _create_children_text(
                 geo,
                 {
@@ -388,6 +331,7 @@ class ExportTask:
             schnam,
             deckelhoehe,
             sohlhoehe,
+            tiefe,
             durchm,
             entwart,
             baujahr,
@@ -401,7 +345,7 @@ class ExportTask:
                 abw,
                 {
                     "KG001": schnam,
-                    "KG211": deckelhoehe - sohlhoehe,
+                    "KG211": tiefe,
                     "KG302": entwart,
                     "KG303": baujahr,
                     "KG305": "B",
@@ -466,10 +410,7 @@ class ExportTask:
             innenmaterial,
             simstatus,
             kommentar,
-            xschob,
-            yschob,
-            xschun,
-            yschun,
+            gline,
         ) in self.db_qkan.fetchall():
 
             abw = SubElement(self.root, "HG")
@@ -496,96 +437,17 @@ class ExportTask:
                 },
             )
 
-            kante = SubElement(abw, "GO")
-            _create_children_text(
-                kante,
-                {
-                    "GO001": haltnam,
-                    "GO002": 'H',
-                },
-            )
-
-            geom = SubElement(kante, "GP")
-            _create_children_text(
-                geom,
-                {
-                    "GP001": schoben,
-                    "GP005": xschob,
-                    "GP006": yschob,
-                    "GP007": sohleoben,
-                },
-            )
-
-            kante = SubElement(abw, "GO")
-            geom = SubElement(kante, "GP")
-            _create_children_text(
-                geom,
-                {
-                    "GP001": schunten,
-                    "GP005": xschun,
-                    "GP006": yschun,
-                    "GP007": sohleunten,
-                },
-            )
-
-    def _export_haltungen_inspektion(self) -> None:
-        if not QKan.config.check_export.haltungen:
-            # or not self.hydraulik_objekte
-            return
-
-        if QKan.config.selections.selectedObjects:
-            sqlnam = "m150_ex_haltungsinspektionen_sel"
-        else:
-            sqlnam = "m150_ex_haltungsinspektionen_all"
-
-        if not self.db_qkan.sqlyml(
-            sqlnam=sqlnam,
-            stmt_category=sqlnam,
-        ):
-            logger.error_code(f"{self.__class__.__name__}: Fehler in 'm150 Export Haltungen Inspektion'")
-            raise QkanDbError
-
-        for (
-            haltnam,
-            schoben,
-            schunten,
-            hoehe,
-            breite,
-            laenge,
-            sohleoben,
-            sohleunten,
-            profil,
-            strasse,
-            material,
-            entwart,
-            simstatus,
-            xschob,
-            yschob,
-            xschun,
-            yschun,
-            kommentar,
-        ) in self.db_qkan.fetchall():
-
-            abw = SubElement(self.root, "HG")
-            _create_children_text(
-                abw,
-                {
-                    "HG001": haltnam,
-                    "HG003": schoben,
-                    "HG004": schunten,
-                    "HG102": strasse,
-                    "HG301": 'K',
-                    "HG302": entwart,
-                    "HG304": material,
-                    "HG305": profil,
-                    "HG306": breite,
-                    "HG307": hoehe,
-                    "HG310": laenge,
-                    "HG313": 'A',
-                    "HG401": simstatus,
-                    "HG999": kommentar,
-                },
-            )
+            gobj = QgsGeometry()
+            gobj.fromWkb(gline)
+            ptlis = gobj.asPolyline()
+            npt = len(ptlis)
+            if npt == 2:
+                gtype = 'L'
+            elif npt > 2:
+                gtype = 'Poly'
+            else:
+                logger.debug(f"Die Haltungsgeometrie {gobj=} hat weniger als 2 Punkte")
+                continue
 
             kante = SubElement(abw, "GO")
             _create_children_text(
@@ -593,31 +455,43 @@ class ExportTask:
                 {
                     "GO001": haltnam,
                     "GO002": 'H',
+                    "GO003": gtype,
                 },
             )
 
-            geom = SubElement(kante, "GP")
-            _create_children_text(
-                geom,
-                {
-                    "GP001": schoben,
-                    "GP005": xschob,
-                    "GP006": yschob,
-                    "GP007": sohleoben,
-                },
-            )
+            for ip, ptobj in enumerate(ptlis):
+                geom = SubElement(kante, "GP")
 
-            kante = SubElement(abw, "GO")
-            geom = SubElement(kante, "GP")
-            _create_children_text(
-                geom,
-                {
-                    "GP001": schunten,
-                    "GP005": xschun,
-                    "GP006": yschun,
-                    "GP007": sohleunten,
-                },
-            )
+                if ip == 1:
+                    _create_children_text(
+                        geom,
+                        {
+                            "GP001": schoben,
+                            "GP005": ptobj.x(),
+                            "GP006": ptobj.x(),
+                            "GP007": sohleoben,
+                        },
+                    )
+
+                elif ip == npt:
+                    _create_children_text(
+                        geom,
+                        {
+                            "GP001": schunten,
+                            "GP005": ptobj.x(),
+                            "GP006": ptobj.x(),
+                            "GP007": sohleunten,
+                        },
+                    )
+                else:
+                    _create_children_text(
+                        geom,
+                        {
+                            "GP001": f'{haltnam}-{ip - 1}',
+                            "GP005": ptobj.x(),
+                            "GP006": ptobj.x(),
+                        },
+                    )
 
     def _export_anschlussleitungen(self) -> None:
         if not QKan.config.check_export.anschlussleitungen:
@@ -640,6 +514,8 @@ class ExportTask:
             leitnam,
             schoben,
             schunten,
+            haltnam,
+            urstation,
             hoehe,
             breite,
             laenge,
@@ -649,15 +525,12 @@ class ExportTask:
             material,
             entwart,
             simstatus,
-            xschob,
-            yschob,
-            xschun,
-            yschun,
             baujahr,
             aussendurchmesser,
             profilauskleidung,
             innenmaterial,
-            kommentar
+            kommentar,
+            gline
         ) in self.db_qkan.fetchall():
             abw = SubElement(self.root, "HG")
             _create_children_text(
@@ -666,6 +539,10 @@ class ExportTask:
                     "HG001": leitnam,
                     "HG003": schoben,
                     "HG004": schunten,
+                    "HG005": haltnam,
+                    "HG006": 'H',
+                    "HG007": urstation,
+                    "HG008": 'I',                   # QKan-Standard: in Fließrichtung
                     "HG301": 'K',
                     "HG302": entwart,
                     "HG303": baujahr,
@@ -718,6 +595,8 @@ class ExportTask:
         Export der Kanaldaten aus einer QKan-SpatiaLite-Datenbank und Schreiben in eine XML-Datei
         """
         iface = QKan.instance.iface
+
+        self.db_qkan.loadmodule("m150porter")
 
         # Create progress bar
         progress_bar = QProgressBar(iface.messageBar())

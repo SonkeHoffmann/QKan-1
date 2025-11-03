@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>701</height>
+    <width>600</width>
+    <height>686</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -61,8 +61,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>594</width>
-        <height>699</height>
+        <width>598</width>
+        <height>684</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -586,7 +586,7 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="cb_impStamm">
           <property name="geometry">
            <rect>
             <x>20</x>
@@ -605,10 +605,10 @@
            <string>Stammdaten</string>
           </property>
          </widget>
-         <widget class="QCheckBox" name="checkBox_2">
+         <widget class="QCheckBox" name="cb_impAnschluesse">
           <property name="geometry">
            <rect>
-            <x>130</x>
+            <x>190</x>
             <y>20</y>
             <width>131</width>
             <height>17</height>
@@ -624,10 +624,10 @@
            <string>Hausanschlüsse</string>
           </property>
          </widget>
-         <widget class="QCheckBox" name="checkBox_3">
+         <widget class="QCheckBox" name="cb_zustand">
           <property name="geometry">
            <rect>
-            <x>250</x>
+            <x>400</x>
             <y>20</y>
             <width>131</width>
             <height>17</height>

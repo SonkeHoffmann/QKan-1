@@ -3,8 +3,8 @@ SELECT
     ha.haltnam,
     ha.schoben,
     ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
+    round(IIF(ha.breite>20, ha.breite, ha.breite*1000.0),1) AS breite,
     round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
     round(ha.sohleoben,3) AS sohleoben,
     round(ha.sohleunten,3) AS sohleunten,
@@ -12,32 +12,33 @@ SELECT
     ha.strasse,
     ma.m150 AS material,
     ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
     ha.baujahr,
-    round(ha.aussendurchmesser,1) AS aussendurchmesser,
     ha.profilauskleidung,
     mi.m150 AS innenmaterial,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
+    si.m150                                                 AS simstatus,
+    ha.kommentar,
+    ASBinary(ha.geom) AS gline
 FROM haltungen AS ha
 JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
 JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
                                     ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
                                     ON ha.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+LEFT JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL)
+"
+
+m150_count_haltungen_all: "
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+                                    ON ha.entwart = ea.bezeichnung
+JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
+                                    ON ha.profilnam = pf.profilnam
 "
 
 m150_ex_haltungen_sel: "
@@ -45,8 +46,8 @@ SELECT
     ha.haltnam,
     ha.schoben,
     ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
+    round(IIF(ha.breite>20, ha.breite, ha.breite*1000.0),1) AS breite,
     round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
     round(ha.sohleoben,3) AS sohleoben,
     round(ha.sohleunten,3) AS sohleunten,
@@ -54,33 +55,35 @@ SELECT
     ha.strasse,
     ma.m150 AS material,
     ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
     ha.baujahr,
-    round(ha.aussendurchmesser,1) AS aussendurchmesser,
     ha.profilauskleidung,
     mi.m150 AS innenmaterial,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
+    si.m150                                                 AS simstatus,
+    ha.kommentar,
+    ASBinary(ha.geom) AS gline
 FROM haltungen AS ha
 JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
 JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON ha.entwart = ea.bezeichnung
 JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
                                     ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
                                     ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
+LEFT JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
                                     ON ha.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+LEFT JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL)
+"
+
+m150_count_haltungen_sel: "
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
+                                    ON ha.entwart = ea.bezeichnung
+JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
+                                    ON ha.profilnam = pf.profilnam
 "
 
 m150_ex_wehre_all: "
@@ -89,7 +92,7 @@ SELECT
     ha.schoben,
     ha.schunten,
     ha.sohleoben,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
     si.m150                                                 AS simstatus,
     ha.kommentar,
     ea.m150 AS entwart,
@@ -109,7 +112,7 @@ SELECT
     ha.schoben,
     ha.schunten,
     ha.sohleoben,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
     si.m150                                                 AS simstatus,
     ha.kommentar,
     ea.m150 AS entwart,
@@ -163,82 +166,12 @@ JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS s
 WHERE haltungstyp = 'Pumpe'
 "
 
-m150_ex_haltungsinspektionen_all: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
-    round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
-    round(ha.sohleoben,3) AS sohleoben,
-    round(ha.sohleunten,3) AS sohleunten,
-    pf.m150 AS profil,
-    ha.strasse,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
-FROM haltungen AS ha
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-"
-
-m150_ex_haltungsinspektionen_sel: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
-    round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
-    round(ha.sohleoben,3) AS sohleoben,
-    round(ha.sohleunten,3) AS sohleunten,
-    pf.m150 AS profil,
-    ha.strasse,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
-FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-"
-
 m150_ex_schaechte_all: "
 SELECT
     sc.schnam,
     round(sc.deckelhoehe,3)         AS deckelhoehe,
     round(sc.sohlhoehe,3)           AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
     round(sc.durchm,1)              AS durchm,
     ea.m150                         AS entwart,
     sc.baujahr,
@@ -254,11 +187,22 @@ JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS s
 WHERE sc.schachttyp = :schachttyp
 "
 
+m150_count_schaechte_all: "
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
+                                    ON sc.entwart = ea.bezeichnung
+JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+                                    ON sc.simstatus = si.bezeichnung
+WHERE sc.schachttyp <> 'Anschlusschacht'
+"
+
 m150_ex_schaechte_sel: "
 SELECT
     sc.schnam,
     round(sc.deckelhoehe,3)         AS deckelhoehe,
     round(sc.sohlhoehe,3)           AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
     round(sc.durchm,1)              AS durchm,
     ea.m150                         AS entwart,
     sc.baujahr,
@@ -275,11 +219,23 @@ JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS s
 WHERE sc.schachttyp = :schachttyp
 "
 
+m150_count_schaechte_sel: "
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
+                                    ON sc.entwart = ea.bezeichnung
+JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
+                                    ON sc.simstatus = si.bezeichnung
+WHERE sc.schachttyp <> 'Anschlusschacht'
+"
+
 m150_ex_anschlussleitungen_all: "
 SELECT
     al.leitnam,
     al.schoben,
     al.schunten,
+    al.haltnam,
+    al.urstation,
     al.hoehe,
     al.breite,
     al.laenge,
@@ -289,15 +245,12 @@ SELECT
     ma.m150 AS material,
     ea.m150 AS entwart,
     si.m150 AS simstatus,
-    round(x(PointN(al.geom, 1)),3) AS xschob,
-    round(y(PointN(al.geom, 1)),3) AS yschob,
-    round(x(PointN(al.geom, -1)),3) AS xschun,
-    round(y(PointN(al.geom, -1)),3) AS yschun,
     al.baujahr,
     al.aussendurchmesser,
     al.profilauskleidung,
     mi.m150 AS innenmaterial,
-    al.kommentar
+    al.kommentar,
+    ASBinary(al.geom) AS gline
 FROM anschlussleitungen AS al
 JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
                                     ON al.entwart = ea.bezeichnung
@@ -316,7 +269,7 @@ WHERE pf.m150 IS NOT NULL
   AND si.m150 IS NOT NULL
 "
 
-# Anschlussleitungen werden indirekt über Haltungen selektiert
+# Anschlussleitungen werden indirekt Ã¼ber Haltungen selektiert
 m150_ex_anschlussleitungen_sel: "
 WITH sel AS (
     SELECT al.pk
@@ -328,6 +281,7 @@ SELECT
     al.leitnam,
     al.schoben,
     al.schunten,
+    al.haltnam,
     al.hoehe,
     al.breite,
     al.laenge,
@@ -337,15 +291,12 @@ SELECT
     ma.m150 AS material,
     ea.m150 AS entwart,
     si.m150 AS simstatus,
-    round(x(PointN(al.geom, 1)),3) AS xschob,
-    round(y(PointN(al.geom, 1)),3) AS yschob,
-    round(x(PointN(al.geom, -1)),3) AS xschun,
-    round(y(PointN(al.geom, -1)),3) AS yschun,
     al.baujahr,
     al.aussendurchmesser,
     al.profilauskleidung,
     mi.m150 AS innenmaterial,
-    al.kommentar
+    al.kommentar,
+    ASBinary(al.geom) AS gline
 FROM anschlussleitungen AS al
 JOIN sel                            ON sel.pk = al.pk
 JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
@@ -370,6 +321,7 @@ SELECT
     sc.schnam,
     round(sc.deckelhoehe,3)         AS deckelhoehe,
     round(sc.sohlhoehe,3)           AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
     round(sc.durchm,1)              AS durchm,
     ea.m150                         AS entwart,
     si.m150                         AS simstatus,
@@ -389,6 +341,7 @@ SELECT
     sc.schnam,
     round(sc.deckelhoehe,3)         AS deckelhoehe,
     round(sc.sohlhoehe,3)           AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
     round(sc.durchm,1)              AS durchm,
     ea.m150                         AS entwart,
     si.m150                         AS simstatus,
@@ -402,4 +355,28 @@ JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS
 JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON sc.simstatus = si.bezeichnung
 WHERE sc.schachttyp = 'Schacht'
+"
+
+m150_im_stationierung_umkehren: "
+UPDATE anschlussleitungen
+SET ursprung = q.ursprung
+FROM (
+    SELECT ha.laenge - al.ursprung AS ursprung
+    FROM haltungen AS ha
+    JOIN anschlussleitungen AS al ON al.haltnam = ha.haltnam
+    WHERE al.pk = :leitnam
+) AS q
+WHERE anschlussleitungen.pk = :leitnam
+"
+
+m150_im_ha_umkehren: "
+UPDATE anschlussleitungen
+SET geom = q.geom
+FROM (
+    SELECT al.pk, ST_Reverse(al.geom) AS geom
+    FROM haltungen AS ha
+    JOIN anschlussleitungen AS al ON al.haltnam = ha.haltnam
+    WHERE ST_Distance(PointN(ha.geom, 1), al.geom) < ST_Distance(PointN(al.geom, -1), ha.geom)
+) AS q
+WHERE anschlussleitungen.pk = q.pk
 "

@@ -92,7 +92,7 @@ class SurfaceToolDialog(_Dialog, SURFACE_CLASS):  # type: ignore
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        help_file = "https://qkan.eu/QKan_Flaechenverarbeitung.html#entferne-uberlappungenl"
+        help_file = "https://qkan.eu/QKan_Flaechenverarbeitung.html#entferne-uberlappungen"
         os.startfile(help_file)
 
 
@@ -402,5 +402,5 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        help_file = "https://qkan.eu/Qkan_Formulare.html#erzeugung-von-haltungsflachen"
+        help_file = "https://qkan.eu/QKan_Flaechenverarbeitung.html#erzeugung-von-haltungsflachen"
         os.startfile(help_file)

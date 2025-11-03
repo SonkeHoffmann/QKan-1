@@ -33,6 +33,7 @@ hinzugefügt.
 
 
 .. image:: ./QKan_Bilder/Sanierungsklassen/sanierung3.png
+                             :scale: 50%
 							 
 
 Bei der Ermittlung der Systemzahl nach ISYBAU werden die in der folgenden Abbildung gezeigten Layer für die Haltungen und Schächte dem Projekt hinzugefügt.

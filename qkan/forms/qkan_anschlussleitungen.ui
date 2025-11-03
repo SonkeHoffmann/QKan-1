@@ -384,71 +384,11 @@
     <property name="title">
      <string>Haltungsdaten</string>
     </property>
-    <widget class="QLineEdit" name="ks">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>90</y>
-       <width>71</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Absolute Rauheit gemäß Prandtl-Colebrook&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Absolute Rauheit gemäß Prandtl-Colebrook</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>90</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Profilbreite</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_20">
-     <property name="geometry">
-      <rect>
-       <x>270</x>
-       <y>90</y>
-       <width>31</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>mm</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_21">
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>120</y>
+       <y>160</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -467,7 +407,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>120</y>
+       <y>160</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -488,8 +428,8 @@
     <widget class="QComboBox" name="entwart">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>30</y>
+       <x>170</x>
+       <y>190</y>
        <width>151</width>
        <height>22</height>
       </rect>
@@ -510,57 +450,13 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QComboBox" name="profilnam">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>30</y>
-       <width>171</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profil der Haltung gem. HE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Profil der Haltung gem. HE</string>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_54">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>30</y>
-       <width>91</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Profiltyp</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_17">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>110</y>
-       <width>151</width>
-       <height>41</height>
+       <y>160</y>
+       <width>141</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -576,9 +472,9 @@
     <widget class="QLabel" name="label_51">
      <property name="geometry">
       <rect>
-       <x>330</x>
-       <y>30</y>
-       <width>151</width>
+       <x>20</x>
+       <y>190</y>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
@@ -596,7 +492,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>60</y>
+       <y>130</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -618,7 +514,7 @@
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>60</y>
+       <y>130</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -633,33 +529,11 @@
       <string>mm</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="breite">
-     <property name="geometry">
-      <rect>
-       <x>170</x>
-       <y>90</y>
-       <width>91</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bedeutung hängt vom Profiltyp ab&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Bedeutung hängt vom Profiltyp ab</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>130</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -671,53 +545,15 @@
       </font>
      </property>
      <property name="text">
-      <string>Profilhöhe</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_70">
-     <property name="geometry">
-      <rect>
-       <x>550</x>
-       <y>90</y>
-       <width>46</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>mm</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_61">
-     <property name="geometry">
-      <rect>
-       <x>330</x>
-       <y>90</y>
-       <width>101</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Rauheitsbeiwert</string>
+      <string>Durchmesser</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>380</x>
        <y>190</y>
-       <width>101</width>
+       <width>71</width>
        <height>21</height>
       </rect>
      </property>
@@ -731,31 +567,12 @@
       <string>Baujahr</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_13">
-     <property name="geometry">
-      <rect>
-       <x>330</x>
-       <y>60</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Zufluss</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_23">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>380</x>
        <y>160</y>
-       <width>101</width>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
@@ -785,41 +602,12 @@
       <string>Material des Schachtes (z.B. Beton, Gussstahl etc.)</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="qzu">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>60</y>
-       <width>71</width>
-       <height>20</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_71">
-     <property name="geometry">
-      <rect>
-       <x>550</x>
-       <y>60</y>
-       <width>46</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>l/s</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_26">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>190</y>
-       <width>101</width>
+       <x>380</x>
+       <y>30</y>
+       <width>91</width>
        <height>21</height>
       </rect>
      </property>
@@ -836,9 +624,9 @@
     <widget class="QLineEdit" name="anschlusstyp">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>190</y>
-       <width>171</width>
+       <x>470</x>
+       <y>30</y>
+       <width>151</width>
        <height>20</height>
       </rect>
      </property>
@@ -862,8 +650,8 @@
     <widget class="QComboBox" name="haltnam">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>120</y>
+       <x>170</x>
+       <y>30</y>
        <width>151</width>
        <height>22</height>
       </rect>
@@ -887,8 +675,8 @@
     <widget class="QLabel" name="label_52">
      <property name="geometry">
       <rect>
-       <x>330</x>
-       <y>120</y>
+       <x>20</x>
+       <y>30</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -901,6 +689,130 @@
      </property>
      <property name="text">
       <string>angeschlossen an</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="urstation">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>60</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bedeutung hängt vom Profiltyp ab&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="statusTip">
+      <string>Bedeutung hängt vom Profiltyp ab</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>60</y>
+       <width>31</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>m</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>60</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Station</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>60</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Ursprung</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="textEdit">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>60</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="strasse">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>130</y>
+       <width>151</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Material des Schachtes (z.B. Beton, Gussstahl etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="statusTip">
+      <string>Material des Schachtes (z.B. Beton, Gussstahl etc.)</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>130</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Straße</string>
      </property>
     </widget>
    </widget>
@@ -1084,11 +996,8 @@
   <tabstop>sohleoben</tabstop>
   <tabstop>schunten</tabstop>
   <tabstop>sohleunten</tabstop>
-  <tabstop>profilnam</tabstop>
   <tabstop>hoehe</tabstop>
-  <tabstop>breite</tabstop>
   <tabstop>laenge</tabstop>
-  <tabstop>ks</tabstop>
   <tabstop>entwart</tabstop>
   <tabstop>teilgebiet</tabstop>
   <tabstop>simstatus</tabstop>

@@ -95,6 +95,7 @@ class ZustandDialog(_Dialog, ZUSTAND_CLASS):  # type: ignore
         self.db.setText(QKan.config.database.qkan)
         # noinspection PyCallByClass,PyArgumentList
         self.epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
+        self.button_box.helpRequested.connect(self.click_help)
 
 
     def checkBox_click(self):
@@ -238,3 +239,9 @@ class ZustandDialog(_Dialog, ZUSTAND_CLASS):  # type: ignore
                         pass
             except:
                 pass
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Zustandsbewertung.html"
+        os.startfile(help_file)
+

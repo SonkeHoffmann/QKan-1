@@ -89,7 +89,7 @@ class SubkansDialog(_Dialog, SUBKANS_CLASS):  # type: ignore
             os.chdir(os.path.dirname(filename))
 
     def click_help(self) -> None:
-        help_file = "https://www.subkans.de/"
+        help_file = "https://qkan.eu/QKan_Substanzbewertung.html"
         os.startfile(help_file)
 
     def select_date(self):

@@ -31,6 +31,7 @@ class EmptyDBDialog(QKanDBDialog, QKanProjectDialog, FORM_CLASS_empty_db):  # ty
 
         self.open_mode = False
         self.db_qkan: DBConnection = None
+        self.button_box.helpRequested.connect(self.click_help)
 
     def run(self) -> None:
         # noinspection PyCallByClass,PyArgumentList
@@ -189,3 +190,7 @@ class EmptyDBDialog(QKanDBDialog, QKanProjectDialog, FORM_CLASS_empty_db):  # ty
                 None,
                 QKan.config.epsg
             )
+
+    def click_help(self) -> None:
+        help_file = "https://qkan.eu/QKan_Formulare_Allgemein.html#neue-datenbank-erstellen"
+        os.startfile(help_file)
