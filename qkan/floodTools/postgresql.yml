@@ -1,0 +1,78 @@
+floodtools_create_wlevel1:
+  CREATE TABLE IF NOT EXISTS wlevel (
+    pk SERIAL PRIMARY KEY,
+    h DOUBLE PRECISION,
+    tanf TIMESTAMP,
+    tend TIMESTAMP,
+    geom GEOMETRY(POLYGON, {self.epsg}))
+
+floodtools_create_wlevel2:
+  CREATE INDEX IF NOT EXISTS wlevel_geom_idx ON wlevel USING GIST (geom)
+
+floodtools_create_wlevel3:
+  CREATE INDEX IF NOT EXISTS wlevel_tanf_idx ON wlevel (tanf)
+
+floodtools_create_velo1:
+  SELECT EXISTS (
+    SELECT FROM information_schema.tables 
+    WHERE table_schema = 'public' 
+    AND table_name = 'velo'
+  )
+
+floodtools_create_velo2:
+  CREATE TABLE IF NOT EXISTS velo (
+    pk SERIAL PRIMARY KEY,
+    v DOUBLE PRECISION,
+    tanf TIMESTAMP,
+    tend TIMESTAMP,
+    geom GEOMETRY(LINESTRING, {self.epsg}))
+
+floodtools_create_velo3:
+  CREATE INDEX IF NOT EXISTS velo_geom_idx ON velo USING GIST (geom)
+
+floodtools_create_velo4:
+  CREATE INDEX IF NOT EXISTS velo_tanf_idx ON velo (tanf)
+
+floodtools_delete_wlevel:
+  DELETE FROM wlevel
+
+floodtools_delete_velo:
+  DELETE FROM velo
+
+floodtools_velo_choice:
+  SELECT column_name, data_type 
+  FROM information_schema.columns 
+  WHERE table_schema = 'public' 
+  AND table_name = 'result2d__velocity'
+
+floodtools_wlevel_choice:
+  SELECT column_name, data_type 
+  FROM information_schema.columns 
+  WHERE table_schema = 'public' 
+  AND table_name = 'result2d__topo_decimated'
+
+floodtools_insert_wlevel:
+  INSERT INTO wlevel (h, tanf, tend, geom)
+  SELECT
+    wl_{tstep} AS h,
+    CAST('{starttime}' AS TIMESTAMP) + INTERVAL '{tstep} * {interval} seconds' AS tanf,
+    CAST('{starttime}' AS TIMESTAMP) + INTERVAL '{tstep + 1} * {interval} seconds' AS tend,
+    ST_Force2D(ST_GeometryN(geom, 1))::geometry(POLYGON, {self.epsg}) AS geom
+  FROM result2d__topo_decimated
+  WHERE wl_{tstep} >= {self.min_w}
+
+floodtools_insert_velo:
+  INSERT INTO velo (v, tanf, tend, geom)
+  SELECT
+    v_{tstep} AS v,
+    CAST('{starttime}' AS TIMESTAMP) + INTERVAL '{tstep} * {interval} seconds' AS tanf,
+    CAST('{starttime}' AS TIMESTAMP) + INTERVAL '{tstep + 1} * {interval} seconds' AS tend,
+    ST_MakeLine(
+      ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {self.epsg}),
+      ST_SetSRID(ST_MakePoint(
+        ST_X(geom) + v_{tstep} * cos(radians(v_dir_{tstep})) * {self.faktor_v},
+        ST_Y(geom) + v_{tstep} * sin(radians(v_dir_{tstep})) * {self.faktor_v}
+      ), {self.epsg})
+    )::geometry(LINESTRING, {self.epsg}) AS geom
+  FROM result2d__velocity
+  WHERE v_{tstep} >= {self.min_v}
