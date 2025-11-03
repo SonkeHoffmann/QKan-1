@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
@@ -43,8 +43,9 @@ DATABASE_DIALOG_CLASS, _ = uic.loadUiType(
 
 class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # type: ignore
     # Quelldatenbank-Auswahl
-    le_database_file: QLineEdit
+    listWidget_source_files: QListWidget
     pb_select_database: QPushButton
+    pb_remove_file: QPushButton
     
     # Zieldatenbank-Auswahl
     listWidget_databases: QListWidget
@@ -60,6 +61,9 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     
     # Info labels
     label_server_info: QLabel  # Label für Server-Info
+    
+    # Internal list to track selected files
+    selected_files: List[str]
 
     def __init__(
         self,
@@ -70,12 +74,16 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     ):
         super().__init__(connection_name, default_dir, tr, parent)
         
+        # Initialize file list
+        self.selected_files = []
+        
         # Set server info in label  
         self.label_server_info.setText(f"Verbunden mit Server: {connection_name}")
         
         # Connect source database signals
-        self.pb_select_database.clicked.connect(self.select_database_file)
-        self.le_database_file.textChanged.connect(self.on_database_file_changed)
+        self.pb_select_database.clicked.connect(self.select_database_files)
+        self.pb_remove_file.clicked.connect(self.remove_selected_file)
+        self.listWidget_source_files.itemSelectionChanged.connect(self.on_source_file_selected)
         
         # Connect target database signals
         self.pb_refresh_databases.clicked.connect(self.refresh_databases)
@@ -91,30 +99,51 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         # Load available databases
         self.load_databases()
         
-        # Initial state - upload button disabled
+        # Initial state - upload button and remove button disabled
         self.pb_upload.setEnabled(False)
+        self.pb_remove_file.setEnabled(False)
 
-    def select_database_file(self):
-        """PostgreSQL-Datenbank-Datei auswählen"""
+    def select_database_files(self):
+        """Mehrere QKan-SQLite-Datenbank-Dateien auswählen"""
         file_dialog = QFileDialog()
-        file_dialog.setWindowTitle("QKan PostgreSQL-Datenbank auswählen")
-        file_dialog.setFileMode(QFileDialog.ExistingFile)
-        file_dialog.setNameFilter("PostgreSQL-Datenbanken (*.pgsql *.db);;Alle Dateien (*)")
+        file_dialog.setWindowTitle("QKan SQLite-Datenbanken auswählen")
+        file_dialog.setFileMode(QFileDialog.ExistingFiles)  # Mehrere Dateien erlauben
+        file_dialog.setNameFilter("SQLite-Datenbanken (*.sqlite *.db);;Alle Dateien (*)")
 
         # Standard-Ordner setzen
         if self.default_dir and os.path.exists(self.default_dir):
             file_dialog.setDirectory(self.default_dir)
         
         if file_dialog.exec_() == QFileDialog.Accepted:
-            selected_files = file_dialog.selectedFiles()
-            if selected_files:
-                file_path = selected_files[0]
-                self.le_database_file.setText(file_path)
-                logger.info(f"Datenbank-Datei ausgewählt: {file_path}")
+            new_files = file_dialog.selectedFiles()
+            if new_files:
+                # Nur neue Dateien hinzufügen (keine Duplikate)
+                for file_path in new_files:
+                    if file_path not in self.selected_files:
+                        self.selected_files.append(file_path)
+                        self.listWidget_source_files.addItem(os.path.basename(file_path))
+                        logger.info(f"Datenbank-Datei hinzugefügt: {file_path}")
+                
+                self.update_upload_button_state()
 
-    def on_database_file_changed(self):
-        """Reagiert auf Änderungen im Quelldatenbank-Feld"""
-        self.update_upload_button_state()
+    def remove_selected_file(self):
+        """Ausgewählte Datei aus der Liste entfernen"""
+        current_item = self.listWidget_source_files.currentItem()
+        if current_item:
+            current_row = self.listWidget_source_files.row(current_item)
+            # Entferne aus der internen Liste
+            if 0 <= current_row < len(self.selected_files):
+                removed_file = self.selected_files.pop(current_row)
+                logger.info(f"Datenbank-Datei entfernt: {removed_file}")
+            
+            # Entferne aus der UI-Liste
+            self.listWidget_source_files.takeItem(current_row)
+            self.update_upload_button_state()
+
+    def on_source_file_selected(self):
+        """Reagiert auf Auswahl einer Quelldatei in der Liste"""
+        has_selection = self.listWidget_source_files.currentItem() is not None
+        self.pb_remove_file.setEnabled(has_selection)
 
     def on_database_selected(self):
         """Reagiert auf Auswahl einer Zieldatenbank"""
@@ -122,7 +151,7 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
 
     def update_upload_button_state(self):
         """Upload-Button aktivieren/deaktivieren je nach Eingaben"""
-        has_source = bool(self.le_database_file.text().strip())
+        has_source = len(self.selected_files) > 0
         has_target = (self.listWidget_databases.currentItem() is not None or 
                       self.cb_create_new_database.isChecked())
         
@@ -147,8 +176,13 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         help_text = """
 QKan PostGIS Datenbank-Upload
 
-Wählen Sie eine Zieldatenbank für den Upload:
+Quelldatenbanken auswählen:
+• Klicken Sie auf "Hinzufügen..." um eine oder mehrere QKan SQLite-Datenbanken auszuwählen
+• Ausgewählte Dateien werden in der Liste angezeigt
+• Mit "Entfernen" können Sie einzelne Dateien aus der Liste löschen
+• Alle ausgewählten Datenbanken werden nacheinander hochgeladen
 
+Zieldatenbank wählen:
 • Bestehende Datenbank: Wählen Sie aus der Liste
 • Neue Datenbank: Aktivieren Sie die Option und geben Sie einen Namen ein
 
@@ -159,6 +193,7 @@ Hinweise:
 • Der Benutzer muss Berechtigung haben, Datenbanken zu erstellen (falls neue DB)
 • PostGIS-Erweiterung wird automatisch installiert falls nicht vorhanden
 • Bestehende Daten gehen bei "Überschreiben" verloren
+• Bei mehreren Dateien werden diese nacheinander in dieselbe Zieldatenbank importiert
         """
         
         QMessageBox.information(
@@ -168,22 +203,23 @@ Hinweise:
         )
 
     def start_upload(self):
-        """Upload-Prozess starten"""
-        # Quelldatenbank validieren
-        source_file = self.le_database_file.text().strip()
-        if not source_file:
+        """Upload-Prozess für mehrere Dateien starten"""
+        # Quelldatenbanken validieren
+        if not self.selected_files:
             QMessageBox.warning(
                 self,
                 "Validierungsfehler",
-                "Bitte wählen Sie eine QKan SQLite-Quelldatenbank aus."
+                "Bitte wählen Sie mindestens eine QKan SQLite-Quelldatenbank aus."
             )
             return
         
-        if not os.path.exists(source_file):
+        # Prüfe ob alle Dateien existieren
+        missing_files = [f for f in self.selected_files if not os.path.exists(f)]
+        if missing_files:
             QMessageBox.warning(
                 self,
                 "Validierungsfehler",
-                f"Die ausgewählte Datei existiert nicht:\n{source_file}"
+                f"Folgende Dateien existieren nicht:\n" + "\n".join(missing_files)
             )
             return
         
@@ -235,20 +271,40 @@ Hinweise:
             if reply != QMessageBox.Yes:
                 return
         
-        # Upload starten mit den gesammelten Informationen
+        # Upload aller Dateien starten
         try:
-            self.perform_upload(
-                connection_name=self.connection_name,
-                target_database=target_database,
-                source_file=source_file,
-                overwrite=self.cb_overwrite_existing.isChecked()
-            )
+            successful_uploads = 0
+            failed_uploads = []
             
-            QMessageBox.information(
-                self,
-                "Upload erfolgreich",
-                f"Die QKan-Datenbank wurde erfolgreich zu '{target_database}' hochgeladen."
-            )
+            for source_file in self.selected_files:
+                try:
+                    logger.info(f"Starte Upload von: {source_file}")
+                    self.perform_upload(
+                        connection_name=self.connection_name,
+                        target_database=target_database,
+                        source_file=source_file,
+                        overwrite=self.cb_overwrite_existing.isChecked()
+                    )
+                    successful_uploads += 1
+                except Exception as e:
+                    failed_uploads.append((os.path.basename(source_file), str(e)))
+                    logger.error(f"Upload fehlgeschlagen für {source_file}: {str(e)}")
+            
+            # Zusammenfassung anzeigen
+            if failed_uploads:
+                error_details = "\n".join([f"• {name}: {error}" for name, error in failed_uploads])
+                QMessageBox.warning(
+                    self,
+                    "Upload teilweise erfolgreich",
+                    f"Erfolgreich hochgeladen: {successful_uploads} von {len(self.selected_files)} Dateien\n\n"
+                    f"Fehlgeschlagene Uploads:\n{error_details}"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Upload erfolgreich",
+                    f"Alle {successful_uploads} QKan-Datenbanken wurden erfolgreich zu '{target_database}' hochgeladen."
+                )
             
             self.accept()
             
