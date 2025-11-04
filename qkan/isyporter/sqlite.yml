@@ -1,11 +1,11 @@
 isy_update_schaechte_untersucht: 
-        UPDATE schaechte_untersucht
-        SET geop = s.geop, kommentar = s.kommentar
-        FROM (
-            SELECT schnam, geop, kommentar
-            FROM schaechte 
-        ) AS s
-        WHERE schaechte_untersucht.schnam = s.schnam
+    UPDATE schaechte_untersucht
+    SET geop = s.geop, kommentar = s.kommentar
+    FROM (
+        SELECT schnam, geop, kommentar
+        FROM schaechte 
+    ) AS s
+    WHERE schaechte_untersucht.schnam = s.schnam
     
 isy_export_select_wehre: 
     SELECT
@@ -709,3 +709,86 @@ isy_export_select_filme:
     objekt,
     datei
     from videos
+    
+isy_import_insert_entwaesserungsarten: 
+    INSERT INTO entwaesserungsarten (
+        bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau)
+        SELECT ?, ?, ?, ?, ?, ?, ?
+        WHERE ? NOT IN (SELECT bezeichnung FROM entwaesserungsarten)
+    
+isy_import_insert_profile: 
+    INSERT INTO profile (profilnam, kuerzel, he_nr, mu_nr, kp_key, isybau, m150, m145, kommentar)
+        SELECT
+            :profilnam, :kuerzel, :he_nr, :mu_nr, :kp_key, 
+            :isybau, :m150, :m145, :kommentar
+        WHERE :profilnam NOT IN (SELECT profilnam FROM profile)
+    
+isy_import_insert_simulationsstatus: 
+    INSERT INTO simulationsstatus (bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, isybau, m150, m145, kommentar)
+        SELECT
+            :bezeichnung, :kuerzel, :he_nr, :mu_nr, :kp_nr, 
+            :isybau, :m150, :m145, :kommentar
+        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM simulationsstatus)
+    
+isy_import_insert_material: 
+    INSERT INTO material (bezeichnung, kuerzel, isybau, m150, m145, kommentar)
+        SELECT
+            :bezeichnung, :kuerzel, 
+            :isybau, :m150, :m145, :kommentar
+        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM material)
+    
+isy_import_insert_wetter: 
+    INSERT INTO wetter (bezeichnung, isybau, m150, m145)
+        SELECT
+            :bezeichnung, 
+            :isybau, :m150, :m145
+        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM wetter)
+    
+isy_import_insert_pumpentypen: 
+    INSERT INTO pumpentypen (bezeichnung,he_nr, isybau)
+        SELECT
+            :bezeichnung, :he_nr,
+            :isybau
+        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM pumpentypen)
+    
+isy_import_insert_untersuchrichtung: 
+    INSERT INTO untersuchrichtung (bezeichnung, kuerzel, isybau, m150, m145)
+        SELECT
+            :bezeichnung, :kuerzel,
+            :isybau, :m150, :m145
+        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM untersuchrichtung)
+    
+isy_import_select_entwaesserungsarten: 
+    SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) 
+    FROM entwaesserungsarten WHERE isybau IS NOT NULL GROUP BY isybau
+    
+isy_import_select_profile: 
+    SELECT isybau, FIRST_VALUE(profilnam) OVER (PARTITION BY isybau ORDER BY pk) 
+    FROM profile WHERE isybau IS NOT NULL GROUP BY isybau
+    
+isy_import_select_pumpentypen: 
+    SELECT isybau, bezeichnung FROM pumpentypen
+    
+isy_import_select_material: 
+    SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) 
+    FROM material WHERE isybau IS NOT NULL GROUP BY isybau
+    
+isy_import_select_simulationsstatus: 
+    SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) 
+    FROM simulationsstatus WHERE isybau IS NOT NULL GROUP BY isybau
+    
+isy_import_select_wetter: 
+    SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) 
+    FROM wetter WHERE isybau IS NOT NULL GROUP BY isybau
+    
+isy_import_update_schaechte_untersucht_geom: 
+    UPDATE schaechte_untersucht
+    SET geop = (select schaechte.geop from schaechte where schaechte_untersucht.schnam =schaechte.schnam);
+    
+isy_import_update_haltungen_untersucht_geom: 
+    UPDATE haltungen_untersucht
+    SET geom = (select haltungen.geom from haltungen where haltungen_untersucht.haltnam =haltungen.haltnam);
+    
+isy_import_update_anschlussleitungen_untersucht_geom: 
+    UPDATE anschlussleitungen_untersucht
+    SET geom = (select anschlussleitungen.geom from anschlussleitungen where anschlussleitungen_untersucht.leitnam =anschlussleitungen.leitnam);

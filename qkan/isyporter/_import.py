@@ -279,6 +279,7 @@ def _get_int(value: Union[str, int], default: int = None) -> int:
 class ImportTask(Schadenstexte):
     def __init__(self, db_qkan: DBConnection, xml_file: str, data_choice: str, ordner_bild: str, ordner_video: str):
         self.db_qkan = db_qkan
+        self.db_qkan.loadmodule('isyporter')
         self.ordner_bild = ordner_bild
         self.ordner_video = ordner_video
 
@@ -560,10 +561,7 @@ class ImportTask(Schadenstexte):
         ]
 
         daten = [el + (el[0],) for el in daten]         # repeat last argument for ? after WHERE in SQL
-        sql = """INSERT INTO entwaesserungsarten (
-                    bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau)
-                    SELECT ?, ?, ?, ?, ?, ?, ?
-                    WHERE ? NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_entwaesserungsarten')
         if not self.db_qkan.sql(sql, "Isybau Referenzliste entwaesserungsarten", daten, many=True):
             return False
 
@@ -623,11 +621,7 @@ class ImportTask(Schadenstexte):
                 }
             )
 
-        sql = """INSERT INTO profile (profilnam, kuerzel, he_nr, mu_nr, kp_key, isybau, m150, m145, kommentar)
-                                SELECT
-                                    :profilnam, :kuerzel, :he_nr, :mu_nr, :kp_key, 
-                                    :isybau, :m150, :m145, :kommentar
-                                WHERE :profilnam NOT IN (SELECT profilnam FROM profile)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_profile')
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste profile", params, many=True):
             return False
 
@@ -659,11 +653,7 @@ class ImportTask(Schadenstexte):
                 }
             )
 
-        sql = """INSERT INTO simulationsstatus (bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, isybau, m150, m145, kommentar)
-                                SELECT
-                                    :bezeichnung, :kuerzel, :he_nr, :mu_nr, :kp_nr, 
-                                    :isybau, :m150, :m145, :kommentar
-                                WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM simulationsstatus)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_simulationsstatus')
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste Simulationsstatus", params, many=True):
             return False
 
@@ -730,11 +720,7 @@ class ImportTask(Schadenstexte):
                 }
             )
 
-        sql = """INSERT INTO material (bezeichnung, kuerzel, isybau, m150, m145, kommentar)
-                                SELECT
-                                    :bezeichnung, :kuerzel, 
-                                    :isybau, :m150, :m145, :kommentar
-                                WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM material)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_material')
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste Material", params, many=True):
             return False
 
@@ -758,11 +744,7 @@ class ImportTask(Schadenstexte):
                 }
             )
 
-        sql = """INSERT INTO wetter (bezeichnung, isybau, m150, m145)
-                                SELECT
-                                    :bezeichnung, 
-                                    :isybau, :m150, :m145
-                                WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM wetter)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_wetter')
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste Wetter", params, many=True):
             return False
 
@@ -786,11 +768,7 @@ class ImportTask(Schadenstexte):
                 }
             )
 
-        sql = """INSERT INTO pumpentypen (bezeichnung,he_nr, isybau)
-                                    SELECT
-                                        :bezeichnung, :he_nr,
-                                        :isybau
-                                    WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM pumpentypen)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_pumpentypen')
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste pumpentypen", params, many=True):
             return False
 
@@ -811,11 +789,7 @@ class ImportTask(Schadenstexte):
                 }
             )
 
-        sql = """INSERT INTO untersuchrichtung (bezeichnung, kuerzel, isybau, m150, m145)
-                                            SELECT
-                                                :bezeichnung, :kuerzel,
-                                                :isybau, :m150, :m145
-                                            WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM untersuchrichtung)"""
+        sql = self.db_qkan.sqltxt('isy_import_insert_untersuchrichtung')
         if not self.db_qkan.sql(sql, "Isybau Import Referenzliste untersuchrichtung", params, many=True):
             return False
 
@@ -839,23 +813,20 @@ class ImportTask(Schadenstexte):
 
     def _init_mappers(self) -> None:
         # Entwässerungsarten
-        sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \
-              "FROM entwaesserungsarten WHERE isybau IS NOT NULL GROUP BY isybau"
+        sql = self.db_qkan.sqltxt('isy_import_select_entwaesserungsarten')
         subject = "isybau Import entwaesserungsarten"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_entwart)
 
         # Profilarten
-        sql = "SELECT isybau, FIRST_VALUE(profilnam) OVER (PARTITION BY isybau ORDER BY pk) " \
-              "FROM profile WHERE isybau IS NOT NULL GROUP BY isybau"
+        sql = self.db_qkan.sqltxt('isy_import_select_profile')
         subject = "xml_import profile"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_profile)
 
-        sql = "SELECT isybau, bezeichnung FROM pumpentypen"
+        sql = self.db_qkan.sqltxt('isy_import_select_pumpentypen')
         subject = "xml_import pumpentypen"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_pump)
 
-        sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \
-              "FROM material WHERE isybau IS NOT NULL GROUP BY isybau"
+        sql = self.db_qkan.sqltxt('isy_import_select_material')
         subject = "xml_import material"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_material)
 
@@ -863,8 +834,7 @@ class ImportTask(Schadenstexte):
         # subject = "xml_import auslasstypen"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_outlet)
 
-        sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \
-              "FROM simulationsstatus WHERE isybau IS NOT NULL GROUP BY isybau"
+        sql = self.db_qkan.sqltxt('isy_import_select_simulationsstatus')
         subject = "xml_import simulationsstatus"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_simstatus)
 
@@ -872,8 +842,7 @@ class ImportTask(Schadenstexte):
         # subject = "xml_import untersuchrichtung"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_untersuchrichtung)
 
-        sql = "SELECT isybau, FIRST_VALUE(bezeichnung) OVER (PARTITION BY isybau ORDER BY pk) " \
-              "FROM wetter WHERE isybau IS NOT NULL GROUP BY isybau"
+        sql = self.db_qkan.sqltxt('isy_import_select_wetter')
         subject = "xml_import wetter"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_wetter)
 
@@ -2821,10 +2790,7 @@ class ImportTask(Schadenstexte):
         self.db_qkan.commit()
 
     def _schaechte_untersucht_geom(self):
-        sql = f"""
-                UPDATE schaechte_untersucht
-        		SET geop = (select schaechte.geop from schaechte where schaechte_untersucht.schnam =schaechte.schnam);
-                						"""
+        sql = self.db_qkan.sqltxt('isy_import_update_schaechte_untersucht_geom')
         data = ()
         try:
             self.db_qkan.sql(sql, parameters=data)
@@ -2833,10 +2799,7 @@ class ImportTask(Schadenstexte):
             pass
 
     def _haltungen_untersucht_geom(self):
-        sql = f"""
-                UPDATE haltungen_untersucht
-                SET geom = (select haltungen.geom from haltungen where haltungen_untersucht.haltnam =haltungen.haltnam);
-                    """
+        sql = self.db_qkan.sqltxt('isy_import_update_haltungen_untersucht_geom')
         data = ()
         try:
             self.db_qkan.sql(sql, parameters=data)
@@ -2845,10 +2808,7 @@ class ImportTask(Schadenstexte):
             pass
 
     def _anschluss_untersucht_geom(self):
-        sql = f"""
-                UPDATE anschlussleitungen_untersucht
-                SET geom = (select anschlussleitungen.geom from anschlussleitungen where anschlussleitungen_untersucht.leitnam =anschlussleitungen.leitnam);
-                """
+        sql = self.db_qkan.sqltxt('isy_import_update_anschlussleitungen_untersucht_geom')
         data = ()
         try:
             self.db_qkan.sql(sql, parameters=data)
