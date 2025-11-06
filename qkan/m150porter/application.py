@@ -132,7 +132,12 @@ class M150Porter(QKanPlugin):
             QKan.config.xml.import_stamm = self.import_dlg.cb_impStamm.isChecked()
             QKan.config.xml.import_zustand = self.import_dlg.cb_zustand.isChecked()
             QKan.config.xml.import_haus = self.import_dlg.cb_impAnschluesse.isChecked()
-            QKan.config.xml.import_switchHA = self.import_dlg.cb_switchAnschluesse.isChecked()
+            # Note: cb_switchAnschluesse doesn't exist in the UI file, use default value
+            QKan.config.xml.import_switchHA = (
+                self.import_dlg.cb_switchAnschluesse.isChecked()
+                if hasattr(self.import_dlg, 'cb_switchAnschluesse')
+                else True
+            )
 
             QKan.config.save()
 
