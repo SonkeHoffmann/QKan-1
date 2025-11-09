@@ -13,6 +13,7 @@ class Schadenstexte:
     """
     db_qkan: DBConnection = None               # wird in der aufrufenden Klasse festgelegt
 
+    @staticmethod
     def calctextpositions_haltungen(data_hu: dict, data_uh: list,
                                     seite_texte: str = 'rechts', epsg: int = 25832
                                     ):
@@ -44,8 +45,8 @@ class Schadenstexte:
 
         si = len(data_uh)  # Anzahl Untersuchungen
         if si == 0:
-            logger.warning("Untersuchungsdaten Haltungen: Es konnten keine Schadenstexte erzeugt werden. "
-                         "Wahrscheinlich ist ein notwendiges Attribut noch leer"
+            logger.warning("Untersuchungsdaten Haltungen: "
+               "Es konnten keine Schadenstexte erzeugt werden. Wahrscheinlich ist ein notwendiges Attribut noch leer"
                          )
             return
 
@@ -265,6 +266,7 @@ class Schadenstexte:
 
         return True
 
+    @staticmethod
     def calctextpositions_schaechte(data_hu: dict, data_uh: list,
                           seite_texte: str = 'rechts', epsg: int = 25832
                                     ):
@@ -283,7 +285,7 @@ class Schadenstexte:
 
         si = len(data_uh)  # Anzahl Untersuchungen
         if si == 0:
-            logger.warning("Untersuchungsdaten Schächte: "
+            logger.debug("Untersuchungsdaten Schächte: "
                 "Es konnten keine Schadenstexte erzeugt werden. Wahrscheinlich ist ein notwendiges Attribut noch leer",
             )
             return
@@ -443,6 +445,7 @@ class Schadenstexte:
 
         return True
 
+    @staticmethod
     def calctextpositions_anschlussleitungen(data_hu: dict, data_uh: list,
                                              seite_texte: str = 'rechts', epsg: int = 25832
                                              ):
@@ -473,7 +476,7 @@ class Schadenstexte:
 
         si = len(data_uh)  # Anzahl Untersuchungen
         if si == 0:
-            logger.warning("Untersuchungsdaten Anschlussleitungen: "
+            logger.debug("Untersuchungsdaten Anschlussleitungen: "
                 "Es konnten keine Schadenstexte erzeugt werden. Wahrscheinlich ist ein notwendiges Attribut noch leer",
             )
             return

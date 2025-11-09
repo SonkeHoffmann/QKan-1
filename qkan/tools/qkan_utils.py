@@ -3,6 +3,8 @@ import os
 import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 from xml.etree.ElementTree import ElementTree
+import yaml
+from fnmatch import fnmatch
 
 from qgis.PyQt.QtCore import QStandardPaths
 from qgis.PyQt.QtWidgets import QListWidget
@@ -692,7 +694,7 @@ def loadLayer(
 
     dlayers = project.mapLayersByName(layerbez)
     for dlayer in dlayers:
-        project.removeMapLayer(project.mapLayersByName(dlayer))
+        project.removeMapLayer(dlayer)
 
     uri = QgsDataSourceUri()
     if qkan_db is None:
@@ -806,3 +808,24 @@ def zoomAll():
 
     canvas.setExtent(layer.extent())
     canvas.refresh()
+
+
+class Patterns():
+    """Management of pattern lists in yaml-Files"""
+
+    def __init__(self, filepath):
+        with open(filepath) as fr:
+            self.patterns = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+
+    def write(self, filepath):
+        """writes patterns"""
+        with open(filepath, 'w') as fw:
+            yaml.dump(self.patterns, fw)
+
+    def find(self, m150key):
+        """Zugeorndeten QKan-Wert finden"""
+        for qkan_name in self.patterns:
+            for patt in self.patterns[qkan_name]:
+                if fnmatch(m150key.strip().lower(), patt):
+                    return qkan_name
+        return None

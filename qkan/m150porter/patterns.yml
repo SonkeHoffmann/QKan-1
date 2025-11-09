@@ -1,0 +1,54 @@
+import_knotentypen:
+  Anschlussschacht:
+  - "anschlus*"
+  - "anschlu\xDF*"
+  - "anschlue*"
+  - "anschl\xFC*"
+  Schacht:
+  - "Schacht"
+  Symbol:
+  - "symbol"
+  - "sonst*"
+  - "allgem*"
+
+import_entwaesserungsarten:
+  "Rinnen/Gräben":
+  - "gewäss*"
+  - "gew\xE4ss*"
+  - "rinne*"
+  - "bach*"
+  - "bäch*"
+  - "b\xE4ch*"
+  Mischwasser:
+  - "mischw*"
+  Regenwasser:
+  - "regenw*"
+  - "niederschl*"
+  - "drain*"
+  Schmutzwasser:
+  - "schmutzw*"
+  stillgelegt:
+  - "außer*"
+  - "stillg*"
+  - "verdäm*"
+  - "verd\xE4m*"
+  - "rückge*"
+  - "r\xFCckge*"
+  sonstige:
+  - "fikt*"
+  - "sonst*"
+  - "ander*"
+  - "unbek*"
+
+import_profile:
+  "Kreis":
+  - "krei*"
+
+import_simulationsstatus:
+  "in Betrieb":
+  - "vorhan*"
+  - "aktiv"
+
+import_material:
+  Beton:
+  - Beton

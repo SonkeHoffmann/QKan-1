@@ -132,7 +132,6 @@ class M150Porter(QKanPlugin):
             QKan.config.xml.import_stamm = self.import_dlg.cb_impStamm.isChecked()
             QKan.config.xml.import_zustand = self.import_dlg.cb_zustand.isChecked()
             QKan.config.xml.import_haus = self.import_dlg.cb_impAnschluesse.isChecked()
-            QKan.config.xml.import_switchHA = self.import_dlg.cb_switchAnschluesse.isChecked()
 
             QKan.config.save()
 
@@ -202,7 +201,8 @@ class M150Porter(QKanPlugin):
             # eval_node_types(db_qkan)  # in qkan.database.qkan_utils
 
             # Write and load new project file, only if new project
-            if QgsProject.instance().fileName() == '':
+            project = QgsProject.instance()
+            if project.fileName() == '':
                 QKan.config.project.template = str(
                     Path(pluginDirectory("qkan")) / "templates" / "Projekt.qgs"
                 )
@@ -217,7 +217,6 @@ class M150Porter(QKanPlugin):
 
                 # Load generated project
                 # noinspection PyArgumentList
-                project = QgsProject.instance()
                 project.read(QKan.config.project.file)
                 project.reloadAllLayers()
 
@@ -229,7 +228,7 @@ class M150Porter(QKanPlugin):
 
                 loadLayer(
                     layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN.value,
-                    table=      "m150_knotenarten",
+                    table=      "refdata",
                     geom_column=None,
                     qmlfile=    "qkan_m150_knotenarten.qml",
                     uifile=     "qkan_m150_knotenarten.ui",
@@ -244,7 +243,7 @@ class M150Porter(QKanPlugin):
                 self.log.warning_user(msg)
 
                 # Attributtabelle zur Bearbeitung anzeigen
-                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.M150_KNOTENARTEN.value,)[0]
+                layer = project.mapLayersByName(enums.LAYERBEZ.M150_KNOTENARTEN.value,)[0]
                 iface.showAttributeTable(layer)
 
                 # noinspection PyArgumentList

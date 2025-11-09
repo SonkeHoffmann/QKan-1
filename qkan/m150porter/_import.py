@@ -505,7 +505,8 @@ class ImportTask(Schadenstexte):
 
         return geom_wkb, sohleoben, sohleunten, schoben, schunten
 
-    def _get_HG_201(self, block: ElementTree.Element, name: str) -> ([str, None], [str, None], [float, None], [float, None]):
+    def _get_HG_201(self, block: ElementTree.Element, name: str) \
+            -> ([str, None], [str, None], [float, None], [float, None]):
         """Liest Haltungsobjekte sowie Sohl- und Deckelhoehe aus den alten m150-Feldern KG201 ff.
 
         - geom:          Haltungsobjekt als Linienobjekt
@@ -595,7 +596,7 @@ class ImportTask(Schadenstexte):
             self._untersuchdat_schaechte()                  ;self.progress_bar.setValue(75)
             self._haltungen_untersucht()                    ;self.progress_bar.setValue(85)
             self._untersuchdat_haltung()                    ;self.progress_bar.setValue(95)
-        self.db_qkan._adapt_reftable('entwaesserungsarten')
+        # self.db_qkan._adapt_reftable('entwaesserungsarten')
 
         self.progress_bar.setValue(100)
         status_message.setText("Fertig! M150-Import abgeschlossen.")
@@ -616,6 +617,8 @@ class ImportTask(Schadenstexte):
 
         # Hinweis: 'None' bewirkt beim Import eine Zuordnung unabhängig vom Wert - SQLite
 
+        complete = True
+
         # Referenztabelle Entwässerungsarten
 
         params = []
@@ -625,52 +628,75 @@ class ImportTask(Schadenstexte):
         logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Kanalnutzung": {len(blocks)}')
 
         for block in blocks:
-            nr = block.findtext("RT002", None)
+            kuerzel = block.findtext("RT002", None)
             bez = block.findtext("RT004", None)
             # Falls einer der beiden Einträge fehlt:
-            if nr is None or bez is None:
+            if bez is None:
                 continue
             params.append(
                 {
-                    'bezeichnung': bez,
-                    'kuerzel': nr,
-                    'bemerkung': 'aus Referenztabelle in der M150-Datei',
-                    'he_nr': None,
-                    'kp_nr': None,
-                    'm150':nr,
-                    'isybau': None,
+                    'bezext': bez,
+                    'kuerzel': kuerzel,
+                    'bezqkan': None,
+                    'kommentar': 'M150-Standard',
                 }
             )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
         if len(blocks) == 0:
             data = [
-                ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR'),
-                ('Schmutzwasser', 'S', 'Schmutzwasser', 2, 1, 'S', 'KS'),
-                ('Mischwasser', 'M', 'Mischwasser', 0, 0, 'M', 'KM'),
-                ('Rinnen/Gräben', 'GR', 'Rinnen/Gräben', None, None, 'Ge', None),
+                ('Regenwasser', 'R'),
+                ('Schmutzwasser', 'S'),
+                ('Mischwasser', 'M'),
+                ('Rinnen/Gräben', 'GR'),
+                ('stillgelegt', 'X'),
+                ('sonstige', 'U'),
             ]
 
-            for (langtext, kurztext, kommentar, he_nr, kp_nr, m150, isybau) in data:
+            for (langtext, kuerzel) in data:
                 params.append(
                     {
-                        'bezeichnung': langtext,
-                        'kuerzel': kurztext,
-                        'bemerkung': kommentar,
-                        'he_nr': None,
-                        'kp_nr': None,
-                        'm150': m150,
-                        'isybau': None,
+                        'bezext': langtext,
+                        'kuerzel': kuerzel,
+                        'bezqkan': langtext,
+                        'kommentar': 'QKan-Standard',
                     }
                 )
 
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_entwaesserungsarten', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_entwaesserungsarten')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 104 Kanalnutzung", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Tabelle m150_knotenarten eingefügt werden:'
+                f'{params=}')
+            raise QkanError
+
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter','import_entwaesserungsarten')
+
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_entwaesserungsarten'"""
+
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
+
+        # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO entwaesserungsarten (
-                    bezeichnung, kuerzel, bemerkung, he_nr, kp_nr, m150, isybau)
-                    SELECT :bezeichnung, :kuerzel, :bemerkung, :he_nr, :kp_nr, :m150, :isybau
-                    WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"""
+                    bezeichnung, kuerzel, bemerkung)
+                    SELECT coalesce(:bezqkan, :bezext), :kuerzel, :kommentar
+                    WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"""
         if not self.db_qkan.sql(sql, "M150 Import Referenzliste entwaesserungsarten", params, many=True):
             logger.error_data(
-                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Tabelle entwaesserungsarten eingefügt werden:'
                 f'{params=}')
             raise QkanError
@@ -684,25 +710,21 @@ class ImportTask(Schadenstexte):
         logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Profilart": {len(blocks)}')
 
         for block in blocks:
-            nr = block.findtext("RT002", None)
-            kuerzel = block.findtext("RT003", nr)
+            kuerzel = block.findtext("RT002", None)
             bez = block.findtext("RT004", None)
             bemerkung = block.findtext(
                 "RT999",
                 ElementTree.Element('aus Referenztabelle in der M150-Datei')
             )
             # Falls einer der beiden Einträge fehlt:
-            if nr is None or bez is None:
+            if bez is None:
                 continue
             params.append(
                 {
-                    'profilnam': bez,
+                    'bezext': bez,
                     'kuerzel': kuerzel,
-                    'bemerkung': bemerkung,
-                    'he_nr': None,
-                    'kp_nr': None,
-                    'm150':nr,
-                    'isybau': None,
+                    'bezqkan': bez,
+                    'kommentar': 'M150-Standard',
                 }
             )
 
@@ -710,68 +732,89 @@ class ImportTask(Schadenstexte):
 
         if len(blocks) == 0:
             data = [
-                ('Kreis', 'DN', 1, 1, None, 0, 'DN', None),
-                ('Rechteck', 'RE', 2, 3, None, 3, 'RE', None),
-                ('Ei (B:H = 2:3)', 'EI', 3, 5, None, 1, 'EI', None),
-                ('Maul (B:H = 2:1.66)', 'MA', 4, 4, None, 2, 'MA', None),
-                ('Halbschale (offen) (B:H = 2:1)', 'HS', 5, None, None, None, None, None),
-                ('Kreis gestreckt (B:H=2:2.5)', None, 6, None, None, None, None, None),
-                ('Kreis überhöht (B:H=2:3)', None, 7, None, None, None, None, None),
-                ('Ei überhöht (B:H=2:3.5)', None, 8, None, None, None, None, None),
-                ('Ei breit (B:H=2:2.5)', None, 9, None, None, None, None, None),
-                ('Ei gedrückt (B:H=2:2)', None, 10, None, None, None, None, None),
-                ('Drachen (B:H=2:2)', None, 11, None, None, None, None, None),
-                ('Maul (DIN) (B:H=2:1.5)', None, 12, None, None, None, None, None),
-                ('Maul überhöht (B:H=2:2)', None, 13, None, None, None, None, None),
-                ('Maul gedrückt (B:H=2:1.25)', None, 14, None, None, None, None, None),
-                ('Maul gestreckt (B:H=2:1.75)', None, 15, None, None, None, None, None),
-                ('Maul gestaucht (B:H=2:1)', None, 16, None, None, None, None, None),
-                ('Haube (B:H=2:2.5)', 'BO', 17, None, None, 11, 'BO', None),
-                ('Parabel (B:H=2:2)', None, 18, None, None, None, None, None),
-                ('Rechteck mit geneigter Sohle (B:H=2:1)', None, 19, None, None, None, None, None),
-                ('Rechteck mit geneigter Sohle (B:H=1:1)', None, 20, None, None, None, None, None),
-                ('Rechteck mit geneigter Sohle (B:H=1:2)', None, 21, None, None, None, None, None),
-                ('Rechteck mit geneigter und horizontaler Sohle (B:H=2:1,b=0.2B)', None, 22, None, None, None, None, None),
-                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:1,b=0.2B)', None, 23, None, None, None, None, None),
-                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:2,b=0.2B)', None, 24, None, None, None, None, None),
-                ('Rechteck mit geneigter und horizontaler Sohle (B:H=2:1,b=0.4B)', None, 25, None, None, None, None, None),
-                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:1,b=0.4B)', None, 26, None, None, None, None, None),
-                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:2,b=0.4B)', None, 27, None, None, None, None, None),
-                ('Sonderprofil', 68, 2, None, None, None, None, None),
-                ('Gerinne', 'RI', 69, None, None, None, None, None),
-                ('Trapez (offen)', 'TR', 900, None, None, 8, None, None),
-                ('Rechteck offen', None, None, None, None, 5, None, None),
-                ('Doppeltrapez (offen)', None, 901, None, None, None, None, None),
-                ('Offener Graben', 'GR', None, None, None, None, 'GR', None),
-                ('Oval', 'OV', None, None, None, 12, 'OV', None),
+                ('Kreis', 'DN'),
+                ('Rechteck', 'RE'),
+                ('Ei (B:H = 2:3)', 'EI'),
+                ('Maul (B:H = 2:1.66)', 'MA'),
+                ('Halbschale (offen) (B:H = 2:1)', 'HS'),
+                ('Kreis gestreckt (B:H=2:2.5)', None),
+                ('Kreis überhöht (B:H=2:3)', None),
+                ('Ei überhöht (B:H=2:3.5)', None),
+                ('Ei breit (B:H=2:2.5)', None),
+                ('Ei gedrückt (B:H=2:2)', None),
+                ('Drachen (B:H=2:2)', None),
+                ('Maul (DIN) (B:H=2:1.5)', None),
+                ('Maul überhöht (B:H=2:2)', None),
+                ('Maul gedrückt (B:H=2:1.25)', None),
+                ('Maul gestreckt (B:H=2:1.75)', None),
+                ('Maul gestaucht (B:H=2:1)', None),
+                ('Haube (B:H=2:2.5)', 'BO'),
+                ('Parabel (B:H=2:2)', None),
+                ('Rechteck mit geneigter Sohle (B:H=2:1)', None),
+                ('Rechteck mit geneigter Sohle (B:H=1:1)', None),
+                ('Rechteck mit geneigter Sohle (B:H=1:2)', None),
+                ('Rechteck mit geneigter und horizontaler Sohle (B:H=2:1,b=0.2B)', None),
+                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:1,b=0.2B)', None),
+                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:2,b=0.2B)', None),
+                ('Rechteck mit geneigter und horizontaler Sohle (B:H=2:1,b=0.4B)', None),
+                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:1,b=0.4B)', None),
+                ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:2,b=0.4B)', None),
+                ('Sonderprofil', 68),
+                ('Gerinne', 'RI'),
+                ('Trapez (offen)', 'TR'),
+                ('Rechteck offen', None),
+                ('Doppeltrapez (offen)', None),
+                ('Offener Graben', 'GR'),
+                ('Oval', 'OV')
             ]
 
-            for (profilnam, kuerzel, he_nr, mu_nr, kp_key, isybau, m150, m145) in data:
+            for (langtext, kuerzel) in data:
                 params.append(
                     {
-                        'profilnam': profilnam,
+                        'bezext': langtext,
                         'kuerzel': kuerzel,
-                        'he_nr': None,
-                        'mu_nr': None,
-                        'kp_key': None,
-                        'isybau': None,
-                        'm150': m150,
-                        'm145': None,
-                        'kommentar': 'QKan-Standard',
+                        'bezqkan': langtext,
+                        'kommentar': 'ITWH-Standard',
                     }
                 )
 
-            sql = """INSERT INTO profile (profilnam, kuerzel, he_nr, mu_nr, kp_key, isybau, m150, m145, kommentar)
-                        SELECT
-                            :profilnam, :kuerzel, :he_nr, :mu_nr, :kp_key, 
-                            :isybau, :m150, :m145, :kommentar
-                        WHERE :profilnam NOT IN (SELECT profilnam FROM profile)"""
-            if not self.db_qkan.sql(sql, "M150 Import Referenzliste profile", params, many=True):
-                logger.error_data(
-                    f'{self.__class__.__name__}: '
-                    f'Datensätze konnten nicht in Tabelle profile eingefügt werden:'
-                    f'{params=}')
-                raise QkanError
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_profile', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_profile')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 106 Profile", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
+                f'{params=}')
+            raise QkanError
+
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter', 'import_profile')
+
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_profile'"""
+
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
+
+        # Neue Datensätze aus der Importdatei hinzufügen
+        sql = """INSERT INTO profile (
+                    profilnam, kuerzel, kommentar)
+                SELECT coalesce(:bezqkan, :bezext), :kuerzel, :kommentar
+                WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT profilnam FROM profile)"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenzliste profile", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Tabelle profile eingefügt werden:'
+                f'{params=}')
+            raise QkanError
 
         # Referenztabelle Simulationsarten (M150: Funktionszustand)
 
@@ -782,69 +825,84 @@ class ImportTask(Schadenstexte):
         logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Funktionszustand": {len(blocks)}')
 
         for block in blocks:
-            nr = block.findtext("RT002", None)
-            kuerzel = block.findtext("RT003", nr)
+            kuerzel = block.findtext("RT002", None)
             bez = block.findtext("RT004", None)
             bemerkung = block.findtext(
                 "RT999",
                 ElementTree.Element('aus Referenztabelle in der M150-Datei')
             )
             # Falls einer der beiden Einträge fehlt:
-            if nr is None or bez is None:
+            if bez is None:
                 continue
             params.append(
                 {
-                    'bezeichnung': bez,
+                    'bezext': bez,
                     'kuerzel': kuerzel,
-                    'he_nr': None,
-                    'mu_nr': None,
-                    'kp_nr': None,
-                    'm150': nr,
-                    'm145': None,
-                    'isybau': None,
-                    'kommentar': bemerkung,
+                    'bezqkan': bez,
+                    'kommentar': 'M150-Standard',
                 }
             )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
 
         if len(blocks) == 0:
-            data = [          #   kurz    he    mu    kp  m150  m145   isy
-                ('in Betrieb',     'B',    1,    1,    0,  'B',  '1',  '0', 'QKan-Standard'),
-                ('außer Betrieb',  'AB',   4, None,    3,  'B',  '1', '3', 'QKan-Standard'),
-                ('geplant',        'P',    2, None,    1,  'P', None, '1', 'QKan-Standard'),
-                ('stillgelegt',    'N', None, None,    4,  'N', None, '3', 'QKan-Standard'),
-                ('verdämmert',     'V',    5, None, None,  'V', None, '4', 'QKan-Standard'),
-                ('fiktiv',         'F',    3, None,    2, None, None, '2', 'QKan-Standard'),
-                ('rückgebaut',     'P', None, None,    6, None, None, '6', 'QKan-Standard'),
+            data = [
+                ('in Betrieb', 'B'),
+                ('außer Betrieb', 'AB'),
+                ('geplant', 'P'),
+                ('stillgelegt', 'N'),
+                ('verdämmert', 'V'),
+                ('fiktiv', 'F'),
+                ('rückgebaut', 'P'),
             ]
 
-            for (bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, m150, m145, isybau, kommentar) in data:
+            for (langtext, kuerzel) in data:
                 params.append(
                     {
-                        'bezeichnung': bezeichnung,
+                        'bezext': langtext,
                         'kuerzel': kuerzel,
-                        'he_nr': he_nr,
-                        'mu_nr': mu_nr,
-                        'kp_nr': kp_nr,
-                        'isybau': None,
-                        'm150': m150,
-                        'm145': m145,
+                        'bezqkan': langtext,
                         'kommentar': 'QKan-Standard',
                     }
                 )
 
-            sql = """INSERT INTO simulationsstatus (bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, isybau, m150, m145, kommentar)
-                        SELECT
-                            :bezeichnung, :kuerzel, :he_nr, :mu_nr, :kp_nr, 
-                            :isybau, :m150, :m145, :kommentar
-                        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM simulationsstatus)"""
-            if not self.db_qkan.sql(sql, "M150 Import Referenzliste Simulationsstatus", params, many=True):
-                logger.error_data(
-                    f'{self.__class__.__name__}: '
-                    f'Datensätze konnten nicht in Tabelle simulationsstatus eingefügt werden:'
-                    f'{params=}')
-                raise QkanError
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_simulationsstatus', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_simulationsstatus')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 109 Funktionszustand", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
+                f'{params=}')
+            raise QkanError
+
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter', 'import_simulationsstatus')
+
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_simulationsstatus'"""
+
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
+
+        # Neue Datensätze aus der Importdatei hinzufügen
+        sql = """INSERT INTO simulationsstatus (
+                    bezeichnung, kuerzel, kommentar)
+                SELECT coalesce(:bezqkan, :bezext), :kuerzel, :kommentar
+                WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT bezeichnung FROM simulationsstatus)"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenzliste simulationsstatus", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Tabelle simulationsstatus eingefügt werden:'
+                f'{params=}')
+            raise QkanError
 
         # Referenztabelle Material
 
@@ -855,101 +913,122 @@ class ImportTask(Schadenstexte):
         logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Material": {len(blocks)}')
 
         for block in blocks:
-            nr = block.findtext("RT002", None)
-            kuerzel = block.findtext("RT003", nr)
+            kuerzel = block.findtext("RT002", None)
             bez = block.findtext("RT004", None)
             bemerkung = block.findtext(
                 "RT999",
                 ElementTree.Element('aus Referenztabelle in der M150-Datei')
             )
             # Falls einer der beiden Einträge fehlt:
-            if nr is None or bez is None:
+            if bez is None:
                 continue
             params.append(
                 {
-                    'bezeichnung': bez,
+                    'bezext': bez,
                     'kuerzel': kuerzel,
-                    'm150':nr,
-                    'm145': None,
-                    'isybau': None,
-                    'kommentar': bemerkung,
+                    'bezqkan': bez,
+                    'kommentar': 'M150-Standard',
                 }
             )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
 
         if len(blocks) == 0:
-            data = [          #   kurz    m150  m145   isy
-                ('Asbestzement', 'AZ', 'AZ', '7', 'AZ', None),
-                ('Beton', 'B', 'B', '2', 'B', None),
-                ('Bitumen', 'BIT', 'BIT', None, None, None),
-                ('Betonsegmente', 'BS', 'BS', None, 'BS', None),
-                ('Betonsegmente kunststoffmodifiziert', 'BSK', 'BSK', None, None, None),
-                ('Bitumen', 'BT', 'BT', None, None, None),
-                ('Edelstahl', 'CN', 'CN', '22', None, None),
-                ('Nichtidentifiziertes Metall (z. B. Eisen und Stahl)', 'EIS', 'EIS', None, 'EIS', None),
-                ('Epoxydharz', 'EPX', 'EPX', None, None, None),
-                ('Epoxydharz mit Synthesefaser', 'EPSF', 'EPSF', None, None, None),
-                ('Faserzement', 'FZ', 'FZ', '6', 'FZ', None),
-                ('Glasfaserverstärkter Kunststoff', 'GFK', 'GFK', '51', 'GFK', None),
-                ('Grauguß', 'GG', 'GG', '4', 'GG', None),
-                ('Duktiles Gußeisen', 'GGG', 'GGG', '5', 'GGG', None),
-                ('Nichtidentifizierter Kunststoff', 'KST', 'KST', '50', 'KST', None),
-                ('Mauerwerk', 'MA', 'MA', '3', 'MA', None),
-                ('Ortbeton', 'OB', 'OB', None, 'OB', None),
-                ('Polymerbeton', 'PC', 'PC', None, 'PC', None),
-                ('Polymermodifizierter Zementbeton', 'PCC', 'PCC', None, 'PCC', None),
-                ('Polyethylen', 'PE', 'PE', '52', 'PE', None),
-                ('Polyesterharz', 'PH', 'PH', None, 'PH', None),
-                ('Polyesterharzbeton', 'PHB', 'PHB', None, 'PHB', None),
-                ('Polypropylen', 'PP', 'PP', '54', 'PP', None),
-                ('Polyurethanharz', 'PUR', 'PUR', None, None, None),
-                ('Polyvinylchlorid modifiziert', 'PVCM', 'PVCM', None, None, None),
-                ('Polyvinylchlorid hart', 'PVCU', 'PVCU', None, 'PVCU', None),
-                ('Stahlfaserbeton', 'SFB', 'SFB', None, 'SFB', None),
-                ('Spannbeton', 'SPB', 'SPB', '12', 'SPB', None),
-                ('Stahlbeton', 'SB', 'SB', '13', 'SB', None),
-                ('Stahl', 'ST', 'ST', '21', 'ST', None),
-                ('Steinzeug', 'STZ', 'STZ', '1', 'STZ', None),
-                ('Spritzbeton', 'SZB', 'SZB', '14', 'SZB', None),
-                ('Spritzbeton kunststoffmodifiziert', 'SZBK', 'SZBK', None, None, None),
-                ('Teerfaser', 'TF', 'TF', None, None, None),
-                ('Ungesättigtes Polyesterharz mit Glasfaser', 'UPGF', 'UPGF', None, None, None),
-                ('Ungesättigtes Polyesterharz mit Synthesefaser', 'UPSF', 'UPSF', None, None, None),
-                ('Vinylesterharz mit Synthesefaser', 'VEGF', 'VEGF', None, None, None),
-                ('Vinylesterharz mit Glasfaser', 'VESF', 'VESF', None, None, None),
-                ('Verbundrohr Beton-/StahlbetonKun', 'VBK', 'VBK', None, None, None),
-                ('Verbundrohr Beton-/Stahlbeton Steinzeug', 'VBS', 'VBS', None, None, None),
-                ('Nichtidentifizierter Werkstoff', 'W', 'W', None, None, None),
-                ('Wickelrohr (PEHD)', 'WPE', 'WPE', None, None, None),
-                ('Wickelrohr (PVCU)', 'WPVC', 'WPVC', None, None, None),
-                ('Zementmörtel', 'ZM', 'ZM', None, None, None),
-                ('Ziegelwerk', 'ZG', 'ZG', None, 'ZG', None),
+            data = [
+                ('Asbestzement', 'AZ'),
+                ('Beton', 'B'),
+                ('Bitumen', 'BIT'),
+                ('Betonsegmente', 'BS'),
+                ('Betonsegmente kunststoffmodifiziert', 'BSK'),
+                ('Bitumen', 'BT'),
+                ('Edelstahl', 'CN'),
+                ('Nichtidentifiziertes Metall (z. B. Eisen und Stahl)', 'EIS'),
+                ('Epoxydharz', 'EPX'),
+                ('Epoxydharz mit Synthesefaser', 'EPSF'),
+                ('Faserzement', 'FZ'),
+                ('Glasfaserverstärkter Kunststoff', 'GFK'),
+                ('Grauguß', 'GG'),
+                ('Duktiles Gußeisen', 'GGG'),
+                ('Nichtidentifizierter Kunststoff', 'KST'),
+                ('Mauerwerk', 'MA'),
+                ('Ortbeton', 'OB'),
+                ('Polymerbeton', 'PC'),
+                ('Polymermodifizierter Zementbeton', 'PCC'),
+                ('Polyethylen', 'PE'),
+                ('Polyesterharz', 'PH'),
+                ('Polyesterharzbeton', 'PHB'),
+                ('Polypropylen', 'PP'),
+                ('Polyurethanharz', 'PUR'),
+                ('Polyvinylchlorid modifiziert', 'PVCM'),
+                ('Polyvinylchlorid hart', 'PVCU'),
+                ('Stahlfaserbeton', 'SFB'),
+                ('Spannbeton', 'SPB'),
+                ('Stahlbeton', 'SB'),
+                ('Stahl', 'ST'),
+                ('Steinzeug', 'STZ'),
+                ('Spritzbeton', 'SZB'),
+                ('Spritzbeton kunststoffmodifiziert', 'SZBK'),
+                ('Teerfaser', 'TF'),
+                ('Ungesättigtes Polyesterharz mit Glasfaser', 'UPGF'),
+                ('Ungesättigtes Polyesterharz mit Synthesefaser', 'UPSF'),
+                ('Vinylesterharz mit Synthesefaser', 'VEGF'),
+                ('Vinylesterharz mit Glasfaser', 'VESF'),
+                ('Verbundrohr Beton-/StahlbetonKun', 'VBK'),
+                ('Verbundrohr Beton-/Stahlbeton Steinzeug', 'VBS'),
+                ('Nichtidentifizierter Werkstoff', 'W'),
+                ('Wickelrohr (PEHD)', 'WPE'),
+                ('Wickelrohr (PVCU)', 'WPVC'),
+                ('Zementmörtel', 'ZM'),
+                ('Ziegelwerk', 'ZG'),
             ]
 
-            for (bezeichnung, kuerzel, m150, m145, isybau, kommentar) in data:
+            for (langtext, kuerzel) in data:
                 params.append(
                     {
-                        'bezeichnung': bezeichnung,
+                        'bezext': langtext,
                         'kuerzel': kuerzel,
-                        'isybau': None,
-                        'm150': m150,
-                        'm145': None,
+                        'bezqkan': langtext,
                         'kommentar': 'QKan-Standard',
                     }
                 )
 
-            sql = """INSERT INTO material (bezeichnung, kuerzel, isybau, m150, m145, kommentar)
-                        SELECT
-                            :bezeichnung, :kuerzel, 
-                            :isybau, :m150, :m145, :kommentar
-                        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM material)"""
-            if not self.db_qkan.sql(sql, "M150 Import Referenzliste Material", params, many=True):
-                logger.error_data(
-                    f'{self.__class__.__name__}: '
-                    f'Datensätze konnten nicht in Tabelle material eingefügt werden:'
-                    f'{params=}')
-                raise QkanError
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_material', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_material')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 105 Bauwerksart", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
+                f'{params=}')
+            raise QkanError
+
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter', 'import_material')
+
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+                FROM refdata
+                WHERE (bezqkan IS NULL OR bezqkan = '') 
+                  AND modul = 'm150porter'
+                  AND subject = 'import_material'"""
+
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
+
+        # Neue Datensätze aus der Importdatei hinzufügen
+        sql = """INSERT INTO material (
+                        bezeichnung, kuerzel, kommentar)
+                    SELECT coalesce(:bezqkan, :bezext), :kuerzel, :kommentar
+                    WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT bezeichnung FROM material)"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenzliste material", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Tabelle material eingefügt werden:'
+                f'{params=}')
+            raise QkanError
 
         # Bauwerksarten - Dieses dict wird nicht über eine QKan-Tabelle verwaltet. Deshalb
         # wird der mapper direkt hier angelegt
@@ -999,117 +1078,109 @@ class ImportTask(Schadenstexte):
                 'Z':    'Sonstige',
             }
 
-        # Referenztabelle Knotenarten_M150, zusätzliche Tabelle für M150
+        # Knotenarten aus Referenztabelle Nr. 116 einlesen.
+        # Die Daten werden nur intern verarbeitet, weil unterschiedliche Tabellen betroffen sind.
 
-        # Prüfen, ob Tabelle schon vorhanden
+        params = []
 
-        if self.db_qkan.attrlist('m150_knotenarten') == []:
-            logger.debug('Tabelle m150_knotenarten wird erstellt')
-            sql = """CREATE TABLE m150_knotenarten (
-                pk INTEGER PRIMARY KEY, 
-                bezeichnung TEXT,                   /* eindeutige QKan-Bezeichnung  */
-                kuerzel TEXT,                       /* nur für Beschriftung */
-                schachttyp TEXT,                    /* entweder entsprechend schaechte.schachttyp oder 'Symbol' */
-                isybau TEXT,                        /* BFR Abwasser */
-                m150 TEXT,                          /* DWA M150 */
-                m145 TEXT,                          /* DWA M145 */
-                kommentar TEXT)
-            """
-            if not self.db_qkan.sql(sql, "Erstellen der Tabelle m150_knotenarten"):
-                logger.error_data(
-                    f'{self.__class__.__name__}: Tabelle m150_knotenarten konnte nicht erstellt werden')
-                raise QkanError
+        blocks = self.xml.findall("RT/[RT001='116']")
 
-            params = []
+        logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Knotenart": {len(blocks)}')
 
-            blocks = self.xml.findall("RT/[RT001='116']")
+        for block in blocks:
+            kuerzel = block.findtext("RT002", None)
+            bezeichnung = block.findtext("RT004", None)
+            # Falls einer der beiden Einträge fehlt:
+            if kuerzel is None or bezeichnung is None:
+                continue
+            params.append(
+                {
+                    'bezext': bezeichnung,
+                    'kuerzel': kuerzel,
+                    'bezqkan': None,                     # anschließend durch den Anwender zu ergänzen
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
+                }
+            )
 
-            logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Knotenart": {len(blocks)}')
+        # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
+        if len(blocks) == 0:
+            #    bezeichnung, kuerzel,      schachttyp (qkan-Tabelle)
+            data = [
+                ('Auslass', 'A',            'Auslass'),
+                ('Bauwerk', 'B',            'Speicher'),     # hier wird bewusst vereinfacht!
+                ('Straßenablauf', 'E',      'Symbol'),       # wird in Tabelle symbole eingefügt
+                ('Fiktiver Schacht', 'F',   'Schacht'),
+                ('Gebäudeanschluss', 'G',   'Schacht'),
+                ('Inspektionsöffnung', 'I', 'Symbol'),
+                ('Lampenschacht', 'L',      'Symbol'),       # wird in Tabelle symbole eingefügt
+                ('Reinigungsöffnung', 'R',  'Symbol'),       # wird in Tabelle symbole eingefügt
+                ('Schacht', 'S',            'Schacht'),
+                ('Sanitärgegenstand', 'W',  'Symbol'),       # wird in Tabelle symbole eingefügt
+                ('Sonstige', 'Z',           'Symbol'),       # wird in Tabelle symbole eingefügt
+            ]
 
-            for block in blocks:
-                kuerzel = block.findtext("RT002", None)
-                bezeichnung = block.findtext("RT004", None)
-                # Falls einer der beiden Einträge fehlt:
-                if kuerzel is None or bezeichnung is None:
-                    continue
+            for (bezeichnung, kuerzel, schachttyp) in data:
                 params.append(
                     {
-                        'bezeichnung': bezeichnung,
+                        'bezext': bezeichnung,
                         'kuerzel': kuerzel,
-                        'schachttyp': None,                     # anschließend durch den Anwender zu ergänzen
-                        'kommentar': 'aus Referenztabelle in der M150-Datei',
+                        'bezqkan': schachttyp,
+                        'kommentar': 'M150-Standard',
                     }
                 )
+            logger.debug("M150-Referenztabelle: Standardtabelle")
 
-            # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
-            if len(blocks) == 0:
-                #    bezeichnung, kuerzel,      schachttyp (qkan-Tabelle)
-                data = [
-                    ('Auslass', 'A',            'Auslass'),
-                    ('Bauwerk', 'B',            'Speicher'),     # hier wird bewusst vereinfacht!
-                    ('Straßenablauf', 'E',      'Symbol'),       # wird in Tabelle symbole eingefügt
-                    ('Fiktiver Schacht', 'F',   'Schacht'),
-                    ('Gebäudeanschluss', 'G',   'Schacht'),
-                    ('Inspektionsöffnung', 'I', 'Symbol'),
-                    ('Lampenschacht', 'L',      'Symbol'),       # wird in Tabelle symbole eingefügt
-                    ('Reinigungsöffnung', 'R',  'Symbol'),       # wird in Tabelle symbole eingefügt
-                    ('Schacht', 'S',            'Schacht'),
-                    ('Sanitärgegenstand', 'W',  'Symbol'),       # wird in Tabelle symbole eingefügt
-                    ('Sonstige', 'Z',           'Symbol'),       # wird in Tabelle symbole eingefügt
-                ]
+        # else:
+        #     complete = False                 # muss noch durch den Anwender bearbeitet werden
+        #     logger.debug("M150-Referenztabelle aus XML-Datei muss noch bearbeitet werden")
 
-                for (bezeichnung, kuerzel, schachttyp) in data:
-                    params.append(
-                        {
-                            'bezeichnung': bezeichnung,
-                            'kuerzel': kuerzel,
-                            'schachttyp': schachttyp,
-                            'kommentar': 'M150-Standard',
-                        }
-                    )
-                complete = True                  # Vorgaben entsprechend M150
-                logger.debug("M150-Referenztabelle: Standardtabelle")
-            else:
-                complete = False                 # muss noch durch den Anwender bearbeitet werden
-                logger.debug("M150-Referenztabelle aus XML-Datei muss noch bearbeitet werden")
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_knotentypen', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_knotentypen')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenzliste Nr. 116 Knotenart", params, many=True):
+            logger.error_data(
+                f'{self.__class__.__name__}: '
+                f'Datensätze konnten nicht in Tabelle m150_knotenarten eingefügt werden:'
+                f'{params=}')
+            raise QkanError
 
-            sql = """INSERT INTO m150_knotenarten (
-                        bezeichnung, kuerzel, m150, m145, schachttyp, kommentar)
-                        SELECT :bezeichnung, :kuerzel, :kuerzel, :kuerzel, :schachttyp, :kommentar
-                        WHERE :bezeichnung NOT IN (SELECT bezeichnung FROM m150_knotenarten)"""
-            if not self.db_qkan.sql(sql, "M150 Import Referenzliste Nr. 116 Knotenart", params, many=True):
-                logger.error_data(
-                    f'{self.__class__.__name__}: '
-                    f'Datensätze konnten nicht in Tabelle m150_knotenarten eingefügt werden:'
-                    f'{params=}')
-                raise QkanError
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter','import_knotentypen')
 
-            self.db_qkan.commit()
-            return complete, False
-        else:
-            sql = """SELECT pk
-                FROM m150_knotenarten
-                WHERE schachttyp IS NULL OR schachttyp = ''"""
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_knotentypen'"""
 
-            self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-            data = self.db_qkan.fetchone()
-            complete = (data is None)
-            logger.debug(f"M150-Referenztabelle wurde getestet: {complete=}")
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
 
-            self.db_qkan.commit()
-            return complete, True
+        self.db_qkan.commit()
+
+        return complete, False
 
     def _init_mappers(self) -> None:
 
         # Entwässerungsarten
-        sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
-              "FROM entwaesserungsarten WHERE m150 IS NOT NULL GROUP BY m150"
-        subject = "M150 Import entwaesserungsarten"
+        # sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
+        #       "FROM entwaesserungsarten WHERE m150 IS NOT NULL GROUP BY m150"
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_entwaesserungsarten'"
+        subject = "xml_import_entwaesserungsarten"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_entwart)
 
         # Profilarten
-        sql = "SELECT m150, FIRST_VALUE(profilnam) OVER (PARTITION BY m150 ORDER BY pk) " \
-              "FROM profile WHERE m150 IS NOT NULL GROUP BY m150"
+        # sql = "SELECT m150, FIRST_VALUE(profilnam) OVER (PARTITION BY m150 ORDER BY pk) " \
+        #       "FROM profile WHERE m150 IS NOT NULL GROUP BY m150"
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_profile'"
         subject = "xml_import profile"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_profile)
 
@@ -1118,8 +1189,10 @@ class ImportTask(Schadenstexte):
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_pump)
 
         # Materialarten
-        sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
-              "FROM material WHERE m150 IS NOT NULL GROUP BY m150"
+        # sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
+        #       "FROM material WHERE m150 IS NOT NULL GROUP BY m150"
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_material'"
         subject = "xml_import material"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_material)
 
@@ -1128,8 +1201,10 @@ class ImportTask(Schadenstexte):
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_outlet)
 
         # Planungs-/Simulationsstatus
-        sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
-              "FROM simulationsstatus WHERE m150 IS NOT NULL GROUP BY m150"
+        # sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
+        #       "FROM simulationsstatus WHERE m150 IS NOT NULL GROUP BY m150"
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_simulationsstatus'"
         subject = "xml_import simulationsstatus"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_simstatus)
 
@@ -1144,10 +1219,11 @@ class ImportTask(Schadenstexte):
         self.db_qkan.consume_mapper(sql, subject, self.mapper_wetter)
 
         # Knotentypen
-        sql = "SELECT m150, FIRST_VALUE(bezeichnung) OVER (PARTITION BY m150 ORDER BY pk) " \
-              "FROM m150_knotenarten WHERE m150 IS NOT NULL GROUP BY m150"
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_knotentypen'"
         subject = "xml_import m150_knotenarten"
         self.db_qkan.consume_mapper(sql, subject, self.mapper_m150knotenarten)
+        logger.debug(f'{self.mapper_m150knotenarten=}')
 
         # Bauwerksarten
         # Mapper nur intern, s. o. in _reftables()
@@ -1208,13 +1284,10 @@ class ImportTask(Schadenstexte):
                 knotenart = self.db_qkan.get_from_mapper(
                     block.findtext("KG305"),                                 # m150-Knotenart (Ref.-Tab. 116)
                     self.mapper_m150knotenarten,
-                    'schacht',
-                    'knotenarten',
-                    'bezeichnung',
-                    'm150',
-                    'kommentar',
-                    'kuerzel',
+                    'Schacht/Anschlussschacht/Symbol',
                 )
+                ka = block.findtext("KG305")
+                logger.debug(f'Zuordnung {ka=} -> {knotenart=}')
 
                 bwart = block.findtext("KG306")                               # m150-Bauwerksart (Ref.-Tab. 117)
                 bauwerksart = self.mapper_bauwerkswart.get(bwart)
@@ -1261,7 +1334,7 @@ class ImportTask(Schadenstexte):
 
             # Je nach Knotentyp wird das Element unterschiedlichen Tabellen hinzugefügt!
 
-            if schacht.schachttyp in ('Schacht', 'Auslass', 'Speicher', 'Anschlussschacht'):
+            if schacht.schachttyp in ('Schacht', 'Auslass', 'Speicher'):
                 params = {'schnam': schacht.schnam,
                           'sohlhoehe': schacht.sohlhoehe, 'deckelhoehe': schacht.deckelhoehe,
                           'bauwerksart': schacht.bauwerksart,
@@ -1282,22 +1355,43 @@ class ImportTask(Schadenstexte):
                         f'{self.__class__.__name__}: '
                         f'Schacht {schacht.schnam} kann nicht eingefügt werden')
                     raise QkanError
+            elif schacht.schachttyp == 'Anschlussschacht':
+                params = {'schnam': schacht.schnam,
+                          'sohlhoehe': schacht.sohlhoehe, 'deckelhoehe': schacht.deckelhoehe,
+                          'bauwerksart': schacht.bauwerksart,
+                          'durchm': schacht.durchm, 'druckdicht': schacht.druckdicht,
+                          'entwart': schacht.entwart, 'strasse': schacht.strasse,
+                          'baujahr': schacht.baujahr, 'material': schacht.material,
+                          'simstatus': schacht.simstatus, 'kommentar': schacht.kommentar,
+                          'geom': schacht.geop,
+                          'epsg': QKan.config.epsg}
+                if not self.db_qkan.insertdata(
+                        tabnam="anschlussschaechte",
+                        stmt_category='m150-import anschlussschaechte',
+                        mute_logger=False,
+                        parameters=params,
+                ):
+                    logger.error_data(
+                        f'{self.__class__.__name__}: '
+                        f'Anschlussschacht {schacht.schnam} kann nicht eingefügt werden')
+                    raise QkanError
             else:
                 params = {'bezeichnung': schacht.schnam,
                           'art': schacht.bauwerksart,
                           'gruppe': 'Entwässerung',
                           'kommentar': 'M150-Import',
                           'geom': schacht.geop,
+                          'epsg': QKan.config.epsg,
                           }
-                sql = """INSERT INTO symbole (bezeichnung, art, gruppe, kommentar, geom) VALUES
-                    (:bezeichnung, :art, :gruppe, :kommentar, :geom)"""
-                if not self.db_qkan.sql(
-                    sql=sql,
-                    parameters=params,
+                if not self.db_qkan.insertdata(
+                        tabnam="symbole",
+                        stmt_category='m150-import symbole',
+                        mute_logger=False,
+                        parameters=params,
                 ):
                     logger.error_data(
                         f'{self.__class__.__name__}: '
-                        f'Schacht {schacht.schnam} kann nicht eingefügt werden')
+                        f'Symbol {schacht.schnam} kann nicht eingefügt werden')
                     raise QkanError
 
         self.db_qkan.commit()
@@ -2151,7 +2245,6 @@ class ImportTask(Schadenstexte):
                 geom, sohleoben, sohleunten, schoben, schunten = self._get_HG_GO(
                     block,
                     leitnam,
-                    QKan.config.xml.import_switchHA,
                 )
                 if geom is None:
                     logger.warning(f'Kein Punktobjekt für Anschlussleitung "{leitnam}" gefunden. Versuche alte M150-Felder HG201 ...')

@@ -3,7 +3,7 @@ import os
 from qgis.core import QgsProject, QgsEditorWidgetSetup
 
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError
 from qgis.utils import pluginDirectory
 from qkan import QKan, enums
 from qkan.tools.qkan_utils import loadLayer, get_database_QKan
@@ -36,6 +36,16 @@ def run(dbcon: DBConnection) -> bool:
     except BaseException as err:
         logger.error_code(f"Fehler {err} in {__name__}.0040, {sql_file =}")
         return False
+
+    # Tabelle wurde bereits mit sql_file erstellt
+    epsg = QKan.config.epsg
+    sql = f"SELECT AddGeometryColumn('anschlussschaechte', 'geom', {epsg}, 'POINT', 2);"
+    if not dbcon.sql(sql, f"migration 0040, Version {VERSION}: Geoobjekt für anschlussschaechte"):
+        raise QkanDbError
+
+    sql = f"SELECT CreateSpatialIndex('anschlussschaechte', 'geom');"
+    if not dbcon.sql(sql, f"migration 0040, Version {VERSION}: Geoindex für anschlussschaechte"):
+        raise QkanDbError
 
     if 'urstation' not in dbcon.attrlist('anschlussleitungen'):
         try:

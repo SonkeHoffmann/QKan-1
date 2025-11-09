@@ -919,6 +919,7 @@ class ImportTask(Schadenstexte):
                     zanf = z
                 if len(ptlis) <= 1:
                     continue
+                ptlis.reverse()                         # STRAKAT beginnt mit den Punkten an der Haltung
                 geomwkb = QgsGeometry.fromPolyline(ptlis).asWkb()
 
                 sohleoben = z1
@@ -1690,7 +1691,7 @@ class ImportTask(Schadenstexte):
             LEFT JOIN eigentum AS eg    ON eg.id = stk.eigentum 
             WHERE
                     stk.schachtnummer <> 0
-                AND stk.schachtart <> 0                 -- keine Knickpunkte
+--                AND stk.schachtart <> 0                 -- keine Knickpunkte, todo: über knotenart lösen 
                 AND stk.schacht_oben Is Not Null
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
