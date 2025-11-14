@@ -687,6 +687,16 @@ class LaengsTask:
                                   ha='left')
                 annotations.append(an)
 
+            elif i == x_d[1]:
+                an = new_plot.annotate(j, ((i +4.) * scale_x, y_min - 1.9),
+                                  ha='left')
+                annotations.append(an)
+
+            elif i == x_d[-1]:
+                an = new_plot.annotate(j, ((i -5.) * scale_x, y_min - 1.9),
+                                  ha='left')
+                annotations.append(an)
+
             elif x % 2:
                 an=new_plot.annotate(round(j, 2), ((i-6.)* scale_x, y_min- 1.9 ),
                               ha='center')
