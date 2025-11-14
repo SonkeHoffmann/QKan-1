@@ -54,6 +54,42 @@ class ExportTask:
 
         self.root: Element = None
 
+        if round(QKan.config.epsg - 5, -1) in (25830, 3040):
+            self.ksys = 'UTM'
+        elif round(QKan.config.epsg - 5, -1) == (31460, 4640):
+            self.ksys = 'GK'
+        else:
+            logger.error_data(f"Fehler beim Koordinatensystem: {QKan.config.epsg}")
+            raise QkanAbortError
+
+    def _prepare_refdata(self) -> None:
+        """Fügt Refernzdaten aus dem Import für den Export hinzu"""
+        if not self.db_qkan.sqlyml(
+            sqlnam='m150_insert_refdatafromimport'
+        ):
+            raise QkanDbError
+
+    def _export_refdata(self) -> None:
+        """Exportiert die Referenztabellen"""
+        if not self.db_qkan.sqlyml(
+            sqlnam='m150_ex_refdata'
+        ):
+            raise QkanDbError
+        for (
+            bezext,
+            kuerzel,
+            m150tabelle,
+        ) in self.db_qkan.fetchall():
+            x_elem = SubElement(self.root, "RT")
+            _create_children_text(
+                x_elem,
+                {
+                    "RT001": m150tabelle,
+                    "RT002": kuerzel,
+                    "RT004": bezext,
+                },
+            )
+
     def _export_wehre(self) -> None:
         if not QKan.config.check_export.wehre:
             # or not self.hydraulik_objekte
@@ -86,9 +122,9 @@ class ExportTask:
             if sohleoben is None:
                 sohleoben = 0
 
-            abw = SubElement(self.root, "KG")
+            x_elem = SubElement(self.root, "KG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
                     "KG001": haltnam,
                     "KG211": hoehe,
@@ -101,9 +137,9 @@ class ExportTask:
                 },
             )
 
-            geo = SubElement(abw, "GO")
+            x_obj = SubElement(x_elem, "GO")
             _create_children_text(
-                geo,
+                x_obj,
                 {
                     "GO001": haltnam,
 
@@ -111,7 +147,7 @@ class ExportTask:
             )
 
             _create_children_text(
-                SubElement(geo, "GP"),
+                SubElement(x_obj, "GP"),
                 {
                     "GP001": haltnam,
                     "GP005": xschob,
@@ -149,9 +185,9 @@ class ExportTask:
             yschob,
         ) in self.db_qkan.fetchall():
 
-            abw = SubElement(self.root, "KG")
+            x_elem = SubElement(self.root, "KG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
                     "KG001": haltnam,
                     "KG302": entwart,
@@ -163,9 +199,9 @@ class ExportTask:
                 },
             )
 
-            geo = SubElement(abw, "GO")
+            x_obj = SubElement(x_elem, "GO")
             _create_children_text(
-                geo,
+                x_obj,
                 {
                     "GO001": haltnam,
 
@@ -173,7 +209,7 @@ class ExportTask:
             )
 
             _create_children_text(
-                SubElement(geo, "GP"),
+                SubElement(x_obj, "GP"),
                 {
                     "GP001": haltnam,
                     "GP005": xschob,
@@ -204,47 +240,129 @@ class ExportTask:
             deckelhoehe,
             sohlhoehe,
             tiefe,
+            knotenart,
             durchm,
             entwart,
+            strasse,
+            strassenname,
             baujahr,
             simstatus,
-            xsch,
-            ysch,
-            kommentar
+            kommentar,
+            geobline,
+            geobpoint,
         ) in self.db_qkan.fetchall():
-            abw = SubElement(self.root, "KG")
+
+            geop = QgsGeometry()
+            geop.fromWkb(geobpoint)
+            ptsch = geop.asPoint()
+            xsch = ptsch.x()
+            ysch = ptsch.y()
+
+            if geobline is None:
+                ptlis = []
+            else:
+                geom = QgsGeometry()
+                geom.fromWkb(geobline)
+                ptlis = geom.asMultiPolyline()              # Achtung: 2-dimensional
+
+            x_elem = SubElement(self.root, "KG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
                     "KG001": schnam,
+                    "KG101": strasse,
+                    "KG102": strassenname,
                     "KG211": tiefe,
+                    "KG301": 'K',
                     "KG302": entwart,
                     "KG303": baujahr,
-                    "KG305": "A",
+                    "KG305": knotenart,
                     "KG309": durchm,
                     "KG401": simstatus,
+                    "KG407": 'B',
                     "KG999": kommentar,
                 },
             )
 
-            geo = SubElement(abw, "GO")
+            #Schachtsohle
+            x_obj = SubElement(x_elem, "GO")
             _create_children_text(
-                geo,
+                x_obj,
                 {
                     "GO001": schnam,
-
+                    "GO002": 'G',
+                    "GO003": 'Pkt',
                 },
             )
 
             _create_children_text(
-                SubElement(geo, "GP"),
+                SubElement(x_obj, "GP"),
                 {
                     "GP001": schnam,
+                    "GP002": self.ksys,
                     "GP005": xsch,
                     "GP006": ysch,
-                    "GP007": deckelhoehe,
+                    "GP007": sohlhoehe,
+                    "GP010": 'mNN',
                 },
             )
+
+            #Deckel
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schnam,
+                    "GO002": 'D',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schnam,
+                    "GP002": self.ksys,
+                    "GP007": deckelhoehe,
+                    "GP010": 'mNN',
+                },
+            )
+
+            # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
+            for i, part in enumerate(ptlis):
+                x_obj = SubElement(x_elem, "GO")
+                _create_children_text(
+                    x_obj,
+                    {
+                        "GO001": schnam + f' - {i}',
+                        "GO002": 'B',
+                        "GO003": 'Poly',
+                    },
+                )
+                for j, point in enumerate(part):
+                    xpt = point.x()
+                    ypt = point.y()
+                    _create_children_text(
+                        SubElement(x_obj, "GP"),
+                        {
+                            "GP001": schnam + f' - {j}',
+                            "GP002": self.ksys,
+                            "GP005": xpt,
+                            "GP006": ypt,
+                        },
+                    )
+
+    def _export_header(self) -> None:
+        "Kopfzeilen mit Version schreiben"
+
+        x_elem = SubElement(self.root, "FD")
+        _create_children_text(
+            x_elem,
+            {
+                "FD001": '04-2010',
+                "FD002": 'A',
+            },
+        )
 
     def _export_schaechte(self) -> None:
         if not QKan.config.check_export.schaechte:
@@ -268,47 +386,117 @@ class ExportTask:
             deckelhoehe,
             sohlhoehe,
             tiefe,
+            knotenart,
             durchm,
             entwart,
+            strasse,
+            strassenname,
             baujahr,
             simstatus,
-            xsch,
-            ysch,
-            kommentar
+            kommentar,
+            geobline,
+            geobpoint,
         ) in self.db_qkan.fetchall():
-            abw = SubElement(self.root, "KG")
+
+            geop = QgsGeometry()
+            geop.fromWkb(geobpoint)
+            ptsch = geop.asPoint()
+            xsch = ptsch.x()
+            ysch = ptsch.y()
+
+            if geobline is None:
+                ptlis = []
+            else:
+                geom = QgsGeometry()
+                geom.fromWkb(geobline)
+                ptlis = geom.asMultiPolyline()              # Achtung: 2-dimensional
+
+            x_elem = SubElement(self.root, "KG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
                     "KG001": schnam,
+                    "KG101": strasse,
+                    "KG102": strassenname,
                     "KG211": tiefe,
+                    "KG301": 'K',
                     "KG302": entwart,
                     "KG303": baujahr,
-                    "KG305": "S",
+                    "KG305": knotenart,
                     "KG309": durchm,
                     "KG401": simstatus,
+                    "KG407": 'B',
                     "KG999": kommentar,
                 },
             )
 
-            geo = SubElement(abw, "GO")
+            #Schachtsohle
+            x_obj = SubElement(x_elem, "GO")
             _create_children_text(
-                geo,
+                x_obj,
                 {
                     "GO001": schnam,
-
+                    "GO002": 'G',
+                    "GO003": 'Pkt',
                 },
             )
 
             _create_children_text(
-                SubElement(geo, "GP"),
+                SubElement(x_obj, "GP"),
                 {
                     "GP001": schnam,
+                    "GP002": self.ksys,
                     "GP005": xsch,
                     "GP006": ysch,
-                    "GP007": deckelhoehe,
+                    "GP007": sohlhoehe,
+                    "GP010": 'mNN',
                 },
             )
+
+            #Deckel
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schnam,
+                    "GO002": 'D',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schnam,
+                    "GP002": self.ksys,
+                    "GP007": deckelhoehe,
+                    "GP010": 'mNN',
+                },
+            )
+
+            # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
+            for i, part in enumerate(ptlis):
+                x_obj = SubElement(x_elem, "GO")
+                _create_children_text(
+                    x_obj,
+                    {
+                        "GO001": schnam + f' - {i}',
+                        "GO002": 'B',
+                        "GO003": 'Poly',
+                    },
+                )
+                for j, point in enumerate(part):
+                    xpt = point.x()
+                    ypt = point.y()
+                    _create_children_text(
+                        SubElement(x_obj, "GP"),
+                        {
+                            "GP001": schnam + f' - {j}',
+                            "GP002": self.ksys,
+                            "GP005": xpt,
+                            "GP006": ypt,
+                        },
+                    )
 
     def _export_speicher(self) -> None:
         if not QKan.config.check_export.speicher:
@@ -332,48 +520,118 @@ class ExportTask:
             deckelhoehe,
             sohlhoehe,
             tiefe,
+            knotenart,
             durchm,
             entwart,
+            strasse,
+            strassenname,
             baujahr,
             simstatus,
-            xsch,
-            ysch,
-            kommentar
+            kommentar,
+            geobline,
+            geobpoint,
         ) in self.db_qkan.fetchall():
-            abw = SubElement(self.root, "KG")
+
+            geop = QgsGeometry()
+            geop.fromWkb(geobpoint)
+            ptsch = geop.asPoint()
+            xsch = ptsch.x()
+            ysch = ptsch.y()
+
+            if geobline is None:
+                ptlis = []
+            else:
+                geom = QgsGeometry()
+                geom.fromWkb(geobline)
+                ptlis = geom.asMultiPolyline()              # Achtung: 2-dimensional
+
+            x_elem = SubElement(self.root, "KG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
                     "KG001": schnam,
+                    "KG101": strasse,
+                    "KG102": strassenname,
                     "KG211": tiefe,
+                    "KG301": 'K',
                     "KG302": entwart,
                     "KG303": baujahr,
-                    "KG305": "B",
+                    "KG305": knotenart,
                     "KG306": "ZRRB",
                     "KG309": durchm,
                     "KG401": simstatus,
+                    "KG407": 'B',
                     "KG999": kommentar,
                 },
             )
 
-            geo = SubElement(abw, "GO")
+            #Schachtsohle
+            x_obj = SubElement(x_elem, "GO")
             _create_children_text(
-                geo,
+                x_obj,
                 {
                     "GO001": schnam,
-
+                    "GO002": 'G',
+                    "GO003": 'Pkt',
                 },
             )
 
             _create_children_text(
-                SubElement(geo, "GP"),
+                SubElement(x_obj, "GP"),
                 {
                     "GP001": schnam,
+                    "GP002": self.ksys,
                     "GP005": xsch,
                     "GP006": ysch,
-                    "GP007": deckelhoehe,
+                    "GP007": sohlhoehe,
+                    "GP010": 'mNN',
                 },
             )
+
+            #Deckel
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schnam,
+                    "GO002": 'D',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schnam,
+                    "GP002": self.ksys,
+                    "GP007": deckelhoehe,
+                    "GP010": 'mNN',
+                },
+            )
+
+            # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
+            for i, part in enumerate(ptlis):
+                x_obj = SubElement(x_elem, "GO")
+                _create_children_text(
+                    x_obj,
+                    {
+                        "GO001": schnam + f' - {i}',
+                        "GO002": 'B',
+                        "GO003": 'Poly',
+                    },
+                )
+                for j, point in enumerate(part):
+                    xpt = point.x()
+                    ypt = point.y()
+                    _create_children_text(
+                        SubElement(x_obj, "GP"),
+                        {
+                            "GP001": schnam + f' - {j}',
+                            "GP002": self.ksys,
+                            "GP005": xpt,
+                            "GP006": ypt,
+                        },
+                    )
 
     def _export_haltungen(self) -> None:
         if not QKan.config.check_export.haltungen:
@@ -399,10 +657,12 @@ class ExportTask:
             hoehe,
             breite,
             laenge,
+            rohrlaenge,
             sohleoben,
             sohleunten,
             profil,
             strasse,
+            strassenname,
             material,
             entwart,
             baujahr,
@@ -413,14 +673,15 @@ class ExportTask:
             gline,
         ) in self.db_qkan.fetchall():
 
-            abw = SubElement(self.root, "HG")
+            x_elem = SubElement(self.root, "HG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
                     "HG001": haltnam,
                     "HG003": schoben,
                     "HG004": schunten,
-                    "HG102": strasse,
+                    "HG101": strasse,
+                    "HG102": strassenname,
                     "HG301": 'K',
                     "HG302": entwart,
                     "HG303": baujahr,
@@ -428,70 +689,76 @@ class ExportTask:
                     "HG305": profil,
                     "HG306": breite,
                     "HG307": hoehe,
-                    "HG308": profilauskleidung,
-                    "HG309": innenmaterial,
                     "HG310": laenge,
                     "HG313": 'A',
+                    "HG314": rohrlaenge,
                     "HG401": simstatus,
                     "HG999": kommentar,
                 },
             )
 
-            gobj = QgsGeometry()
-            gobj.fromWkb(gline)
-            ptlis = gobj.asPolyline()
+            geom = QgsGeometry()
+            geom.fromWkb(gline)
+            ptlis = geom.asPolyline()
             npt = len(ptlis)
             if npt == 2:
-                gtype = 'L'
+                objecttyp = 'L'
             elif npt > 2:
-                gtype = 'Poly'
+                objecttyp = 'Poly'
             else:
-                logger.debug(f"Die Haltungsgeometrie {gobj=} hat weniger als 2 Punkte")
-                continue
+                logger.error_data(f"Die Haltungsgeometrie {geom=} hat weniger als 2 Punkte")
+                raise QkanAbortError
 
-            kante = SubElement(abw, "GO")
+            x_line = SubElement(x_elem, "GO")
             _create_children_text(
-                kante,
+                x_line,
                 {
                     "GO001": haltnam,
                     "GO002": 'H',
-                    "GO003": gtype,
+                    "GO003": objecttyp,
                 },
             )
 
-            for ip, ptobj in enumerate(ptlis):
-                geom = SubElement(kante, "GP")
+            # Erste Stützstelle
+            pt = ptlis[0]
+            x_point = SubElement(x_line, "GP")
+            _create_children_text(
+                x_point,
+                {
+                    "GP001": schoben,
+                    "GP002": self.ksys,
+                    "GP005": pt.x(),
+                    "GP006": pt.x(),
+                    "GP007": sohleoben,
+                },
+            )
 
-                if ip == 1:
-                    _create_children_text(
-                        geom,
-                        {
-                            "GP001": schoben,
-                            "GP005": ptobj.x(),
-                            "GP006": ptobj.x(),
-                            "GP007": sohleoben,
-                        },
-                    )
+            # Alle Stützstellen außer erster und letzter
+            for ip, pt in enumerate(ptlis[1:-1]):
+                x_point = SubElement(x_line, "GP")
+                _create_children_text(
+                    x_point,
+                    {
+                        "GP001": f'{haltnam}-{ip-1}',
+                        "GP002": self.ksys,
+                        "GP005": pt.x(),
+                        "GP006": pt.x(),
+                    },
+                )
 
-                elif ip == npt:
-                    _create_children_text(
-                        geom,
-                        {
-                            "GP001": schunten,
-                            "GP005": ptobj.x(),
-                            "GP006": ptobj.x(),
-                            "GP007": sohleunten,
-                        },
-                    )
-                else:
-                    _create_children_text(
-                        geom,
-                        {
-                            "GP001": f'{haltnam}-{ip - 1}',
-                            "GP005": ptobj.x(),
-                            "GP006": ptobj.x(),
-                        },
-                    )
+            # Letzte Stützstelle
+            pt = ptlis[-1]
+            x_point = SubElement(x_line, "GP")
+            _create_children_text(
+                x_point,
+                {
+                    "GP001": schunten,
+                    "GP002": self.ksys,
+                    "GP005": pt.x(),
+                    "GP006": pt.x(),
+                    "GP007": sohleunten,
+                },
+            )
 
     def _export_anschlussleitungen(self) -> None:
         if not QKan.config.check_export.anschlussleitungen:
@@ -512,15 +779,21 @@ class ExportTask:
 
         for (
             leitnam,
-            schoben,
-            schunten,
+            asoben,
+            asunten,
             haltnam,
+            haoben,
+            haunten,
             urstation,
+            lageanschluss,
+            knotenart,
             hoehe,
             breite,
             laenge,
             sohleoben,
             sohleunten,
+            strasse,
+            strassenname,
             profil,
             material,
             entwart,
@@ -532,17 +805,22 @@ class ExportTask:
             kommentar,
             gline
         ) in self.db_qkan.fetchall():
-            abw = SubElement(self.root, "HG")
+            x_elem = SubElement(self.root, "HG")
             _create_children_text(
-                abw,
+                x_elem,
                 {
-                    "HG001": leitnam,
-                    "HG003": schoben,
-                    "HG004": schunten,
-                    "HG005": haltnam,
+                    "HG001": haltnam,
+                    "HG003": haoben,
+                    "HG004": haunten,
+                    "HG005": asunten,
                     "HG006": 'H',
                     "HG007": urstation,
                     "HG008": 'I',                   # QKan-Standard: in Fließrichtung
+                    "HG009": lageanschluss,
+                    "HG010": knotenart,
+                    "HG011": leitnam,
+                    "HG101": strasse,
+                    "HG102": strassenname,
                     "HG301": 'K',
                     "HG302": entwart,
                     "HG303": baujahr,
@@ -558,34 +836,65 @@ class ExportTask:
                 },
             )
 
-            kante = SubElement(abw, "GO")
+            geom = QgsGeometry()
+            geom.fromWkb(gline)
+            ptlis = geom.asPolyline()
+            npt = len(ptlis)
+            if npt == 2:
+                objecttyp = 'L'
+            elif npt > 2:
+                objecttyp = 'Poly'
+            else:
+                logger.error_data(f"Fehler beim Erzeugen des Geoobjektes: {ptlis=}")
+                raise QkanAbortError
+
+            x_line = SubElement(x_elem, "GO")
             _create_children_text(
-                kante,
+                x_line,
                 {
                     "GO001": leitnam,
                     "GO002": 'H',
+                    "GO003": objecttyp
                 },
             )
 
-            geom = SubElement(kante, "GP")
+            # Erste Stützstelle
+            pt = ptlis[0]
+            x_point = SubElement(x_line, "GP")
             _create_children_text(
-                geom,
+                x_point,
                 {
-                    "GP001": schoben,
-                    "GP005": xschob,                  # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                    "GP006": yschob,
+                    "GP001": asoben,
+                    "GP002": self.ksys,
+                    "GP005": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
+                    "GP006": pt.y(),
                     "GP007": sohleoben,
                 },
             )
 
-            kante = SubElement(abw, "GO")
-            geom = SubElement(kante, "GP")
+            # Alle Stützstellen außer erster und letzter
+            for ip, pt in enumerate(ptlis[1:-1]):
+                x_point = SubElement(x_line, "GP")
+                _create_children_text(
+                    x_point,
+                    {
+                        "GP001": f'{leitnam}-{ip+1}',
+                        "GP002": self.ksys,
+                        "GP005": pt.x(),            # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
+                        "GP006": pt.y(),
+                    },
+                )
+
+            # Letzte Stützstelle
+            pt = ptlis[-1]
+            x_point = SubElement(x_line, "GP")
             _create_children_text(
-                geom,
+                x_point,
                 {
-                    "GP001": schunten,
-                    "GP005": xschun,
-                    "GP006": yschun,
+                    "GP001": asunten,
+                    "GP002": self.ksys,
+                    "GP005": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
+                    "GP006": pt.y(),
                     "GP007": sohleunten,
                 },
             )
@@ -615,6 +924,8 @@ class ExportTask:
         )
 
         # Export
+        self._prepare_refdata()              ; fortschritt("Rerenzdaten aus import übernommen", 0.10)
+        self._export_header()
         self._export_schaechte()            ; fortschritt("Schächte eingefügt", 0.30)
         self._export_wehre()                ; fortschritt("Wehre eingefügt", 0.35)
         self._export_pumpen()               ; fortschritt("Pumpen eingefügt", 0.40)
@@ -624,6 +935,7 @@ class ExportTask:
         self._export_anschlussleitungen()   ; fortschritt("Anschlussleitungen eingefügt", 0.95)
         # self._export_haltungen_inspektion() ; fortschritt("Haltungen Inspektion eingefügt", 0.60)
         # self._export_schaechte_inspektion() ; fortschritt("Schächte eingefügt", 0.4)
+        self._export_refdata()
 
         Path(self.export_file).write_bytes(
             minidom.parseString(tostring(self.root)).toprettyxml(

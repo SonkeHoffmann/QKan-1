@@ -165,6 +165,7 @@ class Anschlussleitung(ClassObject):
     urstation: float = 0.0
     ursprung: str= ""
     inFliessrichtung: bool = True
+    lageanschluss: int = 0
     hoehe: float = 0.0
     breite: float = 0.0
     laenge: float = 0.0
@@ -246,6 +247,7 @@ class ImportTask(Schadenstexte):
         # self.mapper_bewertungsart: Dict[str, str] = {}
         # self.mapper_druckdicht: Dict[str, str] = {}
         self.mapper_bauwerkswart: Dict[str, str] = {}
+        self.mapper_strassen: Dict[str, str] = {}
 
         db_qkan.loadmodule('m150porter')
 
@@ -274,13 +276,14 @@ class ImportTask(Schadenstexte):
         geop_d = None  # falls kein Gerinnepunktobjekt, wird Deckel übernommen
         geom_g = None  # falls kein Objekt für Bauwerk oder Deckel, wird Kreis aus Gerinne übernommen
         geop = QgsPoint()
-        geom = QgsGeometry()
+        geom = None
         sohle_b = None  # falls kein Gerinnepunktobjekt, wird Sohlhöhe aus Bauwerk übernommen
         blocks_go = block.findall("GO")
         if len(blocks_go) == 0:
             logger.debug(f'Keine Geometrieobjektdaten bei Knoten "{name}"')
             return None, None, None, None
         for bl_go in blocks_go:
+            # Schleife über alle Geometrieobjekte
             pnam = bl_go.findtext('GO001')
             pttyp = bl_go.findtext('GO002')
             geotyp = bl_go.findtext('GO003')
@@ -290,8 +293,9 @@ class ImportTask(Schadenstexte):
             if len(blocks_gp) == 0:
                 logger.debug(f'Keine Geometriepunktdaten bei Knoten "{name}"')
                 continue
-            xp = None               # Falls keine Koordinaten in Geometriepunktdaten enthalten (s. u.)
+            xp = yp = zp = None               # Falls keine Koordinaten in Geometriepunktdaten enthalten (s. u.)
             for bl_gp in blocks_gp:
+                # Schleife über alle Stützstellen
                 xp = _get_float(bl_gp, "GP003")
                 if xp is None:
                     xp = _get_float(bl_gp, "GP005")
@@ -324,25 +328,30 @@ class ImportTask(Schadenstexte):
                     logger.info(f"Pumpwerk kann nicht als Bauwerk dargestellt werden")
             elif geotyp == 'Pkt':
                 # Normalfall
-                if pttyp in ('B', 'D'):
-                    geom.combine(
-                        QgsGeometry.fromPolyline(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).points(36))
+                if False and pttyp in ('B', 'D'):
+                    geocircle = QgsGeometry.fromPolyline(
+                        QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).points(36)
                     )
+                    geocircle.convertToMultiType()
+                    if geom is None:
+                        geom = geocircle
+                    else:
+                        geom = QgsGeometry.collectGeometry([geom, geocircle])
                     geop_d = QgsGeometry.fromPointXY(QgsPointXY(xp, yp))                  # nur für den Fall, dass pttyp == 'G'fehlt
                 elif pttyp == 'G':
                     geop = QgsGeometry.fromPointXY(QgsPointXY(xp, yp))
                     # falls kein Bauwerk oder Deckel:
+                    geocircle = QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).toLineString())
+                    geocircle.convertToMultiType()
                     if geom_g is None:
-                        geom_g = QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).toLineString())
+                        geom_g = geocircle
                         geom_g.convertToMultiType()
                     else:
-                        geom_g.combine(
-                            QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).toLineString())
-                        )
-            elif geotyp == 'Kr':
-                geom.combine(
-                    QgsGeometry.fromPolyline(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).points(36))
-                )
+                        geom_g = QgsGeometry.collectGeometry([geom_g, geocircle])
+            # elif geotyp == 'Kr':
+            #     geocircle = QgsGeometry.fromPolyline(
+            #         QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).points(36))
+            #     geom = QgsGeometry.collectGeometry([geom, geocircle])
             elif geotyp in ('Poly', 'Fl'):
                 ptlis = [QgsPointXY(x, y) for x, y in gplis]
                 gmline = QgsGeometry.fromPolylineXY(ptlis)
@@ -350,7 +359,7 @@ class ImportTask(Schadenstexte):
                 if geom is None:
                     geom = gmline
                 else:
-                    geom = geom.combine(gmline)
+                    geom = QgsGeometry.collectGeometry([geom, gmline])
             elif geotyp in ('L'):
                 logger.error(f"Linienelement nicht zulässig in Element <KG001> = {name}")
             else:
@@ -367,12 +376,12 @@ class ImportTask(Schadenstexte):
                 logger.warning(f'm150._get_KG_GO: pttyp unbekannt: {pttyp}')
                 continue
 
-        if not sohlhoehe:
+        if sohlhoehe is None:
             sohlhoehe = sohle_b
-        if not geop:
+        if geop is None:
             geop = geop_d
-        if not geom:
-            geom = geom_g
+        # if geom is None:
+        #     geom = geom_g
 
         if geop:
             geop_wkb = geop.asWkb()
@@ -380,7 +389,7 @@ class ImportTask(Schadenstexte):
             geop_wkb = None
             logger.warning(f"M150-Import: Konnte kein Punktobjekt finden für {name}")
 
-        if link or not geom.isEmpty():
+        if link or geom is not None:
             geom_wkb = geom.asWkb()
         else:
             geom_wkb = None
@@ -414,7 +423,7 @@ class ImportTask(Schadenstexte):
             geop = None
             sohlhoehe = None
 
-        if not xd:
+        if xd is None:
             xd, yd, zd = xs, ys, zs
         geom = QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xd, yd), 1.0).toCircularString(36))
         deckelhoehe = zd
@@ -491,7 +500,7 @@ class ImportTask(Schadenstexte):
                     # Für Hausanschlüsse: Umkehren der Richtung
                     ptlis.reverse()
                 geom = QgsGeometry.fromPolyline(ptlis)
-                if not geom:
+                if geom is None:
                     logger.error(f'Fehler bei polyline: {ptlis}')
             else:
                 logger.warning(f'm150._get_HG_coords: geotyp unbekannt: {geotyp}')
@@ -927,7 +936,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': bez,
-                    'kommentar': 'M150-Standard',
+                    'kommentar': 'aus M150-Datei',
                 }
             )
 
@@ -1077,6 +1086,45 @@ class ImportTask(Schadenstexte):
                 'ZWS':  'Wirbelfallschacht',
                 'Z':    'Sonstige',
             }
+
+        # Straßen - in refdata, aber keine eigene Referenztabelle
+
+        params = []
+
+        blocks = self.xml.findall("RT/[RT001='001']")
+
+        logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Straßen": {len(blocks)}')
+
+        for block in blocks:
+            kuerzel = block.findtext("RT002", None)
+            bez = block.findtext("RT004", None)
+            # Falls einer der beiden Einträge fehlt:
+            if kuerzel is None or bez is None:
+                continue
+            params.append(
+                {
+                    'bezext': bez,
+                    'kuerzel': kuerzel,
+                    'bezqkan': bez,
+                    'kommentar': 'M150-Standard',
+                }
+            )
+
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'strassen', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'strassen')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 101 Straßen", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
+                f'{params=}')
+            raise QkanError
+
+
+
 
         # Knotenarten aus Referenztabelle Nr. 116 einlesen.
         # Die Daten werden nur intern verarbeitet, weil unterschiedliche Tabellen betroffen sind.
@@ -1228,6 +1276,13 @@ class ImportTask(Schadenstexte):
         # Bauwerksarten
         # Mapper nur intern, s. o. in _reftables()
 
+        # Straßen
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'strassen'"
+        subject = "xml_import m150_strassen"
+        self.db_qkan.consume_mapper(sql, subject, self.mapper_strassen)
+        logger.debug(f'{self.mapper_strassen=}')
+
         # sql = "SELECT kuerzel, bezeichnung FROM bewertungsart"
         # subject = "xml_import bewertungsart"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_bewertungsart)
@@ -1345,16 +1400,26 @@ class ImportTask(Schadenstexte):
                           'geop': schacht.geop,
                           'geom': schacht.geom,
                           'schachttyp': schacht.schachttyp, 'epsg': QKan.config.epsg}
-                if not self.db_qkan.insertdata(
-                        tabnam="schaechte",
-                        stmt_category='m150-import schaechte',
-                        mute_logger=False,
-                        parameters=params,
-                ):
-                    logger.error_data(
-                        f'{self.__class__.__name__}: '
-                        f'Schacht {schacht.schnam} kann nicht eingefügt werden')
-                    raise QkanError
+                try:
+                    if not self.db_qkan.insertdata(
+                            tabnam="schaechte",
+                            stmt_category='m150-import schaechte',
+                            mute_logger=False,
+                            parameters=params,
+                    ):
+                        logger.error_data(
+                            f'{self.__class__.__name__}: '
+                            f'Schacht {schacht.schnam} kann nicht eingefügt werden')
+                        raise QkanError
+                except QkanDbError:
+                    geop_err = QgsGeometry()
+                    geop_err.fromWkb(schacht.geop)
+                    geom_err = QgsGeometry()
+                    geom_err.fromWkb(schacht.geom)
+                    logger.error_code(f'Schachtdatensatz kann nicht eingefügt werden.\n'
+                                      f'Punktobjekt: {geop_err.asWkt()}\n'
+                                      f'Multilineobjekt: {geom_err.asWkt()}')
+                    raise QkanDbError
             elif schacht.schachttyp == 'Anschlussschacht':
                 params = {'schnam': schacht.schnam,
                           'sohlhoehe': schacht.sohlhoehe, 'deckelhoehe': schacht.deckelhoehe,
@@ -1776,7 +1841,8 @@ class ImportTask(Schadenstexte):
 
             for block in blocks:
                 # Anschlussleitungen überspringen
-                if block.findtext("HG005") or block.findtext("HG006"):
+                if block.findtext("HG313") != 'A':
+                # if block.findtext("HG005") or block.findtext("HG006"):
                     continue
 
                 name = block.findtext("HG001")
@@ -1788,7 +1854,7 @@ class ImportTask(Schadenstexte):
                 schoben = block.findtext("HG003", None)
                 schunten = block.findtext("HG004", None)
 
-                laenge = _get_float(block, "HG310", 0.0)
+                laenge = _get_float(block, "HG314", 0.0)
 
                 material = block.findtext("HG304", None)
 
@@ -2222,7 +2288,7 @@ class ImportTask(Schadenstexte):
 
     def _anschlussleitungen(self) -> None:
         def _iter() -> Iterator[Anschlussleitung]:
-            blocks = self.xml.findall("HG/HG006/..")
+            blocks = self.xml.findall("HG[HG313='B']")
             logger.debug(f"Anzahl Anschlussleitungen: {len(blocks)}")
 
             for block in blocks:
@@ -2231,16 +2297,33 @@ class ImportTask(Schadenstexte):
                 baujahr = _get_int(block,"HG303", None)
 
                 haltnam = block.findtext("HG001", None)
-                urstation = _get_float(block, "HG007", None)
-                inFliessrichtung = (block.findtext("HG008", None) != 'G')
-
                 laenge = _get_float(block, "HG310", None)
 
+                urstation_t = _get_float(block, "HG007", None)
+                inFliessrichtung = (block.findtext("HG008", None) != 'G')
+                if inFliessrichtung:
+                    urstation = urstation_t
+                elif urstation_t is not None:
+                    kindVon = block.findtext("HG012", None)
+                    if kindVon is not None:
+                        # schließt an weitere Hausanschlussleitung an
+                        haltungslaenge = self.xml.findtext(f"HG[HG011='{kindVon}']/HG314")
+                    else:
+                        # schließt an Haltung an
+                        haltungslaenge = self.xml.findtext(f"HG[HG001='{haltnam}'][HG313='A']/HG314")
+                    if haltungslaenge is not None:
+                        urstation = round(float(haltungslaenge) - urstation_t, 3)
+                    else:
+                        urstation = None
+                else:
+                    urstation = None
                 material = block.findtext("HG304", None)
 
                 profilnam = block.findtext("HG305", None)
-                hoehe = _get_float(block, "HG307", None)
                 breite = _get_float(block, "HG306", None)
+                hoehe = _get_float(block, "HG307", None)
+
+                lageanschluss = _get_int(block, "HG009")
 
                 geom, sohleoben, sohleunten, schoben, schunten = self._get_HG_GO(
                     block,
@@ -2257,6 +2340,7 @@ class ImportTask(Schadenstexte):
                     haltnam=haltnam,
                     urstation=urstation,
                     inFliessrichtung=inFliessrichtung,
+                    lageanschluss=lageanschluss,
                     hoehe=hoehe,
                     breite=breite,
                     laenge=laenge,
@@ -2264,6 +2348,8 @@ class ImportTask(Schadenstexte):
                     baujahr=baujahr,
                     sohleoben=sohleoben,
                     sohleunten=sohleunten,
+                    deckeloben=None,
+                    deckelunten=None,
                     profilnam=profilnam,
                     entwart=block.findtext("HG302", None),
                     ks=1.5,                                         # in Hydraulikdaten enthalten.
@@ -2326,6 +2412,9 @@ class ImportTask(Schadenstexte):
             params = {'leitnam': anschlussleitung.leitnam,
                       'schoben': anschlussleitung.schoben, 'schunten': anschlussleitung.schunten,
                       'haltnam': anschlussleitung.haltnam,
+                      'urstation': anschlussleitung.urstation,
+                      'inFliessrichtung,': anschlussleitung.inFliessrichtung,
+                      'lageanschluss,': anschlussleitung.lageanschluss,
                       'hoehe': anschlussleitung.hoehe, 'breite': anschlussleitung.breite,
                       'laenge': anschlussleitung.laenge, 'material': material,
                       'sohleoben': anschlussleitung.sohleoben, 'sohleunten': anschlussleitung.sohleunten,

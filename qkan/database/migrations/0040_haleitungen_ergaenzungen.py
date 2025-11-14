@@ -65,6 +65,15 @@ def run(dbcon: DBConnection) -> bool:
         except:
             logger.error_code('Fehlgeschlagen: migration_0040, ursprung ergänzen')
 
+    if 'lageanschluss' not in dbcon.attrlist('anschlussleitungen'):
+        try:
+            dbcon.sql(
+                'ALTER TABLE anschlussleitungen ADD COLUMN lageanschluss INTEGER;',
+                'migration_0040, lageanschluss ergänzen'
+            )
+        except:
+            logger.error_code('Fehlgeschlagen: migration_0040, lageanschluss ergänzen')
+
     dbcon.commit()
 
     project.read()

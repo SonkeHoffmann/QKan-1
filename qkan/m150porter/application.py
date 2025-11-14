@@ -6,7 +6,6 @@ from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import get_database_QKan
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
 from qkan.tools.qkan_utils import loadLayer, zoomAll
