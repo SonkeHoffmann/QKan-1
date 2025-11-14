@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1206</width>
+    <width>1185</width>
     <height>694</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,0">
+  <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,0,0">
    <property name="sizeConstraint">
     <enum>QLayout::SetDefaultConstraint</enum>
    </property>
@@ -211,32 +211,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QDialogButtonBox" name="buttonBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="standardButtons">
-            <set>QDialogButtonBox::Close</set>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
       </layout>
@@ -295,16 +269,22 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>100</number>
+            <number>50</number>
+           </property>
+           <property name="singleStep">
+            <number>1</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
            </property>
            <property name="value">
-            <number>50</number>
+            <number>25</number>
            </property>
            <property name="sliderPosition">
-            <number>50</number>
+            <number>25</number>
            </property>
            <property name="tracking">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -316,7 +296,7 @@
             <enum>QSlider::TicksBelow</enum>
            </property>
            <property name="tickInterval">
-            <number>25</number>
+            <number>10</number>
            </property>
           </widget>
          </item>
@@ -329,6 +309,9 @@
          </item>
          <item>
           <widget class="QSlider" name="horizontalSlider_3">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="maximum">
             <number>100</number>
            </property>
@@ -448,6 +431,9 @@
            </property>
            <item>
             <widget class="QPushButton" name="pushButton_5">
+             <property name="toolTip">
+              <string>Zeigt die Gangline der gewählten Elemente (Schächte/Haltungen) an</string>
+             </property>
              <property name="text">
               <string>Gangline anzeigen</string>
              </property>
@@ -527,6 +513,42 @@
       </layout>
      </widget>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Close|QDialogButtonBox::Help</set>
+       </property>
+       <property name="centerButtons">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
