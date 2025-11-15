@@ -8,6 +8,7 @@ from typing import Optional, cast
 from qgis.PyQt.QtWidgets import QListWidgetItem
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
+from qgis.utils import iface
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
@@ -30,7 +31,9 @@ from .dialogs.qgsadapt import QgsAdaptDialog
 from .dialogs.qkanoptions import QKanOptionsDialog
 from .dialogs.read_data import ReadData
 from .dialogs.runoffparams import RunoffParamsDialog
+from .dialogs.zoom_clipboard import QgsZoomDialog
 from .k_filepath import setfilepath
+from .k_zoom_clipboard import zoom_clip
 from .k_layersadapt import layersadapt
 from .k_qgsadapt import qgsadapt
 from .k_runoffparams import setRunoffparams
@@ -56,6 +59,7 @@ class QKanTools(QKanPlugin):
         self.dlghp = QgsHelpDialog(self)
         self.dlgfp = QgsFileDialog(self)
         self.dlgbf = QgsBefahrungDialog(self)
+        self.dlgzc = QgsZoomDialog(self)
         self.iface = iface
 
     # noinspection PyPep8Naming
@@ -132,6 +136,14 @@ class QKanTools(QKanPlugin):
             icon_file_path,
             text=self.tr("Dateipfade suchen"),
             callback=self.run_filepath,
+            parent=self.iface.mainWindow(),
+        )
+
+        icon_file_path = ":/plugins/qkan/tools/res/icon_zoom_clipboard.png"
+        QKan.instance.add_action(
+            icon_file_path,
+            text=self.tr("Zur Auswahl zoomen"),
+            callback=self.run_zoom_clipboard,
             parent=self.iface.mainWindow(),
         )
 
@@ -1018,8 +1030,43 @@ class QKanTools(QKanPlugin):
                     ausw_leitung,
                 )
 
-    def run_befahrung(self) -> None:
+    def run_zoom_clipboard(self) -> None:
 
+        # show the dialog
+        self.dlgzc.show()
+        self.dlgzc.button = False
+
+        # Run the dialog event loop
+        result = self.dlgzc.exec()
+
+        def zoom_clip2():
+            with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+                if not db_qkan.connected:
+                    self.log.error(
+                        "Fehler im XML-Export\n"
+                        f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                    )
+                    raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
+
+                clip = self.dlgzc.text
+
+                layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+                if layer is not None and clip is not None:
+                    value = str(clip)
+                    field = "Bezeichnung"
+
+                    if value != '':
+                        expr = f'"{field}" = \'{value}\''
+                        layer.selectByExpression(expr)
+                        iface.mapCanvas().zoomToSelected(layer)
+
+        if self.dlgzc.button:
+            self.dlgzc.clip.dataChanged.connect(zoom_clip2)
+        else:
+            pass
+
+
+    def run_befahrung(self) -> None:
 
         # show the dialog
         self.dlgfp.show()

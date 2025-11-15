@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
 from qgis.core import Qgis
 from qgis.gui import QgisInterface
 
@@ -59,12 +60,12 @@ class Laengsschnitt(QKanPlugin):
     def animiert_laengs_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                                  massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
                                  geschw_2, anf):
-        self.animation = LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
+        LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
                                     selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
-                                    pushButton_4, horizontalSlider_3, geschw_2, anf)
-        self.animation.laengs()
-        canv_2.draw()
-        canv_2.flush_events()
+                                    pushButton_4, horizontalSlider_3, geschw_2, anf).laengs()
+        #self.animation.laengs()
+        #canv_2.draw()
+        #canv_2.flush_events()
 
     def stop_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                                  massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
@@ -72,7 +73,7 @@ class Laengsschnitt(QKanPlugin):
         self.animation = LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
                                     selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
                                     pushButton_4, horizontalSlider_3, geschw_2, anf)
-        canv_2.flush_events()
+        #canv_2.flush_events()
         self.animation.stop_animation()
         #canv_2.draw()
 
@@ -93,7 +94,7 @@ class Laengsschnitt(QKanPlugin):
             self.laengs_dlg.close()
 
     def closeEvent(self, event):
-        #TODO: Animation stoppen und löchen wenn das FEnster geschlossen wird, da sonst immer ein fehler kommt!
+        #TODO: Animation stoppen und löchen wenn das Fenster geschlossen wird, da sonst immer ein fehler kommt!
         if self.animation:
             #self.animation.event_source.stop()  # Animation beenden
             self.animation.stop_animation()
@@ -105,50 +106,56 @@ class Laengsschnitt(QKanPlugin):
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.laengs_dlg
-        #self.dialog.fig = plt.figure()
-        #in der self.fig können die Matplotlib sachen angezeigt werden
 
-        self.dialog.fig = plt.figure(layout='constrained')
-        self.dialog.fig .set_size_inches(11.5, 5)
-        self.dialog.fig.tight_layout()
+        fig_attr ='fig1'
 
-        qw = QWidget(self.dialog)
-        self.dialog.canv = FigureCanvas(self.dialog.fig)
+        if not hasattr(self.dialog, fig_attr):
+            self.dialog.fig = Figure(figsize=(11.5, 5), constrained_layout=True)
+            self.dialog.canv = FigureCanvas(self.dialog.fig)
 
-        self.dialog.verticalLayout.addWidget(self.dialog.canv)
-        self.dialog.verticalLayout.addWidget(NavigationToolbar(self.dialog.canv, qw, True))
+            self.dialog.verticalLayout.addWidget(self.dialog.canv)
+            self.dialog.verticalLayout.addWidget(NavigationToolbar(self.dialog.canv, self.dialog, True))
+
+            setattr(self.dialog, fig_attr, self.dialog.fig)
+
 
     def get_widget_2(self):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.laengs_dlg
-        #self.dialog.fig_2 = plt.figure()
-        #in der self.fig können die Matplotlib sachen angezeigt werden
-        self.dialog.fig_2 = plt.figure(layout='constrained')
-        self.dialog.fig.tight_layout()
 
-        qw = QWidget(self.dialog)
-        self.dialog.canv_2 = FigureCanvas(self.dialog.fig_2)
 
-        self.dialog.verticalLayout_6.addWidget(self.dialog.canv_2)
-        self.dialog.verticalLayout_6.addWidget(NavigationToolbar(self.dialog.canv_2, qw, True))
+        fig_attr = 'fig2'
+
+        if not hasattr(self.dialog, fig_attr):
+            self.dialog.fig_2 = Figure( constrained_layout=True)
+            self.dialog.canv_2 = FigureCanvas(self.dialog.fig_2)
+
+            # # Achse einmal erstellen
+            # self.dialog.ax = self.dialog.fig.add_subplot(111)
+
+            self.dialog.verticalLayout_6.addWidget(self.dialog.canv_2)
+            self.dialog.verticalLayout_6.addWidget(NavigationToolbar(self.dialog.canv_2, self.dialog, True))
+
+            setattr(self.dialog, fig_attr, self.dialog.fig_2)
 
     def get_widget_3(self):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
         self.dialog = self.laengs_dlg
-        #self.dialog.fig_3 = plt.figure()
-        #in der self.fig können die Matplotlib sachen angezeigt werden
-        self.dialog.fig_3 = plt.figure(layout='constrained')
-        self.dialog.fig.tight_layout()
 
-        qw = QWidget(self.dialog)
-        self.dialog.canv_3 = FigureCanvas(self.dialog.fig_3)
+        fig_attr = 'fig3'
 
-        self.dialog.verticalLayout_2.addWidget(self.dialog.canv_3)
-        self.dialog.verticalLayout_2.addWidget(NavigationToolbar(self.dialog.canv_3, qw, True))
+        if not hasattr(self.dialog, 'fig3'):
+            self.dialog.fig_3 = Figure( constrained_layout=True)
+            self.dialog.canv_3 = FigureCanvas(self.dialog.fig_3)
+
+            self.dialog.verticalLayout_2.addWidget(self.dialog.canv_3)
+            self.dialog.verticalLayout_2.addWidget(NavigationToolbar(self.dialog.canv_3, self.dialog, True))
+
+            setattr(self.dialog, fig_attr, self.dialog.fig_3)
 
 
     def run_laengs(self) -> None:

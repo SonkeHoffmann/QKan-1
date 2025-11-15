@@ -10,9 +10,12 @@ except ImportError:
     WINDOWS = False
 from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.transforms import Affine2D
 from qgis.core import Qgis
 from qgis.utils import iface, spatialite_connect
 import gc
+import numpy as np
+from PyQt5.QtCore import QTimer
 
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import ffloat
@@ -49,84 +52,58 @@ class LaengsTask:
         self.horizontalSlider_3 = horizontalSlider_3
         self.geschw_2 = geschw_2
         self.anf = anf
-        self.anim = None
+
+        self.fontsize = 5
+        self.zeit = 1
         #self.plugin_instance = plugin_instance
 
         self.db_erg = spatialite_connect(self.db_erg)
         self.db_erg_curs = self.db_erg.cursor()
 
-        self.pushButton_4.clicked.connect(self.stop)
-        self.horizontalSlider_3.sliderReleased.connect(self.stop_animation)
+        self.pushButton_4.clicked.connect(self.toggle_animation)
+
+        self.horizontalSlider_3.sliderReleased.connect(self.slider_connect)
+
         self.geschw = self.geschw_2.value()*10
-        self.user_moving_slider = False
+        self.running = False
+        self.timer = QTimer()
 
     def run(self) -> bool:
         self.zeichnen()
 
-    def stop(self):
-        if self.pushButton_4.text() == 'Stop':
-            try:
-                self.anim.event_source.stop()
-                self.pushButton_4.setText('Start')
-            except AttributeError:
-                pass
-        elif self.pushButton_4.text() == 'Start':
-            try:
-                self.anim.event_source.start()
-                self.pushButton_4.setText('Stop')
-            except AttributeError:
-                pass
+    def start_animation(self):
+        if not self.timer.isActive():
+            self.timer.start(self.geschw)
+            self.running = True
+            self.pushButton_4.setText('Stop')
 
     def stop_animation(self):
-        """Stoppt und entfernt die aktuelle Animation vollständig."""
-        self.stop()
-        if self.anim is not None:
-            self.anim.event_source.stop()
-            self.anim._stop()
-            del self.anim
-            self.anim = None
-            self.canv_2.flush_events()
-            self.fig_2.clear()
-            gc.collect()
-            #iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.MessageLevel.Critical)
-            #iface.messageBar().pushMessage("Fehler", 'gestoppt und gelöscht', level=Qgis.MessageLevel.Critical)
+        if self.timer.isActive():
+            self.timer.stop()
+        self.running = False
+        self.pushButton_4.setText('Start')
 
-    # def stop_slider(self):
-    #     try:
-    #         # self.anim.event_source.stop()
-    #         # self.pushButton_4.setText('Start')
-    #         self.stop()
-    #         # if self.anim:
-    #         #     del self.anim
-    #         self.slider()
-    #     except AttributeError:
-    #         pass
+    def toggle_animation(self):
+        if self.running:
+            self.stop_animation()
+        else:
+            self.start_animation()
 
-    def closeEvent(self, event):
-        # Stop the animation when the window is closed
+    def slider_connect(self):
+        if self.timer.isActive():
+            self.timer.stop()
+            self.timer.deleteLater()
 
-        if self.anim is not None:
-            self.anim.event_source.stop()
-            plt.close(self.fig_2)
-            self.canv_2.flush_events()
-            self.fig_2.clear()
-            gc.collect()
-        event.accept()
-        if QtCore.QTimer.isActive():
-            QtCore.QTimer.stop()
-        event.accept()
-
-        # TODO:Plugin informieren, dass das Fenster geschlossen wurde
-        #self.plugin_instance.window_closed(self)
 
 
     def zeichnen(self):
         """Längsschnitt in das Fenster zeichnen"""
+
         figure = self.fig
-        figure.set_size_inches(11.5, 5)
-        figure.tight_layout()
-        figure.clear()
-        plt.figure(figure.number)
+        #figure.set_size_inches(11.5, 5)
+        #figure.tight_layout()
+        # figure.clear()
+        # plt.figure(figure.number)
         new_plot = figure.add_subplot(111)
 
         points = self.point.split(",", 1)
@@ -320,8 +297,8 @@ class LaengsTask:
             x_deckel_l.append(laenge2)
             x_deckel_l.append(laenge2)
 
-            z_sohle_h.append(hschoben)
-            z_sohle_h.append(hschunten)
+            z_sohle_h.append(haltung_sohle_o)
+            z_sohle_h.append(haltung_sohle_u)
             z_deckel.append(deckeloben)
             z_deckel.append(deckelunten)
             z_sohle.append(sohleoben)
@@ -359,7 +336,6 @@ class LaengsTask:
 
         if all(num == 0 for num in x_deckel) and len(x_deckel) > 0 and all(num == 0 for num in x_sohle) and len(x_sohle) > 0:
             iface.messageBar().pushMessage("Fehler", 'Es sind keine Höhenangaben vorhanden!', level=Qgis.MessageLevel.Critical)
-
 
 
         if self.max == True:
@@ -505,7 +481,6 @@ class LaengsTask:
 
         data = [list_deckel, list_sohle, list_laenge, list_entwart, list_hoehe, list_breite, list_material, list_strasse, list_typ]
 
-
         columns = tuple(list)
         rows = ('Deckelhöhe [m NHN]', 'Sohlhöhe [m NHN]', 'Länge [m]', 'Entwässerungsart', 'Höhe [m]', 'Breite [m]', 'Material', 'Strasse', 'Typ')
 
@@ -542,9 +517,16 @@ class LaengsTask:
                 y_sohle2_n.append(y_sohle2[i])
             i += 1
 
-        new_plot.plot(x_deckel, y_deckel_n, color="black", label='Deckel')
-        new_plot.plot(x_sohle, y_sohle_n, color=farbe, label='Kanalsohle')
-        new_plot.plot(x_sohle2, y_sohle2_n, color=farbe, label='Kanalscheitel')
+        ax = new_plot
+        #ax.gca()
+        scale_x = 2
+
+        line_deckel, = new_plot.plot(x_deckel, y_deckel_n, color="black", label='Deckel')
+        line_deckel.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        line_sohle, = new_plot.plot(x_sohle, y_sohle_n, color=farbe, label='Kanalsohle')
+        line_sohle.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        line_scheitel, = new_plot.plot(x_sohle2, y_sohle2_n, color=farbe, label='Kanalscheitel')
+        line_scheitel.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
 
         x_deckel_neu = []
         name_neu = []
@@ -552,33 +534,38 @@ class LaengsTask:
 
         for i in x_deckel:
             if round(i,2) not in x_deckel_neu:
-                x_deckel_neu.append(i)
+                x_deckel_neu.append(round(i,2))
 
         for i in name:
             if i not in name_neu:
                 name_neu.append(i)
 
         for i in y_label:
-            if i not in y_label_neu:
-                y_label_neu.append(i)
+            if round(i,2) not in y_label_neu:
+                y_label_neu.append(round(i,2))
 
-
+        annotations = []
         for x, y, nam in zip(x_deckel_neu, y_label_neu, name_neu):
-            plt.annotate(nam, (x, y),
+            an=new_plot.annotate(nam, (x* scale_x, y),
                          textcoords="offset points",
                          xytext=(-10, 0),
                          rotation=90,
                          ha='center')
+            annotations.append(an)
 
         if all(num == 0 for num in y_liste) and len(y_liste) > 0:
             iface.messageBar().pushMessage("Fehler", 'Es sind keine maximalen Wasserstände vorhanden!', level=Qgis.MessageLevel.Critical)
         else:
             if len(y_liste) > 0 and table == 'schaechte':
-                new_plot.plot(x_deckel_neu, y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
+                #new_plot.plot(x_deckel_neu, y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
+                hline0, = new_plot.plot(x_deckel_neu, y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
+                hline0.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
 
             if len(y_liste) > 0 and table == 'haltungen':
 
-                new_plot.plot(x_deckel[::2], y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
+                #new_plot.plot(x_deckel[::2], y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
+                hline0, = new_plot.plot(x_deckel[::2], y_liste, linestyle="dotted", color="blue", label='maximaler Wasserstand')
+                hline0.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
 
         # wenn die höhen null sind schachthöhen =max und min werte setzen und farbe grau
         y1 = [i for i in y_sohle if i != 0]
@@ -606,9 +593,12 @@ class LaengsTask:
             y_deckel_n.pop(x)
             x_deckel.pop(x)
 
-        plt.vlines(x_deckel, y_sohle, y_deckel_n, color="red", linestyles='solid', label='Schacht', linewidth=5)
-        plt.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid', label='fiktiver Schacht', linewidth=5)
 
+        line1 = new_plot.vlines(x_deckel, y_sohle, y_deckel_n, color="red", linestyles='solid', label='Schacht', linewidth=5)
+        line1.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+
+        line2 = new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid', label='fiktiver Schacht', linewidth=5)
+        line2.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
 
         x_min = -0.5
         y_min = float(min(y_sohle)) - 0.5
@@ -617,28 +607,23 @@ class LaengsTask:
         x_max = laenge2 + 2.5
         x=[x_min, x_max]
         y=[y_min, y_min]
-        plt.hlines(y_min, x_min, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min, x_min-60, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min-0.6, x_min - 60, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min - 1.1, x_min - 60, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min - 1.6, x_min - 60, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min - 2.1, x_min - 60, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min - 2.6, x_min - 60, x_max+5, color="grey", linestyles='solid')
-        plt.hlines(y_min - 3.1, x_min - 60, x_max+5, color="grey", linestyles='solid')
+        hline1 = new_plot.hlines(y_min, x_min, x_max+5, color="grey", linestyles='solid')
+        hline1.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline2 = new_plot.hlines(y_min, x_min-80, x_max+5, color="grey", linestyles='solid')
+        hline2.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline3 = new_plot.hlines(y_min-0.6, x_min - 80, x_max+5, color="grey", linestyles='solid')
+        hline3.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline4 = new_plot.hlines(y_min - 1.1, x_min - 80, x_max+5, color="grey", linestyles='solid')
+        hline4.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline5 = new_plot.hlines(y_min - 1.6, x_min - 80, x_max+5, color="grey", linestyles='solid')
+        hline5.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline6 = new_plot.hlines(y_min - 2.1, x_min - 80, x_max+5, color="grey", linestyles='solid')
+        hline6.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline7 = new_plot.hlines(y_min - 2.6, x_min - 80, x_max+5, color="grey", linestyles='solid')
+        hline7.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+        hline8 = new_plot.hlines(y_min - 3.1, x_min - 80, x_max+5, color="grey", linestyles='solid')
+        hline8.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
 
-        #plt.axis('off')
-
-        plt.annotate("Deckelhöhe [m ü. NHN]", (x_min-55, y_min-0.4), textcoords="offset points", xytext=(-10, 0), ha='left')
-        plt.annotate("Schachtname", (x_min - 55, y_min - 0.9), textcoords="offset points", xytext=(-10, 0),
-                     ha='left')
-        plt.annotate("Sohlhöhe Schacht [m ü. NHN]", (x_min - 55, y_min - 1.4), textcoords="offset points", xytext=(-10, 0),
-                     ha='left')
-        plt.annotate("Sohlhöhe Haltung [m ü. NHN]", (x_min - 55, y_min - 1.9), textcoords="offset points", xytext=(-10, 0),
-                     ha='left')
-        plt.annotate("Länge [m]", (x_min - 55, y_min - 2.5), textcoords="offset points", xytext=(-10, 0),
-                     ha='left')
-        plt.annotate("Nennweite [mm] / Material", (x_min - 55, y_min - 3), textcoords="offset points", xytext=(-10, 0),
-                     ha='left')
 
         z_sohle_neu = []
         for i in z_sohle:
@@ -646,35 +631,80 @@ class LaengsTask:
                 z_sohle_neu.append(i)
         z_deckel_neu = []
         for i in z_deckel:
-            if i not in z_deckel_neu:
-                z_deckel_neu.append(i)
+            if round(i,2) not in z_deckel_neu:
+                z_deckel_neu.append(round(i,2))
+
+        name_neu.insert(0,"Schachtname")
+        x_deckel_neu.insert(0, -70)
+        z_deckel_neu.insert(0, "Deckelhöhe [m ü. NHN]")
+        z_sohle_neu.insert(0, "Sohlhöhe Schacht [m ü. NHN]")
 
 
         for i, j, x, y in zip(x_deckel_neu, name_neu, z_deckel_neu, z_sohle_neu):
             #plt.vlines(i, y_min, y_min-3.1, color="grey", linestyles='solid')
+            if i == x_deckel_neu[0]:
+                #line = plt.vlines(i, y_min - 2.1, y_min - 3.1, color="grey", linestyles='solid')
+                #line.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
 
-            plt.vlines(round(i, 2), y_min-2.1, y_min -3.1, color="grey", linestyles='solid')
+                an = new_plot.annotate(x, ((i + 0.1) * scale_x, y_min - 0.4), ha='left')
+                annotations.append(an)
 
-            plt.annotate(round(x, 2), (i + 0.1, y_min - 0.4), ha='center')
+                an = new_plot.annotate(j, ((i + 0.1) * scale_x, y_min - 0.9), ha='left')
+                annotations.append(an)
 
-            plt.annotate(j, (i +0.1, y_min - 0.9), ha='center')
+                an = new_plot.annotate(y, ((i + 0.1) * scale_x, y_min - 1.4), ha='left')
+                annotations.append(an)
 
-            plt.annotate(round(y, 2), (i +0.1, y_min - 1.4), ha='center')
+            else:
+
+                line = new_plot.vlines(i, y_min-2.1, y_min -3.1, color="grey", linestyles='solid')
+                line.set_transform(Affine2D().scale(scale_x, 1) + ax.transData)
+
+                an = new_plot.annotate(x, ((i + 0.1)* scale_x, y_min - 0.4), ha='center')
+                annotations.append(an)
+
+                an = new_plot.annotate(j, ((i +0.1)* scale_x, y_min - 0.9), ha='center')
+                annotations.append(an)
+
+                an = new_plot.annotate(y, ((i +0.1)* scale_x, y_min - 1.4), ha='center')
+                annotations.append(an)
 
         x = 0
 
         x_d = x_deckel_l
+
         del x_d[-1]
         x_d.insert(0, 0)
 
-        for i, j in zip(x_d, sohle_l):
+        x_d.insert(0, -70)
+        z_sohle_h.insert(0, "Sohlhöhe Haltung [m ü. NHN]")
+
+        for i, j in zip(x_d, z_sohle_h):
             # so verschieben, dass die Texte passend stehen!
-            if x % 2:
-                plt.annotate(round(j, 2), (i-5., y_min- 1.9 ), bbox=dict(facecolor='white', edgecolor='none'),
+
+            if i == x_d[0]:
+                an = new_plot.annotate(j, ((i +0.1) * scale_x, y_min - 1.9),
+                                  ha='left')
+                annotations.append(an)
+
+            elif i == x_d[1]:
+                an = new_plot.annotate(j, ((i +4.) * scale_x, y_min - 1.9),
+                                  ha='left')
+                annotations.append(an)
+
+            elif i == x_d[-1]:
+                an = new_plot.annotate(j, ((i -5.) * scale_x, y_min - 1.9),
+                                  ha='left')
+                annotations.append(an)
+
+            elif x % 2:
+                an=new_plot.annotate(round(j, 2), ((i-6.)* scale_x, y_min- 1.9 ),
                               ha='center')
+                annotations.append(an)
             else:
-                plt.annotate(round(j, 2), (i+5., y_min - 1.9), bbox=dict(facecolor='white', edgecolor='none'),
+                an=new_plot.annotate(j, ((i+6.)* scale_x, y_min - 1.9),
                               ha='center')
+                annotations.append(an)
             x += 1
 
         laenge = laenge_l
@@ -683,6 +713,7 @@ class LaengsTask:
 
         x_mitte = []
         x = 0
+        x_deckel_neu.pop(0)
         while x + 1 < len(x_deckel_neu):
             m = (x_deckel_neu[x] + x_deckel_neu[x + 1]) / 2
             x += 1
@@ -690,29 +721,91 @@ class LaengsTask:
 
         # mittig zwischen zwei Schächte schreiben Länge, Nennweite und Material, Gefälle, Stationierung
         for i, k, l, m in zip(x_mitte, laenge, dn, material):
-            plt.annotate(ffloat(k,2), (i , y_min - 2.5), textcoords="offset points",
-                         xytext=(-10, 0), ha='center')
+            if i == x_mitte[0]:
+                an = new_plot.annotate("Nennweite [mm] / Material", ((-65+0.1) * scale_x, y_min - 3), textcoords="offset points",
+                                  xytext=(-10, 0), ha='left')
+                annotations.append(an)
 
-            plt.annotate(f'{int(l)} / {m}', (i, y_min - 3), textcoords="offset points",
-                         xytext=(-10, 0), ha='center')
+                an = new_plot.annotate("Länge [m]", ((-65 +0.1) * scale_x, y_min - 2.5), textcoords="offset points",
+                             xytext=(-10, 0), ha='left')
+                annotations.append(an)
+
+                an = new_plot.annotate(ffloat(k, 2), ((i+0.1) * scale_x, y_min - 2.5), textcoords="offset points",
+                                  xytext=(-10, 0), ha='center')
+                annotations.append(an)
+
+                an = new_plot.annotate(f'{int(l)} / {m}', ((i+0.1) * scale_x, y_min - 3), textcoords="offset points",
+                                  xytext=(-10, 0), ha='center')
+                annotations.append(an)
+
+            else:
+                an = new_plot.annotate(ffloat(k, 2), ((i+0.1) * scale_x, y_min - 2.5), textcoords="offset points",
+                                  xytext=(-10, 0), ha='center')
+                annotations.append(an)
 
 
-        plt.xlabel('Länge [m]')
-        plt.ylabel('Höhe [m NHN]')
+                an=new_plot.annotate(f'{int(l)} / {m}', ((i+0.1)* scale_x, y_min - 3), textcoords="offset points",
+                             xytext=(-10, 0), ha='center')
+                annotations.append(an)
+
+
+        ax.set_xlim(- 170, (x_max * scale_x)+25)
+        ax.set_xticks([])
+
+        #new_xticks = np.linspace(0, x_max * scale_x, x_max)
+        #new_xticks = np.linspace(0, x_max * scale_x)
+        #ax.set_xticks(new_xticks)
+        #ax.set_xticklabels([f"{xi:.1f}" for xi in x_max])
+
+        new_plot.set_xlabel('Länge [m]')
+        new_plot.set_ylabel('Höhe [m NHN]')
         new_plot.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
           fancybox=True, shadow=True, ncol=5)
 
-        #TODO: tight_layout geht nicht!
-        self.fig.tight_layout(pad=1.08)
-        # plt.table(cellText=data, rowLabels=rows, colLabels=columns, loc='bottom', bbox=[0.0, -0.65, 1, 0.45], cellLoc='center')
-        # plt.subplots_adjust(top=0.98,
-        #                      bottom=0.4,
-        #                      left=0.13,
-        #                      right=0.99,
-        #                      hspace=0.2,
-        #                      wspace=0.2)
 
-        self.auswahl[figure.number] = self.selected
+        self.fig.tight_layout(pad=1.08)
+
+        #self.auswahl[figure.number] = self.selected
+
+        self.fig.canvas.draw()
+
+        self.avoid_label_overlap(annotations, ax, self.fig)
+
+
+    def avoid_label_overlap(self, annotations, ax,fig, pad=0.5, max_iter=100, min_fontsize=7):
+
+        for _ in range(max_iter):
+            moved = False
+            renderer = fig.canvas.get_renderer()
+            boxes = [ann.get_window_extent(renderer=renderer).transformed(ax.transData.inverted()) for ann in
+                     annotations]
+
+            for i in range(len(boxes)):
+                for j in range(i + 1, len(boxes)):
+                    if boxes[i].overlaps(boxes[j]):
+                        xi, yi = annotations[i].get_position()
+                        xj, yj = annotations[j].get_position()
+
+                        dx, dy = xj - xi, yj - yi
+                        dist = np.hypot(dx, dy) + 1e-9
+                        dx, dy = dx / dist * pad / 2, dy / dist * pad / 2
+
+                        # beide leicht auseinanderbewegen
+                        annotations[i].set_position((xi - dx, yi ))
+                        annotations[j].set_position((xj + dx, yj ))
+                        moved = True
+
+                    if moved:
+                        continue
+
+                    for j, ann in enumerate(annotations):
+                        fontsize = ann.get_fontsize()
+                        if fontsize > min_fontsize:
+                            ann.set_fontsize(fontsize - 0.5)
+                            resized = True
+
+                    if not moved and not resized:
+                        break
 
 
     def show(self):
@@ -722,6 +815,8 @@ class LaengsTask:
 
 
     def cad(self):
+        #TODO: Überarbeiten und die Zeichnung lieber programieren und nicht mit Autocad befehlen arbeiten
+
         """Längsschnitt in CAD zeichnen"""
         points = self.point.split(",", 1)
         massstab_liste = self.massstab.split(":", 1)
@@ -1053,7 +1148,7 @@ class LaengsTask:
 
         for i in x_deckel:
             if round(i,2) not in x_deckel_neu:
-                x_deckel_neu.append(i)
+                x_deckel_neu.append(round(i,2))
 
         # deckelkoordinaten
         for i, j in zip(x_deckel, y_deckel_n):
@@ -1279,8 +1374,8 @@ class LaengsTask:
 
     def ganglinie(self):
         figure = self.fig_3
-        figure.clear()
-        plt.figure(figure.number)
+        # figure.clear()
+        # plt.figure(figure.number)
         new_plot = figure.add_subplot(111)
 
         # aktuellen layer auswählen
@@ -1402,8 +1497,8 @@ class LaengsTask:
         if table == 'haltungen':
 
             if self.ausgabe == 'Durchfluss':
-                plt.xlabel('Zeit')
-                plt.ylabel('m³/s')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m³/s')
                 for h in liste:
                     x_liste = []
                     y_liste = []
@@ -1417,8 +1512,8 @@ class LaengsTask:
           fancybox=True, shadow=True, ncol=5)
 
             if self.ausgabe == 'Geschwindigkeit':
-                plt.xlabel('Zeit')
-                plt.ylabel('m/s')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m/s')
                 for h in liste:
                     x_liste = []
                     y_liste = []
@@ -1432,8 +1527,8 @@ class LaengsTask:
           fancybox=True, shadow=True, ncol=5)
 
             if self.ausgabe == 'Auslastung':
-                plt.xlabel('Zeit')
-                plt.ylabel('%')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('%')
                 for h in liste:
                     x_liste = []
                     y_liste = []
@@ -1447,8 +1542,8 @@ class LaengsTask:
           fancybox=True, shadow=True, ncol=5)
 
             if self.ausgabe == 'Wassertiefe':
-                plt.xlabel('Zeit')
-                plt.ylabel('m')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m')
                 for h in liste:
                     x_liste = []
                     y_liste = []
@@ -1463,8 +1558,8 @@ class LaengsTask:
 
         if table == 'schaechte':
             if self.ausgabe == 'Zufluss':
-                plt.xlabel('Zeit')
-                plt.ylabel('m³/s')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m³/s')
                 for s in liste:
                     x_liste = []
                     y_liste = []
@@ -1480,8 +1575,8 @@ class LaengsTask:
 
 
             if self.ausgabe == 'Wasserstand':
-                plt.xlabel('Zeit')
-                plt.ylabel('m NN')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m NN')
                 for s in liste:
                     x_liste = []
                     y_liste = []
@@ -1495,8 +1590,8 @@ class LaengsTask:
           fancybox=True, shadow=True, ncol=5)
 
             if self.ausgabe == 'Wassertiefe':
-                plt.xlabel('Zeit')
-                plt.ylabel('m')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m')
                 for s in liste:
                     x_liste = []
                     y_liste = []
@@ -1510,8 +1605,8 @@ class LaengsTask:
           fancybox=True, shadow=True, ncol=5)
 
             if self.ausgabe == 'Durchfluss':
-                plt.xlabel('Zeit')
-                plt.ylabel('m³/s')
+                new_plot.set_xlabel('Zeit')
+                new_plot.set_ylabel('m³/s')
                 for s in liste:
                     x_liste = []
                     y_liste = []
@@ -1528,29 +1623,21 @@ class LaengsTask:
 
 
     def laengs(self):
+        if self.timer is not None:
+            self.timer.stop()
+            self.timer.deleteLater()
+            self.timer = None
+
+        #hier wird der animierte Längsschnitt in das Fenster gezeichnet
         label_4 = self.label_4
-        horizontalSlider_3 = self.horizontalSlider_3
         anf = self.anf
         geschw = self.geschw
-
-        # hier wird der animierte Längsschnitt in das Fenster gezeichnet
+        self.running = True
 
         figure = self.fig_2
-        figure.clear()
-        plt.clf()
-        plt.figure(figure.number)
-
-        # ax = figure.add_subplot(1, 1, 1)
+        # figure.clear()
+        # plt.figure(figure.number)
         new_plot = figure.add_subplot(111)
-
-        # Animation controls
-        is_manual = False  # True if user has taken control of the animation
-        interval = geschw  # ms, time between animation frames
-        loop_len = 5.0  # seconds per loop
-        scale = interval / 1000 / loop_len
-
-        self.stop_animation()
-        self.anim = None
 
         #aktuellen layer auswählen
         layer = iface.activeLayer()
@@ -1559,7 +1646,7 @@ class LaengsTask:
         #mit dbfunk layer namen anzeigen lassen (für die information ob haltungen oder schächte ausgewählt wurden)
         _, table, _, _ = get_qkanlayer_attributes(x)
 
-        t=None
+        t = None
 
         #selektierte elemente anzeigen
         self.selected = layer.selectedFeatures()
@@ -1611,7 +1698,7 @@ class LaengsTask:
                 liste2.append(y)
         logger.debug(f'zeichnen.ausgewaehlt.3: {liste}')
         logger.debug(f'route: {route}')
-        #route = (['2747.1J55', '2747.1J56', '2747.1J57'], ['M2747.1J55', 'M2747.1J56'])
+
         x_sohle = []
         y_sohle = []
         x_sohle2 = []
@@ -1815,7 +1902,6 @@ class LaengsTask:
             y_liste = []
             x_liste = []
 
-
             for i in haltungen:
                 zeit.append(i)
             for time in zeit:
@@ -1829,8 +1915,8 @@ class LaengsTask:
                 x_liste.append(x)
                 y_liste.append(y)
 
-            horizontalSlider_3.setMinimum(0)
-            horizontalSlider_3.setMaximum(len(zeit))
+            self.horizontalSlider_3.setMinimum(0)
+            self.horizontalSlider_3.setMaximum(len(zeit))
 
             y_sohle_2 = []
             y_deckel_3 = []
@@ -1857,70 +1943,73 @@ class LaengsTask:
                 y_deckel_n.pop(x)
                 x_deckel.pop(x)
 
-            # iface.messageBar().pushMessage("Error",
-            #                                str(len(x_liste)),
-            #                                level=Qgis.MessageLevel.Critical)
+            new_plot.set_xlabel('Länge [m]')
+            new_plot.set_ylabel('Höhe [m NHN]')
+            x_deckel_neu = []
+            new_plot.plot(x_deckel, y_deckel_n, color="black", label='Deckel')
+            new_plot.plot(x_sohle, y_sohle_n, color="black", label='Kanalsohle')
+            new_plot.plot(x_sohle2, y_sohle2_n, color="black", label='Kanalscheitel')
 
+            name_neu = []
+            y_label_neu = []
 
+            for i in x_deckel:
+                if round(i, 2) not in x_deckel_neu:
+                    x_deckel_neu.append(round(i, 2))
 
-            def animate(t):
+            for i in name:
+                if i not in name_neu:
+                    name_neu.append(i)
 
+            for i in y_label:
+                if i not in y_label_neu:
+                    y_label_neu.append(i)
 
-                plt.cla()  # clear the previous image
-                plt.xlabel('Länge [m]')
-                plt.ylabel('Höhe [m NHN]')
-                x_deckel_neu = []
-                new_plot.plot(x_deckel, y_deckel_n, color="black", label='Deckel')
-                new_plot.plot(x_sohle, y_sohle_n, color="black", label='Kanalsohle')
-                new_plot.plot(x_sohle2, y_sohle2_n, color="black", label='Kanalscheitel')
+            for x, y, nam in zip(x_deckel_neu, y_label_neu, name_neu):
+                new_plot.annotate(nam, (x, y),
+                             textcoords="offset points",
+                             xytext=(-10, 0),
+                             rotation=90,
+                             ha='center')
 
-                name_neu = []
-                y_label_neu = []
+            new_plot.vlines(x_deckel, y_sohle, y_deckel, color="red", linestyles='solid', label='Schacht',
+                            linewidth=5)
+            new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid',
+                            label='fiktiver Schacht',
+                            linewidth=5)
 
-                for i in x_deckel:
-                    if round(i,2) not in x_deckel_neu:
-                        x_deckel_neu.append(i)
+            (wasserstand,) = new_plot.plot([], [], color="blue", label='Wasserstand')
 
-                for i in name:
-                    if i not in name_neu:
-                        name_neu.append(i)
+            self.t = anf
+            self.max_t = len(zeit)
+            def animate():
 
-                for i in y_label:
-                    if i not in y_label_neu:
-                        y_label_neu.append(i)
+                if self.t >= self.max_t:
+                    self.timer.stop()
+                    self.running = False
+                    return
 
-                for x, y, nam in zip(x_deckel_neu, y_label_neu, name_neu):
-                    plt.annotate(nam, (x, y),
-                                 textcoords="offset points",
-                                 xytext=(-10, 0),
-                                 rotation=90,
-                                 ha='center')
+                wasserstand.set_data(x_liste[self.t], y_liste[self.t])
 
-                new_plot.vlines(x_deckel, y_sohle, y_deckel, color="red", linestyles='solid', label='Schacht',
-                                linewidth=5)
-                new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid', label='fiktiver Schacht',
-                                linewidth=5)
-
-                new_plot.plot(x_liste[t], y_liste[t], color="blue", label='Wasserstand')  # plot the line
-
-
-                timestamp = zeit[t]
+                timestamp = zeit[self.t]
                 time = timestamp.strftime("%d.%m.%Y %H:%M:%S")[:-3]
+
                 if label_4 is not None:
                     label_4.setText(time)
-                val=t
-                self.horizontalSlider_3.setValue(t)
+
+                if not self.horizontalSlider_3.isSliderDown():
+                    self.horizontalSlider_3.blockSignals(True)
+                    self.horizontalSlider_3.setValue(self.t)
+                    self.horizontalSlider_3.blockSignals(False)
+
+                self.canv_2.draw_idle()
+                self.t+=1
 
 
-            self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False, repeat=True)
-            self.anim.event_source.stop()
-            #self.stop()
+            self.timer = QTimer()
+            self.timer.timeout.connect(animate)
+            self.timer.start(geschw)
 
-            try:
-                self.anim.event_source.start()
-                self.pushButton_4.setText('Stop')
-            except AttributeError:
-                pass
 
 
         if table == 'schaechte':
@@ -1928,7 +2017,7 @@ class LaengsTask:
 
             for i in x_deckel:
                 if round(i,2) not in x_deckel_neu:
-                    x_deckel_neu.append(i)
+                    x_deckel_neu.append(round(i,2))
 
 
             for schacht, xkoordinate in zip(liste, x_deckel_neu):
@@ -1979,9 +2068,8 @@ class LaengsTask:
                 x_liste.append(x)
                 y_liste.append(y)
 
-            horizontalSlider_3.setMinimum(0)
-            horizontalSlider_3.setMaximum(len(zeit))
-
+            self.horizontalSlider_3.setMinimum(0)
+            self.horizontalSlider_3.setMaximum(len(zeit))
 
             y_sohle_2 = []
             y_deckel_3 = []
@@ -2009,69 +2097,69 @@ class LaengsTask:
                 y_deckel_n.pop(x)
                 x_deckel.pop(x)
 
-            def animate(t):
+            new_plot.set_xlabel('Länge [m]')
+            new_plot.set_ylabel('Höhe [m NHN]')
+            x_deckel_neu = []
+            new_plot.plot(x_deckel, y_deckel_n, color="black", label='Deckel')
+            new_plot.plot(x_sohle, y_sohle_n, color="black", label='Kanalsohle')
+            new_plot.plot(x_sohle2, y_sohle2_n, color="black", label='Kanalscheitel')
 
-                plt.cla()  # clear the previous image
-                plt.xlabel('Länge [m]')
-                plt.ylabel('Höhe [m NHN]')
-                x_deckel_neu = []
-                new_plot.plot(x_deckel, y_deckel_n, color="black", label='Deckel')
-                new_plot.plot(x_sohle, y_sohle_n, color="black", label='Kanalsohle')
-                new_plot.plot(x_sohle2, y_sohle2_n, color="black", label='Kanalscheitel')
+            name_neu = []
+            y_label_neu = []
 
-                name_neu = []
-                y_label_neu = []
+            for i in x_deckel:
+                if round(i, 2) not in x_deckel_neu:
+                    x_deckel_neu.append(round(i, 2))
 
-                for i in x_deckel:
-                    if round(i,2) not in x_deckel_neu:
-                        x_deckel_neu.append(i)
+            for i in name:
+                if i not in name_neu:
+                    name_neu.append(i)
 
-                for i in name:
-                    if i not in name_neu:
-                        name_neu.append(i)
+            for i in y_label:
+                if i not in y_label_neu:
+                    y_label_neu.append(i)
 
-                for i in y_label:
-                    if i not in y_label_neu:
-                        y_label_neu.append(i)
+            for x, y, nam in zip(x_deckel_neu, y_label_neu, name_neu):
+                new_plot.annotate(nam, (x, y),
+                                  textcoords="offset points",
+                                  xytext=(-10, 0),
+                                  rotation=90,
+                                  ha='center')
 
-                for x, y, nam in zip(x_deckel_neu, y_label_neu, name_neu):
-                    plt.annotate(nam, (x, y),
-                                 textcoords="offset points",
-                                 xytext=(-10, 0),
-                                 rotation=90,
-                                 ha='center')
+            new_plot.vlines(x_deckel, y_sohle, y_deckel, color="red", linestyles='solid', label='Schacht',
+                            linewidth=5)
+            new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid',
+                            label='fiktiver Schacht',
+                            linewidth=5)
 
-                new_plot.vlines(x_deckel, y_sohle, y_deckel_n, color="red", linestyles='solid', label='Schacht',
-                                linewidth=5)
-                new_plot.vlines(x_deckel_2, y_sohle_2, y_deckel_3, color="gray", linestyles='solid', label='fiktiver Schacht',
-                                linewidth=5)
+            (wasserstand,) = new_plot.plot([], [], color="blue", label='Wasserstand')
 
-                new_plot.plot(x_liste[t], y_liste[t], color="blue", label='Wasserstand')  # plot the line
+            self.t = anf
+            self.max_t = len(zeit)
 
+            def animate():
 
+                if self.t >= self.max_t:
+                    self.stop_animation()
+                    return
 
+                wasserstand.set_data(x_liste[self.t], y_liste[self.t])
 
-                timestamp = zeit[t]
+                timestamp = zeit[self.t]
                 time = timestamp.strftime("%d.%m.%Y %H:%M:%S")[:-3]
+
                 if label_4 is not None:
                     label_4.setText(time)
-                val = t
-                self.horizontalSlider_3.setValue(t)
+                if not self.horizontalSlider_3.isSliderDown():
+                    self.horizontalSlider_3.blockSignals(True)
+                    self.horizontalSlider_3.setValue(self.t)
+                    self.horizontalSlider_3.blockSignals(False)
+                self.canv_2.draw_idle()
+                self.t += 1
 
-
-
-            self.anim = animation.FuncAnimation(figure, animate, frames=range(anf, len(zeit)), interval=geschw, blit=False, repeat=True)
-            self.anim.event_source.stop()
-            #self.stop()
-
-            try:
-                self.anim.event_source.start()
-                self.pushButton_4.setText('Stop')
-            except AttributeError:
-                pass
-        figure.tight_layout(pad=1.08)
-
-        # iface.messageBar().pushMessage("Fehler", str(self.anim), level=Qgis.MessageLevel.Critical)
+            self.timer = QTimer()
+            self.timer.timeout.connect(animate)
+            self.timer.start(geschw)
 
         self.canv_2.flush_events()
         self.pushButton_4.setDefault(True)
