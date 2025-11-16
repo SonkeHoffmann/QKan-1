@@ -33,7 +33,6 @@ from .dialogs.read_data import ReadData
 from .dialogs.runoffparams import RunoffParamsDialog
 from .dialogs.zoom_clipboard import QgsZoomDialog
 from .k_filepath import setfilepath
-from .k_zoom_clipboard import zoom_clip
 from .k_layersadapt import layersadapt
 from .k_qgsadapt import qgsadapt
 from .k_runoffparams import setRunoffparams
@@ -1054,11 +1053,26 @@ class QKanTools(QKanPlugin):
                 if layer is not None and clip is not None:
                     value = str(clip)
                     field = "Bezeichnung"
+                    layer.removeSelection()
 
                     if value != '':
+
                         expr = f'"{field}" = \'{value}\''
                         layer.selectByExpression(expr)
                         iface.mapCanvas().zoomToSelected(layer)
+
+                        sel = layer.selectedFeatureIds()
+
+                        if not sel:
+                            layer = QgsProject.instance().mapLayersByName('Schächte')[0]
+                            layer.removeSelection()
+                            value = str(clip)
+                            field = "Schachtname"
+
+                            expr = f'"{field}" = \'{value}\''
+                            layer.selectByExpression(expr)
+                            iface.mapCanvas().zoomToSelected(layer)
+                            # 42780133
 
         if self.dlgzc.button:
             self.dlgzc.clip.dataChanged.connect(zoom_clip2)
