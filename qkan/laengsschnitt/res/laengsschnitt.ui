@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+    <normaloff>../../../../../../QKan.png</normaloff>../../../../../../QKan.png</iconset>
   </property>
   <property name="modal">
    <bool>false</bool>
@@ -162,35 +162,35 @@
          <item>
           <widget class="QPushButton" name="pushButton">
            <property name="text">
-            <string>Export in Autocad</string>
+            <string>Export in DXF</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Einfüge Punkt des Längsschnittes (x,y)</string>
+            <string>Gewählte Datei</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit">
            <property name="text">
-            <string>0,0</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Maßstabvorgabe in x-Richtung (1:x)</string>
+            <string>Skalierung der Y-Achse</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit_2">
            <property name="text">
-            <string>1:10</string>
+            <string>10</string>
            </property>
           </widget>
          </item>
