@@ -106,13 +106,6 @@ class LaengsTask:
         # plt.figure(figure.number)
         new_plot = figure.add_subplot(111)
 
-        if self.selected is None:
-            msg = (
-                f"Keine Daten ausgewählt"
-            )
-            logger.warning_user(msg)
-            raise QkanUserError(msg)
-
 
         #points = self.point.split(",", 1)
         #pointx = float(points[0])
@@ -128,6 +121,13 @@ class LaengsTask:
 
         #selektierte elemente anzeigen
         self.selected = layer.selectedFeatures()
+
+        if self.selected == []:
+            msg = (
+                f"Keine Daten ausgewählt"
+            )
+            logger.warning_user(msg)
+            raise QkanUserError(msg)
 
         if not self.selected:
             return 'Kein Objekt gewählt'
@@ -162,7 +162,11 @@ class LaengsTask:
 
         route = find_route(self.db_qkan, liste)
         if route is None:
-            return 'nicht erstellt, weniger als 2 Elemente ausgewählt'
+            msg = (
+                f"Keine Route gefunden!"
+            )
+            logger.warning_user(msg)
+            raise QkanAbortError(msg)
         logger.debug(f'LaengsTask.zeichnen() - Ergebnis von find_route(liste):\n{liste=}\n{liste2=}\n{route=}')
 
         # if route is None:
@@ -926,8 +930,8 @@ class LaengsTask:
         entwart_s = []
         gefaelle = []
         durchmesser = []
-        x_deckel_druchm = []
-        y_deckel_druchm = []
+        x_deckel_durchm = []
+        y_deckel_durchm = []
         y_sohle_durchm = []
         y_sohle2_durchm = []
 
@@ -1031,19 +1035,14 @@ class LaengsTask:
             x_deckel_l.append(laenge2)
 
             durchmesser.append(durchmesser_o)
-            durchmesser.append(durchmesser_u)
             durchmesser.append(durchmesser_o)
             durchmesser.append(durchmesser_u)
+            durchmesser.append(durchmesser_u)
 
-            x_deckel_druchm.append(round(laenge2 - laenge, 2) - durchmesser_o/2)
-            x_deckel_druchm.append(round(laenge2 - laenge, 2) + durchmesser_o / 2)
-            x_deckel_druchm.append(round(laenge2 - laenge, 2) - durchmesser_u / 2)
-            x_deckel_druchm.append(round(laenge2 - laenge, 2) + durchmesser_u / 2)
-
-            y_deckel_druchm.append(deckeloben)
-            y_deckel_druchm.append(deckeloben)
-            y_deckel_druchm.append(deckelunten)
-            y_deckel_druchm.append(deckelunten)
+            y_deckel_durchm.append(deckeloben)
+            y_deckel_durchm.append(deckeloben)
+            y_deckel_durchm.append(deckelunten)
+            y_deckel_durchm.append(deckelunten)
 
             y_sohle_durchm.append(sohleoben)
             y_sohle_durchm.append(haltung_sohle_o)
@@ -1471,34 +1470,32 @@ class LaengsTask:
             if round(i, 2) not in x_deckel_neu:
                 x_deckel_neu.append(round(i, 2))
 
+
         x_deckel_durchm = []
-        for val, x in zip(x_deckel_neu, durchmesser):
-            x_deckel_durchm.append(val - x/2)
-            x_deckel_durchm.append(val + x/2)
 
-        counts = {}
+        x_deckel_durchm.append(x_deckel[0] - durchmesser[0] / 2)
+        x_index = 1
+
+        for i in range(0, len(x_deckel) - 1, 2):
+            block = x_deckel[i:i + 2]
+
+            if (x_index % 2) == 1:  # gerade Blöcke → +
+                x_deckel_durchm.extend([b + durchmesser[x_index] / 2 for b in block])
+            else:  # ungerade Blöcke → -
+                x_deckel_durchm.extend([b - durchmesser[x_index] / 2 for b in block])
+            x_index += 1
+
+        x_deckel_durchm.append(x_deckel[-1] + durchmesser[-1] / 2)
+
         y_sohle2_n_durchm = []
+        y_sohle2_n_durchm = [y_sohle2_n[0]] + y_sohle2_n + [y_sohle2_n[-1]]
 
-        for value in y_sohle2_n:
-            if counts.get(value, 0) < 2:
-                y_sohle2_n_durchm.append(value)
-                counts[value] = counts.get(value, 0) + 1
-
-        counts = {}
         y_deckel_n_durchm = []
+        y_deckel_n_durchm = [y_deckel_n[0]] + y_deckel_n + [y_deckel_n[-1]]
 
-        for value in y_deckel_n:
-            if counts.get(value, 0) < 2:
-                y_deckel_n_durchm.append(value)
-                counts[value] = counts.get(value, 0) + 1
-
-        counts = {}
         y_sohle_n_durchm = []
+        y_sohle_n_durchm = [y_sohle_n[0]] + y_sohle_n + [y_sohle_n[-1]]
 
-        for value in y_sohle_n:
-            if counts.get(value, 0) < 2:
-                y_sohle_n_durchm.append(value)
-                counts[value] = counts.get(value, 0) + 1
 
         for i in range(len(x_deckel_durchm)-1):
 
@@ -1960,13 +1957,6 @@ class LaengsTask:
 
     def laengs(self):
 
-        if self.selected is None:
-            msg = (
-                f"Keine Daten ausgewählt"
-            )
-            logger.warning_user(msg)
-            raise QkanUserError(msg)
-
         if self.timer is not None:
             self.timer.stop()
             self.timer.deleteLater()
@@ -1994,6 +1984,13 @@ class LaengsTask:
 
         #selektierte elemente anzeigen
         self.selected = layer.selectedFeatures()
+
+        if self.selected == []:
+            msg = (
+                f"Keine Daten ausgewählt"
+            )
+            logger.warning_user(msg)
+            raise QkanUserError(msg)
         for i in self.selected:
             attrs = i["pk"]
             self.features.append(attrs)
