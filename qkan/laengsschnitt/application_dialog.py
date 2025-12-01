@@ -171,6 +171,15 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
 
 
     def export_cad(self):
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            self.tr("Zu erstellende DXF-Datei"),
+            self.default_dir,
+            "*.dxf",
+        )
+        if filename:
+            self.lineEdit.setText(filename)
+
         self.db_erg = self.lineEdit_4.text()
         self.point = self.lineEdit.text()
         self.massstab = self.lineEdit_2.text()

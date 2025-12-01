@@ -15,6 +15,9 @@ from qkan.plugin import QKanPlugin
 from . import resources  # noqa: F401
 from ._laengsschnitt import LaengsTask
 from .application_dialog import LaengsDialog
+from qkan.utils import QkanUserError, QkanAbortError, get_logger
+
+logger = get_logger("QKan")
 
 
 class Laengsschnitt(QKanPlugin):
@@ -30,42 +33,85 @@ class Laengsschnitt(QKanPlugin):
 
     def refresh_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
                          features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
-        LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
-                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                   geschw_2, anf).zeichnen()
-        canv.draw()
+        try:
+            LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl,
+                       point,
+                       massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
+                       geschw_2, anf).zeichnen()
+            canv.draw()
 
-        return LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl,
-                          point, massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                          geschw_2, anf).zeichnen()
+            return LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected,
+                              auswahl,
+                              point, massstab, features, db_erg, ausgabe, max, label_4, pushButton_4,
+                              horizontalSlider_3,
+                              geschw_2, anf).zeichnen()
+        except QkanUserError as e:
+            # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+            logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+        except Exception as e:
+            logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+            raise QkanAbortError
+
 
 
     def export_cad_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
                             features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
-        LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
-                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf).cad()
+        try:
+            LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl,
+                       point,
+                       massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2,
+                       anf).cad()
+        except QkanUserError as e:
+            # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+            logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+        except Exception as e:
+            logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+            raise QkanAbortError
 
     def show_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
                       features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
-        LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
-                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf).show()
+
+        try:
+            LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl,
+                       point,
+                       massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2,
+                       anf).show()
+        except QkanUserError as e:
+            # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+            logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+        except Exception as e:
+            logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+            raise QkanAbortError
 
     def gang_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
                       features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3, geschw_2, anf):
-        LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
-                   massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
-                   geschw_2, anf).ganglinie()
-        canv_3.draw()
+        try:
+            LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl,
+                       point,
+                       massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
+                       geschw_2, anf).ganglinie()
+            canv_3.draw()
+        except QkanUserError as e:
+            # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+            logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+        except Exception as e:
+            logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+            raise QkanAbortError
+
 
     def animiert_laengs_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                                  massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
                                  geschw_2, anf):
-        LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
-                                    selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
-                                    pushButton_4, horizontalSlider_3, geschw_2, anf).laengs()
-        #self.animation.laengs()
-        #canv_2.draw()
-        #canv_2.flush_events()
+        try:
+            LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
+                       selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
+                       pushButton_4, horizontalSlider_3, geschw_2, anf).laengs()
+        except QkanUserError as e:
+            # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+            logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+        except Exception as e:
+            logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+            raise QkanAbortError
 
     def stop_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point,
                                  massstab, features, db_erg, ausgabe, max, label_4, pushButton_4, horizontalSlider_3,
@@ -73,9 +119,14 @@ class Laengsschnitt(QKanPlugin):
         self.animation = LaengsTask(self.db_qkan, self.database_qkan, fig, canv, fig_2, canv_2, fig_3, canv_3,
                                     selected, auswahl, point, massstab, features, db_erg, ausgabe, max, label_4,
                                     pushButton_4, horizontalSlider_3, geschw_2, anf)
-        #canv_2.flush_events()
-        self.animation.stop_animation()
-        #canv_2.draw()
+        try:
+            self.animation.stop_animation()
+        except QkanUserError as e:
+            # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+            logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+        except Exception as e:
+            logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+            raise QkanAbortError
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
@@ -221,14 +272,16 @@ class Laengsschnitt(QKanPlugin):
                 )
 
                 # Run
-            LaengsTask(self.db_qkan, self.database_qkan, self.fig, self.canv, self.fig_2,
-                       self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point,
-                       self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4,
-                       self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf
-                       ).run()
-
-            # window.show()
-            #
-            # # Speichere das Fenster in der Liste
-            # self.windows.append(window)
+            try:
+                LaengsTask(self.db_qkan, self.database_qkan, self.fig, self.canv, self.fig_2,
+                           self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point,
+                           self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4,
+                           self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf
+                           ).run()
+            except QkanUserError as e:
+                # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+                logger.debug(f"Anwenderfehler bei Tool Längsschnitt: {e}")
+            except Exception as e:
+                logger.error_code(f"Fehler bei Tool Längsschnitt: {e}")
+                raise QkanAbortError
 

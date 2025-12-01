@@ -96,6 +96,7 @@ Um den Längsschnitt nutzen zu können, müssen zunächst Elemente aus dem Layer
 zwischen zwei ausgewählten Elementen erzeugt oder entlang einer Reihe mehrerer ausgewählter Elemente.
 Wenn sich die Auswahl oder Eingaben ändern, kann über den Refresh-Button die Anzeige aktualisiert werden.
 Mit dem Button „Auswahl anzeigen“ lassen sich die für den Längsschnitt verwendeten Elemente erneut in der Karte markieren.
+Mit dem Button „Export in DXF“ kann eine DXF Datei vom aktuell angezeigt Längsschnitt abgespeichert werden. Wenn der maximale Wasserstand aktiviert ist, wird dieser mit exportiert.
 Damit die Anzeige des maximalen Wasserstands, der animierte Längsschnitt sowie die Ganglinie genutzt werden können, muss zunächst eine HYSTEM-EXTRAN-Ergebnisdatei ausgewählt werden.
 Im Anschluss kann im Reiter „Animierter Längsschnitt“ über den Button „Längsschnitt anzeigen“ der animierte Längsschnitt geöffnet werden
 Die Animation kann anschließend über die Steuerelemente im unteren Bereich in Bezug auf Abspielgeschwindigkeit und Zeitpunkt bedient werden.

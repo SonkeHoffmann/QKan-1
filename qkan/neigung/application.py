@@ -3,8 +3,9 @@ from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
 
-from qkan.utils import get_logger
 from qkan.tools.qkan_utils import get_database_QKan, get_default_dir
+from qkan.utils import QkanUserError, QkanAbortError, get_logger
+
 logger = get_logger("QKan")
 
 # noinspection PyUnresolvedReferences
@@ -59,7 +60,18 @@ class Neigung(QKanPlugin):
                 check_cb['cb1'] = self.neigung_dlg.dgm_automatisch.isChecked()
                 check_cb['cb2'] = self.neigung_dlg.dgm_manuell.isChecked()
 
-                imp = NeigungTask(self.neigung_dlg.url_dgm_daten.text(), self.neigung_dlg.speicher_neigung.text(), self.neigung_dlg.speicher_dgm.text(),
+                speicherdgm = ''
+                speicherdgm = self.neigung_dlg.speicher_dgm.text()
+
+                imp = NeigungTask(self.neigung_dlg.url_dgm_daten.text(), self.neigung_dlg.speicher_neigung.text(), speicherdgm,
                     db_qkan, check_cb, epsg
                     )
-                imp.run()
+
+                try:
+                    imp.run()
+                except QkanUserError as e:
+                    # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+                    logger.debug(f"Anwenderfehler bei Tool Neigungsklassen: {e}")
+                except Exception as e:
+                    logger.error_code(f"Fehler bei Tool Neigungsklassen: {e}")
+                    raise QkanAbortError
