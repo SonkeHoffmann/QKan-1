@@ -62,13 +62,6 @@ class ExportTask:
             logger.error_data(f"Fehler beim Koordinatensystem: {QKan.config.epsg}")
             raise QkanAbortError
 
-    def _prepare_refdata(self) -> None:
-        """Fügt Refernzdaten aus dem Import für den Export hinzu"""
-        if not self.db_qkan.sqlyml(
-            sqlnam='m150_insert_refdatafromimport'
-        ):
-            raise QkanDbError
-
     def _export_refdata(self) -> None:
         """Exportiert die Referenztabellen"""
         if not self.db_qkan.sqlyml(
@@ -92,140 +85,281 @@ class ExportTask:
 
     def _export_wehre(self) -> None:
         if not QKan.config.check_export.wehre:
-            # or not self.hydraulik_objekte
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = 'm150_ex_wehre_sel'
-        else:
-            sqlnam = 'm150_ex_wehre_all'
+        sqlnam = 'm150_ex_halwp' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
             stmt_category=sqlnam,
+            parameters={'bauwerkstyp': 'Wehr'}
         ):
             logger.error_code(f"{self.__class__.__name__}: Fehler in 'm150 Export Wehre'")
             raise QkanDbError
 
         for (
-            haltnam,
             schoben,
-            schunten,
-            sohleoben,
-            hoehe,
-            simstatus,
-            kommentar,
+            deckelhoehe,
+            sohlhoehe,
+            tiefe,
+            knotenart,
+            durchm,
             entwart,
-            xschob,
-            yschob,
+            strasse,
+            strassenname,
+            baujahr,
+            bauwerksart,
+            simstatus,
+            material,
+            kommentar,
+            geobline,
+            geobpoint,
         ) in self.db_qkan.fetchall():
-            if sohleoben is None:
-                sohleoben = 0
+            geop = QgsGeometry()
+            geop.fromWkb(geobpoint)
+            ptsch = geop.asPoint()
+            xsch = ptsch.x()
+            ysch = ptsch.y()
+
+            if geobline is None:
+                ptlis = []
+            else:
+                geom = QgsGeometry()
+                geom.fromWkb(geobline)
+                ptlis = geom.asMultiPolyline()              # Achtung: 2-dimensional
 
             x_elem = SubElement(self.root, "KG")
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": haltnam,
-                    "KG211": hoehe,
+                    "KG001": schoben,
+                    "KG101": strasse,
+                    "KG102": strassenname,
+                    "KG211": tiefe,
+                    "KG301": 'K',
                     "KG302": entwart,
-                    "KG305": "B",
-                    "KG306": "ZRUE",
-                    "KG309": schoben,
+                    "KG303": baujahr,
+                    "KG304": material,
+                    "KG305": knotenart,
+                    "KG306": bauwerksart,
+                    "KG309": durchm,
                     "KG401": simstatus,
+                    "KG407": 'B',
                     "KG999": kommentar,
                 },
             )
 
+            #Schachtsohle
             x_obj = SubElement(x_elem, "GO")
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": haltnam,
-
+                    "GO001": schoben,
+                    "GO002": 'G',
+                    "GO003": 'Pkt',
                 },
             )
 
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": haltnam,
-                    "GP005": xschob,
-                    "GP006": yschob,
-                    "GP007": sohleoben,
+                    "GP001": schoben,
+                    "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": sohlhoehe,
+                    "GP010": 'mNN',
                 },
             )
 
+            #Deckel
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schoben,
+                    "GO002": 'D',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schoben,
+                    "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": deckelhoehe,
+                    "GP010": 'mNN',
+                },
+            )
+
+            # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
+            for i, part in enumerate(ptlis):
+                x_obj = SubElement(x_elem, "GO")
+                _create_children_text(
+                    x_obj,
+                    {
+                        "GO001": schoben + f' - {i}',
+                        "GO002": 'B',
+                        "GO003": 'Poly',
+                    },
+                )
+                for j, point in enumerate(part):
+                    xpt = point.x()
+                    ypt = point.y()
+                    _create_children_text(
+                        SubElement(x_obj, "GP"),
+                        {
+                            "GP001": schoben + f' - {j}',
+                            "GP002": self.ksys,
+                            "GP003": xpt,
+                            "GP004": ypt,
+                        },
+                    )
+
     def _export_pumpen(self) -> None:
         if not QKan.config.check_export.pumpen:
-            # or not self.hydraulik_objekte
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = 'm150_ex_pumpen_sel'
-        else:
-            sqlnam = 'm150_ex_pumpen_all'
+        sqlnam = 'm150_ex_halwp' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
             stmt_category=sqlnam,
+            parameters={'bauwerkstyp': 'Pumpe'}
         ):
             logger.error_code(f"{self.__class__.__name__}: Fehler in 'm150 Export Pumpen'")
             raise QkanDbError
 
         for (
-            haltnam,
             schoben,
-            schunten,
-            sohleoben,
-            simstatus,
-            kommentar,
+            deckelhoehe,
+            sohlhoehe,
+            tiefe,
+            knotenart,
+            durchm,
             entwart,
-            xschob,
-            yschob,
+            strasse,
+            strassenname,
+            baujahr,
+            bauwerksart,
+            simstatus,
+            material,
+            kommentar,
+            geobline,
+            geobpoint,
         ) in self.db_qkan.fetchall():
+            geop = QgsGeometry()
+            geop.fromWkb(geobpoint)
+            ptsch = geop.asPoint()
+            xsch = ptsch.x()
+            ysch = ptsch.y()
+
+            if geobline is None:
+                ptlis = []
+            else:
+                geom = QgsGeometry()
+                geom.fromWkb(geobline)
+                ptlis = geom.asMultiPolyline()              # Achtung: 2-dimensional
 
             x_elem = SubElement(self.root, "KG")
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": haltnam,
+                    "KG001": schoben,
+                    "KG101": strasse,
+                    "KG102": strassenname,
+                    "KG211": tiefe,
+                    "KG301": 'K',
                     "KG302": entwart,
-                    "KG305": "B",
-                    "KG306": "ZPW",
-                    "KG309": schoben,
+                    "KG303": baujahr,
+                    "KG304": material,
+                    "KG305": knotenart,
+                    "KG306": bauwerksart,
+                    "KG309": durchm,
                     "KG401": simstatus,
+                    "KG407": 'B',
                     "KG999": kommentar,
                 },
             )
 
+            #Schachtsohle
             x_obj = SubElement(x_elem, "GO")
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": haltnam,
-
+                    "GO001": schoben,
+                    "GO002": 'G',
+                    "GO003": 'Pkt',
                 },
             )
 
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": haltnam,
-                    "GP005": xschob,
-                    "GP006": yschob,
-                    "GP007": sohleoben,
+                    "GP001": schoben,
+                    "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": sohlhoehe,
+                    "GP010": 'mNN',
                 },
             )
+
+            #Deckel
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schoben,
+                    "GO002": 'D',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schoben,
+                    "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": deckelhoehe,
+                    "GP010": 'mNN',
+                },
+            )
+
+            # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
+            for i, part in enumerate(ptlis):
+                x_obj = SubElement(x_elem, "GO")
+                _create_children_text(
+                    x_obj,
+                    {
+                        "GO001": schoben + f' - {i}',
+                        "GO002": 'B',
+                        "GO003": 'Poly',
+                    },
+                )
+                for j, point in enumerate(part):
+                    xpt = point.x()
+                    ypt = point.y()
+                    _create_children_text(
+                        SubElement(x_obj, "GP"),
+                        {
+                            "GP001": schoben + f' - {j}',
+                            "GP002": self.ksys,
+                            "GP003": xpt,
+                            "GP004": ypt,
+                        },
+                    )
 
     def _export_auslaesse(self) -> None:
         if not QKan.config.check_export.auslaesse:
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = "m150_ex_schaechte_sel"
-        else:
-            sqlnam = "m150_ex_schaechte_all"
+        sqlnam = 'm150_ex_schaechte' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
@@ -246,7 +380,9 @@ class ExportTask:
             strasse,
             strassenname,
             baujahr,
+            bauwerksart,
             simstatus,
+            material,
             kommentar,
             geobline,
             geobpoint,
@@ -276,7 +412,9 @@ class ExportTask:
                     "KG301": 'K',
                     "KG302": entwart,
                     "KG303": baujahr,
+                    "KG304": material,
                     "KG305": knotenart,
+                    "KG306": bauwerksart,
                     "KG309": durchm,
                     "KG401": simstatus,
                     "KG407": 'B',
@@ -300,8 +438,8 @@ class ExportTask:
                 {
                     "GP001": schnam,
                     "GP002": self.ksys,
-                    "GP005": xsch,
-                    "GP006": ysch,
+                    "GP003": xsch,
+                    "GP004": ysch,
                     "GP007": sohlhoehe,
                     "GP010": 'mNN',
                 },
@@ -323,6 +461,8 @@ class ExportTask:
                 {
                     "GP001": schnam,
                     "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
                     "GP007": deckelhoehe,
                     "GP010": 'mNN',
                 },
@@ -347,8 +487,8 @@ class ExportTask:
                         {
                             "GP001": schnam + f' - {j}',
                             "GP002": self.ksys,
-                            "GP005": xpt,
-                            "GP006": ypt,
+                            "GP003": xpt,
+                            "GP004": ypt,
                         },
                     )
 
@@ -368,10 +508,7 @@ class ExportTask:
         if not QKan.config.check_export.schaechte:
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = "m150_ex_schaechte_sel"
-        else:
-            sqlnam = "m150_ex_schaechte_all"
+        sqlnam = 'm150_ex_schaechte' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
@@ -392,7 +529,9 @@ class ExportTask:
             strasse,
             strassenname,
             baujahr,
+            bauwerksart,
             simstatus,
+            material,
             kommentar,
             geobline,
             geobpoint,
@@ -422,7 +561,9 @@ class ExportTask:
                     "KG301": 'K',
                     "KG302": entwart,
                     "KG303": baujahr,
+                    "KG304": material,
                     "KG305": knotenart,
+                    "KG306": bauwerksart,
                     "KG309": durchm,
                     "KG401": simstatus,
                     "KG407": 'B',
@@ -446,8 +587,8 @@ class ExportTask:
                 {
                     "GP001": schnam,
                     "GP002": self.ksys,
-                    "GP005": xsch,
-                    "GP006": ysch,
+                    "GP003": xsch,
+                    "GP004": ysch,
                     "GP007": sohlhoehe,
                     "GP010": 'mNN',
                 },
@@ -469,6 +610,8 @@ class ExportTask:
                 {
                     "GP001": schnam,
                     "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
                     "GP007": deckelhoehe,
                     "GP010": 'mNN',
                 },
@@ -493,8 +636,8 @@ class ExportTask:
                         {
                             "GP001": schnam + f' - {j}',
                             "GP002": self.ksys,
-                            "GP005": xpt,
-                            "GP006": ypt,
+                            "GP003": xpt,
+                            "GP004": ypt,
                         },
                     )
 
@@ -502,10 +645,7 @@ class ExportTask:
         if not QKan.config.check_export.speicher:
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = "m150_ex_schaechte_sel"
-        else:
-            sqlnam = "m150_ex_schaechte_all"
+        sqlnam = 'm150_ex_schaechte' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
@@ -526,7 +666,9 @@ class ExportTask:
             strasse,
             strassenname,
             baujahr,
+            bauwerksart,
             simstatus,
+            material,
             kommentar,
             geobline,
             geobpoint,
@@ -556,8 +698,9 @@ class ExportTask:
                     "KG301": 'K',
                     "KG302": entwart,
                     "KG303": baujahr,
+                    "KG304": material,
                     "KG305": knotenart,
-                    "KG306": "ZRRB",
+                    "KG306": bauwerksart,
                     "KG309": durchm,
                     "KG401": simstatus,
                     "KG407": 'B',
@@ -581,8 +724,8 @@ class ExportTask:
                 {
                     "GP001": schnam,
                     "GP002": self.ksys,
-                    "GP005": xsch,
-                    "GP006": ysch,
+                    "GP003": xsch,
+                    "GP004": ysch,
                     "GP007": sohlhoehe,
                     "GP010": 'mNN',
                 },
@@ -604,6 +747,8 @@ class ExportTask:
                 {
                     "GP001": schnam,
                     "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
                     "GP007": deckelhoehe,
                     "GP010": 'mNN',
                 },
@@ -628,8 +773,8 @@ class ExportTask:
                         {
                             "GP001": schnam + f' - {j}',
                             "GP002": self.ksys,
-                            "GP005": xpt,
-                            "GP006": ypt,
+                            "GP003": xpt,
+                            "GP004": ypt,
                         },
                     )
 
@@ -638,10 +783,7 @@ class ExportTask:
             # or not self.hydraulik_objekte
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = 'm150_ex_haltungen_sel'
-        else:
-            sqlnam = 'm150_ex_haltungen_all'
+        sqlnam = 'm150_ex_haltungen' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
@@ -727,8 +869,8 @@ class ExportTask:
                 {
                     "GP001": schoben,
                     "GP002": self.ksys,
-                    "GP005": pt.x(),
-                    "GP006": pt.x(),
+                    "GP003": pt.x(),
+                    "GP004": pt.y(),
                     "GP007": sohleoben,
                 },
             )
@@ -741,8 +883,8 @@ class ExportTask:
                     {
                         "GP001": f'{haltnam}-{ip-1}',
                         "GP002": self.ksys,
-                        "GP005": pt.x(),
-                        "GP006": pt.x(),
+                        "GP003": pt.x(),
+                        "GP004": pt.y(),
                     },
                 )
 
@@ -754,8 +896,8 @@ class ExportTask:
                 {
                     "GP001": schunten,
                     "GP002": self.ksys,
-                    "GP005": pt.x(),
-                    "GP006": pt.x(),
+                    "GP003": pt.x(),
+                    "GP004": pt.y(),
                     "GP007": sohleunten,
                 },
             )
@@ -765,10 +907,7 @@ class ExportTask:
             # or not self.hydraulik_objekte
             return
 
-        if QKan.config.selections.selectedObjects:
-            sqlnam = "m150_ex_anschlussleitungen_sel"
-        else:
-            sqlnam = "m150_ex_anschlussleitungen_all"
+        sqlnam = 'm150_ex_anschlussleitungen' + self.select
 
         if not self.db_qkan.sqlyml(
             sqlnam=sqlnam,
@@ -866,8 +1005,8 @@ class ExportTask:
                 {
                     "GP001": asoben,
                     "GP002": self.ksys,
-                    "GP005": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                    "GP006": pt.y(),
+                    "GP003": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
+                    "GP004": pt.y(),
                     "GP007": sohleoben,
                 },
             )
@@ -880,8 +1019,8 @@ class ExportTask:
                     {
                         "GP001": f'{leitnam}-{ip+1}',
                         "GP002": self.ksys,
-                        "GP005": pt.x(),            # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                        "GP006": pt.y(),
+                        "GP003": pt.x(),            # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
+                        "GP004": pt.y(),
                     },
                 )
 
@@ -893,9 +1032,113 @@ class ExportTask:
                 {
                     "GP001": asunten,
                     "GP002": self.ksys,
-                    "GP005": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                    "GP006": pt.y(),
+                    "GP003": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
+                    "GP004": pt.y(),
                     "GP007": sohleunten,
+                },
+            )
+
+
+    def _export_anschlussschaechte(self) -> None:
+        if not QKan.config.check_export.anschlussschaechte:
+            # or not self.hydraulik_objekte
+            return
+
+        sqlnam = 'm150_ex_anschlussschaechte' + self.select
+
+        if not self.db_qkan.sqlyml(
+            sqlnam=sqlnam,
+            stmt_category=sqlnam,
+        ):
+            logger.error_code(f"{self.__class__.__name__}: Fehler in 'm150 Export Anschlussschaechte'")
+            raise QkanDbError
+
+        for (
+            schnam,
+            sohlhoehe,
+            deckelhoehe,
+            tiefe,
+            durchm,
+            entwart,
+            strasse,
+            strassenname,
+            baujahr,
+            simstatus,
+            material,
+            knotenart,
+            kommentar,
+            geopoint,
+        ) in self.db_qkan.fetchall():
+
+            geop = QgsGeometry()
+            geop.fromWkb(geopoint)
+            ptsch = geop.asPoint()
+            xsch = ptsch.x()
+            ysch = ptsch.y()
+
+            x_elem = SubElement(self.root, "KG")
+            _create_children_text(
+                x_elem,
+                {
+                    "KG001": schnam,
+                    "KG101": strasse,
+                    "KG102": strassenname,
+                    "KG211": tiefe,
+                    "KG301": 'K',
+                    "KG302": entwart,
+                    "KG303": baujahr,
+                    "KG304": material,
+                    "KG305": knotenart,
+                    "KG309": durchm,
+                    "KG401": simstatus,
+                    "KG407": 'B',
+                    "KG999": kommentar,
+                },
+            )
+
+            #Schachtsohle
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schnam,
+                    "GO002": 'G',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schnam,
+                    "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": sohlhoehe,
+                    "GP010": 'mNN',
+                },
+            )
+
+            #Deckel
+            x_obj = SubElement(x_elem, "GO")
+            _create_children_text(
+                x_obj,
+                {
+                    "GO001": schnam,
+                    "GO002": 'D',
+                    "GO003": 'Pkt',
+                },
+            )
+
+            _create_children_text(
+                SubElement(x_obj, "GP"),
+                {
+                    "GP001": schnam,
+                    "GP002": self.ksys,
+                    "GP003": xsch,
+                    "GP004": ysch,
+                    "GP007": deckelhoehe,
+                    "GP010": 'mNN',
                 },
             )
 
@@ -924,18 +1167,28 @@ class ExportTask:
         )
 
         # Export
-        self._prepare_refdata()              ; fortschritt("Rerenzdaten aus import übernommen", 0.10)
+
+        # 2 Selektionsfaktoren: ausgewählte, fehlende
+        if QKan.config.selections.selectedObjects:
+            self.select = '_sel'
+        else:
+            self.select = '_all'
+        if QKan.config.check_export.incluseMissingKeys:
+            self.select += '_include'
+
+        # self._prepare_refdata()              ; fortschritt("Rerenzdaten aus import übernommen", 0.10)
         self._export_header()
-        self._export_schaechte()            ; fortschritt("Schächte eingefügt", 0.30)
-        self._export_wehre()                ; fortschritt("Wehre eingefügt", 0.35)
-        self._export_pumpen()               ; fortschritt("Pumpen eingefügt", 0.40)
-        self._export_auslaesse()            ; fortschritt("Auslässe eingefügt", 0.45)
-        self._export_speicher()             ; fortschritt("Speicher eingefügt", 0.50)
-        self._export_haltungen()            ; fortschritt("Haltungen eingefügt", 0.75)
-        self._export_anschlussleitungen()   ; fortschritt("Anschlussleitungen eingefügt", 0.95)
-        # self._export_haltungen_inspektion() ; fortschritt("Haltungen Inspektion eingefügt", 0.60)
-        # self._export_schaechte_inspektion() ; fortschritt("Schächte eingefügt", 0.4)
-        self._export_refdata()
+        self._export_schaechte()            ; fortschritt("Schächte geschrieben", 0.30)
+        self._export_wehre()                ; fortschritt("Wehre geschrieben", 0.35)
+        self._export_pumpen()               ; fortschritt("Pumpen geschrieben", 0.40)
+        self._export_auslaesse()            ; fortschritt("Auslässe geschrieben", 0.45)
+        self._export_speicher()             ; fortschritt("Speicher geschrieben", 0.50)
+        self._export_anschlussschaechte()   ; fortschritt("Anschlussleitungen geschrieben", 0.95)
+        self._export_haltungen()            ; fortschritt("Haltungen geschrieben", 0.75)
+        self._export_anschlussleitungen()   ; fortschritt("Anschlussleitungen geschrieben", 0.85)
+        # self._export_haltungen_inspektion() ; fortschritt("Haltungen Inspektion geschrieben", 0.60)
+        # self._export_schaechte_inspektion() ; fortschritt("Schächte geschrieben", 0.4)
+        self._export_refdata()              ; fortschritt("Referenzdaten geschrieben", 0.95)
 
         Path(self.export_file).write_bytes(
             minidom.parseString(tostring(self.root)).toprettyxml(

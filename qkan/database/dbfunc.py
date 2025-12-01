@@ -176,7 +176,7 @@ class DBConnection:
             get_database_QKan()
             self.dbname = QKan.config.database.qkan
             self.dbtype = QKan.dbtype
-            if not self.dbname:
+            if self.dbname is None:
                 logger.warning_user("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
                 raise QkanUserError
         else:
@@ -238,7 +238,8 @@ class DBConnection:
                                 shutil.copy(self.dbname, bakdir)
 
                             if self.writeQgsBackup:
-                                shutil.copy(QKan.config.project.file, bakdir)
+                                projectfile = QgsProject.instance().fileName()
+                                shutil.copy(projectfile, bakdir)
 
                         self.upgrade_database()
                     else:
@@ -256,6 +257,9 @@ class DBConnection:
                         self.connected = False
 
                         return None
+                else:
+                    # nu aus Kompatibilitätsgründen
+                    self.isCurrentVersion = True
 
             # Create new database
             else:
@@ -1431,6 +1435,7 @@ class DBConnection:
         logger.debug(f"0 - versiondbQK = {self.current_dbversion.base_version}")
 
         self.isCurrentDbVersion = (self.actDbVersion <= self.current_dbversion)
+        self.isCurrentVersion = self.isCurrentDbVersion                    # nur aus Kompatibilitätsgründen
 
         # Warnung, falls geladene Datenbank neuer als die Datenbankversion zu diesem QKan-Plugin ist.
         # if self.actDbVersion > self.current_dbversion:
@@ -1816,6 +1821,7 @@ class DBConnection:
             return False
 
         self.isCurrentDbVersion = True
+        self.isCurrentVersion = True                    # nur aus Kompatibilitätsgründen
 
         return True
 
@@ -1831,8 +1837,7 @@ class DBConnection:
             attr_short: str = None,
             default: str = None
     ) -> Union[bool, str, None]:
-        """
-    Liefert Langbezeichnung für einen key mit Hilfe eines mappers.
+        """Liefert Langbezeichnung für einen key mit Hilfe eines mappers.
     Wenn der key im mapper nicht vorhanden ist, wird der key sowohl
     im mapper als auch der zugehörigen Datenbanktabelle ergänzt.
 

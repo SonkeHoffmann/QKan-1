@@ -1219,6 +1219,7 @@ class ImportTask(Schadenstexte):
                         ZB=ZB,
                         )
 
+        untersuchdat_schacht = None
         for untersuchdat_schacht in _iter():
 
             params = {'untersuchsch': untersuchdat_schacht.untersuchsch,
@@ -1258,7 +1259,8 @@ class ImportTask(Schadenstexte):
         #     ):
         #         return None
         #
-        Schadenstexte.setschadenstexte_schaechte(self.db_qkan)
+        if untersuchdat_schacht is not None:
+            Schadenstexte.setschadenstexte_schaechte(self.db_qkan)
 
     def _untersuchdat_schaechte_daten(self) -> None:
         # TODO: für Fotos auch ergänzan ab Isybau 2020!
@@ -2091,6 +2093,7 @@ class ImportTask(Schadenstexte):
         #                     # bandnr=bandnr
         #                 )
 
+        untersuchdat_haltung = None
         for untersuchdat_haltung in _iter():
 
             params = {'untersuchhal': untersuchdat_haltung.untersuchhal,
@@ -2136,7 +2139,8 @@ class ImportTask(Schadenstexte):
         #
         # self.db_qkan.commit()
 
-        Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
+        if untersuchdat_haltung is not None:
+            Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
 
     def _untersuchdat_haltung_daten(self):
         # TODO: für Fotos auch ergänzan ab Isybau 2020!
@@ -2688,6 +2692,7 @@ class ImportTask(Schadenstexte):
         #                 # bandnr=bandnr
         #             )
 
+        untersuchdat_anschluss = None
         for untersuchdat_anschlussleitung in _iter():
 
             params = {'untersuchleit': untersuchdat_anschlussleitung.untersuchhal,
@@ -2720,7 +2725,9 @@ class ImportTask(Schadenstexte):
                 return
 
         self.db_qkan.commit()
-        Schadenstexte.setschadenstexte_anschlussleitungen(self.db_qkan)
+
+        if untersuchdat_anschluss is not None:
+            Schadenstexte.setschadenstexte_anschlussleitungen(self.db_qkan)
 
         # geometrieobjekt erzeugen
 

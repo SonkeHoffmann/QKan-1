@@ -246,7 +246,7 @@ class ImportTask(Schadenstexte):
         self.mapper_m150knotenarten: Dict[str, str] = {}
         # self.mapper_bewertungsart: Dict[str, str] = {}
         # self.mapper_druckdicht: Dict[str, str] = {}
-        self.mapper_bauwerkswart: Dict[str, str] = {}
+        self.mapper_bauwerksarten: Dict[str, str] = {}
         self.mapper_strassen: Dict[str, str] = {}
 
         db_qkan.loadmodule('m150porter')
@@ -360,7 +360,7 @@ class ImportTask(Schadenstexte):
                     geom = gmline
                 else:
                     geom = QgsGeometry.collectGeometry([geom, gmline])
-            elif geotyp in ('L'):
+            elif geotyp in ('L',):
                 logger.error(f"Linienelement nicht zulässig in Element <KG001> = {name}")
             else:
                 logger.warning(f'm150._get_KG_GO: geotyp unbekannt: {geotyp}')
@@ -370,7 +370,7 @@ class ImportTask(Schadenstexte):
                 deckelhoehe = zp
             elif pttyp == 'G':
                 sohlhoehe = zp
-            elif pttyp in ('B'):
+            elif pttyp in ('B',):
                 sohle_b = zp
             else:
                 logger.warning(f'm150._get_KG_GO: pttyp unbekannt: {pttyp}')
@@ -389,7 +389,7 @@ class ImportTask(Schadenstexte):
             geop_wkb = None
             logger.warning(f"M150-Import: Konnte kein Punktobjekt finden für {name}")
 
-        if link or geom is not None:
+        if geom is not None:
             geom_wkb = geom.asWkb()
         else:
             geom_wkb = None
@@ -681,7 +681,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'import_entwaesserungsarten')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 104 Kanalnutzung", params, many=True):
             logger.error_data(
-                f'Datensätze konnten nicht in Tabelle m150_knotenarten eingefügt werden:'
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden:'
                 f'{params=}')
             raise QkanError
 
@@ -738,7 +738,6 @@ class ImportTask(Schadenstexte):
             )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
-
         if len(blocks) == 0:
             data = [
                 ('Kreis', 'DN'),
@@ -853,7 +852,6 @@ class ImportTask(Schadenstexte):
             )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
-
         if len(blocks) == 0:
             data = [
                 ('in Betrieb', 'B'),
@@ -941,7 +939,6 @@ class ImportTask(Schadenstexte):
             )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
-
         if len(blocks) == 0:
             data = [
                 ('Asbestzement', 'AZ'),
@@ -1019,10 +1016,10 @@ class ImportTask(Schadenstexte):
 
         # Prüfung, ob noch Zuordnungen NULL oder leer sind
         sql = """SELECT pk
-                FROM refdata
-                WHERE (bezqkan IS NULL OR bezqkan = '') 
-                  AND modul = 'm150porter'
-                  AND subject = 'import_material'"""
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_material'"""
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
@@ -1039,53 +1036,97 @@ class ImportTask(Schadenstexte):
                 f'{params=}')
             raise QkanError
 
-        # Bauwerksarten - Dieses dict wird nicht über eine QKan-Tabelle verwaltet. Deshalb
-        # wird der mapper direkt hier angelegt
+        # Referenztabelle Bauwerksarten
+
+        params = []
 
         blocks = self.xml.findall("RT/[RT001='117']")
 
         logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Bauwerksart": {len(blocks)}')
 
-        self.mapper_bauwerksart = {}
         for block in blocks:
             kuerzel = block.findtext("RT002", None)
-            bezeichnung = block.findtext("RT004", None)
+            bez = block.findtext("RT004", None)
             # Falls einer der beiden Einträge fehlt:
-            if kuerzel is None or bezeichnung is None:
+            if bez is None:
                 continue
-            self.mapper_bauwerksart[bezeichnung] = kuerzel
+            params.append(
+                {
+                    'bezext': bez,
+                    'kuerzel': kuerzel,
+                    'bezqkan': bez,
+                    'kommentar': 'aus M150-Datei',
+                }
+            )
 
         # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
         if len(blocks) == 0:
-            self.mapper_bauwerksart = {
-                'ZABA': 'Absturzbauwerk mit außenliegendem Untersturz',
-                'ZABI': 'Absturzbauwerk mit innenliegendem Untersturz',
-                'ZABK': 'Absturzbauwerk mit Kaskaden',
-                'ZABS': 'Absturzbauwerk mit Schussrinne',
-                'ZABU': 'Absturzbauwerk mit Untersturz',
-                'ZAL':  'Auslaufbauwerk',
-                'ZASA': 'Abscheideranlagen',
-                'ZDUE': 'Düker',
-                'ZERD': 'Bauwerk für erdverlegte Abwasserleitungen und -kanäle',
-                'ZEL':  'Einlaufbauwerk',
-                'ZES':  'Einsteigschacht',
-                'ZFS':  'Fallschacht',
-                'ZHEB': 'Heber',
-                'ZKB':  'Kurvenbauwerk',
-                'ZMS':  'Messschächte',
-                'ZPW':  'Pumpwerke',
-                'ZRKB': 'Regenklärbecken',
-                'ZRRB': 'Regenrückhaltebecken',
-                'ZRUB': 'Regenüberlaufbecken',
-                'ZRUE': 'Regenüberlauf',
-                'ZSA':  'Straßenablauf',
-                'ZSB':  'Schieberbauwerk',
-                'ZSS':  'Spülschacht',
-                'ZVB':  'Verbindungsbauwerk',
-                'ZVT':  'Verteilerwerke',
-                'ZWS':  'Wirbelfallschacht',
-                'Z':    'Sonstige',
-            }
+            data = [
+                ('ZABA', 'Absturzbauwerk mit außenliegendem Untersturz'),
+                ('ZABI', 'Absturzbauwerk mit innenliegendem Untersturz'),
+                ('ZABK', 'Absturzbauwerk mit Kaskaden'),
+                ('ZABS', 'Absturzbauwerk mit Schussrinne'),
+                ('ZABU', 'Absturzbauwerk mit Untersturz'),
+                ('ZAL',  'Auslaufbauwerk'),
+                ('ZASA', 'Abscheideranlagen'),
+                ('ZDUE', 'Düker'),
+                ('ZERD', 'Bauwerk für erdverlegte Abwasserleitungen und -kanäle'),
+                ('ZEL',  'Einlaufbauwerk'),
+                ('ZES',  'Einsteigschacht'),
+                ('ZFS',  'Fallschacht'),
+                ('ZHEB', 'Heber'),
+                ('ZKB',  'Kurvenbauwerk'),
+                ('ZMS',  'Messschächte'),
+                ('ZPW',  'Pumpwerke'),
+                ('ZRKB', 'Regenklärbecken'),
+                ('ZRRB', 'Regenrückhaltebecken'),
+                ('ZRUB', 'Regenüberlaufbecken'),
+                ('ZRUE', 'Regenüberlauf'),
+                ('ZSA',  'Straßenablauf'),
+                ('ZSB',  'Schieberbauwerk'),
+                ('ZSS',  'Spülschacht'),
+                ('ZVB',  'Verbindungsbauwerk'),
+                ('ZVT',  'Verteilerwerke'),
+                ('ZWS',  'Wirbelfallschacht'),
+                ('Z',    'Sonstige'),
+            ]
+
+            for (langtext, kuerzel) in data:
+                params.append(
+                    {
+                        'bezext': langtext,
+                        'kuerzel': kuerzel,
+                        'bezqkan': langtext,
+                        'kommentar': 'M150-Standard',
+                    }
+                )
+
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_bauwerksarten', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_bauwerksarten')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 117 Bauwerksarten", params, many=True):
+            logger.error_data(
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
+                f'{params=}')
+            raise QkanError
+
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter', 'import_bauwerksarten')
+
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_bauwerksarten'"""
+
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
 
         # Straßen - in refdata, aber keine eigene Referenztabelle
 
@@ -1113,8 +1154,8 @@ class ImportTask(Schadenstexte):
         sql = """INSERT INTO refdata (
                     bezext, bezqkan, kuerzel, modul, subject, kommentar)
                     SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'strassen', :kommentar
-                    WHERE :bezext NOT IN (
-                        SELECT bezext FROM refdata
+                    WHERE :bezqkan NOT IN (
+                        SELECT bezqkan FROM refdata
                         WHERE modul = 'm150porter'
                           AND subject = 'strassen')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 101 Straßen", params, many=True):
@@ -1122,9 +1163,6 @@ class ImportTask(Schadenstexte):
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
                 f'{params=}')
             raise QkanError
-
-
-
 
         # Knotenarten aus Referenztabelle Nr. 116 einlesen.
         # Die Daten werden nur intern verarbeitet, weil unterschiedliche Tabellen betroffen sind.
@@ -1274,7 +1312,11 @@ class ImportTask(Schadenstexte):
         logger.debug(f'{self.mapper_m150knotenarten=}')
 
         # Bauwerksarten
-        # Mapper nur intern, s. o. in _reftables()
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_bauwerksarten'"
+        subject = "xml_import m150_bauwerksarten"
+        self.db_qkan.consume_mapper(sql, subject, self.mapper_bauwerksarten)
+        logger.debug(f'{self.mapper_bauwerksarten=}')
 
         # Straßen
         sql = "SELECT kuerzel, bezqkan " \
@@ -1336,16 +1378,20 @@ class ImportTask(Schadenstexte):
                     'kuerzel',
                 )
 
+                ka = block.findtext("KG305")
                 knotenart = self.db_qkan.get_from_mapper(
-                    block.findtext("KG305"),                                 # m150-Knotenart (Ref.-Tab. 116)
+                    ka,                                 # m150-Knotenart (Ref.-Tab. 116)
                     self.mapper_m150knotenarten,
                     'Schacht/Anschlussschacht/Symbol',
                 )
-                ka = block.findtext("KG305")
                 logger.debug(f'Zuordnung {ka=} -> {knotenart=}')
 
-                bwart = block.findtext("KG306")                               # m150-Bauwerksart (Ref.-Tab. 117)
-                bauwerksart = self.mapper_bauwerkswart.get(bwart)
+                bauwerksart = self.db_qkan.get_from_mapper(
+                    block.findtext("KG306"),                               # m150-Bauwerksart (Ref.-Tab. 117)
+                    self.mapper_bauwerksarten,
+                    'bauwerksarten',
+                )
+                # bauwerksart = self.mapper_bauwerkswart.get(bwart)
 
                 # Pumpwerke und Wehre ausschließen, weil Linienobjekte
                 # Bezeichnungen in Wertabbildung zu schachttyp in Layer "M150 Knotenarten"
@@ -1667,6 +1713,7 @@ class ImportTask(Schadenstexte):
                     ZS=ZS,
                     )
 
+        untersuchdat_schacht = None
         for untersuchdat_schacht in _iter():
 
             params = {'untersuchsch': untersuchdat_schacht.untersuchsch, 'id': untersuchdat_schacht.id,
@@ -1699,7 +1746,8 @@ class ImportTask(Schadenstexte):
         # Textpositionen für Schadenstexte berechnen
 
         #self.db_qkan.setschadenstexte_schaechte()
-        Schadenstexte.setschadenstexte_schaechte(self.db_qkan)
+        if untersuchdat_schacht is not None:
+            Schadenstexte.setschadenstexte_schaechte(self.db_qkan)
 
     # def _auslaesse(self) -> None:
     #     def _iter() -> Iterator[Schacht]:
@@ -2254,6 +2302,7 @@ class ImportTask(Schadenstexte):
                     ZS=ZS,
             )
 
+        untersuchdat_haltung = None
         for untersuchdat_haltung in _iter():
 
             params = {'untersuchhal': untersuchdat_haltung.untersuchhal, 'untersuchrichtung': untersuchdat_haltung.untersuchrichtung,
@@ -2284,7 +2333,8 @@ class ImportTask(Schadenstexte):
 
         # Textpositionen für Schadenstexte berechnen
         #self.db_qkan.setschadenstexte_haltungen()
-        Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
+        if untersuchdat_haltung is not None:
+            Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
 
     def _anschlussleitungen(self) -> None:
         def _iter() -> Iterator[Anschlussleitung]:
@@ -2727,6 +2777,7 @@ class ImportTask(Schadenstexte):
                         ZS=ZS,
                     )
 
+        untersuchdat_anschluss = None
         for untersuchdat_anschluss in _iter():
 
             params = {'untersuchleit': untersuchdat_anschluss.untersuchhal,     # Hinweis: Untersuchdat_anschlussleitung = Untersuchdat_haltung
@@ -2763,7 +2814,10 @@ class ImportTask(Schadenstexte):
         self.db_qkan.commit()
 
         #Schadenstexte.setschadenstexte_anschlussleitungen()
-        self.db_qkan.setschadenstexte_anschlussleitungen()
+        # self.db_qkan.setschadenstexte_anschlussleitungen()
+        if untersuchdat_anschluss is not None:
+            Schadenstexte.setschadenstexte_anschlussleitungen(self.db_qkan)
+
 
     def _wehre(self) -> None:
 
@@ -2788,26 +2842,6 @@ class ImportTask(Schadenstexte):
 
                 #In QKan sind Wehre in der Tabelle haltungen gespeichert.
                 _, geom, sohlhoehe, deckelhoehe = self._get_KG_GO(block, wnam, link=True)
-
-
-                # smp = block.find("GO/GP")
-                #
-                # if smp is None:
-                #     fehlermeldung(
-                #         "Fehler beim XML-Import: Pumpen",
-                #         f'Keine Geometrie "SMP" für Pumpe {pnam}',
-                #     )
-                #     xsch, ysch, sohlhoehe = (0.0,) * 3
-                # else:
-                #     xsch = _get_float(smp, "GP003")
-                #     if xsch is None:
-                #         xsch = _get_float(smp, "GP005", 0.0)
-                #
-                #     ysch = _get_float(smp, "GP004")
-                #     if ysch is None:
-                #         ysch = _get_float(smp, "GP006", 0.0)
-                #
-                #     sohlhoehe = _get_float(smp, "GP007", 0.0)
 
                 yield Wehr(
                     wnam=wnam,

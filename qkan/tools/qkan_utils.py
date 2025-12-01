@@ -649,7 +649,8 @@ def loadLayer(
         table,
         geom_column,
         qmlfile,
-        uifile,
+        filter = '',
+        uifile = None,
         group: Union[List, str] = 'QKan',
         gpos=0,
         qkan_db: str = None
@@ -703,7 +704,7 @@ def loadLayer(
         uri.setDatabase(qkan_db)
     logger.debug(f'{uri=}')
     schema = ''
-    uri.setDataSource(schema, table, geom_column)
+    uri.setDataSource(schema, table, geom_column, filter)
     layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
 
     templatepath = os.path.join(pluginDirectory("qkan"), "templates")
@@ -718,9 +719,11 @@ def loadLayer(
         return False
 
     # Adapt path to forms directory
-    editFormConfig = layer.editFormConfig()
-    editFormConfig.setUiForm(os.path.join(formsDir, uifile))
-    layer.setEditFormConfig(editFormConfig)
+    if uifile is not None:
+        editFormConfig = layer.editFormConfig()
+        editFormConfig.setUiForm(os.path.join(formsDir, uifile))
+        layer.setEditFormConfig(editFormConfig)
+
     project.addMapLayer(layer, False)
 
     layersRoot = project.layerTreeRoot()

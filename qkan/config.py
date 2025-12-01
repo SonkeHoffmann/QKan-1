@@ -152,6 +152,7 @@ class CheckExport(ClassObject):
     speicher: bool = True
     haltungen: bool = True
     anschlussleitungen: bool = True
+    anschlussschaechte: bool = True
     pumpen: bool = True
     wehre: bool = True
     drosseln: bool = True
@@ -168,6 +169,7 @@ class CheckExport(ClassObject):
     tezg_hf: bool = (
         False  # Sonderfall: Keine Flächenobjekte, stattdessen Befestigungsgrade in tezg
     )
+    incluseMissingKeys: bool = False
 
     # Referenztabellen
     abflussparameter: bool = True

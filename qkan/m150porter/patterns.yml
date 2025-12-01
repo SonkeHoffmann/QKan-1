@@ -5,7 +5,7 @@ import_knotentypen:
   - "anschlue*"
   - "anschl\xFC*"
   Schacht:
-  - "Schacht"
+  - "schacht"
   Symbol:
   - "symbol"
   - "sonst*"
@@ -40,15 +40,24 @@ import_entwaesserungsarten:
   - "ander*"
   - "unbek*"
 
+# mindestens ein Datensatz für das dict
 import_profile:
   "Kreis":
   - "krei*"
 
+# mindestens ein Datensatz für das dict
 import_simulationsstatus:
   "in Betrieb":
   - "vorhan*"
   - "aktiv"
 
+# mindestens ein Datensatz für das dict
 import_material:
   Beton:
   - Beton
+
+# mindestens ein Datensatz für das dict
+import_bauwerksarten:
+  Heber:
+  - Heber
+

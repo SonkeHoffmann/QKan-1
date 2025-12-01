@@ -21,6 +21,10 @@ from qkan.utils import get_logger, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.he8.application_dialog")
 
+EXPORT_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "res", "he8_export_dialog_base.ui")
+)
+
 
 class _Dialog(QDialog):
     def __init__(
@@ -34,11 +38,6 @@ class _Dialog(QDialog):
         self.setupUi(self)
         self.default_dir = default_dir
         self.tr = tr
-
-
-EXPORT_CLASS, _ = uic.loadUiType(
-    os.path.join(os.path.dirname(__file__), "res", "he8_export_dialog_base.ui")
-)
 
 
 class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
@@ -226,7 +225,11 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
             for layer in layerobjects:
                 layer.selectionChanged.connect(self.count)
 
-        self.count()
+        try:
+            self.count()
+        except:
+            logger.error_code('prepareDialog: Fehler beim Aufruf von count')
+            return False
 
         return True
 

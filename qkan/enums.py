@@ -120,8 +120,9 @@ class LAYERBEZ(enum.Enum):
     SCHACHTTYPEN            = "Schachttypen"
     SYMBOLKATALOG           = "Symbolkatalog"
     FLAECHENTYPEN           = "Flächentypen"
-    M150_KNOTENARTEN        = "M150 Knotenarten"
     MATERIAL                = "Material"
+    M150_KNOTENARTEN        = "M150 Knotenarten"
+    M150_KUERZEL_ERG        = "M150 Kürzel zu ergänzen"
 
     #Ergebnislayer
     ZK_EINZELSCHAEDEN_HA_LEITUNGEN  = "Ergebnis_ZK_Einzelschäden_HA_Leitungen"

@@ -74,6 +74,91 @@ def run(dbcon: DBConnection) -> bool:
         except:
             logger.error_code('Fehlgeschlagen: migration_0040, lageanschluss ergänzen')
 
+    if 'eigentum' not in dbcon.attrlist('anschlussleitungen'):
+        try:
+            dbcon.sql(
+                'ALTER TABLE anschlussleitungen ADD COLUMN eigentum TEXT;',
+                'migration_0040, eigentum ergänzen'
+            )
+        except:
+            logger.error_code('Fehlgeschlagen: migration_0040, eigentum ergänzen')
+
+    # Übertragen der M150-Daten der einzelnen Referenztabellen in die neue Tabelle refdata
+    # 1. für Schächte und Haltungen
+    reftabs = [
+        # tabellenname,          attributname, attributname in Tabellen schaechte & haltungen, begrenzung der attribute
+        ['entwaesserungsarten', 'bezeichnung',   'entwart', 3],
+        ['material',            'bezeichnung',  'material', 2],
+        ['simulationsstatus',   'bezeichnung', 'simstatus', 3]
+    ]
+    modules = [
+        ['m150', 'm150porter'],
+        ['isybau', 'isyporter'],
+        ['he_nr', 'he8porter']
+    ]
+    for tabnam, attrnam, attrdat, nk in reftabs:
+        for mattr, module in modules[:nk]:
+            sql = f"""
+                WITH refsall AS (
+                    SELECT {attrdat}
+                    FROM haltungen
+                    UNION
+                    SELECT {attrdat}
+                    FROM schaechte
+                ),
+                ru AS (
+                    SELECT {attrdat} AS bezqkan
+                    FROM refsall
+                    GROUP BY {attrdat}
+                )
+                INSERT INTO refdata (bezext, bezqkan, kuerzel, subject, modul, kommentar)
+                SELECT 
+                    NULL AS bezext, 
+                    rt.{attrnam} AS bezqkan,
+                    rt.{mattr} AS kuerzel,
+                    'export_{tabnam}' AS subject,
+                    '{module}' AS modul,
+                    'Migration 0040: Übertragung aus alter Referenztabelle {tabnam}' AS kommentar
+                FROM {tabnam} AS rt
+                JOIN ru ON ru.bezqkan = rt.{attrnam}
+                GROUP BY rt.{attrnam}"""
+            dbcon.sql(sql, f'migration_0040: Übertragung aus alter Referenztabelle {tabnam}')
+
+    # 2. nur für Haltungen
+    reftabs = [
+        # tabellenname,          attributname in Tabellen schaechte & haltungen, begrenzung der attribute
+        ['profile',             'profilnam', 'profilnam', 3],
+    ]
+    modules = [
+        ['m150', 'm150porter'],
+        ['isybau', 'isyporter'],
+        ['he_nr', 'he8porter']
+    ]
+    for tabnam, attrnam, attrdat, nk in reftabs:
+        for mattr, module in modules[:nk]:
+            sql = f"""
+                WITH refsall AS (
+                    SELECT {attrdat}
+                    FROM haltungen
+                ),
+                ru AS (
+                    SELECT {attrdat} AS bezqkan
+                    FROM refsall
+                    GROUP BY {attrdat}
+                )
+                INSERT INTO refdata (bezext, bezqkan, kuerzel, subject, modul, kommentar)
+                SELECT 
+                    NULL AS bezext, 
+                    rt.{attrnam} AS bezqkan,
+                    rt.{mattr} AS kuerzel,
+                    'export_{tabnam}' AS subject,
+                    '{module}' AS modul,
+                    'Migration 0040: Übertragung aus alter Referenztabelle {tabnam}' AS kommentar
+                FROM {tabnam} AS rt
+                JOIN ru ON ru.bezqkan = rt.{attrnam}
+                GROUP BY rt.{attrnam}"""
+            dbcon.sql(sql, f'migration_0040: Übertragung aus alter Referenztabelle {tabnam}')
+
     dbcon.commit()
 
     project.read()
@@ -88,6 +173,7 @@ def run(dbcon: DBConnection) -> bool:
         table="schaechte",
         geom_column='geop',
         qmlfile="HA-Schächte.qml",
+        filter='',
         uifile="qkan_anschlussschaechte.ui",
         group=grouppath,
         gpos=4,
@@ -118,6 +204,7 @@ def run(dbcon: DBConnection) -> bool:
         table='material',
         geom_column=None,
         qmlfile='Material.qml',
+        filter='',
         uifile='qkan_material.ui',
         group='Referenztabellen',
         gpos=6,
@@ -146,8 +233,9 @@ def run(dbcon: DBConnection) -> bool:
     # Wertebezeichnungen für das Feld "abflusstyp" in Layer "Anbindungen Flächen" korrigieren
     reflayers = project.mapLayersByName(enums.LAYERBEZ.ABFLUSSTYPEN.value)
     if (anz := len(reflayers)) != 1:
-        logger.error_data(f'Es gibt {anz} Layer "{enums.LAYERBEZ.ABFLUSSTYPEN.value}". '
-                          f'Es darf aber nur einen geben!')
+        logger.warning_user(f'Es gibt {anz} Layer "{enums.LAYERBEZ.ABFLUSSTYPEN.value}". '
+                          f'Es darf aber nur einen geben!\n'
+                          f'Es wird empfohlen, mit dem Menü "QKan-Projekt übertragen" das Projekt zu aktualisieren')
     else:
         reflayer = reflayers[0]
         layers = project.mapLayersByName(enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value)
@@ -213,5 +301,7 @@ def run(dbcon: DBConnection) -> bool:
                     logger.debug(f'Layer {layer.name()} geändert')
 
     project.write(pname)
+    project.clear()
+    project.setDirty(False)
 
     return True

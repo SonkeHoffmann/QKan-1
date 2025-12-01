@@ -19,6 +19,7 @@ from qkan.utils import QkanDbError
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 
+
 class M150Porter(QKanPlugin):
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
@@ -72,26 +73,32 @@ class M150Porter(QKanPlugin):
             QKan.config.database.qkan = str(self.database_name)
             QKan.config.xml.export_file = export_file
 
-            QKan.config.check_export.export_schaechte = (
+            QKan.config.check_export.schaechte = (
                 self.export_dlg.cb_export_schaechte.isChecked()
             )
-            QKan.config.check_export.export_auslaesse = (
+            QKan.config.check_export.auslaesse = (
                 self.export_dlg.cb_export_auslaesse.isChecked()
             )
-            QKan.config.check_export.export_speicher = (
+            QKan.config.check_export.speicher = (
                 self.export_dlg.cb_export_speicher.isChecked()
             )
-            QKan.config.check_export.export_haltungen = (
+            QKan.config.check_export.haltungen = (
                 self.export_dlg.cb_export_haltungen.isChecked()
             )
-            QKan.config.check_export.export_anschlussleitungen = (
+            QKan.config.check_export.anschlussleitungen = (
                 self.export_dlg.cb_export_anschlussleitungen.isChecked()
             )
-            QKan.config.check_export.export_pumpen = (
+            QKan.config.check_export.anschlussschaechte = (
+                self.export_dlg.cb_export_anschlussschaechte.isChecked()
+            )
+            QKan.config.check_export.pumpen = (
                 self.export_dlg.cb_export_pumpen.isChecked()
             )
-            QKan.config.check_export.export_wehre = (
+            QKan.config.check_export.wehre = (
                 self.export_dlg.cb_export_wehre.isChecked()
+            )
+            QKan.config.check_export.incluseMissingKeys = (
+                self.export_dlg.cb_incluseMissingKeys.isChecked()
             )
 
             QKan.config.save()
@@ -230,6 +237,7 @@ class M150Porter(QKanPlugin):
                     table=      "refdata",
                     geom_column=None,
                     qmlfile=    "qkan_m150_knotenarten.qml",
+                    filter=     '',
                     uifile=     "qkan_m150_knotenarten.ui",
                     group=      grouppath
                 )

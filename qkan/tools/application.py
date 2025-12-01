@@ -278,7 +278,7 @@ class QKanTools(QKanPlugin):
             # Abschluss: Projektdatei neu laden
 
             project.clear()
-            project.read(currentProject)  # read the new project file
+            project.read(project_file)  # read the new project file
 
             self.iface.mainWindow().statusBar().clearMessage()
             self.iface.messageBar().pushMessage(
@@ -716,7 +716,7 @@ class QKanTools(QKanPlugin):
             # Falls die Datenbank nicht aktuell ist (self.dbIsUptodate = False), werden alle Elemente im Formular
             # deaktiviert. Nur der Checkbutton zur Aktualisierung der Datenbank bleibt aktiv und es erscheint
             # eine Information.
-            self.db_is_uptodate = db_qkan.isCurrentDbVersion
+            self.db_is_uptodate = db_qkan.connected
 
         if not self.db_is_uptodate:
             logger.error("Versionskontrolle: Die QKan-Datenbank ist nicht aktuell")

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS refdata (
     pk INTEGER PRIMARY KEY,
     bezext TEXT,                        /* externe Bezeichnung, z. B. gem. DWA-M 150 */
     bezqkan TEXT,                       /* Standardbezeichnung in QKan */
+    kuerzel TEXT,                       /* Kürzel in QKan */
     subject TEXT,                       /* Bezeichnung der QKan-Tabelle oder interner Mapping-Tabelle */
     modul TEXT,                         /* QKan-Modul (= Modulverzeichnis) */
     kommentar TEXT,

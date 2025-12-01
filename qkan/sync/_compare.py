@@ -128,23 +128,26 @@ class CompareTask:
 
                 # Synchronisationstabelle
                 loadLayer(
-                    layer_sync,
-                    f'sync_{table}',
-                    'geom',
-                    f'{layer_sync}.qml',
-                    f'sync_{table}.ui',
-                    grouppath,
+                    layerbez=   layer_sync,
+                    table=      f'sync_{table}',
+                    geom_column='geom',
+                    qmlfile=    f'{layer_sync}.qml',
+                    filter=     '',
+                    uifile=     f'sync_{table}.ui',
+                    group=      grouppath,
                 )
 
                 # Externe Tabelle
                 loadLayer(
-                    layer_ext,
-                    table,
-                    'geom',
-                    f'{layer_loc}.qml',
-                    f'qkan_{table}.ui',
-                    grouppath,
-                    qkan_db=QKan.config.sync.ext,
+                    layerbez=   layer_ext,
+                    table=      table,
+                    geom_column='geom',
+                    qmlfile=    f'{layer_loc}.qml',
+                    filter=     '',
+                    uifile=     f'qkan_{table}.ui',
+                    group=      grouppath,
+                    gpos=       0,
+                    qkan_db=    QKan.config.sync.ext,
                 )
 
         # Attributtabellen anzeigen

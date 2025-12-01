@@ -192,6 +192,7 @@ def run(dbcon: DBConnection) -> bool:
                 layerconf['table'],
                 layerconf['geom_column'],
                 layerconf['qmlfile'],
+                '',
                 layerconf['uifile'],
                 layerconf['group'],
                 layerconf['gpos'],):
