@@ -18,7 +18,7 @@ from .utils import setup_logging
 from qkan import enums
 
 # Toggle in DEV to log to console
-LOG_TO_CONSOLE = True
+LOG_TO_CONSOLE = False
 
 # list of all available plugins
 PLUGIN_LIST = [
@@ -77,8 +77,8 @@ class QKan:
     template_dir: str
     forms: str
 
-    dbVersion = "3.4.8"  # "3.4.6" Version der QKan-Datenbank
-    qgsVersion = "3.4.8"  # "3.4.7" Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
+    dbVersion = "3.4.8"  # Version der QKan-Datenbank
+    qgsVersion = "3.4.8"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
 
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
     sqls: dict = {}                     # SQL-Statements for all loaded modules

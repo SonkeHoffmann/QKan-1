@@ -230,6 +230,7 @@ class M150Porter(QKanPlugin):
                 grouppath = [
                     enums.LAYERBEZ.QKAN_GROUP.value,
                     enums.LAYERBEZ.REFERENZTABELLEN_GROUP.value,
+                    enums.LAYERBEZ.M150_GROUP.value,
                 ]
 
                 loadLayer(
@@ -237,7 +238,7 @@ class M150Porter(QKanPlugin):
                     table=      "refdata",
                     geom_column=None,
                     qmlfile=    "qkan_m150_knotenarten.qml",
-                    filter=     '',
+                    filter=     "modul = 'm150porter' AND subject = 'import_knotentypen'",
                     uifile=     "qkan_m150_knotenarten.ui",
                     group=      grouppath
                 )

@@ -103,6 +103,7 @@ class LAYERBEZ(enum.Enum):
     INSPEKTIONSDATEN_GROUP  = "Inspektionsdaten"
     SYMBOLE_GROUP           = "Symbole"
     REFERENZTABELLEN_GROUP  = "Referenztabellen"
+    M150_GROUP              = "M150"
     PLAUSI_GROUP            = "Plausibilitätsprüfungen"
     WMS_GROUP               = "WMS-Dienste"
 

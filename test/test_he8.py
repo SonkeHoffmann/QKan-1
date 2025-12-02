@@ -112,9 +112,21 @@ class TestQKanUpdateHE8(QgisTest):
         QKan.config.he8.export_file = str(BASE_WORK / "itwh.idbm")
         QKan.config.he8.template = str(BASE_WORK / "muster_vorlage.idbm")
 
-        dbAdapt(
-            qkanDB=QKan.config.database.qkan,
-        )
+        with DBConnection(
+                dbname=QKan.config.database.qkan,
+                qkan_db_update=True,
+                writeDbBackup=False,
+                writeQgsBackup=False,
+        ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
+
+            if not dbQK.connected:
+                errormsg = (
+                    "Fehler in k_qgsadapt:\n"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                )
+                raise Exception(f"{__name__}: {errormsg}")
+
+            dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
 
         QKan.config.check_export.schaechte = True
         QKan.config.check_export.auslaesse = False

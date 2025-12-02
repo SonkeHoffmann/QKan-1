@@ -10,7 +10,7 @@
 name=QKan
 qgisMinimumVersion=3.28
 description=Gruppe der QKan-Erweiterung(en)
-version=3.4.7
+version=3.4.8
 author=Nora Blase, Jörg Höttges, Yannick Linke
 email=hoettges@fh-aachen.de
 
@@ -26,6 +26,16 @@ repository=https://github.com/hoettges/QKan
 
 changelog= 
 
+    3.4.8:
+        - Leitungsverfolgung ergänzt
+        - Exporte auf Auswahl beschränken ergänzt
+        - Neuer Modus: Objekte aus der Zwischenablage automatisch suchen
+        - Längsschnitt überarbeitet. Der Längsschnitt kann in eine DXF-Datei exportiert werden
+        - Import aus M150-Dateien liest Schachtgrafiken
+        - Neue Referenztabelle für Datenaustausch nach DWA-M 150
+        - Neuer Layer "Anschlussschächte"
+        - STRAKAT: Videozähler kann auch mehr als 5 Ziffern haben
+        - Neues Feld: Haltungslänge 3D (dynamisch berechnet aus Geo-Objekt)
     3.4.7:
         - Fehlerkorrektur: HE8-Export erzeugte doppelte Elemente
         - Fehlerkorrektur: Haltungsflächenerzeugung war fehlerhaft

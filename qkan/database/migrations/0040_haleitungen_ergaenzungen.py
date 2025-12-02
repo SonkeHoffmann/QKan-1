@@ -262,8 +262,8 @@ def run(dbcon: DBConnection) -> bool:
     # Wertebeziehungen, die bisher auf Schächte verweisen, auf Knotentypen ändern
     reflayers = project.mapLayersByName(enums.LAYERBEZ.KNOTENTYP.value)
     if len(reflayers) != 1:
-        logger.error_data('Entweder fehlt der Layer "Knotentypen oder es gibt mehr als einen Layer mit '
-                          'diesem Namen')
+        logger.warning_user('Entweder fehlt der Layer "Knotentypen oder es gibt mehr als einen Layer mit '
+                            'diesem Namen')
     else:
         reflayer = reflayers[0]                 # Layer, auf den die Werteliste referenziert
         layerlist = [

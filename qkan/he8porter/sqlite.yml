@@ -851,7 +851,8 @@ SELECT
 FROM schaechte
 JOIN simulationsstatus AS st    ON schaechte.simstatus = st.bezeichnung
 LEFT JOIN he.Schacht AS sh      ON sh.Name = schaechte.schnam
-WHERE sh.Name IS NULL
+WHERE schaechte.schachttyp = 'Schacht'
+  AND sh.Name IS NULL
   AND st.he_nr IS NOT NULL"
 
 he8_append_sel_schaechte: "
@@ -875,7 +876,8 @@ FROM schaechte
 JOIN sel_schaechte AS sel ON sel.pk = schaechte.pk
 JOIN simulationsstatus AS st    ON schaechte.simstatus = st.bezeichnung
 LEFT JOIN he.Schacht AS sh      ON sh.Name = schaechte.schnam
-WHERE sh.Name IS NULL
+WHERE schaechte.schachttyp = 'Schacht'
+  AND sh.Name IS NULL
   AND st.he_nr IS NOT NULL"
 
 he8_update_speicher_all: "

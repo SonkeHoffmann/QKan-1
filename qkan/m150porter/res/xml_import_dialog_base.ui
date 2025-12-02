@@ -677,7 +677,7 @@
              </font>
             </property>
             <property name="title">
-             <string>Verzeichnis mit den Daten der TV-Befahrungen (Bilder)</string>
+             <string>Verzeichnis mit den Daten der TV-Befahrungen (Fotos)</string>
             </property>
             <property name="flat">
              <bool>false</bool>

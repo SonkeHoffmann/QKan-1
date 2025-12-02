@@ -183,6 +183,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
             grouppath = [
                 enums.LAYERBEZ.QKAN_GROUP.value,
                 enums.LAYERBEZ.REFERENZTABELLEN_GROUP.value,
+                    enums.LAYERBEZ.M150_GROUP.value,
             ]
 
             loadLayer(
@@ -271,7 +272,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        help_file = "https://qkan.eu/QKan_XML.html#import-aus-dwa-xml"
+        help_file = "https://qkan.eu/QKan_XML.html#export-nach-dwa-m150"
         os.startfile(help_file)
 
 
@@ -393,5 +394,5 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        help_file = "https://qkan.eu/QKan_XML.html#import-aus-dwa-xml"
+        help_file = "https://qkan.eu/QKan_XML.html#import-aus-dwa-m-150"
         os.startfile(help_file)

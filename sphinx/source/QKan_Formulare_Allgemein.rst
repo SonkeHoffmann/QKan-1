@@ -99,6 +99,8 @@ Mit diesem Punkt werden in der Tabelle Schächte Informationen zum Knotentyp erg
     
     
 .. index:: Projektdatei übertragen
+.. _projektdatei-ubertragen:
+
 
 Projektdatei auf andere Datenbank übertragen
 --------------------------------------------
@@ -115,7 +117,8 @@ ein anderes Projekt übertragen werden:
 QKan-Datenbank
 ++++++++++++++
 Hier wird die einzubindende QKan-Datenbank gewählt. 
-Um sicherzustellen, dass die Datenbank auf dem aktuellsten Stand ist, kann die Option "QKan Datenbank aktualisier" gewählt werden.
+Um sicherzustellen, dass die Datenbank auf dem aktuellsten Stand ist, kann die Option 
+"QKan Datenbank aktualisieren" gewählt werden.
 
 
 Projektdatei als Vorlage
@@ -134,15 +137,23 @@ Datenbank aktualisieren
 -----------------------
 							 
 Mit der Funktion |Tool_db_aktualisieren| :guilabel:`QKan-Datenbank aktualisieren` kann die QKan Datenbank sowie die 
-Projektdatei auf die aktuelle Version aktualisiert werden. Dabei kann mit der auswahl unter dem Verzeichnis 
-eine Sicherheitskopie erstellt werden. Diese stellt sicher, dass das orginal Projekt bei einem fehlerhaften 
-Update versuch nicht verloren ist.
+Projektdatei auf die aktuelle Version aktualisiert werden. Dabei kann mit der Auswahl unter dem Verzeichnis 
+eine Sicherheitskopie erstellt werden. Diese stellt sicher, dass das orginalprojekt bei einem fehlerhaften 
+Update versuch wieder hergestellt werden kann.
 
 .. image:: ./QKan_Bilder/qkan_layersadapt.png
 .. |Tool_db_aktualisieren| image:: ./QKan_Bilder/Tool_db_aktualisieren.png
                              :width: 1.25 em
-							 
-							 
+
+Bei der Aktualisierung lässt es sich in einigen Fällen nicht vermeiden, dass die Layer nicht ordnungsgemäß 
+angepasst wurden, insbesondere, wenn das QKan-Projekt gegenüber der ursprünglichen Version stark angepasst 
+wurde. Das gilt insbesondere für das Update auf Version 3.4.8. In diesem Fall ist es empfehlenswert, 
+zunächst das Projekt mit der 
+Funktion :ref:`Projektdatei auf andere Datenbank übertragen <projektdatei-ubertragen>` 
+zu aktualisieren und anschließend aus dem gesicherten Projekt, das dazu parallel geöffnet wird, die 
+zusätzlichen Layer in das neue Projekt zu kopieren. 
+
+
 .. index:: Neue Datenbank erstellen
 
 Neue Datenbank erstellen

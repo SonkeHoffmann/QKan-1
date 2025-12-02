@@ -8,7 +8,8 @@ Formulare
     QKan_Daten
     QKan_Synchro
     QKan_Hystem_Extran
-    QKan_XML
+    QKan_M150
+    QKan_ISYBAU
     QKan_DYNA
     QKan_Mike
     QKan_SWMM

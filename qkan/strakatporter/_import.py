@@ -1177,8 +1177,7 @@ class ImportTask(Schadenstexte):
                     untersuchungsrichtung = unpack('B', b[297:298])[0]
                     bandnr = b[301:b[301:320].find(b'\x00') + 301].decode('ansi').strip()
                     videozaehler = unpack('I', b[320:324])[0]
-                    foto_dateiname = (f'000{bandnr}'[-3:] if len(bandnr) <= 2 else f'{bandnr}') + \
-                                     f'00000{videozaehler}'[-5:]
+                    foto_dateiname = f'{int(bandnr):0>3d}{int(videozaehler):0>5d}'
 
                     wert8 = unpack('B', b[365:366])                         # STRAKAT: Bewertungsart
                     if wert8 == 4:
@@ -1550,7 +1549,7 @@ class ImportTask(Schadenstexte):
         # Entwässerungsarten
 
         # Bezeichnungen in Referenztabelle und bezogenen Tabellen (über trigger) an QKan-Standard anpassen
-        self.db_qkan._adapt_reftable('entwaesserungsarten')
+        # self.db_qkan._adapt_reftable('entwaesserungsarten')           # funktionierte sowieso nicht, jh 01.12.2025
 
         daten = [
             ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR'),
@@ -1583,7 +1582,7 @@ class ImportTask(Schadenstexte):
         # Simulationsstatus
 
         # Bezeichnungen in Referenztabelle und bezogenen Tabellen (über trigger) an QKan-Standard anpassen
-        self.db_qkan._adapt_reftable('simulationsstatus')
+        # self.db_qkan._adapt_reftable('simulationsstatus')           # funktionierte sowieso nicht, jh 01.12.2025
 
         daten = [  # bez    kurz he mu kp m150 m145 isy
             ('in Betrieb', 'B', 1, 1, 0, 'B', '1', '0', 'QKan-Standard'),
