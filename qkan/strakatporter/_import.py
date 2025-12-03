@@ -1177,7 +1177,11 @@ class ImportTask(Schadenstexte):
                     untersuchungsrichtung = unpack('B', b[297:298])[0]
                     bandnr = b[301:b[301:320].find(b'\x00') + 301].decode('ansi').strip()
                     videozaehler = unpack('I', b[320:324])[0]
-                    foto_dateiname = f'{int(bandnr):0>3d}{int(videozaehler):0>5d}'
+                    try:
+                        foto_dateiname = f'{int(bandnr):0>3d}{int(videozaehler):0>5d}'
+                    except BaseException as err:
+                        logger.debug(f'Datenfehler: {bandnr=}, {videozaehler=}')
+                        foto_dateiname = '00000000'
 
                     wert8 = unpack('B', b[365:366])                         # STRAKAT: Bewertungsart
                     if wert8 == 4:
