@@ -9,7 +9,7 @@ from qkan.plugin import QKanPlugin
 from . import resources  # noqa: F401
 from ._SWMM_erg import ImportTask
 from .application_dialog import ImportDialog
-from ..utils import get_logger, QkanAbortError
+from ..utils import QkanUserError, QkanAbortError, get_logger
 
 logger = get_logger("QKan.importswmm")
 
@@ -96,7 +96,14 @@ class SWMMErg(QKanPlugin):
 
             self.log.info("DB creation finished, starting importer")
             imp = ImportTask(self.import_dlg.tf_import.text(), db_qkan)
-            imp.run()
+            try:
+                imp.run()
+            except QkanUserError as e:
+                # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+                logger.debug(f"Anwenderfehler bei Tool SWMM Ergebnisse: {e}")
+            except Exception as e:
+                logger.error_code(f"Fehler bei Tool SWMM Ergebnisse: {e}")
+                raise QkanAbortError
             del imp
 
         #self.log.debug("Closed DB")

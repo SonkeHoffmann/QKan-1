@@ -3,7 +3,8 @@ from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import  QkanUserError, QkanDbError, QkanAbortError, get_logger
 from qgis import processing
-
+import requests
+import re
 
 import urllib.request
 import os
@@ -43,7 +44,13 @@ class NeigungTask:
         return kacheln
 
     def download(self, base_url, x, y):
-        return f"{base_url}dgm1_32_{x}_{y}_1_nw_2022.tif"
+        prefix = f"dgm1_32_{x}_{y}_1_nw"
+        response = requests.get(base_url)
+        xml = response.text
+
+        pattern = fr'name="({prefix}[^"]+)"'
+        files = re.findall(pattern, xml)
+        return files
 
     def laden(self, url, verzeichnis):
         with urllib.request.urlopen(url) as response:
@@ -83,10 +90,10 @@ class NeigungTask:
 
             for x, y in kacheln:
                 url = self.download(self.base_url, x, y)
-                dateiname = os.path.basename(url)
+                dateiname = os.path.basename(url[0])
                 ordner = os.path.join(self.zielordner_dmg, dateiname)
-                self.laden(url, ordner)
-                dgm_layer.append(self.zielordner_dmg+'/'+dateiname)
+                self.laden(self.base_url + url[0], ordner)
+                dgm_layer.append(self.zielordner_dmg + '/' + dateiname)
 
             #DGM Daten verschmelzen
             dgm = processing.run("gdal:merge", {

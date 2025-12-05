@@ -209,6 +209,12 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
     printf(''"Simulationsstatus" fehlt in Schacht "%s"'', schnam) AS bemerkung
     FROM schaechte WHERE simstatus IS NULL AND (schachttyp = ''Schacht'' OR schachttyp IS NULL)', 
  'Schächte', 'pk'),
+ 
+ ('HYSTEM-EXTRAN', 'Simulationsstatus fehlt', 'Fehler', 9,
+    'SELECT pk AS objid,
+    printf(''"Simulationsstatus" fehlt in Haltung "%s"'', schnam) AS bemerkung
+    FROM haltungen WHERE simstatus IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)', 
+ 'Haltungen', 'pk'),
 
 ('HYSTEM-EXTRAN', 'Simulationsstatus nicht in Referenzliste', 'Fehler', 9,
     'SELECT s.pk AS objid,
