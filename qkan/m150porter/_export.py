@@ -20,7 +20,6 @@ def _create_children(parent: Element, names: List[str]) -> None:
     for child in names:
         SubElement(parent, child)
 
-
 def _create_children_text(
     parent: Element, children: Dict[str, Union[str, int, None]]
 ) -> None:
@@ -30,7 +29,6 @@ def _create_children_text(
         else:
             SubElementText(parent, name, str(text))
 
-
 # noinspection PyPep8Naming
 def SubElementText(parent: Element, name: str, text: Union[str, int]) -> Element:
     s = SubElement(parent, name)
@@ -38,7 +36,21 @@ def SubElementText(parent: Element, name: str, text: Union[str, int]) -> Element
         s.text = str(text)
     return s
 
-# TODO: Testen und Verknuepfung zu Refernztabellen prüfen
+def formatm150(zahl: Union[float, None]):
+    """Formatiert auf 3 Nachkommastellen. None wird weitergegeben"""
+    if isinstance(zahl, float):
+        return f'{zahl:.3f}'
+    elif isinstance(zahl, int):
+        return f'{zahl:d}'
+    else:
+        return zahl
+
+def cutm150(text: Union[str, None], limit: int = 16):
+    """Begrenzt einen Text auf die vorgegebene Länge, wenn die Option cutNames aktiv ist"""
+    if QKan.config.check_export.cutNames and text is not None:
+            return text.lstrip()[:limit]
+    else:
+        return text
 
 
 # noinspection SqlNoDataSourceInspection, SqlResolve
@@ -56,8 +68,12 @@ class ExportTask:
 
         if round(QKan.config.epsg - 5, -1) in (25830, 3040):
             self.ksys = 'UTM'
+            self.gp_x = 'GP005'
+            self.gp_y = 'GP006'
         elif round(QKan.config.epsg - 5, -1) == (31460, 4640):
             self.ksys = 'GK'
+            self.gp_x = 'GP003'
+            self.gp_y = 'GP004'
         else:
             logger.error_data(f"Fehler beim Koordinatensystem: {QKan.config.epsg}")
             raise QkanAbortError
@@ -132,17 +148,17 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": schoben,
+                    "KG001": cutm150(schoben, 16),
                     "KG101": strasse,
                     "KG102": strassenname,
-                    "KG211": tiefe,
+                    "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": baujahr,
+                    "KG303": formatm150(baujahr),
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": durchm,
+                    "KG309": formatm150(durchm),
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -154,7 +170,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schoben,
+                    "GO001": cutm150(schoben, 30),
                     "GO002": 'G',
                     "GO003": 'Pkt',
                 },
@@ -163,12 +179,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schoben,
+                    "GP001": cutm150(schoben, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": sohlhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(sohlhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -177,7 +193,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schoben,
+                    "GO001": cutm150(schoben, 30),
                     "GO002": 'D',
                     "GO003": 'Pkt',
                 },
@@ -186,22 +202,23 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schoben,
+                    "GP001": cutm150(schoben, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": deckelhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(deckelhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
             # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
             for i, part in enumerate(ptlis):
                 x_obj = SubElement(x_elem, "GO")
+                suffix = f' - {i}'
                 _create_children_text(
                     x_obj,
                     {
-                        "GO001": schoben + f' - {i}',
+                        "GO001": cutm150(schoben, 30 - len(suffix)) + suffix,
                         "GO002": 'B',
                         "GO003": 'Poly',
                     },
@@ -209,13 +226,14 @@ class ExportTask:
                 for j, point in enumerate(part):
                     xpt = point.x()
                     ypt = point.y()
+                    suffix = f'-{j}'
                     _create_children_text(
                         SubElement(x_obj, "GP"),
                         {
-                            "GP001": schoben + f' - {j}',
+                            "GP001": cutm150(schoben, 30 - len(suffix)) + suffix,
                             "GP002": self.ksys,
-                            "GP003": xpt,
-                            "GP004": ypt,
+                            self.gp_x: formatm150(xpt),
+                            self.gp_y: formatm150(ypt),
                         },
                     )
 
@@ -268,17 +286,17 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": schoben,
+                    "KG001": cutm150(schoben, 16),
                     "KG101": strasse,
                     "KG102": strassenname,
-                    "KG211": tiefe,
+                    "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": baujahr,
+                    "KG303": formatm150(baujahr),
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": durchm,
+                    "KG309": formatm150(durchm),
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -290,7 +308,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schoben,
+                    "GO001": cutm150(schoben, 30),
                     "GO002": 'G',
                     "GO003": 'Pkt',
                 },
@@ -299,12 +317,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schoben,
+                    "GP001": cutm150(schoben, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": sohlhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(sohlhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -313,7 +331,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schoben,
+                    "GO001": cutm150(schoben, 30),
                     "GO002": 'D',
                     "GO003": 'Pkt',
                 },
@@ -322,22 +340,23 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schoben,
+                    "GP001": cutm150(schoben, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": deckelhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(deckelhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
             # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
             for i, part in enumerate(ptlis):
                 x_obj = SubElement(x_elem, "GO")
+                suffix = f' - {i}'
                 _create_children_text(
                     x_obj,
                     {
-                        "GO001": schoben + f' - {i}',
+                        "GO001": cutm150(schoben, 30 - len(suffix)) + suffix,
                         "GO002": 'B',
                         "GO003": 'Poly',
                     },
@@ -345,13 +364,14 @@ class ExportTask:
                 for j, point in enumerate(part):
                     xpt = point.x()
                     ypt = point.y()
+                    suffix = f'-{j}'
                     _create_children_text(
                         SubElement(x_obj, "GP"),
                         {
-                            "GP001": schoben + f' - {j}',
+                            "GP001": cutm150(schoben, 30 - len(suffix)) + suffix,
                             "GP002": self.ksys,
-                            "GP003": xpt,
-                            "GP004": ypt,
+                            self.gp_x: formatm150(xpt),
+                            self.gp_y: formatm150(ypt),
                         },
                     )
 
@@ -405,17 +425,17 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": schnam,
+                    "KG001": cutm150(schnam, 16),
                     "KG101": strasse,
                     "KG102": strassenname,
-                    "KG211": tiefe,
+                    "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": baujahr,
+                    "KG303": formatm150(baujahr),
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": durchm,
+                    "KG309": formatm150(durchm),
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -427,7 +447,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'G',
                     "GO003": 'Pkt',
                 },
@@ -436,12 +456,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": sohlhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(sohlhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -450,7 +470,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'D',
                     "GO003": 'Pkt',
                 },
@@ -459,22 +479,23 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": deckelhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(deckelhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
             # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
             for i, part in enumerate(ptlis):
                 x_obj = SubElement(x_elem, "GO")
+                suffix = f' - {i}'
                 _create_children_text(
                     x_obj,
                     {
-                        "GO001": schnam + f' - {i}',
+                        "GO001": cutm150(schnam, 30 - len(suffix)) + suffix,
                         "GO002": 'B',
                         "GO003": 'Poly',
                     },
@@ -482,13 +503,14 @@ class ExportTask:
                 for j, point in enumerate(part):
                     xpt = point.x()
                     ypt = point.y()
+                    suffix = f'-{j}'
                     _create_children_text(
                         SubElement(x_obj, "GP"),
                         {
-                            "GP001": schnam + f' - {j}',
+                            "GP001": cutm150(schnam, 30 - len(suffix)) + suffix,
                             "GP002": self.ksys,
-                            "GP003": xpt,
-                            "GP004": ypt,
+                            self.gp_x: formatm150(xpt),
+                            self.gp_y: formatm150(ypt),
                         },
                     )
 
@@ -554,17 +576,17 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": schnam,
+                    "KG001": cutm150(schnam, 16),
                     "KG101": strasse,
                     "KG102": strassenname,
-                    "KG211": tiefe,
+                    "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": baujahr,
+                    "KG303": formatm150(baujahr),
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": durchm,
+                    "KG309": formatm150(durchm),
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -576,7 +598,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'G',
                     "GO003": 'Pkt',
                 },
@@ -585,12 +607,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": sohlhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(sohlhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -599,7 +621,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'D',
                     "GO003": 'Pkt',
                 },
@@ -608,22 +630,23 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": deckelhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(deckelhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
             # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
             for i, part in enumerate(ptlis):
                 x_obj = SubElement(x_elem, "GO")
+                suffix = f' - {i}'
                 _create_children_text(
                     x_obj,
                     {
-                        "GO001": schnam + f' - {i}',
+                        "GO001": cutm150(schnam, 30 - len(suffix)) + suffix,
                         "GO002": 'B',
                         "GO003": 'Poly',
                     },
@@ -631,13 +654,14 @@ class ExportTask:
                 for j, point in enumerate(part):
                     xpt = point.x()
                     ypt = point.y()
+                    suffix = f'-{j}'
                     _create_children_text(
                         SubElement(x_obj, "GP"),
                         {
-                            "GP001": schnam + f' - {j}',
+                            "GP001": cutm150(schnam, 30 - len(suffix)) + suffix,
                             "GP002": self.ksys,
-                            "GP003": xpt,
-                            "GP004": ypt,
+                            self.gp_x: formatm150(xpt),
+                            self.gp_y: formatm150(ypt),
                         },
                     )
 
@@ -691,17 +715,17 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": schnam,
+                    "KG001": cutm150(schnam, 16),
                     "KG101": strasse,
                     "KG102": strassenname,
-                    "KG211": tiefe,
+                    "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": baujahr,
+                    "KG303": formatm150(baujahr),
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": durchm,
+                    "KG309": formatm150(durchm),
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -713,7 +737,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'G',
                     "GO003": 'Pkt',
                 },
@@ -722,12 +746,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": sohlhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(sohlhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -736,7 +760,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'D',
                     "GO003": 'Pkt',
                 },
@@ -745,22 +769,23 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": deckelhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(deckelhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
             # Geometrieobjekt. Wenn ptlis = [] wird diese Schleife übersprungen
             for i, part in enumerate(ptlis):
                 x_obj = SubElement(x_elem, "GO")
+                suffix = f' - {i}'
                 _create_children_text(
                     x_obj,
                     {
-                        "GO001": schnam + f' - {i}',
+                        "GO001": cutm150(schnam, 30 - len(suffix)) + suffix,
                         "GO002": 'B',
                         "GO003": 'Poly',
                     },
@@ -768,13 +793,14 @@ class ExportTask:
                 for j, point in enumerate(part):
                     xpt = point.x()
                     ypt = point.y()
+                    suffix = f'-{j}'
                     _create_children_text(
                         SubElement(x_obj, "GP"),
                         {
-                            "GP001": schnam + f' - {j}',
+                            "GP001": cutm150(schnam, 30 - len(suffix)) + suffix,
                             "GP002": self.ksys,
-                            "GP003": xpt,
-                            "GP004": ypt,
+                            self.gp_x: formatm150(xpt),
+                            self.gp_y: formatm150(ypt),
                         },
                     )
 
@@ -819,19 +845,19 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "HG001": haltnam,
-                    "HG003": schoben,
-                    "HG004": schunten,
+                    "HG001": cutm150(haltnam, 33),
+                    "HG003": cutm150(schoben, 16),
+                    "HG004": cutm150(schunten, 16),
                     "HG101": strasse,
                     "HG102": strassenname,
                     "HG301": 'K',
                     "HG302": entwart,
-                    "HG303": baujahr,
+                    "HG303": formatm150(baujahr),
                     "HG304": material,
                     "HG305": profil,
-                    "HG306": breite,
-                    "HG307": hoehe,
-                    "HG310": laenge,
+                    "HG306": formatm150(breite),
+                    "HG307": formatm150(hoehe),
+                    "HG310": formatm150(laenge),
                     "HG313": 'A',
                     "HG314": rohrlaenge,
                     "HG401": simstatus,
@@ -855,7 +881,7 @@ class ExportTask:
             _create_children_text(
                 x_line,
                 {
-                    "GO001": haltnam,
+                    "GO001": cutm150(haltnam, 30),
                     "GO002": 'H',
                     "GO003": objecttyp,
                 },
@@ -867,24 +893,25 @@ class ExportTask:
             _create_children_text(
                 x_point,
                 {
-                    "GP001": schoben,
+                    "GP001": cutm150(schoben, 30),
                     "GP002": self.ksys,
-                    "GP003": pt.x(),
-                    "GP004": pt.y(),
-                    "GP007": sohleoben,
+                    self.gp_x: formatm150(pt.x()),
+                    self.gp_y: formatm150(pt.y()),
+                    "GP007": formatm150(sohleoben),
                 },
             )
 
             # Alle Stützstellen außer erster und letzter
             for ip, pt in enumerate(ptlis[1:-1]):
                 x_point = SubElement(x_line, "GP")
+                suffix = f'-{ip-1}'
                 _create_children_text(
                     x_point,
                     {
-                        "GP001": f'{haltnam}-{ip-1}',
+                        "GP001": cutm150(haltnam, 30 - len(suffix)) + suffix,
                         "GP002": self.ksys,
-                        "GP003": pt.x(),
-                        "GP004": pt.y(),
+                        self.gp_x: formatm150(pt.x()),
+                        self.gp_y: formatm150(pt.y()),
                     },
                 )
 
@@ -894,11 +921,11 @@ class ExportTask:
             _create_children_text(
                 x_point,
                 {
-                    "GP001": schunten,
+                    "GP001": cutm150(schunten, 30),
                     "GP002": self.ksys,
-                    "GP003": pt.x(),
-                    "GP004": pt.y(),
-                    "GP007": sohleunten,
+                    self.gp_x: formatm150(pt.x()),
+                    self.gp_y: formatm150(pt.y()),
+                    "GP007": formatm150(sohleunten),
                 },
             )
 
@@ -948,27 +975,27 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "HG001": haltnam,
-                    "HG003": haoben,
-                    "HG004": haunten,
-                    "HG005": asunten,
+                    "HG001": cutm150(haltnam, 33),
+                    "HG003": cutm150(haoben, 16),
+                    "HG004": cutm150(haunten, 16),
+                    "HG005": cutm150(asunten, 33),
                     "HG006": 'H',
                     "HG007": urstation,
                     "HG008": 'I',                   # QKan-Standard: in Fließrichtung
                     "HG009": lageanschluss,
                     "HG010": knotenart,
-                    "HG011": leitnam,
+                    "HG011": cutm150(leitnam, 33),
                     "HG101": strasse,
                     "HG102": strassenname,
                     "HG301": 'K',
                     "HG302": entwart,
-                    "HG303": baujahr,
+                    "HG303": formatm150(baujahr),
                     "HG304": material,
-                    "HG306": breite,
-                    "HG307": hoehe,
+                    "HG306": formatm150(breite),
+                    "HG307": formatm150(hoehe),
                     "HG308": profilauskleidung,
                     "HG309": innenmaterial,
-                    "HG310": laenge,
+                    "HG310": formatm150(laenge),
                     "HG313": 'B',
                     "HG401": simstatus,
                     "HG999": kommentar,
@@ -991,7 +1018,7 @@ class ExportTask:
             _create_children_text(
                 x_line,
                 {
-                    "GO001": leitnam,
+                    "GO001": cutm150(leitnam, 30),
                     "GO002": 'H',
                     "GO003": objecttyp
                 },
@@ -1003,24 +1030,25 @@ class ExportTask:
             _create_children_text(
                 x_point,
                 {
-                    "GP001": asoben,
+                    "GP001": cutm150(asoben, 30),
                     "GP002": self.ksys,
-                    "GP003": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                    "GP004": pt.y(),
-                    "GP007": sohleoben,
+                    self.gp_x: formatm150(pt.x()),
+                    self.gp_y: formatm150(pt.y()),
+                    "GP007": formatm150(sohleoben),
                 },
             )
 
             # Alle Stützstellen außer erster und letzter
             for ip, pt in enumerate(ptlis[1:-1]):
                 x_point = SubElement(x_line, "GP")
+                suffix = f'-{ip+1}'
                 _create_children_text(
                     x_point,
                     {
-                        "GP001": f'{leitnam}-{ip+1}',
+                        "GP001": cutm150(leitnam, 30 - len(suffix)) + suffix,
                         "GP002": self.ksys,
-                        "GP003": pt.x(),            # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                        "GP004": pt.y(),
+                        self.gp_x: formatm150(pt.x()),
+                        self.gp_y: formatm150(pt.y()),
                     },
                 )
 
@@ -1030,11 +1058,11 @@ class ExportTask:
             _create_children_text(
                 x_point,
                 {
-                    "GP001": asunten,
+                    "GP001": cutm150(asunten, 30),
                     "GP002": self.ksys,
-                    "GP003": pt.x(),                # todo: Schacht- und Deckelhöhe mit entsprechendem TAG markieren
-                    "GP004": pt.y(),
-                    "GP007": sohleunten,
+                    self.gp_x: formatm150(pt.x()),
+                    self.gp_y: formatm150(pt.y()),
+                    "GP007": formatm150(sohleunten),
                 },
             )
 
@@ -1080,16 +1108,16 @@ class ExportTask:
             _create_children_text(
                 x_elem,
                 {
-                    "KG001": schnam,
+                    "KG001": cutm150(schnam, 16),
                     "KG101": strasse,
                     "KG102": strassenname,
-                    "KG211": tiefe,
+                    "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": baujahr,
+                    "KG303": formatm150(baujahr),
                     "KG304": material,
                     "KG305": knotenart,
-                    "KG309": durchm,
+                    "KG309": formatm150(durchm),
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -1101,7 +1129,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'G',
                     "GO003": 'Pkt',
                 },
@@ -1110,12 +1138,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": sohlhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(sohlhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -1124,7 +1152,7 @@ class ExportTask:
             _create_children_text(
                 x_obj,
                 {
-                    "GO001": schnam,
+                    "GO001": cutm150(schnam, 30),
                     "GO002": 'D',
                     "GO003": 'Pkt',
                 },
@@ -1133,12 +1161,12 @@ class ExportTask:
             _create_children_text(
                 SubElement(x_obj, "GP"),
                 {
-                    "GP001": schnam,
+                    "GP001": cutm150(schnam, 30),
                     "GP002": self.ksys,
-                    "GP003": xsch,
-                    "GP004": ysch,
-                    "GP007": deckelhoehe,
-                    "GP010": 'mNN',
+                    self.gp_x: formatm150(xsch),
+                    self.gp_y: formatm150(ysch),
+                    "GP007": formatm150(deckelhoehe),
+                    "GP010": 'NHN',
                 },
             )
 
@@ -1173,7 +1201,7 @@ class ExportTask:
             self.select = '_sel'
         else:
             self.select = '_all'
-        if QKan.config.check_export.incluseMissingKeys:
+        if QKan.config.check_export.includeMissingKeys:
             self.select += '_include'
 
         # self._prepare_refdata()              ; fortschritt("Rerenzdaten aus import übernommen", 0.10)

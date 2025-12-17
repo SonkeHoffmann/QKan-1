@@ -11,14 +11,13 @@ CREATE TABLE IF NOT EXISTS refdata (
 );
 
 -- Neue Tabelle Anschlussschächte
-CREATE TABLE anschlussschaechte (
+CREATE TABLE IF NOT EXISTS anschlussschaechte (
     pk INTEGER PRIMARY KEY,
     schnam TEXT,
     sohlhoehe REAL,
     deckelhoehe REAL,
     durchm REAL,                                    /* Schachtdurchmesser (m) */
     druckdicht INTEGER, 
-    ueberstauflaeche REAL DEFAULT 0,
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
     strasse TEXT,
     baujahr INTEGER,

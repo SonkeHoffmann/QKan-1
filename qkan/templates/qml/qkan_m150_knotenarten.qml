@@ -1,124 +1,135 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis hasScaleBasedVisibilityFlag="0" maxScale="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|MapTips|AttributeTable|Rendering|CustomProperties|Notes" version="3.28.13-Firenze" minScale="1e+08" readOnly="0">
+<qgis hasScaleBasedVisibilityFlag="0" readOnly="0" minScale="1e+08" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|GeometryOptions|Temporal|Legend|Notes" version="3.28.13-Firenze" maxScale="0">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
+  <temporal limitMode="0" endExpression="" mode="0" startField="" endField="" durationField="" accumulate="0" fixedDuration="0" startExpression="" durationUnit="min" enabled="0">
+    <fixedRange>
+      <start></start>
+      <end></end>
+    </fixedRange>
+  </temporal>
   <customproperties>
     <Option type="Map">
-      <Option type="List" name="dualview/previewExpressions">
-        <Option type="QString" value="&quot;bezext&quot;"/>
+      <Option name="dualview/previewExpressions" type="List">
+        <Option value="&quot;bezext&quot;" type="QString"/>
       </Option>
-      <Option type="int" value="0" name="embeddedWidgets/count"/>
+      <Option value="0" name="embeddedWidgets/count" type="int"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
+  <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+    <activeChecks/>
+    <checkConfiguration/>
+  </geometryOptions>
+  <legend showLabelLegend="0" type="default-vector"/>
   <fieldConfiguration>
-    <field configurationFlags="None" name="pk">
+    <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="bezext">
+    <field name="bezext" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="bool" value="false" name="IsMultiline"/>
-            <Option type="bool" value="false" name="UseHtml"/>
+            <Option value="false" name="IsMultiline" type="bool"/>
+            <Option value="false" name="UseHtml" type="bool"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="bezqkan">
+    <field name="bezqkan" configurationFlags="None">
       <editWidget type="ValueMap">
         <config>
           <Option type="Map">
-            <Option type="List" name="map">
+            <Option name="map" type="List">
               <Option type="Map">
-                <Option type="QString" value="Schacht" name="Schacht"/>
+                <Option value="Schacht" name="Schacht" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="Auslass" name="Auslass"/>
+                <Option value="Auslass" name="Auslass" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="Speicher" name="Speicher"/>
+                <Option value="Speicher" name="Speicher" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="Anschlussschacht" name="Anschlussschacht"/>
+                <Option value="Anschlussschacht" name="Anschlussschacht" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" name="&lt;NULL>"/>
+                <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" name="&lt;NULL>" type="QString"/>
               </Option>
               <Option type="Map">
-                <Option type="QString" value="Symbol" name="Symbol"/>
+                <Option value="Symbol" name="Symbol" type="QString"/>
               </Option>
             </Option>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="kuerzel">
+    <field name="kuerzel" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="bool" value="false" name="IsMultiline"/>
-            <Option type="bool" value="false" name="UseHtml"/>
+            <Option value="false" name="IsMultiline" type="bool"/>
+            <Option value="false" name="UseHtml" type="bool"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="subject">
+    <field name="subject" configurationFlags="None">
       <editWidget type="Hidden">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="modul">
+    <field name="modul" configurationFlags="None">
       <editWidget type="Hidden">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="kommentar">
+    <field name="kommentar" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option type="bool" value="false" name="IsMultiline"/>
-            <Option type="bool" value="false" name="UseHtml"/>
+            <Option value="false" name="IsMultiline" type="bool"/>
+            <Option value="false" name="UseHtml" type="bool"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="createdat">
+    <field name="createdat" configurationFlags="None">
       <editWidget type="DateTime">
         <config>
           <Option type="Map">
-            <Option type="bool" value="true" name="allow_null"/>
-            <Option type="bool" value="true" name="calendar_popup"/>
-            <Option type="QString" value="dd.MMM.yyyy HH:mm:ss" name="display_format"/>
-            <Option type="QString" value="yyyy-MM-dd HH:mm:ss" name="field_format"/>
-            <Option type="bool" value="false" name="field_iso_format"/>
+            <Option value="true" name="allow_null" type="bool"/>
+            <Option value="true" name="calendar_popup" type="bool"/>
+            <Option value="dd.MMM.yyyy HH:mm:ss" name="display_format" type="QString"/>
+            <Option value="yyyy-MM-dd HH:mm:ss" name="field_format" type="QString"/>
+            <Option value="false" name="field_iso_format" type="bool"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias field="pk" name="" index="0"/>
-    <alias field="bezext" name="Externe Bezeichnung" index="1"/>
-    <alias field="bezqkan" name="Bezeichung" index="2"/>
-    <alias field="kuerzel" name="Kürzel" index="3"/>
-    <alias field="subject" name="" index="4"/>
-    <alias field="modul" name="" index="5"/>
-    <alias field="kommentar" name="Kommentar" index="6"/>
-    <alias field="createdat" name="erstellt" index="7"/>
+    <alias name="" field="pk" index="0"/>
+    <alias name="Externe Bezeichnung" field="bezext" index="1"/>
+    <alias name="Bezeichung" field="bezqkan" index="2"/>
+    <alias name="Kürzel" field="kuerzel" index="3"/>
+    <alias name="" field="subject" index="4"/>
+    <alias name="" field="modul" index="5"/>
+    <alias name="Kommentar" field="kommentar" index="6"/>
+    <alias name="erstellt" field="createdat" index="7"/>
   </aliases>
   <defaults>
     <default applyOnUpdate="0" expression="" field="pk"/>
@@ -131,42 +142,51 @@
     <default applyOnUpdate="0" expression="" field="createdat"/>
   </defaults>
   <constraints>
-    <constraint field="pk" exp_strength="0" unique_strength="1" notnull_strength="1" constraints="3"/>
-    <constraint field="bezext" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
-    <constraint field="bezqkan" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
-    <constraint field="kuerzel" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
-    <constraint field="subject" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
-    <constraint field="modul" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
-    <constraint field="kommentar" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
-    <constraint field="createdat" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
+    <constraint exp_strength="0" constraints="3" field="pk" unique_strength="1" notnull_strength="1"/>
+    <constraint exp_strength="0" constraints="0" field="bezext" unique_strength="0" notnull_strength="0"/>
+    <constraint exp_strength="0" constraints="0" field="bezqkan" unique_strength="0" notnull_strength="0"/>
+    <constraint exp_strength="0" constraints="0" field="kuerzel" unique_strength="0" notnull_strength="0"/>
+    <constraint exp_strength="0" constraints="0" field="subject" unique_strength="0" notnull_strength="0"/>
+    <constraint exp_strength="0" constraints="0" field="modul" unique_strength="0" notnull_strength="0"/>
+    <constraint exp_strength="0" constraints="0" field="kommentar" unique_strength="0" notnull_strength="0"/>
+    <constraint exp_strength="0" constraints="0" field="createdat" unique_strength="0" notnull_strength="0"/>
   </constraints>
   <constraintExpressions>
-    <constraint desc="" field="pk" exp=""/>
-    <constraint desc="" field="bezext" exp=""/>
-    <constraint desc="" field="bezqkan" exp=""/>
-    <constraint desc="" field="kuerzel" exp=""/>
-    <constraint desc="" field="subject" exp=""/>
-    <constraint desc="" field="modul" exp=""/>
-    <constraint desc="" field="kommentar" exp=""/>
-    <constraint desc="" field="createdat" exp=""/>
+    <constraint exp="" desc="" field="pk"/>
+    <constraint exp="" desc="" field="bezext"/>
+    <constraint exp="" desc="" field="bezqkan"/>
+    <constraint exp="" desc="" field="kuerzel"/>
+    <constraint exp="" desc="" field="subject"/>
+    <constraint exp="" desc="" field="modul"/>
+    <constraint exp="" desc="" field="kommentar"/>
+    <constraint exp="" desc="" field="createdat"/>
   </constraintExpressions>
   <expressionfields/>
-  <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
+  <attributeactions>
+    <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
+  </attributeactions>
+  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
     <columns>
-      <column type="field" hidden="0" width="-1" name="pk"/>
-      <column type="field" hidden="0" width="-1" name="bezext"/>
-      <column type="field" hidden="0" width="-1" name="bezqkan"/>
-      <column type="field" hidden="0" width="-1" name="kuerzel"/>
-      <column type="field" hidden="1" width="-1" name="subject"/>
-      <column type="field" hidden="1" width="-1" name="modul"/>
-      <column type="field" hidden="0" width="-1" name="kommentar"/>
-      <column type="field" hidden="0" width="-1" name="createdat"/>
-      <column type="actions" hidden="1" width="-1"/>
+      <column width="-1" hidden="0" name="pk" type="field"/>
+      <column width="-1" hidden="0" name="bezext" type="field"/>
+      <column width="-1" hidden="0" name="bezqkan" type="field"/>
+      <column width="-1" hidden="0" name="kuerzel" type="field"/>
+      <column width="-1" hidden="1" name="subject" type="field"/>
+      <column width="-1" hidden="1" name="modul" type="field"/>
+      <column width="-1" hidden="0" name="kommentar" type="field"/>
+      <column width="-1" hidden="0" name="createdat" type="field"/>
+      <column width="-1" hidden="1" type="actions"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles/>
-    <fieldstyles/>
+    <fieldstyles>
+      <fieldstyle fieldname="bezqkan">
+        <style background_color="#fb9a99" background_color_alpha="255" name="Bezeichnung_unbekannt" rule="@value is NULL">
+          <font style="" italic="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" underline="0" bold="0" strikethrough="0"/>
+        </style>
+      </fieldstyle>
+    </fieldstyles>
   </conditionalstyles>
   <storedexpressions/>
   <editforminit/>

@@ -47,6 +47,10 @@ Im dritten Reiter Automatische Datenübernahme werden die Trigger verwaltet die 
 .. image:: ./QKan_Bilder/Formulare/optionen3.png
 
 
+.. index:: Projektdatei anpassen
+.. _projektdatei-anpassen:
+
+
 QKan-Projekt aktualisieren
 --------------------------
 
@@ -96,8 +100,8 @@ Auswertung Knotentypen
 ++++++++++++++++++++++
 
 Mit diesem Punkt werden in der Tabelle Schächte Informationen zum Knotentyp ergänzt und in dem Layer Knotentyp dargestellt.
-    
-    
+
+
 .. index:: Projektdatei übertragen
 .. _projektdatei-ubertragen:
 

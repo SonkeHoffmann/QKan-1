@@ -54,7 +54,11 @@ werden.
 .. image:: ./QKan_Bilder/M150_Knotenarten.png
 
 Der Dateiimport zeigt die entsprechende Tabelle an, damit nach Aktivierung des Bearbeitungsmodus der Anwender 
-die Spalte *QKan-Schachttyp* entsprechend bearbeitet. Solange diese Zuordnung nicht vollständig ist, wird 
+die Spalte *QKan-Schachttyp* entsprechend bearbeitet. 
+
+.. image:: ./QKan_Bilder/M150_Knotenarten_edit.png
+
+Solange diese Zuordnung nicht vollständig ist, wird 
 statt des Datenimportes jedes Mal diese Tabelle angezeigt. 
 
 Ausführliche Erläuterungen zu dieser Funktion finden Sie im Kapitel :ref:`DWA-M 150 <dwa-m-150>`

@@ -10099,7 +10099,13 @@ def my_form_open(dialog, layer, feature):
       </attributetableconfig>
       <conditionalstyles>
         <rowstyles/>
-        <fieldstyles/>
+        <fieldstyles>
+          <fieldstyle fieldname="bezqkan">
+            <style background_color="#fb9a99" background_color_alpha="255" name="Bezeichnung_unbekannt" rule="@value is NULL">
+              <font style="" italic="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" underline="0" bold="0" strikethrough="0"/>
+            </style>
+          </fieldstyle>
+        </fieldstyles>
       </conditionalstyles>
       <storedexpressions/>
       <editform tolerant="1">../Users/hoettges/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/qkan/forms/qkan_m150_knotenarten.ui</editform>

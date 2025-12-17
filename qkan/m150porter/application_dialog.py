@@ -59,8 +59,9 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_export_wehre: QCheckBox
     cb_export_anschlussleitungen: QCheckBox
     cb_export_anschlussschaechte: QCheckBox
-    cb_incluseMissingKeys: QCheckBox
+    cb_includeMissingKeys: QCheckBox
     cb_selectedObjects: QCheckBox
+    cb_cutNames: QCheckBox
 
 
     def __init__(
@@ -79,8 +80,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         # Aktionen zu Selektionen
         self.cb_selectedObjects.stateChanged.connect(self.count)
         logger.debug("cb_selectedObjects.stateChanged.connect(self.count)")
-        self.cb_incluseMissingKeys.stateChanged.connect(self.count)
-        logger.debug("cb_incluseMissingKeys.stateChanged.connect(self.count)")
+        self.cb_includeMissingKeys.stateChanged.connect(self.count)
+        logger.debug("cb_includeMissingKeys.stateChanged.connect(self.count)")
 
         # Init fields
         self.tf_database.setText(QKan.config.database.qkan)
@@ -109,8 +110,14 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.cb_export_wehre.setChecked(
             getattr(QKan.config.check_export, "wehre", True)
         )
-        self.cb_incluseMissingKeys.setChecked(
-            getattr(QKan.config.check_export, "incluseMissingKeys", True)
+        self.cb_includeMissingKeys.setChecked(
+            getattr(QKan.config.check_export, "includeMissingKeys", True)
+        )
+        self.cb_selectedObjects.setChecked(
+            getattr(QKan.config.selections, "selectedObjects", False)
+        )
+        self.cb_cutNames.setChecked(
+            getattr(QKan.config.check_export, "cutNames", False)
         )
         self._prepared = False                      # self._prepare_refdata() nur einmal in count aufrufen
 
@@ -151,7 +158,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
                     selection = '_all'
 
                 # Checkbox hat den Status nach dem Klick
-                included = self.cb_incluseMissingKeys.isChecked()
+                included = self.cb_includeMissingKeys.isChecked()
                 if included:
                     selection += '_include'
 

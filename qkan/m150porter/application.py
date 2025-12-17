@@ -97,8 +97,14 @@ class M150Porter(QKanPlugin):
             QKan.config.check_export.wehre = (
                 self.export_dlg.cb_export_wehre.isChecked()
             )
-            QKan.config.check_export.incluseMissingKeys = (
-                self.export_dlg.cb_incluseMissingKeys.isChecked()
+            QKan.config.check_export.includeMissingKeys = (
+                self.export_dlg.cb_includeMissingKeys.isChecked()
+            )
+            QKan.config.selections.selectedObjects = (
+                self.export_dlg.cb_selectedObjects.isChecked()
+            )
+            QKan.config.check_export.cutNames = (
+                self.export_dlg.cb_cutNames.isChecked()
             )
 
             QKan.config.save()

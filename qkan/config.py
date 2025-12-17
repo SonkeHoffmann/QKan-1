@@ -169,7 +169,8 @@ class CheckExport(ClassObject):
     tezg_hf: bool = (
         False  # Sonderfall: Keine Flächenobjekte, stattdessen Befestigungsgrade in tezg
     )
-    incluseMissingKeys: bool = False
+    includeMissingKeys: bool = False
+    cutNames:           bool = False
 
     # Referenztabellen
     abflussparameter: bool = True
