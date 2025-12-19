@@ -4,6 +4,9 @@ from array import array
 from qgis.core import QgsGeometry, QgsPoint
 from qkan.database.dbfunc import DBConnection
 
+from qgis.utils import iface
+from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
+
 logger = get_logger(f'QKan.{__file__}')
 
 
@@ -25,6 +28,7 @@ class Schadenstexte:
 
         # Die folgenden Felder enthalten die Textpositionen einer Haltung. Aus Effizienzgründen wird auf
         # 1000 dimensioniert. Falls das zuwenig ist, muss individuell neu dimensioniert werden.
+
         tdist = QKan.config.zustand.abstand_zustandstexte
         bdist = QKan.config.zustand.abstand_zustandsbloecke - QKan.config.zustand.abstand_zustandstexte
         maxsj = 1000
@@ -152,6 +156,11 @@ class Schadenstexte:
         """Textpositionen für Schadenstexte zu Haltungen berechnen"""
 
         Schadenstexte.db_qkan = db_qkan
+
+        sql = "UPDATE untersuchdat_haltung SET geom = NULL"
+
+        if not Schadenstexte.db_qkan.sql(sql, 'set_objekt', ):
+            logger.error(f"Fehler in {sql}")
 
         logger.debug("Schadenstexte Haltungen werden neu arrangiert ...")
 
@@ -345,6 +354,11 @@ class Schadenstexte:
 
         Schadenstexte.db_qkan = db_qkan
 
+        sql = "UPDATE untersuchdat_schacht SET geom = NULL"
+
+        if not Schadenstexte.db_qkan.sql(sql, 'set_objekt', ):
+            logger.error(f"Fehler in {sql}")
+
         logger.debug("Schadenstexte Schächte werden neu arrangiert ...")
 
         sql = """SELECT
@@ -457,6 +471,7 @@ class Schadenstexte:
 
         # Die folgenden Felder enthalten die Textpositionen einer Anschlussleitung. Aus Effizienzgründen wird auf
         # 1000 dimensioniert. Falls das zuwenig ist, muss individuell neu dimensioniert werden.
+
         tdist = QKan.config.zustand.abstand_zustandstexte
         bdist = QKan.config.zustand.abstand_zustandsbloecke - QKan.config.zustand.abstand_zustandstexte
         maxsj = 1000
@@ -609,6 +624,11 @@ class Schadenstexte:
         """Textpositionen für Schadenstexte zu Anschlussleitungen berechnen"""
 
         Schadenstexte.db_qkan = db_qkan
+
+        sql = "UPDATE untersuchdat_anschlussleitung SET geom = NULL"
+
+        if not Schadenstexte.db_qkan.sql(sql, 'set_objekt', ):
+            logger.error(f"Fehler in {sql}")
 
         logger.debug("Schadenstexte Anschlussleitungen werden neu arrangiert ...")
 

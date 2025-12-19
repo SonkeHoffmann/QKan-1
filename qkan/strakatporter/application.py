@@ -34,6 +34,7 @@ class StrakatPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus STRAKAT"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )

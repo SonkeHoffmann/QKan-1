@@ -35,6 +35,7 @@ class He8Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_export,
             text=self.tr("Export nach Hystem-Extran 8"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_export,
             parent=self.iface.mainWindow(),
         )
@@ -42,6 +43,7 @@ class He8Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus Hystem-Extran 8"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )
@@ -49,6 +51,7 @@ class He8Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_results,
             text=self.tr("Ergebnisse aus Hystem-Extran 8"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_results,
             parent=self.iface.mainWindow(),
         )

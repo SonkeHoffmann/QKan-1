@@ -24,6 +24,7 @@ class Zustandsklassen(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Zustandsklassen ermitteln"),
+            toolbar='QKan-Befahrungsdaten',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )

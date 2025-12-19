@@ -27,6 +27,7 @@ class Neigung(QKanPlugin):
         QKan.instance.add_action(
             icon_neigung,
             text=self.tr("Neigungsklassen ermitteln"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run,
             parent=self.iface.mainWindow(),
         )

@@ -34,6 +34,7 @@ class Synchronisation(QKanPlugin):
         QKan.instance.add_action(
             icon_compare,
             text=self.tr("Vergleich mit einem anderen QKan-Projekt"),
+            toolbar='QKan-Datenaustausch',
             callback=self.openform_compare,
             parent=self.iface.mainWindow(),
         )
@@ -42,6 +43,7 @@ class Synchronisation(QKanPlugin):
         QKan.instance.add_action(
             icon_adjust,
             text=self.tr("Synchronisation mit einem anderen QKan-Projekt"),
+            toolbar='QKan-Datenaustausch',
             callback=self.openform_adjust,
             parent=self.iface.mainWindow(),
         )
