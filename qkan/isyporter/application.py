@@ -30,6 +30,7 @@ class IsyPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_export,
             text=self.tr("Export nach ISYBAU-XML"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_export,
             parent=self.iface.mainWindow(),
         )
@@ -37,6 +38,7 @@ class IsyPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus ISYBAU-XML"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )

@@ -134,6 +134,7 @@ class Laengsschnitt(QKanPlugin):
         QKan.instance.add_action(
             icon,
             text=self.tr("Längsschnitt"),
+            toolbar='QKan-Allgemein',
             callback=self.run_laengs,
             parent=self.iface.mainWindow(),
         )

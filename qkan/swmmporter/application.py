@@ -67,6 +67,7 @@ class SWMMPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_export,
             text=self.tr("Export in SWMM-Datei (*.INP)"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_export,
             parent=self.iface.mainWindow(),
         )
@@ -75,6 +76,7 @@ class SWMMPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus SWMM-Datei (*.INP)"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )

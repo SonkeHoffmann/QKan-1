@@ -62,13 +62,12 @@ class ShowSelected():
         for child in root_rule.children():
             rule = root_rule.takeChild(child)
             label = rule.label()
-            #TODO: evtuell umändern da dies bei NULL werten nicht funktioniert
             if 'Zustandsklasse' in label:
                 pos = label.find('Zustandsklasse') + 15
                 i = label[pos]
-                baserule = f'min(ZD, ZB, ZS) = {i}'
+                baserule = f"if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))) = {i}"
             else:
-                baserule = '(min(ZD, ZB, ZS) < 0 OR min(ZD, ZB, ZS) > 5)'
+                baserule = "((if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))) < 0 OR if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))) > 5 OR if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6)))='-'))"
 
             filterlis = [baserule]
             if untersuchbezeich is not None:

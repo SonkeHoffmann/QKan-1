@@ -36,6 +36,7 @@ class Plausi(QKanPlugin):
         QKan.instance.add_action(
             icon_plausi,
             text=self.tr("Plausibilitätsprüfungen"),
+            toolbar='QKan-Allgemein',
             callback=self.run_plausi,
             parent=self.iface.mainWindow(),
         )

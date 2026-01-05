@@ -20,6 +20,7 @@ class CreateUnbefFl(QKanPlugin):
         QKan.instance.add_action(
             icon_path,
             text=self.tr("Erzeuge unbefestigte Flächen..."),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.dlg.run,
             parent=self.iface.mainWindow(),
         )

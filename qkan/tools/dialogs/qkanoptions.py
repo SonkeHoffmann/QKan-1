@@ -46,6 +46,7 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
     pb_selectLogeditor: QPushButton
     pb_selectfotopath: QPushButton
     pb_selectvideopath: QPushButton
+    cb_textposition_akt: QCheckBox
 
     qsw_epsg: QgsProjectionSelectionWidget
 
@@ -86,6 +87,7 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         self.tf_fangradius.textChanged.connect(self.changed_tf_fangradius)
         self.tf_abstand_zustandstexte.textChanged.connect(self.changed_tf_abstand_zustandstexte)
         self.tf_abstand_zustandsbloecke.textChanged.connect(self.changed_tf_abstand_zustandsbloecke)
+
 
         self.pb_selectfotopath.clicked.connect(self.fotopath)
         self.pb_selectvideopath.clicked.connect(self.videopath)
@@ -191,24 +193,24 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             return
         if abstand_zustandstexte > 5:
             self.tf_abstand_zustandstexte.setStyleSheet("border: 2px solid red; color: red")
-            self.lf_warning1.setText("Wert zu groß!")
-            self.lf_warning1.setStyleSheet("color: red; font: bold;")
+            self.lf_warning_2.setText("Wert zu groß!")
+            self.lf_warning_2.setStyleSheet("color: red; font: bold;")
             self.lf_unit_abstand_zustandstexte.setStyleSheet("color: red")
         elif abstand_zustandstexte < 0.01:
             self.tf_abstand_zustandstexte.setStyleSheet("border: 2px solid red; color: red")
-            self.lf_warning1.setText("Wert zu klein!")
-            self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_abstand_zustandstexte.setStyleSheet("color: red")
+            self.lf_warning_2.setText("Wert zu klein!")
+            self.lf_warning_2.setStyleSheet("color: red; font: bold;")
+            self.lf_unit_abstand_zustandstexte.setStyleSheet("color: red")
         elif abstand_zustandstexte > abstand_zustandsbloecke:
             self.tf_abstand_zustandstexte.setStyleSheet("border: 2px solid red; color: red")
-            self.lf_warning1.setText("Wert sollte nicht größer als Abstand zwischen Textblöcken sein!")
-            self.lf_warning1.setStyleSheet("color: red; font: bold;")
-            self.lf_abstand_zustandstexte.setStyleSheet("color: red")
+            self.lf_warning_2.setText("Wert sollte nicht größer als Abstand zwischen Textblöcken sein!")
+            self.lf_warning_2.setStyleSheet("color: red; font: bold;")
+            self.lf_unit_abstand_zustandstexte.setStyleSheet("color: red")
         else:
             self.tf_abstand_zustandstexte.setStyleSheet("border: 1px solid black;")
-            self.lf_warning1.setText("")
-            self.lf_warning1.setStyleSheet("color: black; font: bold;")
-            self.lf_abstand_zustandstexte.setStyleSheet("color: black")
+            self.lf_warning_2.setText("")
+            self.lf_warning_2.setStyleSheet("color: black; font: bold;")
+            self.lf_unit_abstand_zustandstexte.setStyleSheet("color: black")
 
     def changed_tf_abstand_zustandsbloecke(self):
         """Gibt eine Warnung, falls Fangradius unsinnig"""
@@ -219,23 +221,23 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
             return
         if abstand_zustandsbloecke > 7:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 2px solid red; color: red")
-            self.lf_warning1.setText("Wert zu groß!")
-            self.lf_warning1.setStyleSheet("color: red; font: bold;")
+            self.lf_warning_2.setText("Wert zu groß!")
+            self.lf_warning_2.setStyleSheet("color: red; font: bold;")
             self.tf_abstand_zustandsbloecke.setStyleSheet("color: red")
         elif abstand_zustandsbloecke < 0.01:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 2px solid red; color: red")
-            self.lf_warning1.setText("Wert zu klein!")
-            self.lf_warning1.setStyleSheet("color: red; font: bold;")
+            self.lf_warning_2.setText("Wert zu klein!")
+            self.lf_warning_2.setStyleSheet("color: red; font: bold;")
             self.tf_abstand_zustandsbloecke.setStyleSheet("color: red")
         elif abstand_zustandsbloecke < abstand_zustandstexte:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 2px solid red; color: red")
-            self.lf_warning1.setText("Wert sollte nicht kleiner als Abstand zwischen Zustandstexten sein!")
-            self.lf_warning1.setStyleSheet("color: red; font: bold;")
+            self.lf_warning_2.setText("Wert sollte nicht kleiner als Abstand zwischen Zustandstexten sein!")
+            self.lf_warning_2.setStyleSheet("color: red; font: bold;")
             self.tf_abstand_zustandsbloecke.setStyleSheet("color: red")
         else:
             self.tf_abstand_zustandsbloecke.setStyleSheet("border: 1px solid black;")
-            self.lf_warning1.setText("")
-            self.lf_warning1.setStyleSheet("color: black; font: bold;")
+            self.lf_warning_2.setText("")
+            self.lf_warning_2.setStyleSheet("color: black; font: bold;")
             self.tf_abstand_zustandsbloecke.setStyleSheet("color: black")
 
     def fotopath(self):

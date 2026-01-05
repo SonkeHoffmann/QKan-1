@@ -33,6 +33,7 @@ class M150Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus DWA-150-XML"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )
@@ -41,6 +42,7 @@ class M150Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_export,
             text=self.tr("Export nach DWA-150-XML"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_export,
             parent=self.iface.mainWindow(),
         )

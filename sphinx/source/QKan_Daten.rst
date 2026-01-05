@@ -33,6 +33,7 @@ Die Liste der Plausibilitätsprüfungen kann durch den Anwender ergänzt werden.
 eine SQL-Abfrage eingetragen werden, die zwei Spalten liefert:
 - objid: Bezeichnung, anhand derer die aufzulistenden Objekte identifiziert werden können. 
 - bemerkung: Beschreibung des Fehlers, gegebenenfalls mit zusätzlichen Informationen (z. B. fehlerhafte Länge)
+- gruppe: Als Gruppenname sollte eine abweichender Name zu den schon bestehenden gewählt werden, damit die selbst ertstellten Abfragen nahc einem Update erhalten bleiben
 
 Die in der Spalte "Gruppe" 
 eingetragende Bezeichnung erscheint in der Themenauswahl des Formulars "Plausibilitätsprüfungen". 

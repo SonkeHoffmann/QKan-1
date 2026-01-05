@@ -46,6 +46,7 @@ class SurfaceTools(QKanPlugin):
         QKan.instance.add_action(
             icon_path,
             text=self.tr("Entferne Überlappungen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_cut,
             parent=self.iface.mainWindow(),
         )
@@ -53,6 +54,7 @@ class SurfaceTools(QKanPlugin):
         QKan.instance.add_action(
             icon_path,
             text=self.tr("Erzeuge Voronoiflächen zu Haltungen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_voronoi,
             parent=self.iface.mainWindow(),
         )

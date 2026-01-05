@@ -40,6 +40,7 @@ class SWMMErg(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import von SWMM-Ergebnissen (*.RPT)"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )

@@ -24,6 +24,7 @@ class Substanzklasse(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Substanzklassen ermitteln"),
+            toolbar='QKan-Befahrungsdaten',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )
