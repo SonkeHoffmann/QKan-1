@@ -12,5 +12,6 @@
         <file>res/icon_befahrung</file>
         <file>res/icon_help.png</file>
         <file>res/icon_zoom_clipboard.png</file>
+        <file>res/icon_bericht.png</file>
     </qresource>
 </RCC>
