@@ -118,7 +118,7 @@ def setup_logging(log_to_console: bool, iface) -> tuple[QKanLogger, Path]:
 
     # create custom logger
     logger = QKanLogger("Qkan")
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     # inject custom manager as default
     QKanLogger.manager = QKanLoggingManager(logger)

@@ -212,7 +212,7 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
  
  ('HYSTEM-EXTRAN', 'Simulationsstatus fehlt', 'Fehler', 9,
     'SELECT pk AS objid,
-    printf(''"Simulationsstatus" fehlt in Haltung "%s"'', schnam) AS bemerkung
+    printf(''"Simulationsstatus" fehlt in Haltung "%s"'', haltnam) AS bemerkung
     FROM haltungen WHERE simstatus IS NULL AND (haltungstyp = ''Haltung'' OR haltungstyp IS NULL)', 
  'Haltungen', 'pk'),
 

@@ -236,17 +236,13 @@ class ImportTask(Schadenstexte):
 
         # nr (str) => description
         self.mapper_entwart: Dict[str, str] = {}
-        # self.mapper_pump: Dict[str, str] = {}
         self.mapper_material: Dict[str, str] = {}
         self.mapper_profile: Dict[str, str] = {}
-        # self.mapper_outlet: Dict[str, str] = {}
         self.mapper_simstatus: Dict[str, str] = {}
-        # self.mapper_untersuchrichtung: Dict[str, str] = {}
         self.mapper_wetter: Dict[str, str] = {}
         self.mapper_m150knotenarten: Dict[str, str] = {}
-        # self.mapper_bewertungsart: Dict[str, str] = {}
-        # self.mapper_druckdicht: Dict[str, str] = {}
         self.mapper_bauwerksarten: Dict[str, str] = {}
+        self.mapper_haltungsarten: Dict[str, str] = {}
         self.mapper_strassen: Dict[str, str] = {}
 
         db_qkan.loadmodule('m150porter')
@@ -278,10 +274,38 @@ class ImportTask(Schadenstexte):
         geop = QgsPoint()
         geom = None
         sohle_b = None  # falls kein Gerinnepunktobjekt, wird Sohlhöhe aus Bauwerk übernommen
+        proj = None
         blocks_go = block.findall("GO")
         if len(blocks_go) == 0:
             logger.debug(f'Keine Geometrieobjektdaten bei Knoten "{name}"')
-            return None, None, None, None
+            blocks_go = self.xml.findall(f"HG/GO/GP[GP001='{name}']")
+            logger.debug(f"Keine Geometriedaten bei Knoten '{name}. -> Suche in Haltungsknickpunkten'")
+
+            # Koordinate aus Knickpunkten gleichen Namens
+            blocks_hp = self.xml.findall(f"HG/GO/GP[GP001='{name}']")
+            if len(blocks_hp) == 0:
+                logger.debug(f'Auch keine Geometriepunktdaten bei Haltungsknickpunkten "{name}"')
+                return None, None, None, None
+
+            xp, yp = (None, None)
+            for bl_hp in blocks_hp:
+                proj = bl_hp.findtext(path='GP002')
+                xp = _get_float(bl_hp, "GP003")
+                if xp is None or proj == 'UTM':
+                    xp = _get_float(bl_hp, "GP005")
+                    yp = _get_float(bl_hp, "GP006")
+                else:
+                    yp = _get_float(bl_hp, "GP004")
+                zp = _get_float(bl_hp, "GP007")
+                if xp is not None:
+                    # Nur 1 Knickpunkt verarbeiten
+                    break
+
+            geop = QgsGeometry.fromPointXY(QgsPointXY(xp, yp))
+            # falls kein Bauwerk oder Deckel:
+            geom = QgsGeometry(QgsCircle.fromCenterDiameter(QgsPoint(xp, yp), durchmesser).toLineString())
+            geom.convertToMultiType()
+
         for bl_go in blocks_go:
             # Schleife über alle Geometrieobjekte
             pnam = bl_go.findtext('GO001')
@@ -296,26 +320,36 @@ class ImportTask(Schadenstexte):
             xp = yp = zp = None               # Falls keine Koordinaten in Geometriepunktdaten enthalten (s. u.)
             for bl_gp in blocks_gp:
                 # Schleife über alle Stützstellen
+                proj = bl_go.findtext(path='GP002')
                 xp = _get_float(bl_gp, "GP003")
-                if xp is None:
+                if xp is None or proj == 'UTM':
                     xp = _get_float(bl_gp, "GP005")
-                    if xp is None:
-                        continue
-                        # logger.error_data(
-                        #     f'{self.__class__.__name__}: '
-                        #     f'Keine x-Koordinate in Element {name} gefunden')
-                        # raise QkanError
-                yp = _get_float(bl_gp, "GP004")
-                if yp is None:
                     yp = _get_float(bl_gp, "GP006")
-                    if yp is None:
-                        continue
-                        # logger.error_data(
-                        #     f'{self.__class__.__name__}: '
-                        #     f'Keine y-Koordinate in Element {name} gefunden')
-                        # raise QkanError
+                else:
+                    yp = _get_float(bl_gp, "GP004")
                 zp = _get_float(bl_gp, "GP007")
-                if geotyp in ('L', 'Poly', 'Fl'):
+
+                if xp is None:                  # kommt gleich weg
+                    # Koordinate aus Knickpunkten gleichen Namens
+                    blocks_hp = self.xml.findall(f"HG/GO/GP[GP001='{name}']")
+                    if len(blocks_hp) == 0:
+                        logger.debug(f'Auch keine Geometriepunktdaten bei Haltungsknickpunkten "{name}"')
+                        continue
+
+                    for bl_hp in blocks_hp:
+                        proj = bl_go.findtext(path='GP002')
+                        xp = _get_float(bl_hp, "GP003")
+                        if xp is None or proj == 'UTM':
+                            xp = _get_float(bl_hp, "GP005")
+                            yp = _get_float(bl_hp, "GP006")
+                        else:
+                            yp = _get_float(bl_hp, "GP004")
+                        zp = _get_float(bl_hp, "GP007")
+                        if xp is not None:
+                            # Nur 1 Knickpunkt verarbeiten
+                            break
+
+                if xp is not None and geotyp in ('L', 'Poly', 'Fl'):
                     gplis.append([xp, yp])
             if xp is None:
                 # Keine Koordinaten in Geometriepunktdaten enthalten
@@ -599,6 +633,8 @@ class ImportTask(Schadenstexte):
         # if getattr(QKan.config.xml, "import_haus", True):
         if QKan.config.xml.import_haus:
             self._anschlussleitungen()                      ;self.progress_bar.setValue(50)
+            self._anschluss_untersucht()                    ;self.progress_bar.setValue(55)
+            self._untersuchdat_anschluss()                  ;self.progress_bar.setValue(60)
         # if getattr(QKan.config.xml, "import_zustand", True):
         if QKan.config.xml.import_zustand:
             self._schaechte_untersucht()                    ;self.progress_bar.setValue(65)
@@ -647,7 +683,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': None,
-                    'kommentar': 'M150-Standard',
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
                 }
             )
 
@@ -681,6 +717,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'import_entwaesserungsarten')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 104 Kanalnutzung", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden:'
                 f'{params=}')
             raise QkanError
@@ -706,6 +743,7 @@ class ImportTask(Schadenstexte):
                     WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT bezeichnung FROM entwaesserungsarten)"""
         if not self.db_qkan.sql(sql, "M150 Import Referenzliste entwaesserungsarten", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Tabelle entwaesserungsarten eingefügt werden:'
                 f'{params=}')
             raise QkanError
@@ -733,7 +771,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': bez,
-                    'kommentar': 'M150-Standard',
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
                 }
             )
 
@@ -795,6 +833,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'import_profile')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 106 Profile", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
                 f'{params=}')
             raise QkanError
@@ -820,6 +859,7 @@ class ImportTask(Schadenstexte):
                 WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT profilnam FROM profile)"""
         if not self.db_qkan.sql(sql, "M150 Import Referenzliste profile", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Tabelle profile eingefügt werden:'
                 f'{params=}')
             raise QkanError
@@ -847,7 +887,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': bez,
-                    'kommentar': 'M150-Standard',
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
                 }
             )
 
@@ -882,6 +922,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'import_simulationsstatus')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 109 Funktionszustand", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
                 f'{params=}')
             raise QkanError
@@ -907,6 +948,7 @@ class ImportTask(Schadenstexte):
                 WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT bezeichnung FROM simulationsstatus)"""
         if not self.db_qkan.sql(sql, "M150 Import Referenzliste simulationsstatus", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Tabelle simulationsstatus eingefügt werden:'
                 f'{params=}')
             raise QkanError
@@ -934,7 +976,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': bez,
-                    'kommentar': 'aus M150-Datei',
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
                 }
             )
 
@@ -994,7 +1036,7 @@ class ImportTask(Schadenstexte):
                         'bezext': langtext,
                         'kuerzel': kuerzel,
                         'bezqkan': langtext,
-                        'kommentar': 'QKan-Standard',
+                        'kommentar': 'M150-Standard',
                     }
                 )
 
@@ -1007,6 +1049,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'import_material')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 105 Bauwerksart", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
                 f'{params=}')
             raise QkanError
@@ -1032,6 +1075,7 @@ class ImportTask(Schadenstexte):
                     WHERE coalesce(:bezqkan, :bezext) NOT IN (SELECT bezeichnung FROM material)"""
         if not self.db_qkan.sql(sql, "M150 Import Referenzliste material", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Tabelle material eingefügt werden:'
                 f'{params=}')
             raise QkanError
@@ -1055,7 +1099,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': bez,
-                    'kommentar': 'aus M150-Datei',
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
                 }
             )
 
@@ -1110,6 +1154,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'import_bauwerksarten')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 117 Bauwerksarten", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
                 f'{params=}')
             raise QkanError
@@ -1147,7 +1192,7 @@ class ImportTask(Schadenstexte):
                     'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': bez,
-                    'kommentar': 'M150-Standard',
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
                 }
             )
 
@@ -1160,6 +1205,7 @@ class ImportTask(Schadenstexte):
                           AND subject = 'strassen')"""
         if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 101 Straßen", params, many=True):
             logger.error_data(
+                f'{self.__class__.__name__}: '
                 f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
                 f'{params=}')
             raise QkanError
@@ -1175,13 +1221,13 @@ class ImportTask(Schadenstexte):
 
         for block in blocks:
             kuerzel = block.findtext("RT002", None)
-            bezeichnung = block.findtext("RT004", None)
+            bez = block.findtext("RT004", None)
             # Falls einer der beiden Einträge fehlt:
-            if kuerzel is None or bezeichnung is None:
+            if kuerzel is None or bez is None:
                 continue
             params.append(
                 {
-                    'bezext': bezeichnung,
+                    'bezext': bez,
                     'kuerzel': kuerzel,
                     'bezqkan': None,                     # anschließend durch den Anwender zu ergänzen
                     'kommentar': 'aus Referenztabelle in der M150-Datei',
@@ -1205,10 +1251,10 @@ class ImportTask(Schadenstexte):
                 ('Sonstige', 'Z',           'Symbol'),       # wird in Tabelle symbole eingefügt
             ]
 
-            for (bezeichnung, kuerzel, schachttyp) in data:
+            for (langtext, kuerzel, schachttyp) in data:
                 params.append(
                     {
-                        'bezext': bezeichnung,
+                        'bezext': langtext,
                         'kuerzel': kuerzel,
                         'bezqkan': schachttyp,
                         'kommentar': 'M150-Standard',
@@ -1247,6 +1293,80 @@ class ImportTask(Schadenstexte):
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
         complete = complete and (data is None)
+
+        # Referenztabelle Haltungsart (HG313)
+
+        params = []
+
+        blocks = self.xml.findall("RT/[RT001='108']")
+
+        logger.debug(f'Anzahl Datensätze in M150-Referenztabelle "Haltungsart": {len(blocks)}')
+
+        for block in blocks:
+            kuerzel = block.findtext("RT002", None)
+            bez = block.findtext("RT004", None)
+
+            # Falls einer der beiden Einträge fehlt:
+            if bez is None:
+                continue
+            params.append(
+                {
+                    'bezext': bez,
+                    'kuerzel': kuerzel,
+                    'bezqkan': bez,
+                    'kommentar': 'aus Referenztabelle in der M150-Datei',
+                }
+            )
+
+        # Falls keine Referenztabelle in der M150-Datei vorhanden ist:
+        if len(blocks) == 0:
+            data = [
+                ('A' ,'Kanal', 'Haltung'),
+                ('B', 'Anschlussleitung', 'Anschlussleitung'),
+                ('C', 'Entlastungsleitung', 'Haltung'),
+                ('Z', 'Sonstige', 'Haltung'),
+            ]
+
+            for (kuerzel, langtext, haltungstyp) in data:
+                params.append(
+                    {
+                        'bezext': langtext,
+                        'kuerzel': kuerzel,
+                        'bezqkan': haltungstyp,
+                        'kommentar': 'M150-Standard',
+                    }
+                )
+
+        sql = """INSERT INTO refdata (
+                    bezext, bezqkan, kuerzel, modul, subject, kommentar)
+                    SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_haltungsarten', :kommentar
+                    WHERE :bezext NOT IN (
+                        SELECT bezext FROM refdata
+                        WHERE modul = 'm150porter'
+                          AND subject = 'import_haltungsarten')"""
+        if not self.db_qkan.sql(sql, "M150 Import Referenztabelle Nr. 108 Haltungsarten", params, many=True):
+            logger.error_data(
+                f'{self.__class__.__name__}: '
+                f'Datensätze konnten nicht in Referenztabelle eingefügt werden: '
+                f'{params=}')
+            raise QkanError
+
+        # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
+        self.db_qkan._adapt_reftable('m150porter','import_haltungsarten')
+
+        # Prüfung, ob noch Zuordnungen NULL oder leer sind
+        sql = """SELECT pk
+            FROM refdata
+            WHERE (bezqkan IS NULL OR bezqkan = '') 
+              AND modul = 'm150porter'
+              AND subject = 'import_haltungsarten'"""
+
+        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
+        data = self.db_qkan.fetchone()
+        complete = complete and (data is None)
+
+        # todo: Einlesen, Patterns, Mapper beim Einlesen von Haltungen, Anschlussleitungen einsetzen,
+        #       Schächte ohne Koordinaten aus Haltungspunktdaten holen
 
         self.db_qkan.commit()
 
@@ -1325,6 +1445,13 @@ class ImportTask(Schadenstexte):
         self.db_qkan.consume_mapper(sql, subject, self.mapper_strassen)
         logger.debug(f'{self.mapper_strassen=}')
 
+        # Haltungsarten
+        sql = "SELECT kuerzel, bezqkan " \
+              "FROM refdata WHERE modul = 'm150porter' AND subject = 'import_haltungsarten'"
+        subject = "xml_import m150_haltungsarten"
+        self.db_qkan.consume_mapper(sql, subject, self.mapper_haltungsarten)
+        logger.debug(f'{self.mapper_haltungsarten=}')
+
         # sql = "SELECT kuerzel, bezeichnung FROM bewertungsart"
         # subject = "xml_import bewertungsart"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_bewertungsart)
@@ -1333,7 +1460,28 @@ class ImportTask(Schadenstexte):
         # subject = "xml_import druckdicht"
         # self.db_qkan.consume_mapper(sql, subject, self.mapper_druckdicht)
 
+        # XPATH-Filter zur Unterscheidung von Haltungen und Hausanschlussleitungen
+        kuerzel = [
+            key for key in self.mapper_haltungsarten
+            if self.mapper_haltungsarten[key]=='Haltung'
+        ]
+        if kuerzel != []:
+            self.m150_haltung = kuerzel[0]
+        else:
+            self.m150_haltung = 'keine_Haltung'    # kein Kürzel für Hausanschlussleitung vorhanden
+
+        kuerzel = [
+            key for key in self.mapper_haltungsarten
+            if self.mapper_haltungsarten[key]=='Hausanschlussleitung'
+        ]
+        if kuerzel != []:
+            self.m150_anschlussleitung = kuerzel[0]
+        else:
+            self.m150_anschlussleitung = 'keine_HA-Leitung'    # kein Kürzel für Hausanschlussleitung vorhanden
+
+
     def _schaechte(self) -> None:
+        """Schächte und Anschlussschächte einlesen"""
         def _iter() -> Iterator[Schacht]:
             blocks = self.xml.findall("KG")                                           # old: KG[KG305='S']
 
@@ -1883,16 +2031,11 @@ class ImportTask(Schadenstexte):
 
     def _haltungen(self) -> None:
         def _iter() -> Iterator[Haltung]:
-            blocks = self.xml.findall("HG")
+            blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']")
 
             logger.debug(f"Anzahl Haltungen: {len(blocks)}")
 
             for block in blocks:
-                # Anschlussleitungen überspringen
-                if block.findtext("HG313") != 'A':
-                # if block.findtext("HG005") or block.findtext("HG006"):
-                    continue
-
                 name = block.findtext("HG001")
                 if name is None:
                     name = block.findtext("HG002", None)
@@ -2020,13 +2163,13 @@ class ImportTask(Schadenstexte):
     #Haltung_untersucht
     def _haltungen_untersucht(self) -> None:
         def _iter() -> Iterator[Haltung_untersucht]:
-            blocks = self.xml.findall("HG/HI/..")
-            logger.debug(f"Anzahl Haltungen: {len(blocks)}")
+            blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']/HI/..")
+            logger.debug(f"Anzahl Haltungen untersucht: {len(blocks)}")
 
             for block in blocks:
                 # Anschlussleitungen überspringen
-                if block.findtext("HG005") or block.findtext("HG006"):
-                    continue
+                # if block.findtext("HG005") or block.findtext("HG006"):
+                #     continue
 
                 name = block.findtext("HG001", None)
                 if name is None:
@@ -2171,7 +2314,7 @@ class ImportTask(Schadenstexte):
 
     def _untersuchdat_haltung(self) -> None:
         def _iter() -> Iterator[Untersuchdat_haltung]:
-            blocks = self.xml.findall("HG/HI/..")
+            blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']/HI/..")
 
             logger.debug(f"Anzahl Untersuchungsdaten Haltung: {len(blocks)}")
 
@@ -2338,8 +2481,9 @@ class ImportTask(Schadenstexte):
 
     def _anschlussleitungen(self) -> None:
         def _iter() -> Iterator[Anschlussleitung]:
-            blocks = self.xml.findall("HG[HG313='B']")
-            logger.debug(f"Anzahl Anschlussleitungen: {len(blocks)}")
+            blocks = self.xml.findall(f"HG[HG313='{self.m150_anschlussleitung}']")
+
+            logger.debug(f"Anzahl Hausanschlussleitungen: {len(blocks)}")
 
             for block in blocks:
                 leitnam = block.findtext("HG011", None)
@@ -2360,7 +2504,7 @@ class ImportTask(Schadenstexte):
                         haltungslaenge = self.xml.findtext(f"HG[HG011='{kindVon}']/HG314")
                     else:
                         # schließt an Haltung an
-                        haltungslaenge = self.xml.findtext(f"HG[HG001='{haltnam}'][HG313='A']/HG314")
+                        haltungslaenge = self.xml.findtext(f"HG[HG001='{haltnam}']/HG314")
                     if haltungslaenge is not None:
                         urstation = round(float(haltungslaenge) - urstation_t, 3)
                     else:
@@ -2504,8 +2648,8 @@ class ImportTask(Schadenstexte):
 
     def _anschluss_untersucht(self) -> None:
         def _iter() -> Iterator[Anschlussleitung_untersucht]:
-            blocks = self.xml.findall("HG/HG006/../HI/..")
-            logger.debug(f"Anzahl Haltungen: {len(blocks)}")
+            blocks = self.xml.findall(f"HG[HG313='{self.m150_anschlussleitung}']/HI/..")
+            logger.debug(f"Anzahl Hausanschlussleitungen untersucht: {len(blocks)}")
 
             for block in blocks:
                 name = block.findtext("HG001", None)
@@ -2650,9 +2794,9 @@ class ImportTask(Schadenstexte):
 
     def _untersuchdat_anschluss(self) -> None:
         def _iter() -> Iterator[Untersuchdat_anschlussleitung]:
-            blocks = self.xml.findall("HG/HI/..")
+            blocks = self.xml.findall(f"HG[HG313='{self.m150_anschlussleitung}']/HI/..")
 
-            logger.debug(f"Anzahl Untersuchungsdaten Haltung: {len(blocks)}")
+            logger.debug(f"Anzahl Untersuchungsdaten Hausanschlussleitungen: {len(blocks)}")
 
             ordner_bild = self.ordner_bild
             ordner_video = self.ordner_video
@@ -2777,33 +2921,33 @@ class ImportTask(Schadenstexte):
                         ZS=ZS,
                     )
 
-        untersuchdat_anschluss = None
-        for untersuchdat_anschluss in _iter():
+        untersuchdat_anschlussleitung = None
+        for untersuchdat_anschlussleitung in _iter():
 
-            params = {'untersuchleit': untersuchdat_anschluss.untersuchhal,     # Hinweis: Untersuchdat_anschlussleitung = Untersuchdat_haltung
-                      'untersuchrichtung': untersuchdat_anschluss.untersuchrichtung,
-                      'schoben': untersuchdat_anschluss.schoben, 'schunten': untersuchdat_anschluss.schunten,
-                      'id': untersuchdat_anschluss.id, 'untersuchtag': untersuchdat_anschluss.untersuchtag,
-                      'videozaehler': untersuchdat_anschluss.videozaehler,
-                      'inspektionslaenge': untersuchdat_anschluss.inspektionslaenge,
-                      'station': untersuchdat_anschluss.station,
-                      'timecode': untersuchdat_anschluss.timecode, 'langtext': untersuchdat_anschluss.langtext,
-                      'kuerzel': untersuchdat_anschluss.kuerzel,
-                      'charakt1': untersuchdat_anschluss.charakt1, 'charakt2': untersuchdat_anschluss.charakt2,
-                      'quantnr1': untersuchdat_anschluss.quantnr1, 'quantnr2': untersuchdat_anschluss.quantnr2,
-                      'streckenschaden': untersuchdat_anschluss.streckenschaden,
-                      'streckenschaden_lfdnr': untersuchdat_anschluss.streckenschaden_lfdnr,
-                      'pos_von': untersuchdat_anschluss.pos_von, 'pos_bis': untersuchdat_anschluss.pos_bis,
-                      'foto_dateiname': untersuchdat_anschluss.foto_dateiname,
-                      'film_dateiname': untersuchdat_anschluss.film_dateiname,
-                      'ordner_bild': untersuchdat_anschluss.ordner_bild,
-                      'ordner_video': untersuchdat_anschluss.ordner_video,
-                      'ZD': untersuchdat_anschluss.ZD,
-                      'ZB': untersuchdat_anschluss.ZB, 'ZS': untersuchdat_anschluss.ZS}
+            params = {'untersuchleit': untersuchdat_anschlussleitung.untersuchhal,     # Hinweis: Untersuchdat_anschlussleitung = Untersuchdat_haltung
+                      'untersuchrichtung': untersuchdat_anschlussleitung.untersuchrichtung,
+                      'schoben': untersuchdat_anschlussleitung.schoben, 'schunten': untersuchdat_anschlussleitung.schunten,
+                      'id': untersuchdat_anschlussleitung.id, 'untersuchtag': untersuchdat_anschlussleitung.untersuchtag,
+                      'videozaehler': untersuchdat_anschlussleitung.videozaehler,
+                      'inspektionslaenge': untersuchdat_anschlussleitung.inspektionslaenge,
+                      'station': untersuchdat_anschlussleitung.station,
+                      'timecode': untersuchdat_anschlussleitung.timecode, 'langtext': untersuchdat_anschlussleitung.langtext,
+                      'kuerzel': untersuchdat_anschlussleitung.kuerzel,
+                      'charakt1': untersuchdat_anschlussleitung.charakt1, 'charakt2': untersuchdat_anschlussleitung.charakt2,
+                      'quantnr1': untersuchdat_anschlussleitung.quantnr1, 'quantnr2': untersuchdat_anschlussleitung.quantnr2,
+                      'streckenschaden': untersuchdat_anschlussleitung.streckenschaden,
+                      'streckenschaden_lfdnr': untersuchdat_anschlussleitung.streckenschaden_lfdnr,
+                      'pos_von': untersuchdat_anschlussleitung.pos_von, 'pos_bis': untersuchdat_anschlussleitung.pos_bis,
+                      'foto_dateiname': untersuchdat_anschlussleitung.foto_dateiname,
+                      'film_dateiname': untersuchdat_anschlussleitung.film_dateiname,
+                      'ordner_bild': untersuchdat_anschlussleitung.ordner_bild,
+                      'ordner_video': untersuchdat_anschlussleitung.ordner_video,
+                      'ZD': untersuchdat_anschlussleitung.ZD,
+                      'ZB': untersuchdat_anschlussleitung.ZB, 'ZS': untersuchdat_anschlussleitung.ZS}
 
             if not self.db_qkan.insertdata(
-                    tabnam="untersuchdat_anschluss",
-                    stmt_category='m150-import untersuchdat_anschluss',
+                    tabnam="untersuchdat_anschlussleitung",
+                    stmt_category='m150-import untersuchdat_anschlussleitung',
                     mute_logger=False,
                     parameters=params,
             ):
@@ -2815,12 +2959,10 @@ class ImportTask(Schadenstexte):
 
         #Schadenstexte.setschadenstexte_anschlussleitungen()
         # self.db_qkan.setschadenstexte_anschlussleitungen()
-        if untersuchdat_anschluss is not None:
+        if untersuchdat_anschlussleitung is not None:
             Schadenstexte.setschadenstexte_anschlussleitungen(self.db_qkan)
 
-
     def _wehre(self) -> None:
-
         def _iter() -> Iterator[Wehr]:
             blocks = self.xml.findall("KG[KG306='ZVB']")
             logger.debug(f"Anzahl Wehre: {len(blocks)}")
@@ -2856,7 +2998,6 @@ class ImportTask(Schadenstexte):
                     kommentar=kommentar,
                     schwellenhoehe = 0.0
                 )
-
 
         for wehr in _iter():
 
@@ -2905,7 +3046,6 @@ class ImportTask(Schadenstexte):
         self.db_qkan.commit()
 
     def _pumpen(self) -> None:
-
         def _iter() -> Iterator[Pumpe]:
             blocks = self.xml.findall("KG[KG306='ZPW']") + \
                      self.xml.findall("KG[KG306='RSPW']") + \

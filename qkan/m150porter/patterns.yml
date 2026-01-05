@@ -1,9 +1,13 @@
+# Muster duerfen nur Kleinbuchstaben enthalten
+# Patterns mit - und in Anführungszeichen (")
+
 import_knotentypen:
   Anschlussschacht:
   - "anschlus*"
   - "anschlu\xDF*"
   - "anschlue*"
   - "anschl\xFC*"
+  - "hausanschl*"
   Schacht:
   - "schacht"
   Symbol:
@@ -54,10 +58,18 @@ import_simulationsstatus:
 # mindestens ein Datensatz für das dict
 import_material:
   Beton:
-  - Beton
+  - "Beton"
 
 # mindestens ein Datensatz für das dict
 import_bauwerksarten:
   Heber:
-  - Heber
+  - "Heber"
 
+import_haltungsarten:
+  Haltung:
+  - "haltung"
+  - "kanal"
+  - "entlastungsleitung"
+  - "sonstige"
+  Hausanschlussleitung:
+  - "*anschlussleitung"

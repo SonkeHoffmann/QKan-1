@@ -239,7 +239,11 @@ class DBConnection:
 
                             if self.writeQgsBackup:
                                 projectfile = QgsProject.instance().fileName()
-                                shutil.copy(projectfile, bakdir)
+                                try:
+                                    shutil.copy(projectfile, bakdir)
+                                except:
+                                    logger.error_code(f'Projektdatei {projectfile} konnte nicht auf {bakdir} kopiert werden')
+                                    raise QkanAbortError
 
                         self.upgrade_database()
                     else:
@@ -771,7 +775,7 @@ class DBConnection:
             stmt_category: str = "allgemein",
             mute_logger: bool = False,
             ignore: bool = False,  # ignore error and continue
-            parameters: [dict, tuple] = None
+            parameters: dict[Union[str, Any], Union[Union[str, float, int], Any]] = None
     ) -> bool:
         """Fügt einen Datensatz mit Geo-Objekt hinzu
 
@@ -1940,7 +1944,7 @@ class DBConnection:
                 # Schleife über alle QKan-Bezeichnungen
                 for patt in patterns[bezqkan]:
                     # Schleife über die Matchliste
-                    if fnmatch(bezext.strip().lower(), patt):
+                    if fnmatch(bezext.strip().lower(), patt.lower()):
                         # Match gefunden
                         logger.debug(f'Match gefunden: {bezext=}, {patt=}')
                         if not self.sqlyml(

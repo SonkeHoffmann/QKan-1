@@ -21,7 +21,8 @@ class TestM150QKan(QgisTest):
     def test_import(self) -> None:
         QKan.config.database.qkan = str(BASE_WORK / "HKuSuHA.sqlite")
         # QKan.config.xml.import_file = str(BASE_WORK / "HKuSuHA.xml")
-        QKan.config.xml.import_file = str(BASE_WORK / "M150_2_Z_2010_HKuSuHA_tags.xml")
+        # QKan.config.xml.import_file = str(BASE_WORK / "M150_2_Z_2010_HKuSuHA.xml")
+        QKan.config.xml.import_file = str(BASE_WORK / "M150_Z_2010_HKuSuHA.xml")
         # QKan.config.database.qkan = str(BASE_WORK / "alsdorf.sqlite")
         # QKan.config.xml.import_file = str(BASE_WORK / "Alsdorf_Test_mit Zustand_25832.xml")
         # QKan.config.database.qkan = str(BASE_WORK / "lemgo.sqlite")

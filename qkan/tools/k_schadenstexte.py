@@ -68,17 +68,16 @@ class Schadenstexte:
 
             pavor = 0
             mavor = 1  # Initialisierung mit 1 = True
-            stvor = 0
+            stvor = None        # zum Vergleich mit vorheriger Station
             for i in range(ianf, iend):
                 station = data_uh[i][2]
                 if i == ianf:
                     dist = 0
                 else:
+                    # Wenn gleiche Station, dann Abstand tdist, sonst noch bdist dazu
                     dist = (abs(station - stvor) > 0.0001) * bdist + tdist
-                pa[i - ianf] = max(station, pavor + dist)
-                ma[i - ianf] = mavor * (pavor + dist > station - 0.0001)
-                pavor = pa[i - ianf]
-                mavor = ma[i - ianf]
+                ma[i - ianf] = mavor = mavor * (pavor + dist > station - 0.0001)
+                pa[i - ianf] = pavor = max(station, pavor + dist)
                 stvor = station
 
             xa, ya, xe, ye = data_hu[pk]
@@ -86,17 +85,16 @@ class Schadenstexte:
 
             pevor = laenge - (tdist + bdist)
             mevor = 1  # Initialisierung mit 1 = True
-            stvor = 0
+            stvor = None        # zum Vergleich mit vorheriger Station
             for i in range(iend - 1, ianf - 1, -1):
                 station = data_uh[i][2]
                 if i == iend - 1:
                     dist = 0
                 else:
+                    # Wenn gleiche Station, dann Abstand tdist, sonst noch bdist dazu
                     dist = (abs(station - stvor) > 0.0001) * bdist + tdist
-                pe[i - ianf] = min(station, pevor - dist)
-                me[i - ianf] = mevor * (pevor - dist < station + 0.0001)
-                pevor = pe[i - ianf]
-                mevor = me[i - ianf]
+                me[i - ianf] = mevor = mevor * (pevor - dist < station + 0.0001)
+                pe[i - ianf] = pevor = min(station, pevor - dist)
                 stvor = station
 
             for i in range(ianf, iend):
@@ -497,49 +495,46 @@ class Schadenstexte:
                 me = array('B', [0] * sj)  # markiert den Endbereich, in dem nur pe verwendet wird
                 po = array('d', [0.0] * sj)  # Für ma: pa, für me: pe, sonst: (pa+pe)/2.
 
-            pavor = 0
+            pavor = None
             mavor = 1  # Initialisierung mit 1 = True
-            stvor = 0
+            stvor = None        # zum Vergleich mit vorheriger Station
             for i in range(ianf, iend):
                 station = data_uh[i][2]
                 if i == ianf:
                     dist = 0
+                    pavor = station
                 else:
+                    # Wenn gleiche Station, dann Abstand tdist, sonst noch bdist dazu
                     dist = (abs(station - stvor) > 0.0001) * bdist + tdist
-                pa[i - ianf] = max(station, pavor + dist)
-                ma[i - ianf] = mavor * (pavor + dist > station - 0.0001)
-                pavor = pa[i - ianf]
-                mavor = ma[i - ianf]
+                ma[i - ianf] = mavor = mavor * (pavor + dist > station - 0.0001)
+                pa[i - ianf] = pavor = max(station, pavor + dist)
                 stvor = station
 
-            xa, ya, x_, y_, laenge, geom_wkb = data_hu[pk]
+            xa, ya, xe, ye, laeng_, geom_wkb = data_hu[pk]
+            # Länge muss ggfs. auf den Bereich der Stationen erweitert werden
+            laenge = max(laeng_, data_uh[iend-1][2] - data_uh[ianf][2])
 
-            # Verlängern der Verbindung Anf - Ende über das Ende hinaus mit laenge, vor allem für den Fall, dass
-            # die Anschlussleitung stark gebogen ist.
-            laeng_ = ((x_ - xa) ** 2. + (y_ - ya) ** 2.) ** 0.5
-            xe = xa + (x_ - xa) * laenge / laeng_
-            ye = ya + (y_ - ya) * laenge / laeng_
-
-            pevor = laenge - (tdist + bdist)
+            versatz = QKan.config.zustand.versatz_anschlusstexte    # Abstand der Texte zur Haltung
+            pevor = laeng_ - (tdist + bdist) - versatz
             mevor = 1  # Initialisierung mit 1 = True
-            stvor = 0
+            stvor = None        # zum Vergleich mit vorheriger Station
             for i in range(iend - 1, ianf - 1, -1):
                 station = data_uh[i][2]
                 if i == iend - 1:
                     dist = 0
                 else:
+                    # Wenn gleiche Station, dann Abstand tdist, sonst noch bdist dazu
                     dist = (abs(station - stvor) > 0.0001) * bdist + tdist
-                pe[i - ianf] = min(station, pevor - dist)
-                me[i - ianf] = mevor * (pevor - dist < station + 0.0001)
-                pevor = pe[i - ianf]
-                mevor = me[i - ianf]
+                me[i - ianf] = mevor = mevor * (pevor - dist < station + 0.0001)
+                pe[i - ianf] = pevor = min(station, pevor - dist)
                 stvor = station
 
             for i in range(ianf, iend):
-                if ma[i - ianf]:
-                    po[i - ianf] = pa[i - ianf]
-                elif me[i - ianf]:
+                if me[i - ianf]:
+                    # auch wenn beides wahr ist ...
                     po[i - ianf] = pe[i - ianf]
+                elif ma[i - ianf]:
+                    po[i - ianf] = pa[i - ianf]
                 else:
                     po[i - ianf] = (pa[i - ianf] + pe[i - ianf]) / 2.
 
@@ -547,8 +542,9 @@ class Schadenstexte:
 
             if laenge > 0.045:
                 # Koordinaten relativ zur Anschlussleitung
-                xu = (xe - xa) / laenge
-                yu = (ye - ya) / laenge
+                laeng_ = ((xe - xa)**2 + (ye - ya)**2)**0.5
+                xu = (xe - xa) / laeng_
+                yu = (ye - ya) / laeng_
                 if seite_texte == 'rechts':
                     xv = yu
                     yv = -xu
@@ -560,20 +556,20 @@ class Schadenstexte:
                 # werden. Besonderheit: Zunächst werden die Texte um versatz verschoben, weiter weg wird der Versatz
                 # wenn möglich verringert.
                 versatz = QKan.config.zustand.versatz_anschlusstexte - (tdist)
-                st1_akt = 0                     # Position des letzten Textes, um sicherzustellen, dass die unter-
+                # st1_akt = 0                     # Position des letzten Textes, um sicherzustellen, dass die unter-
                                                 # schiedlichen Abstände tdist und bdist erhalten bleiben
                 for i in range(ianf, iend):
                     pk = data_uh[i][0]
                     st0 = data_uh[i][2]
-                    st1_vor = st1_akt           # Speichern der vorherigen (nicht versetzten) Position
-                    st1_akt =  po[i - ianf]
+                    # st1_vor = st1_akt           # Speichern der vorherigen (nicht versetzten) Position
+                    st1 =  po[i - ianf]
                     # Feststellen, ob zwischen der vorherigen und der aktuellen Position ein vergrößerter Abstand vorlag
-                    if st1_akt - st1_vor < tdist + 0.001:
-                        vdist = tdist
-                    else:
-                        vdist = tdist + bdist
-                    st1_ver = max(versatz + vdist, st1_akt)
-                    versatz = st1_ver
+                    # if st1_akt - st1_vor < tdist + 0.001:
+                    #     vdist = tdist
+                    # else:
+                    #     vdist = tdist + bdist
+                    # st1_ver = max(versatz + vdist, st1_akt)
+                    # versatz = st1_ver
                     # Der Anfangspunkt liegt auf der Anschlussleitung im Abstand st0 vom Anfangspunkt
                     leitobj = QgsGeometry()
                     leitobj.fromWkb(bytes.fromhex(geom_wkb.hex()))
@@ -586,10 +582,10 @@ class Schadenstexte:
                         p1 = QgsPoint(x1, y1)
                     x2 = xa + xu * st0 + xv * abst[1]
                     y2 = ya + yu * st0 + yv * abst[1]
-                    x3 = xa + xu * st1_ver + xv * abst[2]
-                    y3 = ya + yu * st1_ver + yv * abst[2]
-                    x4 = xa + xu * st1_ver + xv * abst[3]
-                    y4 = ya + yu * st1_ver + yv * abst[3]
+                    x3 = xa + xu * st1 + xv * abst[2]
+                    y3 = ya + yu * st1 + yv * abst[2]
+                    x4 = xa + xu * st1 + xv * abst[3]
+                    y4 = ya + yu * st1 + yv * abst[3]
                     geoobj = QgsGeometry.asWkb(
                         QgsGeometry.fromPolyline([p1, QgsPoint(x2, y2), QgsPoint(x3, y3), QgsPoint(x4, y4)]))
                     sql = "UPDATE untersuchdat_anschlussleitung SET geom = GeomFromWKB(?, ?) WHERE pk = ? AND geom IS NULL"
@@ -638,8 +634,8 @@ class Schadenstexte:
         sql = """SELECT
             uh.pk, hu.pk AS id,
             CASE hu.untersuchrichtung
-                WHEN 'in Fließrichtung' THEN GLength(hu.geom) - uh.station
-                WHEN 'gegen Fließrichtung'    THEN uh.station
+                WHEN 'gegen Fließrichtung' THEN GLength(hu.geom) - uh.station
+                WHEN 'in Fließrichtung'    THEN uh.station
                                            ELSE uh.station END        AS station
             FROM untersuchdat_anschlussleitung AS uh
             JOIN anschlussleitungen_untersucht AS hu
@@ -681,7 +677,8 @@ class Schadenstexte:
             FROM (
                 SELECT
                     hu.pk AS pk, hu.leitnam, 
-                    row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten ORDER BY hu.untersuchtag DESC) AS row_number
+                    row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten 
+                                       ORDER BY hu.untersuchtag DESC) AS row_number
                 FROM anschlussleitungen_untersucht AS hu
                 GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag
             ) AS unum
@@ -699,7 +696,8 @@ class Schadenstexte:
             WITH num AS (
                 SELECT
                     hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag, 
-                    row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten ORDER BY hu.untersuchtag DESC) AS row_number
+                    row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten 
+                                       ORDER BY hu.untersuchtag DESC) AS row_number
                 FROM anschlussleitungen_untersucht AS hu
                 GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag
             )
