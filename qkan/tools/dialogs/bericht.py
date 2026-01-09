@@ -43,12 +43,14 @@ class QgsBerichtDialog(QKanDBDialog, FORM_CLASS_bericht):  # type: ignore
 
         self.buttonBox.helpRequested.connect(self.click_help)
 
+
+
     def click_help(self) -> None:
         help_file = "https://qkan.eu//QKan_Formulare_Allgemein.html"
         os.startfile(help_file)
 
     def select_path(self) -> None:
-        filename, _filter = QFileDialog.getSaveFileName(self, "Haltungsberichte Speicherort", "", '*.pdf')
+        filename= QFileDialog.getExistingDirectory(self, "Haltungsberichte Speicherort")
         self.lineEdit.setText(filename)
 
         if os.path.dirname(filename) != '':

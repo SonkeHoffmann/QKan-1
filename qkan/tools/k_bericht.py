@@ -22,7 +22,7 @@ logger = get_logger("QKan.tools.k_bericht")
 
 
 def bericht(
-    db, filename
+    db, filename, auswahl
 ) -> None:
     """Erzeugt Haltungsberichte.
     """
@@ -84,25 +84,71 @@ def bericht(
     atlas = layout.atlas()
     atlas.setEnabled(True)
 
-    #Filter
-    #atlas.setFilterFeatures(True)
-    #atlas.setFilterExpression("")
-
-    atlas.beginRender()
-
-    while atlas.next():
-        feature = atlas.currentFeature()
-        print(feature["id"])
-
-    atlas.endRender()
-
     exporter = QgsLayoutExporter(layout)
     settings = QgsLayoutExporter.PdfExportSettings()
 
-    exporter.exportToPdf(
-        filename,
-        settings
-    )
+    layer = atlas.coverageLayer()
+
+    if auswahl:
+
+        haltungen_layer_name = "Haltungen"
+
+        haltungen_layer = QgsProject.instance().mapLayersByName(haltungen_layer_name)[0]
+
+
+        sql = f"""
+        SELECT h.*
+        FROM haltungen AS h
+        JOIN sel_haltungen AS s
+        ON h.pk = s.pk
+        """
+
+        vl_name = "vl_haltungen_filtered"
+        vl = QgsVectorLayer(f"virtual:{sql}", vl_name, "virtual")
+
+        if not vl.isValid():
+            print("Fehler: Virtueller Layer konnte nicht erstellt werden!")
+        else:
+            QgsProject.instance().addMapLayer(vl)
+            coverage_layer = atlas.coverageLayer()
+
+            expression = f"""
+                "haltnam" IN (
+                    aggregate(
+                        layer:='{vl_name}',
+                        aggregate:='array_agg',
+                        expression:="haltnam"
+                    )
+                )
+            """
+            coverage_layer.setSubsetString(expression)
+
+        features = list(layer.getFeatures())
+
+        atlas.beginRender()
+        for i in range(len(features)):
+            atlas.next()  # Atlas auf die nächste Seite setzen
+            feature = features[atlas.currentFeatureNumber()]
+            filename = filename + rf"\{feature['haltnam']}.pdf"
+            exporter.exportToPdf(filename, settings)
+        atlas.endRender()
+
+        haltungen_layer.setSubsetString("")
+        coverage_layer.setSubsetString("")
+
+    else:
+        haltungen = QgsProject.instance().mapLayersByName("Haltungen")[0]
+        features = list(layer.getFeatures())
+        coverage_layer = atlas.coverageLayer()
+        coverage_layer.setSubsetString("")
+        atlas.beginRender()
+        for i in range(len(features)):
+            atlas.next()  # Atlas auf die nächste Seite setzen
+            feature = features[atlas.currentFeatureNumber()]
+            exporter.exportToPdf(filename+ rf"\{feature['haltnam']}.pdf", settings)
+        atlas.endRender()
+
+        haltungen.setSubsetString("")
 
 
     #Layout zurücksetzten

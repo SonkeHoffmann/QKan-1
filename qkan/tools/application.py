@@ -1074,6 +1074,10 @@ class QKanTools(QKanPlugin):
 
             # Abrufen der ausgewählten Elemente in den Listen
             path = self.dlgb.lineEdit.text()
+            if self.dlgb.radioButton_2.isChecked():
+                auswahl = True
+            else:
+                auswahl = False
             # fotopath = self.dlgfp.lineEdit_2.text()
             # fotopath_2 = self.dlgfp.lineEdit_3.text()
             # videopath_2 = self.dlgfp.lineEdit_5.text()
@@ -1100,7 +1104,8 @@ class QKanTools(QKanPlugin):
 
                 bericht(
                     db_qkan,
-                    path
+                    path,
+                    auswahl
                 )
 
     def run_zoom_clipboard(self) -> None:
