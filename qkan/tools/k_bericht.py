@@ -76,7 +76,7 @@ def bericht(
 
     x = QgsProject.instance()
 
-    layout = x.layoutManager().layoutByName('Bericht')
+    layout = x.layoutManager().layoutByName('Haltungsbericht')
     #TODO: QKan Fehler
     if layout is None:
         raise Exception("Layout nicht gefunden")
