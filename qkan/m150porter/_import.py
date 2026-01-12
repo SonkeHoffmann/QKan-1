@@ -2045,7 +2045,9 @@ class ImportTask(Schadenstexte):
                 schoben = block.findtext("HG003", None)
                 schunten = block.findtext("HG004", None)
 
-                laenge = _get_float(block, "HG314", 0.0)
+                laenge = _get_float(block, "HG314", None)
+                if laenge is None:
+                    laenge = _get_float(block, "HG310", None)
 
                 material = block.findtext("HG304", None)
 
@@ -2181,7 +2183,7 @@ class ImportTask(Schadenstexte):
                 schunten = block.findtext("HG004", None)
 
                 laenge = _get_float(block, "HG314", None)
-                if not laenge:
+                if laenge is None:
                     laenge = _get_float(block, "HG310", None)
 
                 hoehe = _get_float(block, "HG307")
@@ -2501,10 +2503,22 @@ class ImportTask(Schadenstexte):
                     kindVon = block.findtext("HG012", None)
                     if kindVon is not None:
                         # schließt an weitere Hausanschlussleitung an
-                        haltungslaenge = self.xml.findtext(f"HG[HG011='{kindVon}']/HG314")
+                        hblocks = self.xml.findall(f"HG[HG011='{kindVon}']")
+                        haltungslaenge = None
+                        for hblock in hblocks:
+                            # letzter wird übernommen
+                            haltungslaenge = _get_float(hblock, "HG314", None)
+                        if haltungslaenge is None:
+                            haltungslaenge = _get_float(hblock, "HG310", None)
                     else:
                         # schließt an Haltung an
-                        haltungslaenge = self.xml.findtext(f"HG[HG001='{haltnam}']/HG314")
+                        hblocks = self.xml.findall(f"HG[HG001='{haltnam}']")
+                        haltungslaenge = None
+                        for hblock in hblocks:
+                            # letzter wird übernommen
+                            haltungslaenge = _get_float(hblock, "HG314", None)
+                        if haltungslaenge is None:
+                            haltungslaenge = _get_float(hblock, "HG310", None)
                     if haltungslaenge is not None:
                         urstation = round(float(haltungslaenge) - urstation_t, 3)
                     else:
@@ -2662,7 +2676,7 @@ class ImportTask(Schadenstexte):
                 schunten = block.findtext("HG004", None)
 
                 laenge = _get_float(block,"HG314", None)
-                if not laenge:
+                if laenge is None:
                     laenge = _get_float(block, "HG310", None)
 
                 hoehe = (_get_float(block,"HG307", 0.0))

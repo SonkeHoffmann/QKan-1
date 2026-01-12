@@ -2,15 +2,11 @@ import os
 
 from qkan.utils import get_logger
 
-from qgis.utils import iface, spatialite_connect
 from qkan import QKan
 from qkan import enums
-from pathlib import Path
-import sys
 from qkan.tools.k_schadenstexte import Schadenstexte
+from qkan.tools.qkan_utils import loadLayer
 from qgis.core import (
-    Qgis,
-    QgsApplication,
     QgsProject,
     QgsLayoutExporter,
     QgsDataSourceUri,
@@ -22,7 +18,7 @@ logger = get_logger("QKan.tools.k_bericht")
 
 
 def bericht(
-    db, filename, auswahl
+    db_qkan, filename, auswahl
 ) -> None:
     """Erzeugt Haltungsberichte.
     """
@@ -33,32 +29,58 @@ def bericht(
     #sowie hinterher auch alles wieder zurückändern
 
     #Layout verändern
-    uri = QgsDataSourceUri()
-    uri.setDatabase(db.dbname)
-    schema = ''
     table = 'untersuchdat_haltung_bewertung'
-    geom_column = 'geom'
-    uri.setDataSource(schema, table, geom_column)
-    untersuchdat_haltung_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
-    vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-    x = QgsProject.instance()
-    try:
-        x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-    except:
-        pass
+    layernam = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
+    if db_qkan.attrlist(table) != []:
+        x = QgsProject.instance()
+        try:
+            x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
+        except:
+            pass
+        loadLayer(
+            layerbez=layernam,
+            table=table,
+            geom_column='geom',
+            qmlfile='untersuchdat_haltung_bewertung_dwa_bericht.qml',
+            group=['qkan', 'Ergebnisse'],
+        )
 
-    x = os.path.dirname(os.path.abspath(__file__))
-    vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa_bericht.qml')
-    # QgsProject.instance().addMapLayer(vlayer)
-    group = 'Ergebnisse'
-    layersRoot = QgsProject.instance().layerTreeRoot()
-    QgsProject.instance().addMapLayer(vlayer, False)
-    atcGroup = layersRoot.findGroup(group)
-    if atcGroup is None:
-        atcGroup = layersRoot.addGroup(group)
-    atcGroup.addLayer(vlayer)
+    # uri = QgsDataSourceUri()
+    # uri.setDatabase(db_qkan.dbname)
+    # schema = ''
+    # table = 'untersuchdat_haltung_bewertung'
+    # geom_column = 'geom'
+    # uri.setDataSource(schema, table, geom_column)
+    # untersuchdat_haltung_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
+    # vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
+    # x = QgsProject.instance()
+    # try:
+    #     x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
+    # except:
+    #     pass
+    #
+    # x = os.path.dirname(os.path.abspath(__file__))
+    # vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa_bericht.qml')
+    # # QgsProject.instance().addMapLayer(vlayer)
+    # group = 'Ergebnisse'
+    # layersRoot = QgsProject.instance().layerTreeRoot()
+    # QgsProject.instance().addMapLayer(vlayer, False)
+    # atcGroup = layersRoot.findGroup(group)
+    # if atcGroup is None:
+    #     atcGroup = layersRoot.addGroup(group)
+    # atcGroup.addLayer(vlayer)
 
-    #Beschriftung verändern und neu berechnen
+    # Beschriftung verändern und neu berechnen
+
+    # Konfiguration zwischenspeichern
+    storedvalues = [
+        QKan.config.zustand.abstand_zustandstexte,
+        QKan.config.zustand.abstand_zustandsbloecke,
+        QKan.config.zustand.abstand_knoten_anf,
+        QKan.config.zustand.abstand_knoten_1,
+        QKan.config.zustand.abstand_knoten_2,
+        QKan.config.zustand.abstand_knoten_end,
+    ]
 
     QKan.config.zustand.abstand_zustandstexte = 0.6
     QKan.config.zustand.abstand_zustandsbloecke = 1.0
@@ -67,9 +89,9 @@ def bericht(
     QKan.config.zustand.abstand_knoten_2 = 1.5
     QKan.config.zustand.abstand_knoten_end = 5.0
 
-    Schadenstexte.setschadenstexte_haltungen(db)
-    Schadenstexte.setschadenstexte_schaechte(db)
-    Schadenstexte.setschadenstexte_anschlussleitungen(db)
+    Schadenstexte.setschadenstexte_haltungen(db_qkan)
+    Schadenstexte.setschadenstexte_schaechte(db_qkan)
+    Schadenstexte.setschadenstexte_anschlussleitungen(db_qkan)
 
 
     #Bericht erstellen und abspeichern
@@ -151,42 +173,58 @@ def bericht(
         haltungen.setSubsetString("")
 
 
-    #Layout zurücksetzten
-    uri = QgsDataSourceUri()
-    uri.setDatabase(db.dbname)
-    schema = ''
-    table = 'untersuchdat_haltung_bewertung'
-    geom_column = 'geom'
-    uri.setDataSource(schema, table, geom_column)
-    untersuchdat_haltung_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
-    vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-    x = QgsProject.instance()
-    try:
-        x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-    except:
-        pass
+    #Layout zurücksetzen
+    if db_qkan.attrlist(table) != []:
+        x = QgsProject.instance()
+        try:
+            x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
+        except:
+            pass
+        loadLayer(
+            layerbez=layernam,
+            table=table,
+            geom_column='geom',
+            qmlfile='untersuchdat_haltung_bewertung_dwa.qml',
+            group=['qkan', 'Ergebnisse'],
+        )
 
-    x = os.path.dirname(os.path.abspath(__file__))
-    vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
-    # QgsProject.instance().addMapLayer(vlayer)
-    group = 'Ergebnisse'
-    layersRoot = QgsProject.instance().layerTreeRoot()
-    QgsProject.instance().addMapLayer(vlayer, False)
-    atcGroup = layersRoot.findGroup(group)
-    if atcGroup is None:
-        atcGroup = layersRoot.addGroup(group)
-    atcGroup.addLayer(vlayer)
+    # uri = QgsDataSourceUri()
+    # uri.setDatabase(db_qkan.dbname)
+    # schema = ''
+    # table = 'untersuchdat_haltung_bewertung'
+    # geom_column = 'geom'
+    # uri.setDataSource(schema, table, geom_column)
+    # untersuchdat_haltung_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
+    # vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
+    # x = QgsProject.instance()
+    # try:
+    #     x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
+    # except:
+    #     pass
+    #
+    # x = os.path.dirname(os.path.abspath(__file__))
+    # vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa.qml')
+    # # QgsProject.instance().addMapLayer(vlayer)
+    # group = 'Ergebnisse'
+    # layersRoot = QgsProject.instance().layerTreeRoot()
+    # QgsProject.instance().addMapLayer(vlayer, False)
+    # atcGroup = layersRoot.findGroup(group)
+    # if atcGroup is None:
+    #     atcGroup = layersRoot.addGroup(group)
+    # atcGroup.addLayer(vlayer)
 
 
-    #Beschriftung zurücksetzten und neu berechnen
+    #Beschriftung zurücksetzen und neu berechnen
 
-    QKan.config.zustand.abstand_zustandstexte = 0.35
-    QKan.config.zustand.abstand_zustandsbloecke = 0.45
-    QKan.config.zustand.abstand_knoten_anf = 0.0
-    QKan.config.zustand.abstand_knoten_1 = 1.0
-    QKan.config.zustand.abstand_knoten_2 = 1.5
-    QKan.config.zustand.abstand_knoten_end = 4.0
+    (
+        QKan.config.zustand.abstand_zustandstexte,
+        QKan.config.zustand.abstand_zustandsbloecke,
+        QKan.config.zustand.abstand_knoten_anf,
+        QKan.config.zustand.abstand_knoten_1,
+        QKan.config.zustand.abstand_knoten_2,
+        QKan.config.zustand.abstand_knoten_end,
+    ) = storedvalues
 
-    Schadenstexte.setschadenstexte_haltungen(db)
-    Schadenstexte.setschadenstexte_schaechte(db)
-    Schadenstexte.setschadenstexte_anschlussleitungen(db)
+    Schadenstexte.setschadenstexte_haltungen(db_qkan)
+    Schadenstexte.setschadenstexte_schaechte(db_qkan)
+    Schadenstexte.setschadenstexte_anschlussleitungen(db_qkan)

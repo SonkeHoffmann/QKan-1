@@ -243,6 +243,7 @@ class SyncConfig(ClassObject):
     ext: str = ""
     check_schaechte: bool = True
     check_haltungen: bool = True
+    check_haschaechte: bool = True
     check_haleitungen: bool = True
     check_flaechen: bool = True
     check_tezg: bool = True
