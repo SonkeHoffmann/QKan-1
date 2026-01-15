@@ -15,7 +15,11 @@ from qgis.core import (
     QgsLayoutExporter,
     QgsDataSourceUri,
     QgsVectorLayer,
+    QgsPrintLayout,
+    QgsReadWriteContext,
 )
+from qgis.PyQt.QtXml import QDomDocument
+from qgis.utils import pluginDirectory
 
 
 logger = get_logger("QKan.tools.k_bericht")
@@ -26,8 +30,6 @@ def bericht(
 ) -> None:
     """Erzeugt Haltungsberichte.
     """
-    #TODO: Vorlage Bericht in QGIS öffnen und je nach dem ob alle Daten oder nur gewählte Daten erzeugt werden sollen
-    # die Auswahl vom Atlas ändern
 
     #vorher layout ändern und positionierung ändenr
     #sowie hinterher auch alles wieder zurückändern
@@ -76,10 +78,40 @@ def bericht(
 
     x = QgsProject.instance()
 
-    layout = x.layoutManager().layoutByName('Bericht')
-    #TODO: QKan Fehler
+    layout = x.layoutManager().layoutByName('Haltungsbericht')
+
     if layout is None:
-        raise Exception("Layout nicht gefunden")
+        template_path = str(
+                    Path(pluginDirectory("qkan")) / "templates" / "Haltungsbericht.qpt"
+                )
+        layout = QgsPrintLayout(x)
+        layout.initializeDefaults()
+        layout.setName("Haltungsbericht")
+
+        doc = QDomDocument()
+        with open(template_path, 'r', encoding='utf-8') as f:
+            doc.setContent(f.read())
+
+        context = QgsReadWriteContext()
+        layout.loadFromTemplate(doc, context)
+
+        # Layout zum Projekt hinzufügen
+        x.layoutManager().addLayout(layout)
+        layout = x.layoutManager().layoutByName('Haltungsbericht')
+
+
+        image_path = str(
+                    Path(pluginDirectory("qkan")) / "tools" / "res" / "QKan_Logo.png"
+                )
+
+        layout = x.layoutManager().layoutByName("Haltungsbericht")
+        item = layout.itemById("Bild")
+        item.setPicturePath(image_path)
+        item.refresh()
+        item = layout.itemById("Bild1")
+        item.setPicturePath(image_path)
+        item.refresh()
+
 
     atlas = layout.atlas()
     atlas.setEnabled(True)
@@ -105,12 +137,14 @@ def bericht(
 
         vl_name = "vl_haltungen_filtered"
         vl = QgsVectorLayer(f"virtual:{sql}", vl_name, "virtual")
+        coverage_layer = atlas.coverageLayer()
 
         if not vl.isValid():
             print("Fehler: Virtueller Layer konnte nicht erstellt werden!")
+
         else:
             QgsProject.instance().addMapLayer(vl)
-            coverage_layer = atlas.coverageLayer()
+
 
             expression = f"""
                 "haltnam" IN (
