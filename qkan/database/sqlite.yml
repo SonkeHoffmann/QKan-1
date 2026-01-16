@@ -1115,6 +1115,7 @@ CREATE TABLE IF NOT EXISTS videos (
     pk INTEGER PRIMARY KEY, 
                     name TEXT, 
                     untersuchtag TEXT,
+                    untersuchrichtung TEXT,
                     objekt TEXT,
                     datei TEXT,
                     createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
@@ -1488,9 +1489,9 @@ coalesce(:createdat, CURRENT_TIMESTAMP));"
 
 database_insertdata_videos: "
 INSERT INTO videos
-  (name, untersuchtag, objekt, datei, createdat)
+  (name, untersuchtag, untersuchrichtung, objekt, datei, createdat)
 VALUES (
-:name, :untersuchtag, :objekt, :datei, 
+:name, :untersuchtag, :untersuchrichtung, :objekt, :datei, 
 coalesce(:createdat, CURRENT_TIMESTAMP));"
 
 database_insertdata_flaechen: "

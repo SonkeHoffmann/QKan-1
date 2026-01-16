@@ -45,6 +45,7 @@ class Schacht_untersucht(ClassObject):
     baujahr: int = 0
     untersuchtag: str = ""
     untersucher: str = ""
+    film_dateiname: str = ""
     wetter: str = ""
     bewertungsart: str = ""
     bewertungstag: str = ""
@@ -116,6 +117,7 @@ class Haltung_untersucht(ClassObject):
     untersuchtag: str = ""
     untersucher: str = ""
     untersuchrichtung: str = ""
+    film_dateiname: str = ""
     bezugspunkt: str = ""
     wetter: str = ""
     strasse: str = ""
@@ -1692,6 +1694,11 @@ class ImportTask(Schadenstexte):
                 _schacht = block.find("KI")
                 if _schacht:
                     untersuchtag = _schacht.findtext("KI104", None)
+                    _datei = _schacht.findtext("KI/KI116", None)
+                    if _datei:
+                        film_dateiname = _datei.replace("\\", "/")
+                    else:
+                        film_dateiname = None
                     untersucher = _schacht.findtext("KI112", None)
                     wetter = _schacht.findtext("KI106", None)
                     bewertungsart = _schacht.findtext("KI005", None)
@@ -1718,6 +1725,7 @@ class ImportTask(Schadenstexte):
                     baujahr=baujahr,
                     untersuchtag=untersuchtag,
                     untersucher=untersucher,
+                    film_dateiname=film_dateiname,
                     wetter=wetter,
                     bewertungsart=bewertungsart,
                     bewertungstag=bewertungstag,
@@ -1764,6 +1772,21 @@ class ImportTask(Schadenstexte):
             ):
                 return
 
+            params = {'name': schacht_untersucht.schnam,
+                      'untersuchtag': schacht_untersucht.untersuchtag,
+                      'datei': schacht_untersucht.film_dateiname, 'objekt': 'Schacht'}
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
+                         f'params: {params}')
+
+            if not self.db_qkan.insertdata(
+                    tabnam="videos",
+                    mute_logger=False,
+                    parameters=params,
+            ):
+                del self.db_qkan
+                return
+
         self.db_qkan.commit()
 
     def _untersuchdat_schaechte(self) -> None:
@@ -1789,6 +1812,7 @@ class ImportTask(Schadenstexte):
             pos_bis = 0
             bereich = ""
             foto_dateiname = ""
+            film_dateiname = ""
             ZD = None
             ZB = None
             ZS = None
@@ -1798,11 +1822,6 @@ class ImportTask(Schadenstexte):
                 name = block.findtext("KG001", None)
                 untersuchtag = block.findtext("KI/KI104")
 
-                _datei = block.findtext("KI/KI116", None)
-                if _datei and self.ordner_video:
-                    film_dateiname = os.path.join(self.ordner_video, _datei).replace("\\","/")
-                else:
-                    film_dateiname = None
 
                 for _untersuchdat_schacht in block.findall("KI/KZ"):
 
@@ -1875,7 +1894,6 @@ class ImportTask(Schadenstexte):
                       'pos_bis': untersuchdat_schacht.pos_bis, 'vertikale_lage': untersuchdat_schacht.vertikale_lage,
                       'inspektionslage': untersuchdat_schacht.inspektionslaenge, 'bereich': untersuchdat_schacht.bereich,
                       'foto_dateiname': untersuchdat_schacht.foto_dateiname, 'ordner_bild': untersuchdat_schacht.ordner_bild,
-                      'film_dateiname': untersuchdat_schacht.film_dateiname, 'ordner_video': untersuchdat_schacht.ordner_video,
                       'ZD': untersuchdat_schacht.ZD, 'ZB': untersuchdat_schacht.ZB, 'ZS': untersuchdat_schacht.ZS, 'epsg': QKan.config.epsg}
 
             # logger.debug(f'm150porter.import - insertdata:\ntabnam: untersuchdat_schacht\n'
@@ -2222,6 +2240,11 @@ class ImportTask(Schadenstexte):
                 _haltung = block.find("HI")
                 if _haltung:
                     untersuchtag = _haltung.findtext("HI104", None)
+                    _datei = _haltung.findtext("HI116", None)
+                    if _datei:
+                        film_dateiname = _datei.replace("\\", "/")
+                    else:
+                        film_dateiname = None
                     untersucher = _haltung.findtext("HI112", None)
                     wetter = _haltung.findtext("HI106", None)
                     bewertungsart = _haltung.findtext("HI005", None)
@@ -2271,6 +2294,7 @@ class ImportTask(Schadenstexte):
                     untersuchtag=untersuchtag,
                     untersucher=untersucher,
                     untersuchrichtung=untersuchrichtung,
+                    film_dateiname=film_dateiname,
                     bezugspunkt=bezugspunkt,
                     wetter=wetter,
                     bewertungsart=bewertungsart,
@@ -2310,6 +2334,21 @@ class ImportTask(Schadenstexte):
                     mute_logger=False,
                     parameters=params,
             ):
+                return
+
+            params = {'name': haltung_untersucht.haltnam, 'untersuchtag': haltung_untersucht.untersuchtag,
+                      'untersuchrichtung': haltung_untersucht.untersuchrichtung,
+                      'datei': haltung_untersucht.film_dateiname, 'objekt': 'Haltung'}
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
+                         f'params: {params}')
+
+            if not self.db_qkan.insertdata(
+                    tabnam="videos",
+                    mute_logger=False,
+                    parameters=params,
+            ):
+                del self.db_qkan
                 return
 
         self.db_qkan.commit()
@@ -2373,12 +2412,6 @@ class ImportTask(Schadenstexte):
 
                     #schoben = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenZulauf", None, self.NS)
                     #schunten = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenAblauf", None, self.NS)
-
-                _datei = block.findtext("HI/HI116", None)
-                if _datei and self.ordner_video:
-                    film_dateiname = os.path.join(self.ordner_video, _datei).replace("\\","/")
-                else:
-                    film_dateiname = None
 
 
                 for _untersuchdat in block.findall("HI/HZ"):
@@ -2461,8 +2494,8 @@ class ImportTask(Schadenstexte):
                       'quantnr1': untersuchdat_haltung.quantnr1, 'quantnr2': untersuchdat_haltung.quantnr2,
                       'streckenschaden': untersuchdat_haltung.streckenschaden, 'streckenschaden_lfdnr': untersuchdat_haltung.streckenschaden_lfdnr,
                       'pos_von': untersuchdat_haltung.pos_von, 'pos_bis': untersuchdat_haltung.pos_bis,
-                      'foto_dateiname': untersuchdat_haltung.foto_dateiname, 'film_dateiname': untersuchdat_haltung.film_dateiname,
-                      'ordner_bild': untersuchdat_haltung.ordner_bild, 'ordner_video': untersuchdat_haltung.ordner_video,
+                      'foto_dateiname': untersuchdat_haltung.foto_dateiname,
+                      'ordner_bild': untersuchdat_haltung.ordner_bild,
                        'ZD': untersuchdat_haltung.ZD,
                       'ZB': untersuchdat_haltung.ZB, 'ZS': untersuchdat_haltung.ZS}
 
@@ -2715,6 +2748,12 @@ class ImportTask(Schadenstexte):
                 _haltung = block.find("HI")
                 if _haltung:
                     untersuchtag = _haltung.findtext("HI104", None)
+                    _datei = _haltung.findtext("HI116", None)
+                    if _datei:
+                        film_dateiname = _datei.replace("\\", "/")
+                    else:
+                        film_dateiname = None
+
                     untersucher = _haltung.findtext("HI112", None)
                     wetter = _haltung.findtext("HI106", None)
                     bewertungsart = _haltung.findtext("HI005", None)
@@ -2763,6 +2802,7 @@ class ImportTask(Schadenstexte):
                     untersuchtag=untersuchtag,
                     untersucher=untersucher,
                     untersuchrichtung=untersuchrichtung,
+                    film_dateiname=film_dateiname,
                     bezugspunkt=bezugspunkt,
                     wetter=wetter,
                     bewertungsart=bewertungsart,
@@ -2802,6 +2842,22 @@ class ImportTask(Schadenstexte):
                     mute_logger=False,
                     parameters=params,
             ):
+                return
+
+            params = {'name': anschluss_untersucht.haltnam,
+                      'untersuchtag': anschluss_untersucht.untersuchtag,
+                      'untersuchrichtung': anschluss_untersucht.untersuchrichtung,
+                      'datei': anschluss_untersucht.film_dateiname, 'objekt': 'Anschlussleitung'}
+
+            logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
+                         f'params: {params}')
+
+            if not self.db_qkan.insertdata(
+                    tabnam="videos",
+                    mute_logger=False,
+                    parameters=params,
+            ):
+                del self.db_qkan
                 return
 
         self.db_qkan.commit()
@@ -2864,11 +2920,6 @@ class ImportTask(Schadenstexte):
                 # schoben = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenZulauf", None, self.NS)
                 # schunten = _untersuchdat_haltung.findtext("d:RGrunddaten/d:KnotenAblauf", None, self.NS)
 
-                _datei = block.findtext("HI/HI116", None)
-                if _datei and self.ordner_video:
-                    film_dateiname = os.path.join(self.ordner_video, _datei).replace("\\","/")
-                else:
-                    film_dateiname = None
 
                 for _untersuchdat in block.findall("HI/HZ"):
 
@@ -2966,6 +3017,7 @@ class ImportTask(Schadenstexte):
                     parameters=params,
             ):
                 return
+
 
         # Textpositionen für Schadenstexte berechnen
 
