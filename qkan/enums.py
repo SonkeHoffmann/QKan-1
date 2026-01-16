@@ -149,7 +149,7 @@ class LAYERBEZ(enum.Enum):
     SYNC_GROUP_SYNCHRONISATION      = "Synchronisation"
     SYNC_GROUP_SCHAECHTE            = "Vergleich Schächte"
     SYNC_GROUP_HALTUNGEN            = "Vergleich Haltungen"
-    SYNC_GROUP_ANSCHLUSSLEITUNGEN   = "Vergleich HA-Leitungen"
+    SYNC_GROUP_HA_LEITUNGEN   = "Vergleich HA-Leitungen"
 
 
 class MikeVersion(enum.Enum):

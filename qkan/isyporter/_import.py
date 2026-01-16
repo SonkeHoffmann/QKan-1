@@ -91,6 +91,7 @@ class Untersuchdat_schacht(ClassObject):
 class Untersuchdat_daten(ClassObject):
     untersuchsch: str = ""
     untersuchtag: str = ""
+    untersuchrichtung: str = ""
     datei: str = ""
     objekt: str = ""
 
@@ -1296,6 +1297,14 @@ class ImportTask(Schadenstexte):
 
                 for film in filme:
                     bezeichnungen = film.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                    _ = film.findtext("FilmObjekte/FilmObjekt/Inspektionsrichtung", None, self.NS)
+                    if _ == "O":
+                        untersuchrichtung = "in Fließrichtung"
+                    elif _ == "U":
+                        untersuchrichtung = "gegen Fließrichtung"
+                    else:
+                        logger.warning(f"Haltung untersucht: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
+                        untersuchrichtung = None
                     x = _get_int(film.findtext("Auftragskennung", None, self.NS))
                     if bezeichnungen in liste and x == liste[bezeichnungen][1]:
 
@@ -1319,11 +1328,12 @@ class ImportTask(Schadenstexte):
                             if _datei is not None and filmpfad is not None:
                                 filmdatei = os.path.join(filmpfad, _datei)
                             else:
-                                filmdatei = None
+                                filmdatei = _datei
 
                             yield Untersuchdat_daten(
                                 untersuchsch=bezeichnungen,
                                 untersuchtag=liste[bezeichnungen][0],
+                                untersuchrichtung=untersuchrichtung,
                                 datei=filmdatei,
                                 objekt=objekt,
                             )
@@ -1331,6 +1341,7 @@ class ImportTask(Schadenstexte):
         for untersuchdat_daten in _iter():
 
             params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
+                      'untersuchrichtung': untersuchdat_daten.untersuchrichtung,
                       'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
@@ -2176,6 +2187,14 @@ class ImportTask(Schadenstexte):
 
                 for film in filme:
                     bezeichnungen = film.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                    _ = film.findtext("FilmObjekte/FilmObjekt/Inspektionsrichtung", None, self.NS)
+                    if _ == "O":
+                        untersuchrichtung = "in Fließrichtung"
+                    elif _ == "U":
+                        untersuchrichtung = "gegen Fließrichtung"
+                    else:
+                        logger.warning(f"Haltung untersucht: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
+                        untersuchrichtung = None
                     x = _get_int(film.findtext("Auftragskennung", None, self.NS))
                     #if bezeichnungen in liste and x == liste[bezeichnungen][1]:
                     if bezeichnungen in liste:
@@ -2199,12 +2218,13 @@ class ImportTask(Schadenstexte):
                             if _datei is not None and filmpfad is not None:
                                 filmdatei = os.path.join(filmpfad, _datei)
                             else:
-                                filmdatei = None
+                                filmdatei = _datei
 
 
                             yield Untersuchdat_daten(
                                 untersuchsch=bezeichnungen,
                                 untersuchtag=liste[bezeichnungen][0],
+                                untersuchrichtung=untersuchrichtung,
                                 datei=filmdatei,
                                 objekt=objekt,
                             )
@@ -2212,6 +2232,7 @@ class ImportTask(Schadenstexte):
         for untersuchdat_daten in _iter():
 
             params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
+                      'untersuchrichtung': untersuchdat_daten.untersuchrichtung,
                       'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'
@@ -2776,6 +2797,14 @@ class ImportTask(Schadenstexte):
 
                 for film in filme:
                     bezeichnungen = film.findtext("FilmObjekte/FilmObjekt/Objektbezeichnung", None, self.NS)
+                    _ = film.findtext("FilmObjekte/FilmObjekt/Inspektionsrichtung", None, self.NS)
+                    if _ == "O":
+                        untersuchrichtung = "in Fließrichtung"
+                    elif _ == "U":
+                        untersuchrichtung = "gegen Fließrichtung"
+                    else:
+                        logger.warning(f"Haltung untersucht: Fehlerhafter Wert in Feld Inspektionsrichtung: {_}")
+                        untersuchrichtung = None
                     x = _get_int(film.findtext("Auftragskennung", None, self.NS))
                     if bezeichnungen in liste and x == liste[bezeichnungen][1]:
                         if bezeichnungen in liste:
@@ -2800,11 +2829,12 @@ class ImportTask(Schadenstexte):
                                 if _datei is not None and filmpfad is not None:
                                     filmdatei = os.path.join(filmpfad, _datei)
                                 else:
-                                    filmdatei = None
+                                    filmdatei = _datei
 
                                 yield Untersuchdat_daten(
                                     untersuchsch=bezeichnungen,
                                     untersuchtag=liste[bezeichnungen][0],
+                                    untersuchrichtung=untersuchrichtung,
                                     datei=filmdatei,
                                     objekt=objekt,
                                 )
@@ -2812,6 +2842,7 @@ class ImportTask(Schadenstexte):
         for untersuchdat_daten in _iter():
 
             params = {'name': untersuchdat_daten.untersuchsch, 'untersuchtag': untersuchdat_daten.untersuchtag,
+                      'untersuchrichtung': untersuchdat_daten.untersuchrichtung,
                       'datei': untersuchdat_daten.datei, 'objekt': untersuchdat_daten.objekt}
 
             logger.debug(f'isyporter.import - insertdata:\ntabnam: videos\n'

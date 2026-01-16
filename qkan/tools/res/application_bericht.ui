@@ -30,7 +30,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QRadioButton" name="radioButton">
+        <widget class="QRadioButton" name="select_all">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
@@ -45,7 +45,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_2">
+        <widget class="QRadioButton" name="select_auswahl">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
@@ -74,10 +74,10 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="save_path"/>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="select_path">
            <property name="text">
             <string>...</string>
            </property>

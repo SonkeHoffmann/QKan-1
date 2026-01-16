@@ -30,16 +30,16 @@ FORM_CLASS_bericht, _ = uic.loadUiType(
 
 class QgsBerichtDialog(QKanDBDialog, FORM_CLASS_bericht):  # type: ignore
     buttonBox: QDialogButtonBox
-    radioButton: QRadioButton
-    radioButton_2: QRadioButton
-    lineEdit: QLineEdit
-    pushButton: QPushButton
+    select_all: QRadioButton
+    select_auswahl: QRadioButton
+    save_path: QLineEdit
+    select_path: QPushButton
 
 
     def __init__(self, plugin: "QKanTools", parent: Optional[QWidget] = None):
         super().__init__(plugin, parent, readonly=True)
 
-        self.pushButton.clicked.connect(self.select_path)
+        self.select_path.clicked.connect(self.select_pfad)
 
         self.buttonBox.helpRequested.connect(self.click_help)
 
@@ -49,9 +49,9 @@ class QgsBerichtDialog(QKanDBDialog, FORM_CLASS_bericht):  # type: ignore
         help_file = "https://qkan.eu//QKan_Formulare_Allgemein.html"
         os.startfile(help_file)
 
-    def select_path(self) -> None:
+    def select_pfad(self) -> None:
         filename= QFileDialog.getExistingDirectory(self, "Haltungsberichte Speicherort")
-        self.lineEdit.setText(filename)
+        self.save_path.setText(filename)
 
         if os.path.dirname(filename) != '':
             os.chdir(os.path.dirname(filename))

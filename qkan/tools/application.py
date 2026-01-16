@@ -1073,8 +1073,8 @@ class QKanTools(QKanPlugin):
         if result:
 
             # Abrufen der ausgewählten Elemente in den Listen
-            path = self.dlgb.lineEdit.text()
-            if self.dlgb.radioButton_2.isChecked():
+            path = self.dlgb.save_path.text()
+            if self.dlgb.select_auswahl.isChecked():
                 auswahl = True
             else:
                 auswahl = False

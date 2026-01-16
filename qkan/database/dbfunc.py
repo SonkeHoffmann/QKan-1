@@ -1210,6 +1210,7 @@ class DBConnection:
             parlis = [
                 "name",
                 "untersuchtag",
+                "untersuchrichtung",
                 "objekt",
                 "datei",
                 "createdat",
