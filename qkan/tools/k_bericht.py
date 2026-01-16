@@ -16,6 +16,7 @@ from qgis.core import (
 )
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.utils import pluginDirectory
+from pathlib import Path
 
 
 logger = get_logger("QKan.tools.k_bericht")
