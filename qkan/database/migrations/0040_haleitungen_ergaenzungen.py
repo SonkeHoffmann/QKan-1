@@ -169,7 +169,7 @@ def run(dbcon: DBConnection) -> bool:
         enums.LAYERBEZ.SCHAECHTE_GROUP.value,
     ]
     loadLayer(
-        layerbez=enums.LAYERBEZ.ANSCHLUSSSCHAECHTE.value,
+        layerbez=enums.LAYERBEZ.HA_SCHAECHTE.value,
         table="schaechte",
         geom_column='geop',
         qmlfile="HA-Schächte.qml",
@@ -179,7 +179,7 @@ def run(dbcon: DBConnection) -> bool:
         gpos=4,
     )
 
-    layers = project.mapLayersByName(enums.LAYERBEZ.ANSCHLUSSSCHAECHTE.value)         # können mehrere sein, auch wenn's nicht gewollt ist ...
+    layers = project.mapLayersByName(enums.LAYERBEZ.HA_SCHAECHTE.value)         # können mehrere sein, auch wenn's nicht gewollt ist ...
     for layer in layers:
         qmlfile = os.path.join(pluginDirectory("qkan"), 'templates/qml', "HA-Schächte.qml")
         try:
@@ -270,7 +270,7 @@ def run(dbcon: DBConnection) -> bool:
             (enums.LAYERBEZ.ANBINDUNG_FLAECHEN, 'schnam'),
             (enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN, 'schnam'),
             (enums.LAYERBEZ.EINZELFLAECHEN, 'schnam'),
-            (enums.LAYERBEZ.ANSCHLUSSLEITUNGEN, 'schoben', 'schunten'),
+            (enums.LAYERBEZ.HA_LEITUNGEN, 'schoben', 'schunten'),
             (enums.LAYERBEZ.AUSSENGEBIETE, 'schnam'),
             (enums.LAYERBEZ.DROSSELN, 'schoben', 'schunten'),
             (enums.LAYERBEZ.DIREKTEINLEITUNGEN, 'schnam'),

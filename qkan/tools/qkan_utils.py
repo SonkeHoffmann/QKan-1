@@ -690,7 +690,7 @@ def loadLayer(
         enums.LAYERBEZ.SYNC_GROUP_SYNCHRONISATION.value,
         enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
         enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
-        enums.LAYERBEZ.SYNC_GROUP_ANSCHLUSSLEITUNGEN.value,
+        enums.LAYERBEZ.SYNC_GROUP_HA_LEITUNGEN.value,
     ]
 
     dlayers = project.mapLayersByName(layerbez)

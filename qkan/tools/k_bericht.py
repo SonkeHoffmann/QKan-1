@@ -32,11 +32,11 @@ def bericht(
     table = 'untersuchdat_haltung_bewertung'
     layernam = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
     if db_qkan.attrlist(table) != []:
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
-        except:
-            pass
+        # x = QgsProject.instance()
+        # try:
+        #     x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
+        # except:
+        #     pass
         loadLayer(
             layerbez=layernam,
             table=table,
@@ -175,11 +175,11 @@ def bericht(
 
     #Layout zurücksetzen
     if db_qkan.attrlist(table) != []:
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
-        except:
-            pass
+        # x = QgsProject.instance()
+        # try:
+        #     x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
+        # except:
+        #     pass
         loadLayer(
             layerbez=layernam,
             table=table,
