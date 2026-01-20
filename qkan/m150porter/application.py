@@ -209,7 +209,7 @@ class M150Porter(QKanPlugin):
                 QKan.config.xml.ordner_bild,
                 QKan.config.xml.ordner_video
             )
-            complete, layerexists = imp.run()
+            refs_uncomplete = imp.run()
             del imp
 
             # eval_node_types(db_qkan)  # in qkan.database.qkan_utils
@@ -234,51 +234,43 @@ class M150Porter(QKanPlugin):
                 project.read(QKan.config.project.file)
                 project.reloadAllLayers()
 
-            if not layerexists:
-                grouppath = [
-                    enums.LAYERBEZ.QKAN_GROUP.value,
-                    enums.LAYERBEZ.REFERENZTABELLEN_GROUP.value,
-                    enums.LAYERBEZ.M150_GROUP.value,
-                ]
+            # Layer mit M150-Referenztabelle hinzufügen
+            grouppath = [
+                enums.LAYERBEZ.QKAN_GROUP.value,
+                enums.LAYERBEZ.REFERENZTABELLEN_GROUP.value,
+                enums.LAYERBEZ.M150_GROUP.value,
+            ]
 
-                loadLayer(
-                    layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN.value,
-                    table=      "refdata",
-                    geom_column=None,
-                    qmlfile=    "qkan_m150_knotenarten.qml",
-                    filter=     "modul = 'm150porter' AND subject = 'import_knotentypen'",
-                    uifile=     "qkan_m150_knotenarten.ui",
-                    group=      grouppath
-                )
-                project.write()
-            if not complete:
+            loadLayer(
+                layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN.value,
+                table=      "refdata",
+                geom_column=None,
+                qmlfile=    "qkan_m150_knotenarten.qml",
+                filter=     "modul = 'm150porter' AND subject = 'import_knotentypen'",
+                uifile=     "qkan_m150_knotenarten.ui",
+                group=      grouppath
+            )
+            project.write()
+            if 'import_knotentypen' in refs_uncomplete:
                 msg = ('\n\nIn der M150-Datei sind individuelle Knotentypen definiert. Vor einem Import muss \n'
                        'in der Referenztabelle "M150 Knotenarten" der QKan-Schachttyp ausgewählt werden. \n\n'
                        'Anschließend muss der Import neu gestartet werden. \n(siehe <a href='
-                       '"https://qkan.eu/versionen/new/QKan_XML.html#start-des-importes">QKan Dokumentation</a>)!\n\n')
+                       '"https://qkan.eu/versionen/new/QKan_XML.html#start-des-importes">QKan Dokumentation</a>)!\n\n'
+                       )
                 self.log.warning_user(msg)
 
                 # Attributtabelle zur Bearbeitung anzeigen
                 layer = project.mapLayersByName(enums.LAYERBEZ.M150_KNOTENARTEN.value,)[0]
                 iface.showAttributeTable(layer)
+                refs_uncomplete.remove('import_knotentypen')
 
-                # noinspection PyArgumentList
-                # QgsMessageLog.logMessage(
-                #     message=msg,
-                #     tag="QKan",
-                #     notifyUser=True,
-                #     level=Qgis.MessageLevel.Info,
-                # )
-                #
-                # self.iface.openMessageLog()
-                # self.iface.messageBar().pushMessage(
-                #     "QKan",
-                #     msg,
-                #     level=Qgis.MessageLevel.Info,
-                #     duration=0
-                # )
-
-            # TODO: Some layers don't have a valid EPSG attached or wrong coordinates
+            if len(refs_uncomplete) > 0:
+                msg = ('\n\n In der M150-Datei sind individuelle Referenztabellen enthalten, die keinen \n'
+                       'QKan-Werten zugeordnet werden konnten. Vor dem Import müssen diese zunächst bearbeitet \n'
+                       'werden, bevor der Import mit der bereits angelegten QKan-Datenbank erneut \n'
+                       'durchgeführt werden kann. \n(siehe <a href='
+                       '"https://qkan.eu/versionen/new/QKan_XML.html#start-des-importes">QKan Dokumentation</a>)!\n\n'
+                       )
 
         self.log.debug("Closed DB")
 

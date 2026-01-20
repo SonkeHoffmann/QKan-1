@@ -587,7 +587,7 @@ class ImportTask(Schadenstexte):
 
         return geom_wkb, sohleoben, sohleunten
 
-    def run(self) -> (bool, bool):
+    def run(self) -> list[str]:
         """Import ausführen.
 
         Einlesen der M150-Daten in zwei Schritten:
@@ -595,15 +595,15 @@ class ImportTask(Schadenstexte):
            Standardwerte gesetzt.
         2. Import der M150-Daten
 
-        Der Status wird in _reftables() festgestellt, Wenn das Ergebnis complete = False ist, wird der Import
+        Der Status wird in _reftables() festgestellt, Wenn das Ergebnis refs_uncomplete nicht leer ist, wird der Import
         zunächst beendet und der Benutzer aufgefordert, den Knotentyp für jeden Schachttyp im Layer M150:Knotenarten
         festzulegen.
 
-        :returns:   complete, layerexists
-        :rtype:     bool, bool
+        :returns:   refs_uncomplete, layerexists
+        :rtype:     list, bool
 
-        **complete** gibt an, ob in allen Datensätzen der Referenztabelle *m150_knotenarten* das Attribut
-                     *schachttyp* gegeben ist.
+        **refs_uncomplete** gibt an, ob in allen Datensätzen der Referenztabelle refdata die
+        QKan-Bezeichnung (Attribut "bezqkan") nicht leer ist.
         **tabM150Exists** gibt an, ob die Tabelle m150_knotenarten (und der dazugehörige Layer) existiert
         """
 
@@ -619,52 +619,49 @@ class ImportTask(Schadenstexte):
         status_message.layout().addWidget(self.progress_bar)
         iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
-        complete, layerexists = self._reftables()           ;self.progress_bar.setValue(5)
-        if not complete:
-            return complete, layerexists
+        refs_uncomplete = self._reftables()           ;self.progress_bar.setValue(5)
+        if len(refs_uncomplete) > 0:
+            return refs_uncomplete
 
         self._init_mappers()
 #        if getattr(QKan.config.xml, "import_stamm", True):
         if QKan.config.xml.import_stamm:
-            self._schaechte()                               ;self.progress_bar.setValue(10)
-            #self._auslaesse()                               ;self.progress_bar.setValue(20)   # in _schaechte() enthalten
+            self._schaechte()                             #  ;self.progress_bar.setValue(10)
+            #self._auslaesse()                            #   ;self.progress_bar.setValue(20)   # in _schaechte() enthalten
             #self._speicher()
-            self._haltungen()                               ;self.progress_bar.setValue(30)
+            self._haltungen()                             #  ;self.progress_bar.setValue(30)
             self._wehre()
-            self._pumpen()                                  ;self.progress_bar.setValue(40)
+            self._pumpen()                                #  ;self.progress_bar.setValue(40)
         # if getattr(QKan.config.xml, "import_haus", True):
         if QKan.config.xml.import_haus:
-            self._anschlussleitungen()                      ;self.progress_bar.setValue(50)
-            self._anschluss_untersucht()                    ;self.progress_bar.setValue(55)
-            self._untersuchdat_anschluss()                  ;self.progress_bar.setValue(60)
+            self._anschlussleitungen()                    #  ;self.progress_bar.setValue(50)
+            self._anschluss_untersucht()                  #  ;self.progress_bar.setValue(55)
+            self._untersuchdat_anschluss()                #  ;self.progress_bar.setValue(60)
         # if getattr(QKan.config.xml, "import_zustand", True):
         if QKan.config.xml.import_zustand:
-            self._schaechte_untersucht()                    ;self.progress_bar.setValue(65)
-            self._untersuchdat_schaechte()                  ;self.progress_bar.setValue(75)
-            self._haltungen_untersucht()                    ;self.progress_bar.setValue(85)
-            self._untersuchdat_haltung()                    ;self.progress_bar.setValue(95)
+            self._schaechte_untersucht()                  #  ;self.progress_bar.setValue(65)
+            self._untersuchdat_schaechte()                #  ;self.progress_bar.setValue(75)
+            self._haltungen_untersucht()                  #  ;self.progress_bar.setValue(85)
+            self._untersuchdat_haltung()                  #  ;self.progress_bar.setValue(95)
         # self.db_qkan._adapt_reftable('entwaesserungsarten')
 
-        self.progress_bar.setValue(100)
+#        self.progress_bar.setValue(100)
         status_message.setText("Fertig! M150-Import abgeschlossen.")
 
-        return complete, layerexists
+        return refs_uncomplete
 
-    def _reftables(self) -> (bool, bool):
+    def _reftables(self) -> list[str]:
         """Referenztabellen mit Datensätzen für DWA-Import füllen
 
-        :returns:   complete, tabM150Exists
-        :rtype:     bool, bool
+        :returns:   refs_uncomplete
+        :rtype:     bool
 
-        **complete** gibt an, ob in allen Datensätzen der Referenztabelle *m150_knotenarten* das Attribut
-                     *schachttyp* gegeben ist.
-
-        **tabM150Exists** gibt an, ob die Tabelle m150_knotenarten (und der dazugehörige Layer) existiert
+        **refs_uncomplete** gibt an, ob in allen Datensätzen der Referenztabelle refdata die
+        QKan-Bezeichnung (Attribut "bezqkan") nicht leer ist.
         """
-
         # Hinweis: 'None' bewirkt beim Import eine Zuordnung unabhängig vom Wert - SQLite
 
-        complete = True
+        refs_uncomplete = []
 
         # Referenztabelle Entwässerungsarten
 
@@ -736,7 +733,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_entwaesserungsarten')
 
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO entwaesserungsarten (
@@ -852,7 +850,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_profile')
 
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO profile (
@@ -941,7 +940,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_simulationsstatus')
 
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO simulationsstatus (
@@ -1068,7 +1068,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_material')
 
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO material (
@@ -1173,7 +1174,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_bauwerksarten')
 
         # Straßen - in refdata, aber keine eigene Referenztabelle
 
@@ -1264,10 +1266,6 @@ class ImportTask(Schadenstexte):
                 )
             logger.debug("M150-Referenztabelle: Standardtabelle")
 
-        # else:
-        #     complete = False                 # muss noch durch den Anwender bearbeitet werden
-        #     logger.debug("M150-Referenztabelle aus XML-Datei muss noch bearbeitet werden")
-
         sql = """INSERT INTO refdata (
                     bezext, bezqkan, kuerzel, modul, subject, kommentar)
                     SELECT :bezext, :bezqkan, :kuerzel, 'm150porter', 'import_knotentypen', :kommentar
@@ -1294,7 +1292,8 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_knotentypen')
 
         # Referenztabelle Haltungsart (HG313)
 
@@ -1365,14 +1364,15 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        complete = complete and (data is None)
+        if data is not None:
+            refs_uncomplete.append('import_haltungsarten')
 
         # todo: Einlesen, Patterns, Mapper beim Einlesen von Haltungen, Anschlussleitungen einsetzen,
         #       Schächte ohne Koordinaten aus Haltungspunktdaten holen
 
         self.db_qkan.commit()
 
-        return complete, False
+        return refs_uncomplete
 
     def _init_mappers(self) -> None:
 
@@ -1470,7 +1470,7 @@ class ImportTask(Schadenstexte):
         if kuerzel != []:
             self.m150_haltung = kuerzel[0]
         else:
-            self.m150_haltung = 'keine_Haltung'    # kein Kürzel für Hausanschlussleitung vorhanden
+            self.m150_haltung = None    # kein Kürzel für Hausanschlussleitung vorhanden
 
         kuerzel = [
             key for key in self.mapper_haltungsarten
@@ -1479,7 +1479,7 @@ class ImportTask(Schadenstexte):
         if kuerzel != []:
             self.m150_anschlussleitung = kuerzel[0]
         else:
-            self.m150_anschlussleitung = 'keine_HA-Leitung'    # kein Kürzel für Hausanschlussleitung vorhanden
+            self.m150_anschlussleitung = None    # kein Kürzel für Hausanschlussleitung vorhanden
 
 
     def _schaechte(self) -> None:
@@ -1530,9 +1530,10 @@ class ImportTask(Schadenstexte):
 
                 ka = block.findtext("KG305")
                 knotenart = self.db_qkan.get_from_mapper(
-                    ka,                                 # m150-Knotenart (Ref.-Tab. 116)
-                    self.mapper_m150knotenarten,
-                    'Schacht/Anschlussschacht/Symbol',
+                    key=ka,                                 # m150-Knotenart (Ref.-Tab. 116)
+                    mapper=self.mapper_m150knotenarten,
+                    table='Schacht/Anschlussschacht/Symbol',
+                    default='Schacht',
                 )
                 logger.debug(f'Zuordnung {ka=} -> {knotenart=}')
 
@@ -2049,7 +2050,10 @@ class ImportTask(Schadenstexte):
 
     def _haltungen(self) -> None:
         def _iter() -> Iterator[Haltung]:
-            blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']")
+            if self.m150_haltung is None:
+                blocks = self.xml.findall(f"HG")
+            else:
+                blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']")
 
             logger.debug(f"Anzahl Haltungen: {len(blocks)}")
 
@@ -2183,7 +2187,10 @@ class ImportTask(Schadenstexte):
     #Haltung_untersucht
     def _haltungen_untersucht(self) -> None:
         def _iter() -> Iterator[Haltung_untersucht]:
-            blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']/HI/..")
+            if self.m150_haltung is None:
+                blocks = self.xml.findall(f"HG/HI/..")
+            else:
+                blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']/HI/..")
             logger.debug(f"Anzahl Haltungen untersucht: {len(blocks)}")
 
             for block in blocks:
@@ -2355,7 +2362,10 @@ class ImportTask(Schadenstexte):
 
     def _untersuchdat_haltung(self) -> None:
         def _iter() -> Iterator[Untersuchdat_haltung]:
-            blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']/HI/..")
+            if self.m150_haltung is None:
+                blocks = self.xml.findall(f"HG/HI/..")
+            else:
+                blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']/HI/..")
 
             logger.debug(f"Anzahl Untersuchungsdaten Haltung: {len(blocks)}")
 
@@ -2515,6 +2525,9 @@ class ImportTask(Schadenstexte):
             Schadenstexte.setschadenstexte_haltungen(self.db_qkan)
 
     def _anschlussleitungen(self) -> None:
+        if self.m150_anschlussleitung is None:
+            return
+
         def _iter() -> Iterator[Anschlussleitung]:
             blocks = self.xml.findall(f"HG[HG313='{self.m150_anschlussleitung}']")
 
@@ -2694,6 +2707,9 @@ class ImportTask(Schadenstexte):
         self.db_qkan.commit()
 
     def _anschluss_untersucht(self) -> None:
+        if self.m150_anschlussleitung is None:
+            return
+
         def _iter() -> Iterator[Anschlussleitung_untersucht]:
             blocks = self.xml.findall(f"HG[HG313='{self.m150_anschlussleitung}']/HI/..")
             logger.debug(f"Anzahl Hausanschlussleitungen untersucht: {len(blocks)}")
@@ -2863,6 +2879,9 @@ class ImportTask(Schadenstexte):
         self.db_qkan.commit()
 
     def _untersuchdat_anschluss(self) -> None:
+        if self.m150_anschlussleitung is None:
+            return
+
         def _iter() -> Iterator[Untersuchdat_anschlussleitung]:
             blocks = self.xml.findall(f"HG[HG313='{self.m150_anschlussleitung}']/HI/..")
 
