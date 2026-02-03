@@ -16,19 +16,26 @@ from . import resources  # noqa: F401
 
 
 class UploadPostgis(QKanPlugin):
+    """
+    Plugin zum Upload einer SQLite-Datenbank auf PostGIS WebSuite.
+    
+    Ermöglicht den Transfer aller geometrischen Objekte aus einer QKan
+    SQLite-Datenbank auf einen PostGIS-Server für die Kartendarstellung
+    in der WebSuite.
+    """
+    
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
 
-        default_dir = get_default_dir()                                     # dient dazu, dass bei der Dateiauswahl die Suche
-                                                                            # im selben Verzeichnis zu starten
-        self.uploadPostgis_dlg = UploadPostgisDialog(default_dir, tr=self.tr)         # Formularinstanz
+        default_dir = get_default_dir()
+        self.uploadPostgis_dlg = UploadPostgisDialog(default_dir, tr=self.tr)
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
         icon_uploadPostgis = ":/plugins/qkan/uploadPostgis/res/icon_uploadPostgis.png"
         QKan.instance.add_action(
             icon_uploadPostgis,
-            text=self.tr("Upload nach PostGIS"),
+            text=self.tr("Upload nach PostGIS WebSuite"),
             callback=self.openform_uploadPostgis,
             parent=self.iface.mainWindow(),
         )
@@ -37,7 +44,7 @@ class UploadPostgis(QKanPlugin):
         self.uploadPostgis_dlg.close()
 
     def openform_uploadPostgis(self) -> None:
-        """Anzeigen des Formulars und anschließender Aufruf von _runuploadPostgis"""
+        """Anzeigen des Formulars für den Upload zu PostGIS WebSuite"""
 
         self.uploadPostgis_dlg._load_uploadPostgis_config()
 
@@ -46,12 +53,26 @@ class UploadPostgis(QKanPlugin):
         if self.uploadPostgis_dlg.exec_():
             self.uploadPostgis_dlg._save_uploadPostgis_config()
             
-            self._runuploadPostgis()
+            # Upload wird im Dialog gestartet (über DatabaseDialog)
+            self.log.info("Upload-Dialog abgeschlossen")
 
-    def _runuploadPostgis(self) -> bool:
-        """Start des Moduls
-
-        Einspringpunkt für Test
+    def _runuploadPostgis(self, source_database: str = None, 
+                         target_database: str = "qkan_upload",
+                         schema_name: str = "qkan",
+                         overwrite: bool = True,
+                         add_layers: bool = True) -> bool:
+        """
+        Start des Upload-Moduls für eine einzelne Datenbank.
+        
+        Args:
+            source_database: Pfad zur SQLite-Quelldatenbank (optional, verwendet aktuelle QKan-DB wenn nicht angegeben)
+            target_database: Name der Zieldatenbank auf PostGIS
+            schema_name: PostGIS-Schema für die Tabellen
+            overwrite: Bestehende Tabellen überschreiben
+            add_layers: Layer nach Upload zu QGIS hinzufügen
+            
+        Returns:
+            bool: True wenn erfolgreich
         """
 
         self.log.debug("UploadPostgis gestartet")
@@ -62,12 +83,13 @@ class UploadPostgis(QKanPlugin):
             self.log.error("Kein Server ausgewählt")
             return False
 
-        # Für diese Implementation nehmen wir an, dass die Zieldatenbank
-        # bereits im Dialog-Workflow bestimmt wurde
-        # In einer vollständigen Implementation würde dies aus dem DatabaseDialog kommen
-        target_database = "qkan_upload"  # Standard-Datenbankname
-        schema_name = "qkan"  # Standard-Schema
-        overwrite = True  # Standard: Überschreiben erlaubt
+        # Quelldatenbank ermitteln
+        if source_database is None:
+            source_database = QKan.config.database.qkan
+            
+        if not source_database:
+            self.log.error("Keine Quelldatenbank angegeben")
+            return False
         
         # Progress Bar erstellen
         iface = QKan.instance.iface
@@ -80,25 +102,35 @@ class UploadPostgis(QKanPlugin):
             progress_bar.setRange(0, 100)
 
             status_message = iface.messageBar().createMessage(
-                "", "Upload zu PostGIS läuft. Bitte warten..."
+                "", "Upload zu PostGIS WebSuite läuft. Bitte warten..."
             )
             status_message.layout().addWidget(progress_bar)
-            iface.messageBar().pushWidget(status_message, Qgis.Info, 10)
+            iface.messageBar().pushWidget(status_message, Qgis.Info, 30)
 
+        success = False
         try:
             task = UploadPostgisTask(
                 server_connection=selected_server,
                 target_database=target_database,
-                source_database_file=QKan.config.database.qkan,  # Aktuelle QKan-Datenbank verwenden
+                source_database_file=source_database,
                 schema_name=schema_name,
                 overwrite=overwrite,
-                progress_bar=progress_bar
+                progress_bar=progress_bar,
+                add_layers_to_qgis=add_layers
             )
             
             success = task.run()
             
             if success:
                 self.log.info("UploadPostgis erfolgreich abgeschlossen!")
+                
+                # Zusammenfassung der hochgeladenen Tabellen
+                geom_tables = [t for t in task.uploaded_tables if t.get('has_geometry')]
+                total_records = sum(t.get('records', 0) for t in task.uploaded_tables)
+                
+                self.log.info(f"Zusammenfassung: {len(task.uploaded_tables)} Tabellen, "
+                             f"davon {len(geom_tables)} mit Geometrie, "
+                             f"insgesamt {total_records} Datensätze")
             else:
                 self.log.error("UploadPostgis ist mit Fehlern beendet!")
                 
@@ -111,7 +143,5 @@ class UploadPostgis(QKanPlugin):
             if iface and status_message:
                 iface.messageBar().clearWidgets()
             
-        del task
-
         return success
 

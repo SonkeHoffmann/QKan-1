@@ -9,9 +9,11 @@ from qgis.PyQt.QtWidgets import (
     QLineEdit,
     QListWidget,
     QMessageBox,
+    QProgressBar,
     QPushButton,
     QWidget,
     QFileDialog,
+    QApplication,
 )
 from qgis.PyQt.QtCore import QSettings
 
@@ -58,12 +60,20 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     pb_help: QPushButton
     pb_cancel: QPushButton
     pb_upload: QPushButton
+    pb_export_sql: QPushButton  # Neuer Button für SQL-Export
     
     # Info labels
     label_server_info: QLabel  # Label für Server-Info
     
+    # Progress bar and status
+    progressBar_upload: QProgressBar
+    label_progress_status: QLabel
+    
     # Internal list to track selected files
     selected_files: List[str]
+    
+    # Connection status
+    connection_available: bool
 
     def __init__(
         self,
@@ -76,9 +86,20 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         
         # Initialize file list
         self.selected_files = []
+        self.connection_available = False
         
-        # Set server info in label  
-        self.label_server_info.setText(f"Verbunden mit Server: {connection_name}")
+        # Get actual host from settings for display
+        settings = QSettings()
+        if connection_name.lower() == "localhost":
+            actual_host = "localhost:5432"
+        else:
+            base_key = f"PostgreSQL/connections/{connection_name}"
+            host = settings.value(f"{base_key}/host", "unbekannt")
+            port = settings.value(f"{base_key}/port", 5432)
+            actual_host = f"{host}:{port}"
+        
+        # Set server info in label with actual host
+        self.label_server_info.setText(f"Server: {connection_name} ({actual_host})")
         
         # Connect source database signals
         self.pb_select_database.clicked.connect(self.select_database_files)
@@ -95,6 +116,7 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.pb_help.clicked.connect(self.show_help)
         self.pb_cancel.clicked.connect(self.reject)
         self.pb_upload.clicked.connect(self.start_upload)
+        self.pb_export_sql.clicked.connect(self.export_to_sql_dump)
         
         # Load available databases
         self.load_databases()
@@ -102,13 +124,19 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         # Initial state - upload button and remove button disabled
         self.pb_upload.setEnabled(False)
         self.pb_remove_file.setEnabled(False)
+        
+        # Initialize progress bar
+        self.progressBar_upload.setValue(0)
+        self.progressBar_upload.setFormat("%v / %m Tabellen")
+        self.label_progress_status.setText("Bereit für Upload")
 
     def select_database_files(self):
         """Mehrere QKan-SQLite-Datenbank-Dateien auswählen"""
         file_dialog = QFileDialog()
         file_dialog.setWindowTitle("QKan SQLite-Datenbanken auswählen")
         file_dialog.setFileMode(QFileDialog.ExistingFiles)  # Mehrere Dateien erlauben
-        file_dialog.setNameFilter("SQLite-Datenbanken (*.sqlite *.db);;Alle Dateien (*)")
+        # Erweitere Filter um alle gängigen SQLite-Endungen
+        file_dialog.setNameFilter("SQLite-Datenbanken (*.sqlite *.sqlite3 *.db *.gpkg);;Alle Dateien (*.*)")
 
         # Standard-Ordner setzen
         if self.default_dir and os.path.exists(self.default_dir):
@@ -121,7 +149,8 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
                 for file_path in new_files:
                     if file_path not in self.selected_files:
                         self.selected_files.append(file_path)
-                        self.listWidget_source_files.addItem(os.path.basename(file_path))
+                        # Zeige vollständigen Pfad für Klarheit
+                        self.listWidget_source_files.addItem(file_path)
                         logger.info(f"Datenbank-Datei hinzugefügt: {file_path}")
                 
                 self.update_upload_button_state()
@@ -171,29 +200,139 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
             self.le_new_database_name.setFocus()
         self.update_upload_button_state()
 
+    def export_to_sql_dump(self):
+        """Exportiert SQLite-Dateien als SQL-Dump für GBD WebSuite"""
+        if not self.selected_files:
+            QMessageBox.warning(
+                self,
+                "SQL-Export",
+                "Bitte wählen Sie zuerst mindestens eine SQLite-Datenbank aus."
+            )
+            return
+        
+        from .export_sql_dump import export_to_sql_dump
+        from qgis.PyQt.QtWidgets import QFileDialog
+        
+        exported_files = []
+        
+        for source_file in self.selected_files:
+            # Ausgabedatei-Namen generieren
+            base_name = os.path.splitext(source_file)[0]
+            default_output = f"{base_name}_websuite.sql"
+            
+            # Datei-Dialog für Ausgabe
+            output_file, _ = QFileDialog.getSaveFileName(
+                self,
+                f"SQL-Dump speichern für: {os.path.basename(source_file)}",
+                default_output,
+                "SQL-Dateien (*.sql);;Alle Dateien (*.*)"
+            )
+            
+            if not output_file:
+                logger.info(f"Export abgebrochen für {source_file}")
+                continue
+            
+            try:
+                logger.info(f"Exportiere {source_file} nach {output_file}")
+                success = export_to_sql_dump(source_file, output_file, schema_name="qkan")
+                
+                if success:
+                    exported_files.append(output_file)
+                    logger.info(f"✓ Export erfolgreich: {output_file}")
+                    
+            except Exception as e:
+                QMessageBox.critical(
+                    self,
+                    "Export fehlgeschlagen",
+                    f"Fehler beim Exportieren von {os.path.basename(source_file)}:\n\n{str(e)}"
+                )
+                logger.error(f"SQL-Export fehlgeschlagen für {source_file}: {e}")
+        
+        # Zusammenfassung anzeigen
+        if exported_files:
+            file_list = "\n".join([f"• {os.path.basename(f)}" for f in exported_files])
+            
+            QMessageBox.information(
+                self,
+                "Export erfolgreich",
+                f"✓ {len(exported_files)} SQL-Dump(s) erfolgreich erstellt:\n\n{file_list}\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                f"NÄCHSTE SCHRITTE (GBD WebSuite):\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"1. Datei auf Server kopieren:\n"
+                f"   scp datei.sql user@server:/tmp/\n\n"
+                f"2. Per SSH verbinden:\n"
+                f"   ssh user@server\n\n"
+                f"3. SQL-Dump importieren:\n"
+                f"   psql -d websuite_db -f /tmp/datei.sql\n\n"
+                f"4. Tabellen prüfen:\n"
+                f"   psql -d websuite_db -c '\\dt qkan.*'\n\n"
+                f"Alternativ: Import über pgAdmin, DBeaver\n"
+                f"oder WebSuite Admin-Interface (falls vorhanden)"
+            )
+
     def show_help(self):
         """Hilfe anzeigen"""
         help_text = """
-QKan PostGIS Datenbank-Upload
+QKan PostGIS Datenbank-Upload / SQL-Export
 
-Quelldatenbanken auswählen:
-• Klicken Sie auf "Hinzufügen..." um eine oder mehrere QKan SQLite-Datenbanken auszuwählen
-• Ausgewählte Dateien werden in der Liste angezeigt
-• Mit "Entfernen" können Sie einzelne Dateien aus der Liste löschen
-• Alle ausgewählten Datenbanken werden nacheinander hochgeladen
+=== FÜR GBD WEBSUITE ===
+Wenn Sie eine GBD WebSuite verwenden und KEINEN direkten PostgreSQL-Zugriff 
+haben, nutzen Sie die SQL-Dump-Export-Funktion (siehe unten).
 
-Zieldatenbank wählen:
-• Bestehende Datenbank: Wählen Sie aus der Liste
-• Neue Datenbank: Aktivieren Sie die Option und geben Sie einen Namen ein
+QUELLDATENBANKEN AUSWÄHLEN:
+• Klicken Sie auf "Hinzufügen..." um QKan SQLite-Datenbanken auszuwählen
+• Unterstützte Formate: .sqlite, .sqlite3, .db, .gpkg
+• Mehrere Dateien können gleichzeitig ausgewählt werden
+• Mit "Entfernen" können Sie Dateien aus der Liste löschen
 
-Optionen:
-• Bestehende Tabellen überschreiben: Löscht vorhandene QKan-Tabellen vor dem Import
+OPTION 1: DIREKTER UPLOAD (wenn PostgreSQL-Port erreichbar)
+• Zieldatenbank wählen aus der Liste ODER
+• Neue Datenbank erstellen (nur Buchstaben, Zahlen, Unterstriche, max. 63 Zeichen)
+• Klicken Sie "Upload starten"
 
-Hinweise:
-• Der Benutzer muss Berechtigung haben, Datenbanken zu erstellen (falls neue DB)
-• PostGIS-Erweiterung wird automatisch installiert falls nicht vorhanden
-• Bestehende Daten gehen bei "Überschreiben" verloren
-• Bei mehreren Dateien werden diese nacheinander in dieselbe Zieldatenbank importiert
+OPTION 2: SQL-DUMP EXPORT (für GBD WebSuite OHNE direkten DB-Zugriff)
+• Wählen Sie SQLite-Datenbank(en) aus
+• Im Dialog gibt es einen "Als SQL-Dump exportieren" Button
+• Laden Sie den generierten .sql-Dump auf Ihren WebSuite-Server hoch
+• Importieren per SSH: psql -d datenbank -f dump.sql
+
+OPTIONEN:
+• Bestehende Tabellen überschreiben: Löscht vorhandene QKan-Tabellen 
+  vor dem Import (ACHTUNG: Datenverlust!)
+
+UPLOAD-PROZESS (Direkter Upload):
+1. SQLite-Datenbank analysieren
+2. PostGIS-Tabellen erstellen
+3. Geometrien konvertieren und übertragen
+4. Spatial-Indizes erstellen
+5. Layer zu QGIS hinzufügen (optional)
+
+HINWEISE:
+• PostGIS-Erweiterung wird automatisch aktiviert falls nötig
+• Geometrien werden mit korrektem SRID übertragen
+• Der Upload kann je nach Datenmenge einige Minuten dauern
+
+GBD WEBSUITE SPEZIFISCH:
+• Falls der direkte PostgreSQL-Zugriff blockiert ist, verwenden Sie SQL-Dump
+• Bei Verbindungsproblemen: Prüfen Sie Firewall/SSH-Tunnel
+• Standard-Port: 5432 (oft nur über VPN/SSH erreichbar)
+
+OPTIONEN:
+• Bestehende Tabellen überschreiben: Löscht vorhandene QKan-Tabellen 
+  vor dem Import (ACHTUNG: Datenverlust!)
+
+UPLOAD-PROZESS:
+1. SQLite-Datenbank analysieren
+2. PostGIS-Tabellen erstellen
+3. Geometrien konvertieren und übertragen
+4. Spatial-Indizes erstellen
+5. Layer zu QGIS hinzufügen (optional)
+
+HINWEISE:
+• PostGIS-Erweiterung wird automatisch aktiviert falls nötig
+• Geometrien werden mit korrektem SRID übertragen
+• Der Upload kann je nach Datenmenge einige Minuten dauern
         """
         
         QMessageBox.information(
@@ -221,6 +360,22 @@ Hinweise:
                 "Validierungsfehler",
                 f"Folgende Dateien existieren nicht:\n" + "\n".join(missing_files)
             )
+            return
+        
+        # Wenn keine Verbindung möglich ist, SQL-Export vorschlagen
+        if not self.connection_available:
+            reply = QMessageBox.question(
+                self,
+                "Keine Datenbankverbindung",
+                "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
+                "Möchten Sie stattdessen einen SQL-Dump exportieren?\n"
+                "Dieser kann dann manuell auf dem Server importiert werden.",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+            
+            if reply == QMessageBox.Yes:
+                self.export_to_sql_dump()
             return
         
         # Zieldatenbank validieren
@@ -275,9 +430,19 @@ Hinweise:
         try:
             successful_uploads = 0
             failed_uploads = []
+            total_files = len(self.selected_files)
             
-            for source_file in self.selected_files:
+            # UI während Upload deaktivieren
+            self.pb_upload.setEnabled(False)
+            self.pb_cancel.setEnabled(False)
+            
+            for file_index, source_file in enumerate(self.selected_files):
                 try:
+                    # Fortschrittsanzeige für mehrere Dateien
+                    if total_files > 1:
+                        self.label_progress_status.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
+                        QApplication.processEvents()
+                    
                     logger.info(f"Starte Upload von: {source_file}")
                     self.perform_upload(
                         connection_name=self.connection_name,
@@ -289,6 +454,10 @@ Hinweise:
                 except Exception as e:
                     failed_uploads.append((os.path.basename(source_file), str(e)))
                     logger.error(f"Upload fehlgeschlagen für {source_file}: {str(e)}")
+            
+            # UI wieder aktivieren
+            self.pb_upload.setEnabled(True)
+            self.pb_cancel.setEnabled(True)
             
             # Zusammenfassung anzeigen
             if failed_uploads:
@@ -317,50 +486,47 @@ Hinweise:
             logger.error(f"Upload fehlgeschlagen: {str(e)}")
     
     def perform_upload(self, connection_name: str, target_database: str, source_file: str, overwrite: bool):
-        """Führt den Upload durch"""
+        """Führt den Upload durch mit Fortschrittsanzeige"""
         from ._uploadPostgis import UploadPostgisTask
-        from qkan import QKan
-        from qgis.core import Qgis
-        from qgis.PyQt.QtWidgets import QProgressBar
         
-        # Progress Bar für den Upload-Task
-        iface = QKan.instance.iface if hasattr(QKan, 'instance') and QKan.instance else None
-        progress_bar = None
-        status_message = None
+        logger.info(f"perform_upload aufgerufen: connection={connection_name}, db={target_database}, file={source_file}")
         
-        try:
-            if iface:
-                progress_bar = QProgressBar(iface.messageBar())
-                progress_bar.setRange(0, 100)
-
-                status_message = iface.messageBar().createMessage(
-                    "", f"Upload zu PostGIS läuft ({target_database}). Bitte warten..."
-                )
-                status_message.layout().addWidget(progress_bar)
-                iface.messageBar().pushWidget(status_message, Qgis.Info, 30)
-            
-            # Upload-Task erstellen und ausführen
-            task = UploadPostgisTask(
-                server_connection=f"{connection_name} ({self.connection_name})",
-                target_database=target_database,
-                source_database_file=source_file,
-                schema_name="qkan",
-                overwrite=overwrite,
-                progress_bar=progress_bar
-            )
-            
-            success = task.run()
-            
-            if not success:
-                from qkan.utils import QkanError
-                raise QkanError("Upload-Task wurde nicht erfolgreich abgeschlossen")
-                
-        finally:
-            # Status message entfernen
-            if iface and status_message:
-                iface.messageBar().clearWidgets()
+        # Reset progress bar
+        self.progressBar_upload.setValue(0)
+        self.label_progress_status.setText(f"Starte Upload: {os.path.basename(source_file)}")
+        QApplication.processEvents()
+        
+        # Upload-Task erstellen mit Callback für Fortschritt
+        task = UploadPostgisTask(
+            server_connection=connection_name,
+            target_database=target_database,
+            source_database_file=source_file,
+            schema_name="qkan",
+            overwrite=overwrite,
+            progress_bar=self.progressBar_upload,
+            progress_callback=self.update_progress_status,
+            add_layers_to_qgis=True
+        )
+        
+        success = task.run()
+        
+        if not success:
+            from qkan.utils import QkanError
+            raise QkanError("Upload-Task wurde nicht erfolgreich abgeschlossen")
+        
+        # Upload abgeschlossen
+        self.progressBar_upload.setValue(self.progressBar_upload.maximum())
+        self.label_progress_status.setText("Upload abgeschlossen!")
+        QApplication.processEvents()
         
         logger.info("Upload-Prozess erfolgreich abgeschlossen")
+    
+    def update_progress_status(self, current: int, total: int, message: str):
+        """Callback für Fortschrittsupdate von UploadPostgisTask"""
+        self.progressBar_upload.setMaximum(total)
+        self.progressBar_upload.setValue(current)
+        self.label_progress_status.setText(message)
+        QApplication.processEvents()
     
     def is_valid_database_name(self, name: str) -> bool:
         """Validiert einen Datenbanknamen"""
@@ -370,30 +536,78 @@ Hinweise:
         return bool(re.match(pattern, name)) and len(name) <= 63
 
     def load_databases(self):
-        """Verfügbare Datenbanken laden"""
+        """Verfügbare Datenbanken vom PostGIS-Server laden"""
         self.listWidget_databases.clear()
         
         # Verbindungsparameter aus QSettings laden
         settings = QSettings()
-        base_key = f"PostgreSQL/connections/{self.connection_name}"
         
-        host = settings.value(f"{base_key}/host", "localhost")
-        port = settings.value(f"{base_key}/port", 5432)
-        username = settings.value(f"{base_key}/username", "")
-        password = settings.value(f"{base_key}/password", "")
-        ssl_mode = settings.value(f"{base_key}/sslmode", "prefer")
+        # Für localhost: Aktuellen Benutzer verwenden
+        if self.connection_name.lower() == "localhost":
+            import getpass
+            host = "localhost"
+            port = 5432
+            username = getpass.getuser()
+            password = ""
+            ssl_mode = "prefer"
+            logger.info(f"Localhost-Verbindung: {username}@{host}:{port}")
+        else:
+            base_key = f"PostgreSQL/connections/{self.connection_name}"
+            host = settings.value(f"{base_key}/host", "")
+            port = int(settings.value(f"{base_key}/port", 5432))
+            username = settings.value(f"{base_key}/username", "")
+            password = settings.value(f"{base_key}/password", "")
+            ssl_mode = settings.value(f"{base_key}/sslmode", "prefer")
+            
+            logger.info(f"WebSuite-Verbindung: {username}@{host}:{port} (sslmode={ssl_mode})")
         
+        if not host:
+            self.listWidget_databases.addItem("Fehler: Kein Host konfiguriert")
+            logger.error(f"Kein Host für Verbindung '{self.connection_name}' gefunden")
+            return
+            
         if not username:
             self.listWidget_databases.addItem("Fehler: Kein Benutzername konfiguriert")
+            logger.error(f"Kein Benutzername für Verbindung '{self.connection_name}' gefunden")
             return
         
         try:
             import psycopg2
+            import socket
+            
+            # DNS-Auflösung testen und protokollieren
+            resolved_host = host
+            try:
+                ip_info = socket.getaddrinfo(host, port, socket.AF_INET)
+                if ip_info:
+                    resolved_ip = ip_info[0][4][0]
+                    logger.info(f"DNS aufgelöst: {host} -> {resolved_ip}")
+                    # Verwende aufgelöste IP für Verbindung
+                    resolved_host = resolved_ip
+            except socket.gaierror as dns_error:
+                logger.warning(f"DNS-Auflösung fehlgeschlagen für {host}: {dns_error}")
+                # Verwende Original-Hostname
             
             # Verbindung zu postgres-Datenbank (für Liste aller DBs)
-            conn_string = f"host='{host}' port={port} dbname='postgres' user='{username}' password='{password}' sslmode='{ssl_mode}'"
+            conn_string = (
+                f"host='{resolved_host}' "
+                f"port={port} "
+                f"dbname='postgres' "
+                f"user='{username}' "
+                f"password='{password}' "
+                f"sslmode='{ssl_mode}' "
+                f"connect_timeout=10"
+            )
+            
+            logger.info(f"Verbinde zu: {username}@{resolved_host}:{port}/postgres")
+            
             conn = psycopg2.connect(conn_string)
             cursor = conn.cursor()
+            
+            # Server-Version für Debug
+            cursor.execute("SELECT version()")
+            server_version = cursor.fetchone()[0]
+            logger.info(f"Verbunden mit: {server_version[:50]}...")
             
             # Alle Datenbanken abfragen (außer System-DBs)
             cursor.execute("""
@@ -407,19 +621,46 @@ Hinweise:
             databases = cursor.fetchall()
             
             if databases:
+                logger.info(f"Gefundene Datenbanken auf {host}: {[db[0] for db in databases]}")
                 for db in databases:
                     self.listWidget_databases.addItem(db[0])
             else:
-                self.listWidget_databases.addItem("Keine Benutzer-Datenbanken gefunden")
+                self.listWidget_databases.addItem("(Keine Benutzer-Datenbanken gefunden)")
+                logger.info(f"Keine Benutzer-Datenbanken auf {host} gefunden")
             
             cursor.close()
             conn.close()
             
+            # Verbindung war erfolgreich
+            self.connection_available = True
+            
         except ImportError:
             self.listWidget_databases.addItem("Fehler: psycopg2 nicht installiert")
+            logger.error("psycopg2 nicht installiert")
+            self.connection_available = False
+            self._show_sql_export_hint()
+        except psycopg2.OperationalError as e:
+            error_msg = str(e)
+            self.listWidget_databases.addItem(f"Verbindungsfehler: {error_msg[:50]}...")
+            self.listWidget_databases.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
+            logger.error(f"PostGIS Verbindungsfehler zu {host}:{port}: {error_msg}")
+            self.connection_available = False
+            self._show_sql_export_hint()
         except Exception as e:
-            self.listWidget_databases.addItem(f"Verbindungsfehler: {str(e)}")
-            logger.error(f"Fehler beim Laden der Datenbanken: {e}")
+            self.listWidget_databases.addItem(f"Fehler: {str(e)[:50]}...")
+            self.listWidget_databases.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
+            logger.error(f"Unerwarteter Fehler beim Laden der Datenbanken von {host}: {e}")
+            self.connection_available = False
+            self._show_sql_export_hint()
+    
+    def _show_sql_export_hint(self):
+        """Zeigt Hinweis für SQL-Export bei Verbindungsproblemen"""
+        # Update Label mit Hinweis
+        current_text = self.label_server_info.text()
+        if "Kein direkter Zugriff" not in current_text:
+            self.label_server_info.setText(
+                f"{current_text} - ⚠️ Kein direkter Zugriff möglich"
+            )
 
     def get_selected_database(self):
         """Ausgewählte Datenbank zurückgeben"""

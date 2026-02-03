@@ -1,15 +1,27 @@
 # SQL-Statements für SQLite-Analyse im uploadPostgis-Modul
+# Upload einer SQLite-Datenbank auf PostGIS WebSuite
 
-# Alle relevanten Tabellen auflisten
+# Alle relevanten Tabellen auflisten (ohne System-Tabellen)
 uploadPostgis_get_all_tables: "
 SELECT name FROM sqlite_master 
-WHERE type='table' AND name NOT LIKE 'sqlite_%' 
-AND name NOT LIKE 'geometry_columns'
-AND name NOT LIKE 'spatial_ref_sys'
-AND name NOT LIKE 'spatialite_history'
-AND name NOT LIKE 'sql_statements_log'
+WHERE type='table' 
+AND name NOT LIKE 'sqlite_%' 
 AND name NOT LIKE 'idx_%'
-AND name NOT LIKE 'SpatialIndex'
+AND name NOT IN ('geometry_columns', 'spatial_ref_sys', 
+                'spatialite_history', 'sql_statements_log',
+                'SpatialIndex', 'ElementaryGeometries',
+                'geometry_columns_auth', 'geometry_columns_field_infos',
+                'geometry_columns_statistics', 'geometry_columns_time',
+                'spatial_ref_sys_aux', 'views_geometry_columns',
+                'views_geometry_columns_auth', 'views_geometry_columns_field_infos',
+                'views_geometry_columns_statistics', 'virts_geometry_columns',
+                'virts_geometry_columns_auth', 'virts_geometry_columns_field_infos',
+                'virts_geometry_columns_statistics', 'geom_cols_ref_sys',
+                'raster_coverages', 'raster_coverages_srid',
+                'raster_coverages_keyword', 'vector_coverages',
+                'vector_coverages_srid', 'vector_coverages_keyword',
+                'data_licenses', 'vector_layers', 'vector_layers_auth',
+                'vector_layers_field_infos', 'vector_layers_statistics')
 ORDER BY name"
 
 # Spalteninfo für eine Tabelle
@@ -24,8 +36,28 @@ SELECT COUNT(*) FROM {table_name}"
 uploadPostgis_select_all_data: "
 SELECT * FROM {table_name}"
 
-# Geometrie-Informationen für eine Tabelle
+# Geometrie-Informationen für eine Tabelle (für WebSuite-Kartendarstellung)
 uploadPostgis_get_geometry_info: "
 SELECT f_geometry_column, type, coord_dimension, srid
 FROM geometry_columns
 WHERE f_table_name = '{table_name}'"
+
+# Geometrie als WKT für den Transfer nach PostGIS
+uploadPostgis_select_data_with_geom: "
+SELECT {non_geom_columns}, 
+    CASE 
+        WHEN \"{geom_col}\" IS NOT NULL THEN AsText(\"{geom_col}\")
+        ELSE NULL 
+    END as geom_wkt
+FROM {table_name}"
+
+# Prüfen ob Tabelle Geometrie-Daten hat
+uploadPostgis_check_geometry_data: "
+SELECT COUNT(*) FROM {table_name}
+WHERE {geom_col} IS NOT NULL"
+
+# SRID aus der Datenbank ermitteln
+uploadPostgis_get_srid: "
+SELECT srid FROM geometry_columns
+WHERE f_table_name = '{table_name}'
+LIMIT 1"

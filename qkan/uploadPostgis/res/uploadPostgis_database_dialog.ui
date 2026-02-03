@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>620</height>
+    <height>680</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>620</height>
+    <height>680</height>
    </size>
   </property>
   <property name="font">
@@ -214,11 +214,59 @@
    </widget>
   </widget>
   
+  <widget class="QGroupBox" name="groupBox_progress">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>540</y>
+     <width>560</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Upload-Fortschritt</string>
+   </property>
+   
+   <widget class="QProgressBar" name="progressBar_upload">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>540</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+   </widget>
+   
+   <widget class="QLabel" name="label_progress_status">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>48</y>
+      <width>540</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Bereit für Upload</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  
   <widget class="QPushButton" name="pb_help">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>560</y>
+     <y>620</y>
      <width>80</width>
      <height>32</height>
     </rect>
@@ -236,11 +284,36 @@
    </property>
   </widget>
   
+  <widget class="QPushButton" name="pb_export_sql">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>620</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>9</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>📄 SQL-Dump Export</string>
+   </property>
+   <property name="toolTip">
+    <string>Erstellt einen PostgreSQL SQL-Dump für manuelle Installation (z.B. bei GBD WebSuite ohne direkten DB-Zugriff)</string>
+   </property>
+  </widget>
+  
   <widget class="QPushButton" name="pb_cancel">
    <property name="geometry">
     <rect>
      <x>420</x>
-     <y>560</y>
+     <y>620</y>
      <width>80</width>
      <height>32</height>
     </rect>
@@ -262,7 +335,7 @@
    <property name="geometry">
     <rect>
      <x>510</x>
-     <y>560</y>
+     <y>620</y>
      <width>80</width>
      <height>32</height>
     </rect>
