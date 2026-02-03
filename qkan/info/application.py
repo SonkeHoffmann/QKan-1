@@ -9,9 +9,15 @@ try:
     import win32com.client as w3c
 except:
     w3c = None
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+try:
+    from matplotlib import pyplot as plt
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+except ImportError:
+    plt = None
+    FigureCanvas = None
+    NavigationToolbar = None
 from typing import Dict, List, Optional, Union
 from pathlib import Path
 from xml.dom import minidom
@@ -100,6 +106,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         #layout='constrained' damit die Texte sich nicht überschneiden!
         self.dialog.fig_1 = plt.figure()
@@ -115,6 +124,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         self.dialog.fig_2 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
@@ -129,6 +141,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         self.dialog.fig_3 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
@@ -143,6 +158,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         self.dialog.fig_4 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
@@ -157,6 +175,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         self.dialog.fig_5 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
@@ -171,6 +192,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         #self.dialog.fig_6 = plt.figure(layout='constrained')
         self.dialog.fig_6 = plt.figure()
@@ -186,6 +210,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         #self.dialog.fig_6 = plt.figure(layout='constrained')
         self.dialog.fig_7 = plt.figure()
@@ -201,6 +228,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         #self.dialog.fig_6 = plt.figure(layout='constrained')
         self.dialog.fig_8 = plt.figure()
@@ -216,6 +246,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         #self.dialog.fig_6 = plt.figure(layout='constrained')
         self.dialog.fig_9 = plt.figure()
@@ -231,6 +264,9 @@ class Infos(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            logger.warning("Matplotlib ist nicht installiert. Diagramme können nicht angezeigt werden.")
+            return
         self.dialog = self.info_dlg
         #self.dialog.fig_6 = plt.figure(layout='constrained')
         self.dialog.fig_10 = plt.figure()

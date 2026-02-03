@@ -3,7 +3,10 @@ from qgis.core import *
 from qgis.utils import iface, spatialite_connect, pluginDirectory
 import sqlite3
 import math
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 from qkan.tools.qkan_utils import loadLayer
 
 
@@ -42,6 +45,21 @@ class SanierungsbedarfszahlFunkt:
 
 
     def run(self):
+        # Prüfe ob pandas verfügbar ist
+        if pd is None and (self.excel_format or self.excel_speicher):
+            from qkan.utils import get_logger
+            logger = get_logger("QKan.sanierungsbedarfszahl")
+            logger.error("Pandas ist nicht installiert. Excel-Export nicht verfügbar.")
+            from qgis.core import Qgis
+            if iface:
+                iface.messageBar().pushMessage(
+                    "Fehler",
+                    "Pandas ist nicht installiert. Excel-Export ist nicht verfügbar.",
+                    level=Qgis.Critical,
+                    duration=5
+                )
+            return
+        
         check_cb = self.check_cb
         if check_cb['cb3'] and check_cb['cb1']:
             self.haltung = True

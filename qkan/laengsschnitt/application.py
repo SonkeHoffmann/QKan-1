@@ -1,7 +1,12 @@
 from PyQt5.QtWidgets import *
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+try:
+    from matplotlib import pyplot as plt
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+except ImportError:
+    plt = None
+    FigureCanvas = None
+    NavigationToolbar = None
 from qgis.core import Qgis
 from qgis.gui import QgisInterface
 
@@ -104,6 +109,11 @@ class Laengsschnitt(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            from qkan.utils import get_logger
+            logger = get_logger("QKan.laengsschnitt")
+            logger.warning("Matplotlib ist nicht installiert. Längsschnitt-Ansicht nicht verfügbar.")
+            return
         self.dialog = self.laengs_dlg
         #self.dialog.fig = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
@@ -122,6 +132,11 @@ class Laengsschnitt(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            from qkan.utils import get_logger
+            logger = get_logger("QKan.laengsschnitt")
+            logger.warning("Matplotlib ist nicht installiert. Längsschnitt-Ansicht nicht verfügbar.")
+            return
         self.dialog = self.laengs_dlg
         #self.dialog.fig_2 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden
@@ -138,6 +153,11 @@ class Laengsschnitt(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if plt is None:
+            from qkan.utils import get_logger
+            logger = get_logger("QKan.laengsschnitt")
+            logger.warning("Matplotlib ist nicht installiert. Längsschnitt-Ansicht nicht verfügbar.")
+            return
         self.dialog = self.laengs_dlg
         #self.dialog.fig_3 = plt.figure()
         #in der self.fig können die Matplotlib sachen angezeigt werden

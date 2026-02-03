@@ -72,6 +72,7 @@ class UploadPostgisTask:
         self.pg_cursor = None
         self.db_conn = None  # SQLite-Verbindung
         self.db_cursor = None  # SQLite-Cursor
+        self.use_spatialite = False  # Flag ob SpatiaLite verfügbar ist
         
         # Tracking für hochgeladene Tabellen
         self.uploaded_tables: List[Dict[str, Any]] = []
@@ -292,8 +293,9 @@ class UploadPostgisTask:
 
     def _get_sqlite_tables(self) -> List[str]:
         """Alle relevanten Tabellen aus SQLite-Datenbank ermitteln"""
+        # Zuerst alle Tabellen abrufen
         self.db_cursor.execute("""
-            SELECT name FROM sqlite_master 
+            SELECT name, sql FROM sqlite_master 
             WHERE type='table' 
             AND name NOT LIKE 'sqlite_%' 
             AND name NOT LIKE 'idx_%'
@@ -311,11 +313,26 @@ class UploadPostgisTask:
                             'raster_coverages_keyword', 'vector_coverages',
                             'vector_coverages_srid', 'vector_coverages_keyword',
                             'data_licenses', 'vector_layers', 'vector_layers_auth',
-                            'vector_layers_field_infos', 'vector_layers_statistics')
+                            'vector_layers_field_infos', 'vector_layers_statistics',
+                            'KNN')
             ORDER BY name
         """)
         tables = self.db_cursor.fetchall()
-        return [row[0] for row in tables]
+        
+        # Virtuelle Tabellen herausfiltern (CREATE VIRTUAL TABLE ...)
+        regular_tables = []
+        for row in tables:
+            table_name = row[0]
+            create_sql = row[1] if row[1] else ""
+            
+            # Überspringe virtuelle Tabellen (SpatiaLite R*Tree, KNN, etc.)
+            if create_sql and 'VIRTUAL' in create_sql.upper():
+                logger.debug(f"Überspringe virtuelle Tabelle: {table_name}")
+                continue
+            
+            regular_tables.append(table_name)
+        
+        return regular_tables
 
     def _get_geometry_info(self, table_name: str) -> Optional[Dict[str, Any]]:
         """Geometrie-Information für eine Tabelle ermitteln"""
@@ -553,16 +570,31 @@ class UploadPostgisTask:
                 geom_col = geom_info['column']
                 srid = geom_info['srid']
                 
-                # Daten mit WKT-konvertierter Geometrie laden
-                select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
-                select_sql = f"""
-                    SELECT {select_cols}, 
-                        CASE 
-                            WHEN "{geom_col}" IS NOT NULL THEN AsText("{geom_col}")
-                            ELSE NULL 
-                        END as geom_wkt
-                    FROM {table_name}
-                """
+                # Prüfen ob SpatiaLite-Funktionen verfügbar sind
+                use_spatialite = getattr(self, 'use_spatialite', False)
+                
+                if use_spatialite:
+                    # Daten mit WKT-konvertierter Geometrie laden (SpatiaLite)
+                    select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
+                    select_sql = f"""
+                        SELECT {select_cols}, 
+                            CASE 
+                                WHEN "{geom_col}" IS NOT NULL THEN AsText("{geom_col}")
+                                ELSE NULL 
+                            END as geom_wkt
+                        FROM {table_name}
+                    """
+                else:
+                    # Ohne SpatiaLite: Geometrie als Hex-BLOB lesen
+                    select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
+                    select_sql = f"""
+                        SELECT {select_cols}, 
+                            CASE 
+                                WHEN "{geom_col}" IS NOT NULL THEN hex("{geom_col}")
+                                ELSE NULL 
+                            END as geom_hex
+                        FROM {table_name}
+                    """
             else:
                 select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
                 select_sql = f"SELECT {select_cols} FROM {table_name}"
@@ -574,12 +606,21 @@ class UploadPostgisTask:
                 return 0
             
             # INSERT-Statement vorbereiten
+            use_spatialite = getattr(self, 'use_spatialite', False)
+            
             if geom_info:
                 geom_col = geom_info['column']
                 srid = geom_info['srid']
                 
                 insert_cols = ', '.join([f'"{c}"' for c in non_geom_columns] + [f'"{geom_col}"'])
-                placeholders = ', '.join(['%s'] * len(non_geom_columns) + [f'ST_GeomFromText(%s, {srid})'])
+                
+                if use_spatialite:
+                    # SpatiaLite: WKT-Format
+                    placeholders = ', '.join(['%s'] * len(non_geom_columns) + [f'ST_GeomFromText(%s, {srid})'])
+                else:
+                    # Ohne SpatiaLite: Hex-EWKB-Format (SpatiaLite speichert im GPKG/EWKB-Format)
+                    placeholders = ', '.join(['%s'] * len(non_geom_columns) + [f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})"])
+                
                 insert_sql = f"""
                     INSERT INTO {self.schema_name}.{table_name} ({insert_cols})
                     VALUES ({placeholders})
@@ -793,22 +834,46 @@ class UploadPostgisTask:
             
             self._update_progress(15, "Öffne SQLite-Quelldatenbank...")
             
-            # SQLite/SpatiaLite-Datenbank direkt öffnen (ohne QKan-spezifische Prüfungen)
+            # SQLite/SpatiaLite-Datenbank öffnen mit Fallback
+            db_conn = None
+            db_cursor = None
+            use_spatialite = False
+            
+            # Versuche zuerst SpatiaLite über qgis.utils
             try:
                 db_conn = spatialite_connect(
                     database=self.source_database_file, 
                     check_same_thread=False
                 )
                 db_cursor = db_conn.cursor()
-                logger.info(f"✓ SQLite-Datenbank erfolgreich geöffnet: {self.source_database_file}")
-            except Exception as db_error:
-                error_msg = f"Kann SQLite-Datenbank nicht öffnen: {str(db_error)}"
-                logger.error(f"✗ {error_msg}")
-                raise QkanError(error_msg)
+                use_spatialite = True
+                logger.info(f"✓ SpatiaLite-Datenbank erfolgreich geöffnet: {self.source_database_file}")
+            except Exception as spatialite_error:
+                logger.info(f"ℹ SpatiaLite-Modul nicht verfügbar ({spatialite_error})")
+                logger.info("→ Verwende Standard-SQLite-Modus (Geometrien werden direkt konvertiert)")
+                
+                # Fallback auf Standard-SQLite ohne Extensions
+                try:
+                    db_conn = sqlite3.connect(
+                        self.source_database_file,
+                        check_same_thread=False
+                    )
+                    db_cursor = db_conn.cursor()
+                    
+                    # NICHT versuchen mod_spatialite zu laden - das führt zu VirtualKNN-Fehlern
+                    # Geometrien werden als BLOB/Hex behandelt
+                    logger.info(f"✓ SQLite-Datenbank geöffnet (Standard-Modus)")
+                    logger.info("  → Geometrien werden als BLOB/Hex gelesen und nach PostGIS konvertiert")
+                    
+                except Exception as sqlite_error:
+                    error_msg = f"Kann SQLite-Datenbank nicht öffnen: {str(sqlite_error)}"
+                    logger.error(f"✗ {error_msg}")
+                    raise QkanError(error_msg)
             
             try:
                 self.db_conn = db_conn
                 self.db_cursor = db_cursor
+                self.use_spatialite = use_spatialite
                 
                 self._update_progress(20, "Analysiere Quelldatenbank...")
                 
@@ -833,58 +898,54 @@ class UploadPostgisTask:
                 geometry_tables_count = 0
                 
                 for table_name in tables:
-                    try:
-                        # Tabellenfortschritt aktualisieren
-                        self._update_table_progress(processed_tables, total_tables, table_name)
-                        
-                        logger.info(f"Verarbeite Tabelle: {table_name}")
-                        
-                        # Tabellenstruktur ermitteln
-                        columns = self._get_table_structure(table_name)
-                        
-                        if not columns:
-                            logger.warning(f"Keine Spalten für Tabelle {table_name} gefunden - überspringe")
-                            continue
-                        
-                        # Geometrie-Information ermitteln
-                        geom_info = self._get_geometry_info(table_name)
-                        
-                        # PostgreSQL-Tabelle erstellen
-                        table_created = self._create_postgres_table(table_name, columns, geom_info)
-                        
-                        if not table_created:
-                            continue
-                        
-                        # Daten übertragen
-                        transferred_records = self._transfer_table_data(table_name, columns, geom_info)
-                        
-                        # Spatial-Index erstellen für Geometrie-Tabellen
-                        if geom_info:
-                            self._create_spatial_index(table_name, geom_info)
-                            geometry_tables_count += 1
-                        
-                        # Tabelle finalisieren
-                        self._finalize_table(table_name)
-                        
-                        # Tracking für WebSuite-Registrierung
-                        self.uploaded_tables.append({
-                            'name': table_name,
-                            'records': transferred_records,
-                            'has_geometry': geom_info is not None,
-                            'geom_info': geom_info
-                        })
-                        
+                    # Tabellenfortschritt aktualisieren
+                    self._update_table_progress(processed_tables, total_tables, table_name)
+                    
+                    logger.info(f"Verarbeite Tabelle: {table_name}")
+                    
+                    # Tabellenstruktur ermitteln
+                    columns = self._get_table_structure(table_name)
+                    
+                    if not columns:
+                        logger.warning(f"Keine Spalten für Tabelle {table_name} gefunden - überspringe")
                         processed_tables += 1
-                        
-                        # Fortschritt nach Abschluss der Tabelle aktualisieren
-                        self._update_table_progress(processed_tables, total_tables, f"{table_name} ✓ ({transferred_records} Datensätze)")
-                        
-                        logger.info(f"Tabelle {table_name} erfolgreich übertragen: {transferred_records} Datensätze")
-                        
-                    except Exception as e:
-                        logger.error(f"Fehler beim Verarbeiten der Tabelle {table_name}: {str(e)}")
-                        processed_tables += 1  # Auch bei Fehler hochzählen
                         continue
+                    
+                    # Geometrie-Information ermitteln
+                    geom_info = self._get_geometry_info(table_name)
+                    
+                    # PostgreSQL-Tabelle erstellen
+                    table_created = self._create_postgres_table(table_name, columns, geom_info)
+                    
+                    if not table_created:
+                        processed_tables += 1
+                        continue
+                    
+                    # Daten übertragen
+                    transferred_records = self._transfer_table_data(table_name, columns, geom_info)
+                    
+                    # Spatial-Index erstellen für Geometrie-Tabellen
+                    if geom_info:
+                        self._create_spatial_index(table_name, geom_info)
+                        geometry_tables_count += 1
+                    
+                    # Tabelle finalisieren
+                    self._finalize_table(table_name)
+                    
+                    # Tracking für WebSuite-Registrierung
+                    self.uploaded_tables.append({
+                        'name': table_name,
+                        'records': transferred_records,
+                        'has_geometry': geom_info is not None,
+                        'geom_info': geom_info
+                    })
+                    
+                    processed_tables += 1
+                    
+                    # Fortschritt nach Abschluss der Tabelle aktualisieren
+                    self._update_table_progress(processed_tables, total_tables, f"{table_name} ✓ ({transferred_records} Datensätze)")
+                    
+                    logger.info(f"Tabelle {table_name} erfolgreich übertragen: {transferred_records} Datensätze")
             
             finally:
                 # SQLite-Verbindung schließen

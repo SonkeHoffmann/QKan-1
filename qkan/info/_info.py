@@ -2,10 +2,18 @@ from qgis.utils import spatialite_connect
 
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-import matplotlib.patches as mpatches
-import numpy as np
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib.gridspec import GridSpec
+    import matplotlib.patches as mpatches
+except ImportError:
+    plt = None
+    GridSpec = None
+    mpatches = None
+try:
+    import numpy as np
+except ImportError:
+    np = None
 from math import cos, sin, radians
 
 from qgis.core import (
