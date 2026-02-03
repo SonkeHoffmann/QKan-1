@@ -124,13 +124,24 @@ class UploadPostgis(QKanPlugin):
             if success:
                 self.log.info("UploadPostgis erfolgreich abgeschlossen!")
                 
-                # Zusammenfassung der hochgeladenen Tabellen
+                # Detaillierte Zusammenfassung der hochgeladenen Tabellen
                 geom_tables = [t for t in task.uploaded_tables if t.get('has_geometry')]
                 total_records = sum(t.get('records', 0) for t in task.uploaded_tables)
                 
-                self.log.info(f"Zusammenfassung: {len(task.uploaded_tables)} Tabellen, "
-                             f"davon {len(geom_tables)} mit Geometrie, "
-                             f"insgesamt {total_records} Datensätze")
+                self.log.info(f"=" * 60)
+                self.log.info(f"UPLOAD-ZUSAMMENFASSUNG")
+                self.log.info(f"=" * 60)
+                self.log.info(f"Tabellen mit Daten:         {len(task.tables_with_data)}")
+                self.log.info(f"Tabellen ohne Daten (leer): {len(task.tables_empty)}")
+                self.log.info(f"Tabellen übersprungen:      {len(task.tables_skipped)}")
+                self.log.info(f"Tabellen fehlgeschlagen:    {len(task.tables_failed)}")
+                self.log.info(f"Tabellen mit Geometrie:     {len(geom_tables)}")
+                self.log.info(f"Datensätze insgesamt:       {total_records}")
+                self.log.info(f"=" * 60)
+                
+                # Details bei Fehlern oder Warnungen
+                if task.tables_failed:
+                    self.log.warning(f"Fehlgeschlagene Tabellen: {', '.join(t['name'] for t in task.tables_failed)}")
             else:
                 self.log.error("UploadPostgis ist mit Fehlern beendet!")
                 

@@ -64,10 +64,12 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     
     # Info labels
     label_server_info: QLabel  # Label für Server-Info
+    label_progress_tables: QLabel
+    label_progress_records: QLabel
     
-    # Progress bar and status
-    progressBar_upload: QProgressBar
-    label_progress_status: QLabel
+    # Progress bars
+    progressBar_upload: QProgressBar  # Tabellen-Fortschritt
+    progressBar_records: QProgressBar  # Datensatz-Fortschritt
     
     # Internal list to track selected files
     selected_files: List[str]
@@ -125,10 +127,13 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.pb_upload.setEnabled(False)
         self.pb_remove_file.setEnabled(False)
         
-        # Initialize progress bar
+        # Initialize progress bars
         self.progressBar_upload.setValue(0)
         self.progressBar_upload.setFormat("%v / %m Tabellen")
-        self.label_progress_status.setText("Bereit für Upload")
+        self.progressBar_records.setValue(0)
+        self.progressBar_records.setFormat("%v / %m Datensätze")
+        self.label_progress_tables.setText("Tabellen:")
+        self.label_progress_records.setText("Datensätze:")
 
     def select_database_files(self):
         """Mehrere QKan-SQLite-Datenbank-Dateien auswählen"""
@@ -491,12 +496,14 @@ HINWEISE:
         
         logger.info(f"perform_upload aufgerufen: connection={connection_name}, db={target_database}, file={source_file}")
         
-        # Reset progress bar
+        # Reset progress bars
         self.progressBar_upload.setValue(0)
-        self.label_progress_status.setText(f"Starte Upload: {os.path.basename(source_file)}")
+        self.progressBar_records.setValue(0)
+        self.label_progress_tables.setText(f"Starte Upload: {os.path.basename(source_file)}")
+        self.label_progress_records.setText("Datensätze: bereit")
         QApplication.processEvents()
         
-        # Upload-Task erstellen mit Callback für Fortschritt
+        # Upload-Task erstellen mit Callbacks für Fortschritt
         task = UploadPostgisTask(
             server_connection=connection_name,
             target_database=target_database,
@@ -508,6 +515,10 @@ HINWEISE:
             add_layers_to_qgis=True
         )
         
+        # Zweite Progress Bar für Datensätze an Task übergeben
+        task.progress_bar_records = self.progressBar_records
+        task.record_progress_callback = self.update_record_progress
+        
         success = task.run()
         
         if not success:
@@ -516,16 +527,67 @@ HINWEISE:
         
         # Upload abgeschlossen
         self.progressBar_upload.setValue(self.progressBar_upload.maximum())
-        self.label_progress_status.setText("Upload abgeschlossen!")
+        self.progressBar_records.setValue(self.progressBar_records.maximum())
+        self.label_progress_tables.setText("Tabellen: Upload abgeschlossen!")
+        self.label_progress_records.setText("Datensätze: Upload abgeschlossen!")
         QApplication.processEvents()
         
+        # Detaillierte Zusammenfassung im Log und Dialog anzeigen
+        logger.info("=" * 60)
+        logger.info("UPLOAD-ZUSAMMENFASSUNG für: " + os.path.basename(source_file))
+        logger.info("=" * 60)
+        logger.info(f"Tabellen mit Daten:         {len(task.tables_with_data)}")
+        logger.info(f"Tabellen ohne Daten (leer): {len(task.tables_empty)}")
+        logger.info(f"Tabellen übersprungen:      {len(task.tables_skipped)}")
+        logger.info(f"Tabellen fehlgeschlagen:    {len(task.tables_failed)}")
+        
+        # Tabellen mit Daten
+        if task.tables_with_data:
+            logger.info("-" * 60)
+            logger.info("GEFÜLLTE TABELLEN:")
+            total_records = 0
+            for t in sorted(task.tables_with_data, key=lambda x: x['name']):
+                geom_marker = " [Geometrie]" if t['has_geometry'] else ""
+                logger.info(f"  ✓ {t['name']}: {t['records']} Datensätze{geom_marker}")
+                total_records += t['records']
+            logger.info(f"  → Gesamt: {total_records} Datensätze")
+        
+        # Leere Tabellen
+        if task.tables_empty:
+            logger.info("-" * 60)
+            logger.info("LEERE TABELLEN (Struktur übertragen, keine Daten):")
+            for name in sorted(task.tables_empty):
+                logger.info(f"  ○ {name}")
+        
+        # Übersprungene Tabellen
+        if task.tables_skipped:
+            logger.info("-" * 60)
+            logger.info("ÜBERSPRUNGENE TABELLEN:")
+            for t in sorted(task.tables_skipped, key=lambda x: x['name']):
+                logger.info(f"  - {t['name']}: {t['reason']}")
+        
+        # Fehlgeschlagene Tabellen
+        if task.tables_failed:
+            logger.info("-" * 60)
+            logger.info("FEHLGESCHLAGENE TABELLEN:")
+            for t in sorted(task.tables_failed, key=lambda x: x['name']):
+                logger.info(f"  ✗ {t['name']}: {t['reason']}")
+        
+        logger.info("=" * 60)
         logger.info("Upload-Prozess erfolgreich abgeschlossen")
     
     def update_progress_status(self, current: int, total: int, message: str):
         """Callback für Fortschrittsupdate von UploadPostgisTask"""
         self.progressBar_upload.setMaximum(total)
         self.progressBar_upload.setValue(current)
-        self.label_progress_status.setText(message)
+        self.label_progress_tables.setText(message)
+        QApplication.processEvents()
+    
+    def update_record_progress(self, current: int, total: int, table_name: str):
+        """Callback für Datensatz-Fortschrittsupdate"""
+        self.progressBar_records.setMaximum(total)
+        self.progressBar_records.setValue(current)
+        self.label_progress_records.setText(f"{table_name}: {current}/{total} Datensätze")
         QApplication.processEvents()
     
     def is_valid_database_name(self, name: str) -> bool:

@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>680</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>680</height>
+    <height>710</height>
    </size>
   </property>
   <property name="font">
@@ -220,18 +220,32 @@
      <x>20</x>
      <y>540</y>
      <width>560</width>
-     <height>70</height>
+     <height>110</height>
     </rect>
    </property>
    <property name="title">
     <string>Upload-Fortschritt</string>
    </property>
    
+   <widget class="QLabel" name="label_progress_tables">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>540</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tabellen:</string>
+    </property>
+   </widget>
+   
    <widget class="QProgressBar" name="progressBar_upload">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>25</y>
+      <y>38</y>
       <width>540</width>
       <height>20</height>
      </rect>
@@ -244,20 +258,34 @@
     </property>
    </widget>
    
-   <widget class="QLabel" name="label_progress_status">
+   <widget class="QLabel" name="label_progress_records">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>48</y>
+      <y>62</y>
       <width>540</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Bereit für Upload</string>
+     <string>Datensätze:</string>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
+   </widget>
+   
+   <widget class="QProgressBar" name="progressBar_records">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>540</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -266,9 +294,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>620</y>
-     <width>80</width>
-     <height>32</height>
+     <y>660</y>
+     <width>100</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -287,10 +315,10 @@
   <widget class="QPushButton" name="pb_export_sql">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>620</y>
-     <width>160</width>
-     <height>32</height>
+     <x>280</x>
+     <y>660</y>
+     <width>150</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -312,10 +340,10 @@
   <widget class="QPushButton" name="pb_cancel">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>620</y>
-     <width>80</width>
-     <height>32</height>
+     <x>440</x>
+     <y>660</y>
+     <width>70</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -334,10 +362,10 @@
   <widget class="QPushButton" name="pb_upload">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>620</y>
-     <width>80</width>
-     <height>32</height>
+     <x>520</x>
+     <y>660</y>
+     <width>70</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">

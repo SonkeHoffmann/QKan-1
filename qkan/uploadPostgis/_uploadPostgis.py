@@ -64,6 +64,10 @@ class UploadPostgisTask:
         self.add_layers_to_qgis = add_layers_to_qgis
         self.default_srid = srid
         
+        # Zweite Progress Bar für Datensatz-Fortschritt (wird vom Dialog gesetzt)
+        self.progress_bar_records = None
+        self.record_progress_callback = None
+        
         # Verbindungsparameter parsen
         self.connection_params = self._parse_connection_params()
         
@@ -76,6 +80,12 @@ class UploadPostgisTask:
         
         # Tracking für hochgeladene Tabellen
         self.uploaded_tables: List[Dict[str, Any]] = []
+        
+        # Statistik-Tracking für Upload-Zusammenfassung
+        self.tables_with_data: List[Dict[str, Any]] = []  # Tabellen mit Daten
+        self.tables_empty: List[str] = []  # Leere Tabellen
+        self.tables_skipped: List[Dict[str, str]] = []  # Übersprungene Tabellen mit Grund
+        self.tables_failed: List[Dict[str, str]] = []  # Fehlgeschlagene Tabellen
 
     def _parse_connection_params(self) -> Dict[str, Any]:
         """Verbindungsparameter aus dem ausgewählten Server extrahieren"""
@@ -109,15 +119,21 @@ class UploadPostgisTask:
             }
 
     def _connect_postgis(self) -> None:
-        """Verbindung zu PostGIS-Server herstellen"""
+        """
+        Verbindung zu PostGIS-Server herstellen.
+        
+        Verbindet zunächst mit der postgres Systemdatenbank, um die Zieldatenbank
+        zu prüfen/erstellen, und wechselt dann zur Zieldatenbank.
+        """
         try:
             params = self.connection_params
             
-            # Connection String aufbauen
+            # SCHRITT 1: Zuerst mit postgres Systemdatenbank verbinden
+            # um Zieldatenbank zu prüfen/erstellen
             conn_parts = [
                 f"host='{params['host']}'",
                 f"port={params['port']}",
-                f"dbname='{params['database']}'",
+                f"dbname='postgres'",  # Zuerst postgres Systemdatenbank
                 f"user='{params['user']}'"
             ]
             
@@ -130,14 +146,17 @@ class UploadPostgisTask:
             conn_parts.append("connect_timeout=10")
             conn_string = ' '.join(conn_parts)
             
-            logger.info(f"Verbinde zu PostgreSQL: {params['user']}@{params['host']}:{params['port']}/{params['database']}")
+            logger.info(f"Verbinde zu PostgreSQL: {params['user']}@{params['host']}:{params['port']}/postgres")
             
-            # Verbindung herstellen
+            # Verbindung zur postgres DB herstellen
             self.pg_conn = psycopg2.connect(conn_string)
             self.pg_conn.autocommit = True
             self.pg_cursor = self.pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             
-            logger.info("PostGIS-Verbindung erfolgreich hergestellt!")
+            logger.info("✓ Verbindung zu postgres Systemdatenbank erfolgreich")
+            
+            # SCHRITT 2: Zieldatenbank prüfen/erstellen wird in _create_target_database() gemacht
+            # SCHRITT 3: Wechsel zur Zieldatenbank erfolgt am Ende von _create_target_database()
             
         except Exception as e:
             raise QkanError(f"Fehler beim Verbinden zu PostGIS: {str(e)}")
@@ -153,7 +172,7 @@ class UploadPostgisTask:
             logger.warning(f"Fehler beim Schließen der Verbindung: {str(e)}")
 
     def _create_target_database(self) -> None:
-        """Zieldatenbank erstellen falls sie nicht existiert"""
+        """Zieldatenbank erstellen falls sie nicht existiert und zur DB wechseln"""
         try:
             # Prüfen ob Datenbank existiert
             self.pg_cursor.execute(
@@ -173,44 +192,44 @@ class UploadPostgisTask:
                 try:
                     # Sichere Variante mit Escape
                     self.pg_cursor.execute(f'CREATE DATABASE "{self.target_database}"')
-                    logger.info(f"Datenbank {self.target_database} erfolgreich erstellt")
+                    logger.info(f"✓ Datenbank {self.target_database} erfolgreich erstellt")
                 except Exception as create_error:
                     logger.warning(f"Datenbank konnte nicht erstellt werden: {str(create_error)}")
                     # Vielleicht existiert sie schon oder wir haben keine Rechte
                     # Versuche trotzdem fortzufahren
                 finally:
                     self.pg_conn.autocommit = old_autocommit
+            else:
+                logger.info(f"✓ Datenbank {self.target_database} existiert bereits")
             
-            # Verbindung zur Zieldatenbank wechseln (falls wir mit postgres verbunden waren)
-            current_db = self.pg_conn.info.dbname if hasattr(self.pg_conn, 'info') else None
+            # Verbindung zur Zieldatenbank wechseln
+            logger.info(f"Wechsle Verbindung zu Datenbank: {self.target_database}")
+            self.pg_conn.close()
             
-            if current_db != self.target_database:
-                logger.info(f"Wechsle Verbindung zu Datenbank: {self.target_database}")
-                self.pg_conn.close()
+            params = self.connection_params.copy()
+            params['database'] = self.target_database
+            
+            conn_parts = [
+                f"host='{params['host']}'",
+                f"port={params['port']}",
+                f"dbname='{params['database']}'",
+                f"user='{params['user']}'"
+            ]
+            
+            if params.get('password'):
+                conn_parts.append(f"password='{params['password']}'")
                 
-                params = self.connection_params.copy()
-                params['database'] = self.target_database
-                
-                conn_parts = [
-                    f"host='{params['host']}'",
-                    f"port={params['port']}",
-                    f"dbname='{params['database']}'",
-                    f"user='{params['user']}'"
-                ]
-                
-                if params.get('password'):
-                    conn_parts.append(f"password='{params['password']}'")
-                    
-                if params.get('sslmode'):
-                    conn_parts.append(f"sslmode='{params['sslmode']}'")
-                
-                conn_string = ' '.join(conn_parts)
-                
-                self.pg_conn = psycopg2.connect(conn_string)
-                self.pg_conn.autocommit = True
-                self.pg_cursor = self.pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-                
-            logger.info(f"Datenbank {self.target_database} ist verfügbar")
+            if params.get('sslmode'):
+                conn_parts.append(f"sslmode='{params['sslmode']}'")
+            
+            conn_parts.append("connect_timeout=10")
+            conn_string = ' '.join(conn_parts)
+            
+            self.pg_conn = psycopg2.connect(conn_string)
+            self.pg_conn.autocommit = True
+            self.pg_cursor = self.pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            logger.info(f"✓ Verbunden mit Datenbank {self.target_database}")
             
         except Exception as e:
             logger.error(f"Fehler bei Datenbankeinrichtung: {str(e)}")
@@ -651,9 +670,16 @@ class UploadPostgisTask:
                             logger.debug(f"Fehler bei Datensatz in {table_name}: {str(row_error)}")
                             continue
                     
-                    # Progress aktualisieren
-                    progress = min(100, int(50 + (inserted_records / total_records) * 40))
-                    self._update_progress(progress, f"Übertragen: {inserted_records}/{total_records} Datensätze")
+                    # Progress aktualisieren - separate Progress Bar für Datensätze
+                    if self.progress_bar_records and total_records > 0:
+                        self.progress_bar_records.setMaximum(total_records)
+                        self.progress_bar_records.setValue(inserted_records)
+                    
+                    # Callback für detaillierte Fortschrittsmeldung
+                    if self.record_progress_callback:
+                        # Sende Updates alle 500 Datensätze oder bei Abschluss
+                        if inserted_records % 500 == 0 or inserted_records == total_records:
+                            self.record_progress_callback(inserted_records, total_records, table_name)
                     
                 except Exception as e:
                     logger.error(f"Fehler beim Übertragen der Daten für Tabelle {table_name}: {str(e)}")
@@ -816,12 +842,21 @@ class UploadPostgisTask:
             
             self._update_progress(5, "Verbinde zu PostGIS-Server...")
             
-            # PostGIS-Verbindung herstellen
+            # PostGIS-Verbindung herstellen (zunächst mit postgres DB)
             try:
                 self._connect_postgis()
                 logger.info("✓ PostGIS-Verbindung hergestellt")
             except Exception as conn_error:
                 logger.error(f"✗ PostGIS-Verbindung fehlgeschlagen: {conn_error}")
+                raise
+            
+            # Zieldatenbank prüfen/erstellen und verbinden
+            self._update_progress(8, "Prüfe/erstelle Zieldatenbank...")
+            try:
+                self._create_target_database()
+                logger.info("✓ Zieldatenbank verfügbar")
+            except Exception as db_error:
+                logger.error(f"✗ Zieldatenbank konnte nicht eingerichtet werden: {db_error}")
                 raise
             
             self._update_progress(10, "Richte PostGIS-Umgebung ein...")
@@ -897,6 +932,12 @@ class UploadPostgisTask:
                 processed_tables = 0
                 geometry_tables_count = 0
                 
+                # Statistik-Listen zurücksetzen
+                self.tables_with_data = []
+                self.tables_empty = []
+                self.tables_skipped = []
+                self.tables_failed = []
+                
                 for table_name in tables:
                     # Tabellenfortschritt aktualisieren
                     self._update_table_progress(processed_tables, total_tables, table_name)
@@ -908,6 +949,7 @@ class UploadPostgisTask:
                     
                     if not columns:
                         logger.warning(f"Keine Spalten für Tabelle {table_name} gefunden - überspringe")
+                        self.tables_skipped.append({'name': table_name, 'reason': 'Keine Spalten gefunden'})
                         processed_tables += 1
                         continue
                     
@@ -915,14 +957,31 @@ class UploadPostgisTask:
                     geom_info = self._get_geometry_info(table_name)
                     
                     # PostgreSQL-Tabelle erstellen
-                    table_created = self._create_postgres_table(table_name, columns, geom_info)
-                    
-                    if not table_created:
+                    try:
+                        table_created = self._create_postgres_table(table_name, columns, geom_info)
+                        
+                        if not table_created:
+                            self.tables_skipped.append({'name': table_name, 'reason': 'Tabelle existiert bereits'})
+                            processed_tables += 1
+                            continue
+                    except Exception as create_error:
+                        logger.error(f"Fehler beim Erstellen der Tabelle {table_name}: {str(create_error)}")
+                        self.tables_failed.append({'name': table_name, 'reason': str(create_error)})
                         processed_tables += 1
                         continue
                     
                     # Daten übertragen
-                    transferred_records = self._transfer_table_data(table_name, columns, geom_info)
+                    try:
+                        transferred_records = self._transfer_table_data(table_name, columns, geom_info)
+                    except Exception as transfer_error:
+                        logger.error(f"Fehler bei Datenübertragung für {table_name}: {str(transfer_error)}")
+                        self.tables_failed.append({'name': table_name, 'reason': f'Datenübertragung: {str(transfer_error)}'})
+                        transferred_records = 0
+                    
+                    # Datensatz-Progress Bar zurücksetzen
+                    if self.progress_bar_records:
+                        self.progress_bar_records.setValue(0)
+                        self.progress_bar_records.setMaximum(100)
                     
                     # Spatial-Index erstellen für Geometrie-Tabellen
                     if geom_info:
@@ -932,13 +991,20 @@ class UploadPostgisTask:
                     # Tabelle finalisieren
                     self._finalize_table(table_name)
                     
-                    # Tracking für WebSuite-Registrierung
-                    self.uploaded_tables.append({
+                    # Tracking für WebSuite-Registrierung und Statistik
+                    table_info = {
                         'name': table_name,
                         'records': transferred_records,
                         'has_geometry': geom_info is not None,
                         'geom_info': geom_info
-                    })
+                    }
+                    self.uploaded_tables.append(table_info)
+                    
+                    # Statistik: Mit Daten oder leer?
+                    if transferred_records > 0:
+                        self.tables_with_data.append(table_info)
+                    else:
+                        self.tables_empty.append(table_name)
                     
                     processed_tables += 1
                     
@@ -981,14 +1047,57 @@ class UploadPostgisTask:
             if self.progress_callback:
                 self.progress_callback(total_tables, total_tables, f"Upload abgeschlossen: {processed_tables} Tabellen")
             
-            logger.info(f"""
-Upload erfolgreich abgeschlossen:
-- Tabellen übertragen: {processed_tables}/{total_tables}
-- Davon mit Geometrie: {geometry_tables_count}
-- Zieldatenbank: {self.target_database}
-- Schema: {self.schema_name}
-- Server: {self.connection_params['host']}
-            """)
+            # Detaillierte Upload-Zusammenfassung erstellen
+            total_records = sum(t['records'] for t in self.tables_with_data)
+            
+            logger.info("=" * 70)
+            logger.info("UPLOAD-ZUSAMMENFASSUNG")
+            logger.info("=" * 70)
+            logger.info(f"Quelldatenbank: {self.source_database_file}")
+            logger.info(f"Zieldatenbank:  {self.target_database}")
+            logger.info(f"Schema:         {self.schema_name}")
+            logger.info(f"Server:         {self.connection_params['host']}")
+            logger.info("-" * 70)
+            logger.info(f"Tabellen gesamt gefunden:     {total_tables}")
+            logger.info(f"Tabellen mit Daten:           {len(self.tables_with_data)}")
+            logger.info(f"Tabellen ohne Daten (leer):   {len(self.tables_empty)}")
+            logger.info(f"Tabellen übersprungen:        {len(self.tables_skipped)}")
+            logger.info(f"Tabellen fehlgeschlagen:      {len(self.tables_failed)}")
+            logger.info(f"Tabellen mit Geometrie:       {geometry_tables_count}")
+            logger.info(f"Datensätze übertragen:        {total_records}")
+            logger.info("-" * 70)
+            
+            # Tabellen mit Daten auflisten
+            if self.tables_with_data:
+                logger.info("TABELLEN MIT DATEN:")
+                for t in sorted(self.tables_with_data, key=lambda x: x['name']):
+                    geom_marker = " [Geometrie]" if t['has_geometry'] else ""
+                    logger.info(f"  ✓ {t['name']}: {t['records']} Datensätze{geom_marker}")
+            
+            # Leere Tabellen auflisten
+            if self.tables_empty:
+                logger.info("-" * 70)
+                logger.info("TABELLEN OHNE DATEN (leer):")
+                for name in sorted(self.tables_empty):
+                    logger.info(f"  ○ {name}")
+            
+            # Übersprungene Tabellen auflisten
+            if self.tables_skipped:
+                logger.info("-" * 70)
+                logger.info("ÜBERSPRUNGENE TABELLEN:")
+                for t in sorted(self.tables_skipped, key=lambda x: x['name']):
+                    logger.info(f"  - {t['name']}: {t['reason']}")
+            
+            # Fehlgeschlagene Tabellen auflisten
+            if self.tables_failed:
+                logger.info("-" * 70)
+                logger.info("FEHLGESCHLAGENE TABELLEN:")
+                for t in sorted(self.tables_failed, key=lambda x: x['name']):
+                    logger.info(f"  ✗ {t['name']}: {t['reason']}")
+            
+            logger.info("=" * 70)
+            logger.info(f"Upload {'erfolgreich' if not self.tables_failed else 'mit Warnungen'} abgeschlossen!")
+            logger.info("=" * 70)
             
             self._update_progress(100, "Upload erfolgreich abgeschlossen!")
             
