@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>660</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>660</height>
+    <height>710</height>
    </size>
   </property>
   <property name="font">
@@ -60,7 +60,7 @@
     <font>
      <family>Tahoma</family>
      <pointsize>9</pointsize>
-     <style>italic</style>
+     <italic>true</italic>
     </font>
    </property>
    <property name="text">
@@ -74,98 +74,58 @@
      <x>20</x>
      <y>85</y>
      <width>560</width>
-     <height>200</height>
+     <height>150</height>
     </rect>
    </property>
    <property name="title">
-    <string>QKan SQLite-Quelldatenbank(en)</string>
+    <string>QKan SQLite-Quelldatenbanken</string>
    </property>
    
-   <widget class="QLabel" name="label_source_info">
+   <widget class="QListWidget" name="listWidget_source_files">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
-      <width>540</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Wählen Sie eine oder mehrere SQLite-Datenbanken aus:</string>
-    </property>
-   </widget>
-   
-   <widget class="QListWidget" name="listWidget_source_databases">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>45</y>
-      <width>540</width>
+      <y>25</y>
+      <width>440</width>
       <height>110</height>
      </rect>
     </property>
-    <property name="selectionMode">
-     <enum>QAbstractItemView::ExtendedSelection</enum>
+    <property name="toolTip">
+     <string>Ausgewählte Quelldatenbanken für den Upload</string>
     </property>
    </widget>
    
    <widget class="QPushButton" name="pb_select_database">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>165</y>
-      <width>130</width>
-      <height>28</height>
+      <x>460</x>
+      <y>25</y>
+      <width>90</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Datenbanken wählen</string>
+     <string>Hinzufügen...</string>
+    </property>
+    <property name="toolTip">
+     <string>Wählen Sie eine oder mehrere QKan-Datenbanken aus</string>
     </property>
    </widget>
    
-   <widget class="QPushButton" name="pb_add_database">
+   <widget class="QPushButton" name="pb_remove_file">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>165</y>
-      <width>110</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hinzufügen</string>
-    </property>
-   </widget>
-   
-   <widget class="QPushButton" name="pb_remove_database">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>165</y>
-      <width>110</width>
-      <height>28</height>
+      <x>460</x>
+      <y>65</y>
+      <width>90</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="text">
      <string>Entfernen</string>
     </property>
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-   </widget>
-   
-   <!-- Verstecktes Feld für Abwärtskompatibilität -->
-   <widget class="QLineEdit" name="le_database_file">
-    <property name="geometry">
-     <rect>
-      <x>400</x>
-      <y>165</y>
-      <width>0</width>
-      <height>0</height>
-     </rect>
-    </property>
-    <property name="visible">
-     <bool>false</bool>
+    <property name="toolTip">
+     <string>Ausgewählte Datei aus der Liste entfernen</string>
     </property>
    </widget>
   </widget>
@@ -174,7 +134,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>300</y>
+     <y>250</y>
      <width>560</width>
      <height>280</height>
     </rect>
@@ -254,13 +214,89 @@
    </widget>
   </widget>
   
+  <widget class="QGroupBox" name="groupBox_progress">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>540</y>
+     <width>560</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Upload-Fortschritt</string>
+   </property>
+   
+   <widget class="QLabel" name="label_progress_tables">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>540</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tabellen:</string>
+    </property>
+   </widget>
+   
+   <widget class="QProgressBar" name="progressBar_upload">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>38</y>
+      <width>540</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+   </widget>
+   
+   <widget class="QLabel" name="label_progress_records">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>62</y>
+      <width>540</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Datensätze:</string>
+    </property>
+   </widget>
+   
+   <widget class="QProgressBar" name="progressBar_records">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>540</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  
   <widget class="QPushButton" name="pb_help">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>610</y>
-     <width>80</width>
-     <height>32</height>
+     <y>660</y>
+     <width>100</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -276,13 +312,38 @@
    </property>
   </widget>
   
+  <widget class="QPushButton" name="pb_export_sql">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>660</y>
+     <width>150</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>9</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>📄 SQL-Dump Export</string>
+   </property>
+   <property name="toolTip">
+    <string>Erstellt einen PostgreSQL SQL-Dump für manuelle Installation (z.B. bei GBD WebSuite ohne direkten DB-Zugriff)</string>
+   </property>
+  </widget>
+  
   <widget class="QPushButton" name="pb_cancel">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>610</y>
-     <width>80</width>
-     <height>32</height>
+     <x>440</x>
+     <y>660</y>
+     <width>70</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -301,10 +362,10 @@
   <widget class="QPushButton" name="pb_upload">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>610</y>
-     <width>80</width>
-     <height>32</height>
+     <x>520</x>
+     <y>660</y>
+     <width>70</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">

@@ -1,4 +1,5 @@
 # SQL-Statements für PostgreSQL/PostGIS im uploadPostgis-Modul
+# Upload einer SQLite-Datenbank auf PostGIS WebSuite für Kartendarstellung
 
 # PostGIS Version abfragen
 uploadPostgis_get_postgis_version: "
@@ -30,9 +31,13 @@ SELECT EXISTS(
 uploadPostgis_enable_postgis: "
 CREATE EXTENSION IF NOT EXISTS postgis"
 
-# Schema erstellen
+# Schema erstellen für WebSuite
 uploadPostgis_create_schema: "
 CREATE SCHEMA IF NOT EXISTS {schema_name}"
+
+# Search Path setzen für einfacheren Zugriff
+uploadPostgis_set_search_path: "
+SET search_path TO {schema_name}, public"
 
 # Tabelle erstellen
 uploadPostgis_create_table: "
@@ -54,19 +59,66 @@ SELECT EXISTS (
 uploadPostgis_drop_table: "
 DROP TABLE IF EXISTS {schema_name}.{table_name} CASCADE"
 
-# Geometrie-Spalte hinzufügen
+# Geometrie-Spalte hinzufügen für WebSuite-Kartendarstellung
 uploadPostgis_add_geometry_column: "
 SELECT AddGeometryColumn('{schema_name}', '{table_name}', '{geom_column}', {srid}, '{geom_type}', {coord_dimension})"
 
-# Index auf Geometriespalte erstellen
+# Geometrie-Spalte direkt hinzufügen (Fallback)
+uploadPostgis_add_geometry_column_direct: "
+ALTER TABLE {schema_name}.{table_name}
+ADD COLUMN \"{geom_column}\" geometry({geom_type}, {srid})"
+
+# Index auf Geometriespalte erstellen (wichtig für WebSuite-Performance)
 uploadPostgis_create_spatial_index: "
 CREATE INDEX IF NOT EXISTS idx_{table_name}_{geom_column}_gist 
-ON {schema_name}.{table_name} USING GIST ({geom_column})"
+ON {schema_name}.{table_name} USING GIST (\"{geom_column}\")"
 
 # Anzahl der Datensätze zählen
 uploadPostgis_count_records: "
 SELECT COUNT(*) FROM {schema_name}.{table_name}"
 
+# Geometrie-Metadaten aktualisieren für WebSuite
+uploadPostgis_populate_geometry_columns: "
+SELECT Populate_Geometry_Columns('{schema_name}.{table_name}'::regclass)"
+
+# Tabellen-Kommentar setzen
+uploadPostgis_set_table_comment: "
+COMMENT ON TABLE {schema_name}.{table_name} IS 'QKan Import: {source_file} - {timestamp}'"
+
+# ANALYZE für Query-Optimierung
+uploadPostgis_analyze_table: "
+ANALYZE {schema_name}.{table_name}"
+
 # Vacuum und Analyze nach Import
 uploadPostgis_vacuum_analyze: "
 VACUUM ANALYZE {schema_name}.{table_name}"
+
+# Alle Tabellen im Schema auflisten
+uploadPostgis_list_schema_tables: "
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = '{schema_name}'
+ORDER BY table_name"
+
+# Geometrie-Tabellen für WebSuite-Kartendarstellung auflisten
+uploadPostgis_list_geometry_tables: "
+SELECT f_table_name, f_geometry_column, type, srid
+FROM geometry_columns
+WHERE f_table_schema = '{schema_name}'
+ORDER BY f_table_name"
+
+# Extent einer Geometrie-Tabelle ermitteln (für WebSuite Kartenansicht)
+uploadPostgis_get_table_extent: "
+SELECT ST_AsText(ST_Extent(\"{geom_column}\")) as extent
+FROM {schema_name}.{table_name}"
+
+# Layer-Information für WebSuite
+uploadPostgis_get_layer_info: "
+SELECT 
+    f_table_name as layer_name,
+    f_geometry_column as geom_column,
+    type as geometry_type,
+    srid,
+    (SELECT COUNT(*) FROM {schema_name}.\"{f_table_name}\") as feature_count
+FROM geometry_columns
+WHERE f_table_schema = '{schema_name}'"
