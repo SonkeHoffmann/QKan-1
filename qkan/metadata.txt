@@ -11,7 +11,7 @@ name=QKan
 qgisMinimumVersion=3.28
 description=Gruppe der QKan-Erweiterung(en)
 version=3.4.7
-author=Nora Blase, Jörg Höttges, Yannick Linke
+author=Nora Blase, Jörg Höttges, Yannick Linke, Sönke Hoffmann
 email=hoettges@fh-aachen.de
 
 about=Mit diesem Plugin können Kanaldaten (Stammdaten und Inspektionsdaten) verwaltet und dargestellt werden. Es bietet Werkzeuge zur Vorbereitung und Ergebnisdarstellung einer hydraulischen Netzberechnung sowie Schnittstellen zu Berechnungssoftware. Außerdem ist eine Zustands- und Substanzbewertung für Kanalnetze integriert. Nähere Informationen können Sie der README.md (./plugins/QKan) entnehmen.
