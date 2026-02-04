@@ -717,7 +717,7 @@
   </fieldConfiguration>
   <aliases>
     <alias name="" index="0" field="pk"/>
-    <alias name="" index="1" field="flnam"/>
+    <alias name="Bezeichnung" index="1" field="flnam"/>
     <alias name="Haltung" index="2" field="haltnam"/>
     <alias name="Schacht" index="3" field="schnam"/>
     <alias name="Neigungsklasse" index="4" field="neigkl"/>
@@ -726,8 +726,8 @@
     <alias name="Regenschreiber" index="7" field="regenschreiber"/>
     <alias name="Abflussparameter" index="8" field="abflussparameter"/>
     <alias name="Aufteilen" index="9" field="aufteilen"/>
-    <alias name="" index="10" field="kommentar"/>
-    <alias name="" index="11" field="createdat"/>
+    <alias name="Kommentar" index="10" field="kommentar"/>
+    <alias name="Erstelldatum" index="11" field="createdat"/>
   </aliases>
   <defaults>
     <default applyOnUpdate="0" expression="" field="pk"/>

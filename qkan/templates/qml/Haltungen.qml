@@ -2400,7 +2400,7 @@
     <alias name="Elementtyp" index="20" field="haltungstyp"/>
     <alias name="Planungsstatus" index="21" field="simstatus"/>
     <alias name="hat RW-Anschlüsse" index="22" field="rwanschluss"/>
-    <alias name="" index="23" field="druckdicht"/>
+    <alias name="druckdicht" index="23" field="druckdicht"/>
     <alias name="x Anfang" index="24" field="xschob"/>
     <alias name="y Anfang" index="25" field="yschob"/>
     <alias name="x Ende" index="26" field="xschun"/>

@@ -75,7 +75,7 @@ class QKan:
     instance: "QKan"
     config: Config
     template_dir: str
-    forms: str
+    forms: list[str]
 
     dbVersion = "3.4.8"  # Version der QKan-Datenbank
     qgsVersion = "3.4.8"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
@@ -236,6 +236,7 @@ class QKan:
             zustand = self.menu.addMenu("Zustandsbewertung")
             substanz = self.menu.addMenu("Substanzbewertung")
             flood2D = self.menu.addMenu("Überflutung")
+            # postgis = self.menu.addMenu("PostgisUpload")
             info = self.menu.addMenu("Info")
 
             safe_add_action(allgemein, "Optionen")
@@ -291,6 +292,8 @@ class QKan:
 
             safe_add_action(sync, "Vergleich mit einem anderen QKan-Projekt")
             safe_add_action(sync, "Synchronisation mit einem anderen QKan-Projekt")
+
+            # safe_add_action(postgis, "Upload to PostGIS")
 
             safe_add_action(flood2D, "Überflutungsanimation")
 

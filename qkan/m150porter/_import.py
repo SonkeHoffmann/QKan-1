@@ -131,11 +131,11 @@ class Haltung_untersucht(ClassObject):
 
 class Untersuchdat_haltung(ClassObject):
     untersuchhal: str = ""
-    untersuchrichtung: str = ""
     schoben: str = ""
     schunten: str = ""
     id: int = 0
     untersuchtag: str = ""
+    untersuchrichtung: str = ""
     inspektionslaenge: float = 0.0
     videozaehler: str = ""
     station: float = 0.0

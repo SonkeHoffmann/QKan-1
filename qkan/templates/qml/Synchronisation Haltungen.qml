@@ -578,19 +578,17 @@
       <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
         <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
-      <style name="nicht ausführen" text_color="#ff0011" rule="not status" text_color_alpha="255">
+      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
         <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
       </style>
-      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#fdbf6f">
+      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
         <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
-      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0011">
+      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
         <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
     </rowstyles>
-    <fieldstyles>
-      <fieldstyle fieldname="pk"/>
-    </fieldstyles>
+    <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
   <editforminit/>

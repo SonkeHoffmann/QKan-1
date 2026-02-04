@@ -60,7 +60,7 @@
     <font>
      <family>Tahoma</family>
      <pointsize>9</pointsize>
-     <style>italic</style>
+     <italic>true</italic>
     </font>
    </property>
    <property name="text">

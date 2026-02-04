@@ -922,6 +922,7 @@ class DBConnection:
                 "schunten",
                 "id",
                 "untersuchtag",
+                "untersuchrichtung",
                 "bandnr",
                 "videozaehler",
                 "inspektionslaenge",

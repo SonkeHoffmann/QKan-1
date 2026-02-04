@@ -503,6 +503,9 @@
       <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
         <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
+      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      </style>
     </rowstyles>
     <fieldstyles/>
   </conditionalstyles>

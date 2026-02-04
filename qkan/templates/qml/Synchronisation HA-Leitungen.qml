@@ -391,18 +391,25 @@
     <alias name="Sohlhöhe Ende" index="14" field="sohleunten"/>
     <alias name="Baujahr" index="15" field="baujahr"/>
     <alias name="Anschluss an Haltung" index="16" field="haltnam"/>
-    <alias name="Teilgebiet" index="17" field="teilgebiet"/>
-    <alias name="Straße" index="18" field="strasse"/>
-    <alias name="Profilbezeichnung" index="19" field="profilnam"/>
-    <alias name="Entwässerungssystem" index="20" field="entwart"/>
-    <alias name="Material" index="21" field="material"/>
-    <alias name="Profilauskleidung" index="22" field="profilauskleidung"/>
-    <alias name="Innenmaterial" index="23" field="innenmaterial"/>
-    <alias name="Rauheitsbeiwert" index="24" field="ks"/>
-    <alias name="Anschlusstyp" index="25" field="anschlusstyp"/>
-    <alias name="Planungsstatus" index="26" field="simstatus"/>
-    <alias name="Kommentar" index="27" field="kommentar"/>
-    <alias name="erstellt" index="28" field="createdat"/>
+    <alias name="Urstation" index="17" field="urstation"/>
+    <alias name="Ursprung" index="18" field="ursprung"/>
+    <alias name="Anschlusstyp" index="19" field="anschlusstyp"/>
+    <alias name="Lage des Anschlusses" index="20" field="lageanschluss"/>
+    <alias name="Teilgebiet" index="21" field="teilgebiet"/>
+    <alias name="Straße" index="22" field="strasse"/>
+    <alias name="Profilbezeichnung" index="23" field="profilnam"/>
+    <alias name="Entwässerungssystem" index="24" field="entwart"/>
+    <alias name="Material" index="25" field="material"/>
+    <alias name="Profilauskleidung" index="26" field="profilauskleidung"/>
+    <alias name="Innenmaterial" index="27" field="innenmaterial"/>
+    <alias name="Rauheitsbeiwert" index="28" field="ks"/>
+    <alias name="Planungsstatus" index="29" field="simstatus"/>
+    <alias name="X Anfang" index="30" field="xschob"/>
+    <alias name="Y Anfang" index="31" field="yschob"/>
+    <alias name="X Ende" index="32" field="xschun"/>
+    <alias name="Y Ende" index="33" field="yschun"/>
+    <alias name="Kommentar" index="34" field="kommentar"/>
+    <alias name="erstellt" index="35" field="createdat"/>
   </aliases>
   <defaults>
     <default applyOnUpdate="0" expression="" field="pk"/>
@@ -543,7 +550,7 @@
       <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
         <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
       </style>
-      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#fdbf6f">
+      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
         <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
       <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
