@@ -46,13 +46,15 @@ class SurfaceTools(QKanPlugin):
         QKan.instance.add_action(
             icon_path,
             text=self.tr("Entferne Überlappungen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_cut,
             parent=self.iface.mainWindow(),
         )
         icon_path = ":/plugins/qkan/surfaceTools/res/icon_voronoiTool.png"
         QKan.instance.add_action(
             icon_path,
-            text=self.tr("Erzeuge Voronoiflächen zu Haltungen"),
+            text=self.tr("Erzeuge Thiessen Polygone zu Haltungen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_voronoi,
             parent=self.iface.mainWindow(),
         )

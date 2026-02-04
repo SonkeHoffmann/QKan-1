@@ -1,6 +1,21 @@
 FAQ
 ===
 
+
+Fehler beim Update
+------------------
+**Problem:** Beim Update auf QKan Version 3.4.8 erscheint ein Fenster mit der Fehlermeldung "Konnte Erweiterung 'qkan' nicht laden ...".
+
+.. image:: ./QKan_Bilder/faq_updatefehler_348.png
+
+**Erläuterung:** Der Grund ist ein Programmierfehler in der vorherigen Version, wodurch diese nicht vollständig deinstalliert werden kann. 
+
+**Lösung:** Löschen Sie das vorherige Plugin manuell. Den Speicherort für das Plugin finden Sie über das 
+Menü :guilabel:`Einstellungen` :guilabel:`Benutzerprofile` :guilabel:`Aktuelles Profilverzeichnis öffnen`, wenn Sie in den Unterordner 
+*python/plugins* wechseln. Hier müssen Sie nur den Ordner *qkan* löschen und anschließend QGIS beenden und neu starten. Jetzt 
+können Sie QKan wie gewohnt neu installieren.
+
+
 Fehlerhafte Anzeige Linienelemente
 ----------------------------------
 
@@ -42,7 +57,7 @@ angeordneten Feldern anstelle eines QKan-Formulares angezeigt.
 
 1. Die Projektdatei wurde (in der Regel zusammen mit der eingebundenen QKan-Datenbank) in ein anderes Verzeichnis verschoben. Ist dies der Fall,
 kann im Menü unter :guilabel:`QKan` unter dem Punkt :guilabel:`Allgemein` mit |Tool_projekt_aktualisieren| :guilabel:`QKan-Projekt aktualisieren`
-der Pfad wieder hergestellt werden. Dazu muss in dem sich öffnenden Fesnter das Kontrollfeld im Bereich "Layer anpassen > Formularanbindung auf
+der Pfad wieder hergestellt werden. Dazu muss in dem sich öffnenden Fenster das Kontrollfeld im Bereich "Layer anpassen > Formularanbindung auf
 QKan-Standard setzten" sowie das Optionsfeld im Bereich "QKan-Layer > alle anpassen" aktiviert werden (siehe Bild unten).
 
 .. image:: ./QKan_Bilder/formularpfade_wiederherstellen.png

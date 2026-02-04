@@ -3,6 +3,8 @@ import os
 import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 from xml.etree.ElementTree import ElementTree
+import yaml
+from fnmatch import fnmatch
 
 from qgis.PyQt.QtCore import QStandardPaths
 from qgis.PyQt.QtWidgets import QListWidget
@@ -12,7 +14,7 @@ from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsDataSourceUri, QgsVect
 from qgis.utils import iface, pluginDirectory
 from math import ceil
 from qkan import QKan, enums
-from ..utils import get_logger, QkanError
+from ..utils import get_logger, QkanUserError
 
 if TYPE_CHECKING:
     from ..database.dbfunc import DBConnection
@@ -257,14 +259,12 @@ def get_database_QKan(silent: bool = False) -> None:
 
     project = QgsProject.instance()
     qkanlayers = [enums.LAYERBEZ.SCHAECHTE.value, enums.LAYERBEZ.HALTUNGEN.value, enums.LAYERBEZ.EINZELFLAECHEN.value]
-    layerobjects = None
     for lnam in qkanlayers:
         layerobjects = project.mapLayersByName(lnam)
         if len(layerobjects) > 0:
             break
     else:
-        logger.warning("Fehler: Es wurde noch kein QKan-Projekt geladen")
-        raise QkanError()
+        return
 
     layer = layerobjects[0]
     # only once for loaded project
@@ -649,7 +649,8 @@ def loadLayer(
         table,
         geom_column,
         qmlfile,
-        uifile,
+        filter = '',
+        uifile = None,
         group: Union[List, str] = 'QKan',
         gpos=0,
         qkan_db: str = None
@@ -689,12 +690,12 @@ def loadLayer(
         enums.LAYERBEZ.SYNC_GROUP_SYNCHRONISATION.value,
         enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
         enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
-        enums.LAYERBEZ.SYNC_GROUP_ANSCHLUSSLEITUNGEN.value,
+        enums.LAYERBEZ.SYNC_GROUP_HA_LEITUNGEN.value,
     ]
 
     dlayers = project.mapLayersByName(layerbez)
     for dlayer in dlayers:
-        project.removeMapLayer(project.mapLayersByName(dlayer))
+        project.removeMapLayer(dlayer)
 
     uri = QgsDataSourceUri()
     if qkan_db is None:
@@ -703,7 +704,7 @@ def loadLayer(
         uri.setDatabase(qkan_db)
     logger.debug(f'{uri=}')
     schema = ''
-    uri.setDataSource(schema, table, geom_column)
+    uri.setDataSource(schema, table, geom_column, filter)
     layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
 
     templatepath = os.path.join(pluginDirectory("qkan"), "templates")
@@ -718,9 +719,11 @@ def loadLayer(
         return False
 
     # Adapt path to forms directory
-    editFormConfig = layer.editFormConfig()
-    editFormConfig.setUiForm(os.path.join(formsDir, uifile))
-    layer.setEditFormConfig(editFormConfig)
+    if uifile is not None:
+        editFormConfig = layer.editFormConfig()
+        editFormConfig.setUiForm(os.path.join(formsDir, uifile))
+        layer.setEditFormConfig(editFormConfig)
+
     project.addMapLayer(layer, False)
 
     layersRoot = project.layerTreeRoot()
@@ -778,3 +781,54 @@ def list_selected_items(list_widget: QListWidget) -> List[str]:
     """
 
     return [_.text() for _ in list_widget.selectedItems()]
+
+def zoomAll():
+    """
+    Zoomt Karte auf Schächte oder Haltungen
+    :return: None
+    """
+    canvas = iface.mapCanvas()
+    canvas.refreshAllLayers()
+
+    layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)
+    if len(layers) > 0:
+        layer = layers[0]
+        layer.updateExtents()
+        canvas.refreshAllLayers()
+        if not (10.0 < (breite := layer.extent().width()) < 100000.0):
+            logger.debug(f"Layer Schächte nicht gefunden oder {breite=} unplausibel")
+            layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)
+            if len(layers) > 0:
+                layer = layers[0]
+                layer.updateExtents()
+                canvas.refreshAllLayers()
+                if not (10.0 < (breite := layer.extent().width()) < 100000.0):
+                    logger.debug('Zoom nicht möglich, weil Zoombereich von Haltungslayer {breite=} ebenfalls unplausibel')
+                    return
+    else:
+        logger.debug('Layer Schächte und Haltungen sind nicht vorhanden. Möglicherweise wurde kein Projekt geladen')
+        return
+
+    canvas.setExtent(layer.extent())
+    canvas.refresh()
+
+
+class Patterns():
+    """Management of pattern lists in yaml-Files"""
+
+    def __init__(self, filepath):
+        with open(filepath) as fr:
+            self.patterns = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+
+    def write(self, filepath):
+        """writes patterns"""
+        with open(filepath, 'w') as fw:
+            yaml.dump(self.patterns, fw)
+
+    def find(self, m150key):
+        """Zugeorndeten QKan-Wert finden"""
+        for qkan_name in self.patterns:
+            for patt in self.patterns[qkan_name]:
+                if fnmatch(m150key.strip().lower(), patt):
+                    return qkan_name
+        return None

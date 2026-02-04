@@ -59,31 +59,47 @@ class TestQKan2Kpp(QgisTest):
         # project.read(QKan.config.project.file)
         # LOGGER.debug("Geladene Projektdatei: %s", project.fileName())
 
-        db = DBConnection(dbname=QKan.config.database.qkan, qkan_db_update=True)
-        if not db.connected:
-            raise Exception("Datenbank nicht gefunden oder nicht aktuell.")
+        # db = DBConnection(dbname=QKan.config.database.qkan, qkan_db_update=True)
+        # if not db.connected:
+        #     raise Exception("Datenbank nicht gefunden oder nicht aktuell.")
 
-        erg = export_kanaldaten(
-            self.iface,
-            dynafile=dynafile,
-            template_dyna=template_dyna,
-            db_qkan=db,
-            dynabef_choice=enums.BefChoice.FLAECHEN,
-            dynaprof_choice=enums.ProfChoice.PROFILNAME,
-            liste_teilgebiete=[],
-            profile_ergaenzen=True,
-            autonum_dyna=True,
-            mit_verschneidung=True,
-            fangradius=0.1,
-            mindestflaeche=0.5,
-            max_loops=1000,
-        )
+        with DBConnection(
+                dbname=QKan.config.database.qkan,
+                qkan_db_update=True,
+                writeDbBackup=False,
+                writeQgsBackup=False,
+        ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
+
+            if not dbQK.connected:
+                errormsg = (
+                    "Fehler in k_qgsadapt:\n"
+                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                )
+                raise Exception(f"{__name__}: {errormsg}")
+
+            dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
+
+            erg = export_kanaldaten(
+                self.iface,
+                dynafile=dynafile,
+                template_dyna=template_dyna,
+                db_qkan=dbQK,
+                dynabef_choice=enums.BefChoice.FLAECHEN,
+                dynaprof_choice=enums.ProfChoice.PROFILNAME,
+                liste_teilgebiete=[],
+                profile_ergaenzen=True,
+                autonum_dyna=True,
+                mit_verschneidung=True,
+                fangradius=0.1,
+                mindestflaeche=0.5,
+                max_loops=1000,
+            )
 
         LOGGER.debug("erg (Validate_KPP_export): %s", erg)
         if not erg:
             LOGGER.info("Nicht ausgeführt, weil zuerst QKan-DB aktualisiert wurde.!")
 
-        del db
+        del dbQK
         # self.assertTrue(False, "Fehlernachricht")
 
 

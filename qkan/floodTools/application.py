@@ -29,6 +29,7 @@ class FloodTools(QKanPlugin):
         QKan.instance.add_action(
             icon_animation,
             text=self.tr("Überflutungsanimation"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_floodAnimation,
             parent=self.iface.mainWindow(),
         )

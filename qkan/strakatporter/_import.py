@@ -5,10 +5,10 @@ from typing import Iterator
 
 from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.core import Qgis, QgsGeometry, QgsPoint
-from qkan import QKan, enums
+from qkan import QKan
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError
 from qkan.tools.k_schadenstexte import Schadenstexte
 
 logger = get_logger("QKan.strakat.import")
@@ -132,6 +132,7 @@ class ImportTask(Schadenstexte):
         self.kriterienschaeden = QKan.config.zustand.kriterienschaeden
         self.maxdiff = QKan.config.strakat.maxdiff
 
+        self.db_qkan.loadmodule('strakatporter')
 
     def run(self) -> bool:
 
@@ -186,101 +187,58 @@ class ImportTask(Schadenstexte):
         """
 
         # Erstellung Tabelle t_strakatkanal
-        sql = "PRAGMA table_list('t_strakatkanal')"
-        if not self.db_qkan.sql(sql, "Prüfen, ob temporäre Tabelle 't_strakatkanal', vorhanden ist"):
+        if not self.db_qkan.sqlyml(
+                sqlnam='strakat_kanal_attrs',
+        ):
             return False                                        # Abbruch weil Anfrage fehlgeschlagen
-        if not self.db_qkan.fetchone():
-            sql = """ 
-            CREATE TABLE IF NOT EXISTS t_strakatkanal (
-                pk INTEGER PRIMARY KEY,
-                nummer INTEGER,
-                rw_gerinne_o REAL,
-                hw_gerinne_o REAL,
-                rw_gerinne_u REAL,
-                hw_gerinne_u REAL,
-                rw_rohranfang REAL,
-                hw_rohranfang REAL,
-                rw_rohrende REAL,
-                hw_rohrende REAL,
-                zuflussnummer1 INTEGER,
-                zuflussnummer2 INTEGER,
-                zuflussnummer3 INTEGER,
-                zuflussnummer4 INTEGER,
-                zuflussnummer5 INTEGER,
-                zuflussnummer6 INTEGER,
-                zuflussnummer7 INTEGER,
-                zuflussnummer8 INTEGER,
-                abflussnummer1 INTEGER,
-                abflussnummer2 INTEGER,
-                abflussnummer3 INTEGER,
-                abflussnummer4 INTEGER,
-                abflussnummer5 INTEGER,
-                schacht_oben TEXT,
-                schacht_unten TEXT,
-                haltungsname TEXT,
-                rohrbreite_v REAL,
-                rohrhoehe___v REAL,
-                flaechenfactor_v REAL,
-                deckel_oben_v REAL,
-                deckel_unten_v REAL,
-                sohle_oben___v REAL,
-                sohle_unten__v REAL,
-                s_sohle_oben_v REAL,           -- Position in Datei kanal.rwtopen unbekannt
-                sohle_zufluss1 REAL,
-                sohle_zufluss2 REAL,
-                sohle_zufluss3 REAL,
-                sohle_zufluss4 REAL,
-                sohle_zufluss5 REAL,
-                sohle_zufluss6 REAL,
-                sohle_zufluss7 REAL,
-                sohle_zufluss8 REAL,
-                kanalart INTEGER,
-                profilart_v INTEGER,
-                material_v INTEGER,
-                e_gebiet INTEGER,
-                strassennummer INTEGER,
-                schachtnummer INTEGER,
-                schachtart INTEGER,
-                berichtsnummer INTEGER,
-                laenge REAL,
-                schachtmaterial INTEGER,
-                oberflaeche INTEGER,
-                baujahr INTEGER,
-                wasserschutz INTEGER,
-                eigentum INTEGER,
-                naechste_halt INTEGER,
-                rueckadresse INTEGER,
-                mark INTEGER DEFAULT 0,
-                strakatid TEXT
-            )"""
-            if not self.db_qkan.sql(sql, 'Erstellung Tabelle "t_strakatkanal"'):
-                return False
-
+        if self.db_qkan.fetchone() is None:
             # Kopie von t_strakatkanal, um inkonsistente Schachtbezeichnungen nachvollziehbar zu machen
-            if not self.db_qkan.sql(sql.replace('t_strakatkanal', 't_strakatk_ori'), 'Erstellung Tabelle "t_strakatk_ori"'):
-                return False
+            for tabnam in ['t_strakatkanal','t_strakatk_ori']:
+                replacefun = lambda sqltext: sqltext.format(tabnam=tabnam)
+                if not self.db_qkan.sqlyml(
+                    sqlnam= 'strakat_create_t_strakatkanal',
+                    stmt_category='create_t_strakatkanal',
+                    replacefun=replacefun,
+                ):
+                    logger.error("Erstellen der Tabelle 't_strakatkanal' bzw. 't_strakat_ori' schlug fehlt")
+                    raise QkanDbError
 
-            sqls = [
-                f"SELECT AddGeometryColumn('t_strakatkanal', 'geom', {self.epsg}, 'LINESTRING')",
-                "SELECT CreateSpatialIndex('t_strakatkanal', 'geom')",
-                f"SELECT AddGeometryColumn('t_strakatkanal', 'geop', {self.epsg}, 'POINT')",
-                "SELECT CreateSpatialIndex('t_strakatkanal', 'geop')",
-            ]
-            for sql in sqls:
-                if not self.db_qkan.sql(sql=sql,
-                                        stmt_category="strakat_import ergänze geom und geop in t_strakatkanal"):
-                    raise Exception(f'{self.__class__.__name__}: Fehler beim Ergänzen von geom und geop in t_strakatkanal')
+                parameters = (tabnam, self.epsg,)
 
-            # Kopie von t_strakatkanal, um inkonsistente Schachtbezeichnungen nachvollziehbar zu machen
-            for sql in sqls:
-                if not self.db_qkan.sql(sql=sql.replace('t_strakatkanal', 't_strakatk_ori'),
-                                        stmt_category="strakat_import ergänze geom und geop in t_strakatk_ori"):
-                    raise Exception(f'{self.__class__.__name__}: Fehler beim Ergänzen von geom und geop in t_strakatk_ori')
+                if not self.db_qkan.sqlyml(
+                    sqlnam='strakat_addgeometrycolumn_geom',
+                    parameters=parameters,
+                ):
+                    logger.error_code("Geometrie in t_strakatkanal bzw. t_strakat_ori konnte nicht hinzugefügt werden")
+                    raise QkanDbError
+
+                if not self.db_qkan.sqlyml(
+                    sqlnam='strakat_addgeometrycolumn_geop',
+                    parameters=parameters,
+                ):
+                    logger.error_code("Geometrie in t_strakatkanal bzw. t_strakat_ori konnte nicht hinzugefügt werden")
+                    raise QkanDbError
+
+                parameters = (tabnam,)
+
+                if not self.db_qkan.sqlyml(
+                    sqlnam='strakat_createspatialindex_geom',
+                    parameters=parameters,
+                ):
+                    logger.error_code("SpatialIndex in t_strakatkanal bzw. t_strakat_ori konnte nicht hinzugefügt werden")
+                    raise QkanDbError
+
+                if not self.db_qkan.sqlyml(
+                    sqlnam='strakat_createspatialindex_geop',
+                    parameters=parameters,
+                ):
+                    logger.error_code("SpatialIndex in t_strakatkanal bzw. t_strakat_ori konnte nicht hinzugefügt werden")
+                    raise QkanDbError
 
             self.db_qkan.commit()
 
         def _iter() -> Iterator[Kanal_STRAKAT]:
-        # Datei kanal.rwtopen einlesen und in Tabelle schreiben
+            # Datei kanal.rwtopen einlesen und in Tabelle schreiben
             blength = 1024                      # Blocklänge in der STRAKAT-Datei
             with open(os.path.join(self.strakatdir, 'kanal.rwtopen'), 'rb') as fo:
 
@@ -427,7 +385,7 @@ class ImportTask(Schadenstexte):
                                     f' wurde nach 1000000 Datensätze abgebrochen!"')
 
         params = ()                           # STRAKAT data stored in tuple of dicts for better performance
-                                            # with sql-statement executemany
+        # with sql-statement executemany
         logger.debug("{__name__}: Berichte werden gelesen und in data gespeichert ...")
 
         for _schacht in _iter():
@@ -470,84 +428,45 @@ class ImportTask(Schadenstexte):
 
         logger.debug("{__name__}: Berichte werden in temporäre STRAKAT-Tabellen geschrieben ...")
 
-        sql = """INSERT INTO t_strakatkanal (
-            nummer, 
-            rw_gerinne_o, hw_gerinne_o, rw_gerinne_u, hw_gerinne_u,
-            rw_rohranfang, hw_rohranfang, rw_rohrende, hw_rohrende,
-            zuflussnummer1, zuflussnummer2, zuflussnummer3, zuflussnummer4,
-            zuflussnummer5, zuflussnummer6, zuflussnummer7, zuflussnummer8,
-            abflussnummer1, abflussnummer2, abflussnummer3, abflussnummer4, abflussnummer5,
-            schacht_oben, schacht_unten, haltungsname,
-            rohrbreite_v, rohrhoehe___v, flaechenfactor_v,
-            deckel_oben_v, deckel_unten_v, sohle_oben___v, sohle_unten__v, s_sohle_oben_v,
-            sohle_zufluss1, sohle_zufluss2, sohle_zufluss3, sohle_zufluss4,
-            sohle_zufluss5, sohle_zufluss6, sohle_zufluss7, sohle_zufluss8,
-            kanalart, profilart_v, material_v,
-            e_gebiet, strassennummer,
-            schachtnummer, schachtart, berichtsnummer,
-            laenge, schachtmaterial, oberflaeche,
-            baujahr, wasserschutz, eigentum,
-            naechste_halt, rueckadresse, strakatid
-        )
-        VALUES (
-            :nummer, 
-            :rw_gerinne_o, :hw_gerinne_o, :rw_gerinne_u, :hw_gerinne_u,
-            :rw_rohranfang, :hw_rohranfang, :rw_rohrende, :hw_rohrende,
-            :zuflussnummer1, :zuflussnummer2, :zuflussnummer3, :zuflussnummer4,
-            :zuflussnummer5, :zuflussnummer6, :zuflussnummer7, :zuflussnummer8,
-            :abflussnummer1, :abflussnummer2, :abflussnummer3, :abflussnummer4, :abflussnummer5,
-            :schacht_oben, :schacht_unten, :haltungsname,
-            :rohrbreite_v, :rohrhoehe___v, :flaechenfactor_v,
-            :deckel_oben_v, :deckel_unten_v, :sohle_oben___v, :sohle_unten__v, :s_sohle_oben_v,
-            :sohle_zufluss1, :sohle_zufluss2, :sohle_zufluss3, :sohle_zufluss4,
-            :sohle_zufluss5, :sohle_zufluss6, :sohle_zufluss7, :sohle_zufluss8,
-            :kanalart, :profilart_v, :material_v,
-            :e_gebiet, :strassennummer,
-            :schachtnummer, :schachtart, :berichtsnummer,
-            :laenge, :schachtmaterial, :oberflaeche,
-            :baujahr, :wasserschutz, :eigentum,
-            :naechste_halt, :rueckadresse, :strakatid                
-        )"""
-
-        if not self.db_qkan.sql(sql=sql, stmt_category="strakat_import STRAKAT Kanaltabelle", parameters=params, many=True):
+        if not self.db_qkan.sqlyml(
+            sqlnam='strakat_kanaltabelle',
+            stmt_category="strakat_import STRAKAT Kanaltabelle",
+            parameters=params,
+            many=True
+        ):
             raise Exception(f'{self.__class__.__name__}:Fehler beim Lesen der Datei "kanal.rwtopen"')
 
         sqls = [
-            f"""UPDATE t_strakatkanal
-                SET geom = MakeLine(
-                    Makepoint(iif(:coordsFromRohr, rw_rohranfang, rw_gerinne_o), 
-                              iif(:coordsFromRohr, hw_rohranfang, hw_gerinne_o),
-                              :epsg),
-                    Makepoint(iif(:coordsFromRohr, rw_rohrende, rw_gerinne_u), 
-                              iif(:coordsFromRohr, hw_rohrende, hw_gerinne_u),
-                              :epsg)
-                )
-                WHERE iif(:coordsFromRohr, rw_rohranfang, rw_gerinne_o) > 1
-                  AND iif(:coordsFromRohr, hw_rohranfang, hw_gerinne_o) > 1
-                  AND iif(:coordsFromRohr, rw_rohrende, rw_gerinne_u) > 1
-                  AND iif(:coordsFromRohr, hw_rohrende, hw_gerinne_u) > 1
-            """,
-            f"""UPDATE t_strakatkanal
-                SET geop = Makepoint(rw_gerinne_o, hw_gerinne_o, :epsg)
-                WHERE rw_gerinne_o > 1   AND hw_gerinne_o > 1
-            """,
-            "DELETE FROM t_strakatkanal WHERE schachtnummer = 0"
+            'strakat_update_geom',
+            'strakat_update_geop',
+            'strakat_delete_schnr0',
         ]
 
         params = {"epsg": self.epsg, "coordsFromRohr": False}   # für Netzlogik sind Gerinneschnittpunkte relevant
-        for sql in sqls:
-            if not self.db_qkan.sql(sql=sql, stmt_category="strakat_import Geoobjekte t_strakatkanal", parameters=params):
-                raise Exception(f'{self.__class__.__name__}:Fehler beim Erzeugen der Geoobjekte t_strakatkanal')
+        for sqlnam in sqls:
+            if not self.db_qkan.sqlyml(
+                sqlnam=sqlnam,
+                stmt_category="strakat_import Geoobjekte t_strakatkanal",
+                parameters=params,
+            ):
+                logger.error_code('Fehler beim Erzeugen der Geoobjekte t_strakatkanal')
+                raise QkanDbError
 
         # Kopie von t_strakatkanal, um inkonsistente Schachtbezeichnungen nachvollziehbar zu machen
-        sql = "INSERT INTO t_strakatk_ori SELECT * FROM t_strakatkanal"
-        if not self.db_qkan.sql(sql=sql, stmt_category="strakat_import Kopie von t_strakatkanal"):
-            raise Exception(f'{self.__class__.__name__}:Fehler bei strakat_import Kopie von t_strakatkanal')
+        if not self.db_qkan.sqlyml(
+            sqlnam='strakat_copy2ori',
+            stmt_category="strakat_import Kopie von t_strakatkanal"
+        ):
+            logger.error_code('Fehler bei strakat_import Kopie von t_strakatkanal')
+            raise QkanDbError
 
         # Bereinigung inkonsistenter Schachtbezeichnungen
 
         # 1. Übertragen des schacht_oben auf Kanäle ohne schachtoben oder mit einem schachtoben,
         #    der nicht mit anderen Schachtoben übereinstimmt.
+        sqlnams = [
+            'strakat_prep1'
+        ]
         sqls = [
             # 1.0 Fehlende Schacht- und Haltungsbezeichnungen ergänzen
             # Die 2. Abfrage übernimmt den Schachtnamen nur dann als Haltungsnamen, wenn dadurch keine
@@ -763,7 +682,6 @@ class ImportTask(Schadenstexte):
                 nextlist = False
                 if n0 != idvor:
                     endelist = False
-                    nextlist = True
                     idvor = n0
                 elif endelist:
                     continue
@@ -919,6 +837,7 @@ class ImportTask(Schadenstexte):
                     zanf = z
                 if len(ptlis) <= 1:
                     continue
+                ptlis.reverse()                         # STRAKAT beginnt mit den Punkten an der Haltung
                 geomwkb = QgsGeometry.fromPolyline(ptlis).asWkb()
 
                 sohleoben = z1
@@ -1176,8 +1095,11 @@ class ImportTask(Schadenstexte):
                     untersuchungsrichtung = unpack('B', b[297:298])[0]
                     bandnr = b[301:b[301:320].find(b'\x00') + 301].decode('ansi').strip()
                     videozaehler = unpack('I', b[320:324])[0]
-                    foto_dateiname = (f'000{bandnr}'[-3:] if len(bandnr) <= 2 else f'{bandnr}') + \
-                                     f'00000{videozaehler}'[-5:]
+                    try:
+                        foto_dateiname = f'{int(bandnr):0>3d}{int(videozaehler):0>5d}'
+                    except BaseException as err:
+                        logger.debug(f'Datenfehler: {bandnr=}, {videozaehler=}')
+                        foto_dateiname = '00000000'
 
                     wert8 = unpack('B', b[365:366])                         # STRAKAT: Bewertungsart
                     if wert8 == 4:
@@ -1549,7 +1471,7 @@ class ImportTask(Schadenstexte):
         # Entwässerungsarten
 
         # Bezeichnungen in Referenztabelle und bezogenen Tabellen (über trigger) an QKan-Standard anpassen
-        self.db_qkan._adapt_reftable('entwaesserungsarten')
+        # self.db_qkan._adapt_reftable('entwaesserungsarten')           # funktionierte sowieso nicht, jh 01.12.2025
 
         daten = [
             ('Regenwasser', 'R', 'Regenwasser', 1, 2, 'R', 'KR'),
@@ -1582,7 +1504,7 @@ class ImportTask(Schadenstexte):
         # Simulationsstatus
 
         # Bezeichnungen in Referenztabelle und bezogenen Tabellen (über trigger) an QKan-Standard anpassen
-        self.db_qkan._adapt_reftable('simulationsstatus')
+        # self.db_qkan._adapt_reftable('simulationsstatus')           # funktionierte sowieso nicht, jh 01.12.2025
 
         daten = [  # bez    kurz he mu kp m150 m145 isy
             ('in Betrieb', 'B', 1, 1, 0, 'B', '1', '0', 'QKan-Standard'),
@@ -1689,8 +1611,8 @@ class ImportTask(Schadenstexte):
             LEFT JOIN schaechte AS sd   ON sd.schnam = stk.schacht_oben
             LEFT JOIN eigentum AS eg    ON eg.id = stk.eigentum 
             WHERE
-                    stk.schachtnummer <> 0
-                AND stk.schachtart <> 0                 -- keine Knickpunkte
+                    stk.schachtnummer <> 0                                      -- nicht geloescht
+--              AND stk.schachtart <> 0                 -- keine Knickpunkte, todo: über knotenart lösen 
                 AND stk.schacht_oben Is Not Null
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
@@ -2668,36 +2590,3 @@ class ImportTask(Schadenstexte):
         logger.debug("setschadenstexte_anschlussleitungen"),
 
         return True
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

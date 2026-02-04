@@ -69,7 +69,14 @@ class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
         self.obj_zwischen.clicked.connect(lambda: self.button_clicked("kuerzester"))
         self.obj_oberhalb.clicked.connect(lambda: self.button_clicked("oberhalb"))
         self.fliessweg.clicked.connect(lambda: self.button_clicked("Fliessweg"))
+        self.button_box.helpRequested.connect(self.click_help)
 
     def button_clicked(self, name):
         self.geklickter_button = name
         self.accept()
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Daten.html#auswahl-erweitern-netzverfolgung"
+        os.startfile(help_file)
+

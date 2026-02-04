@@ -1,375 +1,1939 @@
 m150_ex_haltungen_all: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
 SELECT
     ha.haltnam,
     ha.schoben,
     ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
-    round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
+    round(IIF(ha.breite>20, ha.breite, ha.breite*1000.0),1) AS breite,
+    ha.laenge, 
+    round(glength(ha.geom),3)                               AS rohrlaenge,
     round(ha.sohleoben,3) AS sohleoben,
     round(ha.sohleunten,3) AS sohleunten,
-    pf.m150 AS profil,
-    ha.strasse,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
+    pf.kuerzel                                              AS profil,
+    st.kuerzel                                              AS strasse,
+    ha.strasse                                              AS strassennname,
+    ma.kuerzel                                              AS material,
+    ea.kuerzel                                              AS entwart,
     ha.baujahr,
-    round(ha.aussendurchmesser,1) AS aussendurchmesser,
     ha.profilauskleidung,
-    mi.m150 AS innenmaterial,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
+    mi.kuerzel                                              AS innenmaterial,
+    si.kuerzel                                              AS simstatus,
+    ha.kommentar,
+    AsBinary(ha.geom) AS gline
 FROM haltungen AS ha
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
-                                    ON ha.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
-"
+JOIN ea ON ea.bezqkan = ha.entwart
+JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
+
+m150_count_haltungen_all: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN ea ON ea.bezqkan = ha.entwart
+JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
+
+m150_ex_haltungen_all_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
+SELECT
+    ha.haltnam,
+    ha.schoben,
+    ha.schunten,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
+    round(IIF(ha.breite>20, ha.breite, ha.breite*1000.0),1) AS breite,
+    ha.laenge, 
+    round(glength(ha.geom),3)                               AS rohrlaenge,
+    round(ha.sohleoben,3) AS sohleoben,
+    round(ha.sohleunten,3) AS sohleunten,
+    pf.kuerzel                                              AS profil,
+    st.kuerzel                                              AS strasse,
+    ha.strasse                                              AS strassennname,
+    ma.kuerzel                                              AS material,
+    ea.kuerzel                                              AS entwart,
+    ha.baujahr,
+    ha.profilauskleidung,
+    mi.kuerzel                                              AS innenmaterial,
+    si.kuerzel                                              AS simstatus,
+    ha.kommentar,
+    AsBinary(ha.geom) AS gline
+FROM haltungen AS ha
+LEFT JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
+
+m150_count_haltungen_all_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM haltungen AS ha
+LEFT JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
 
 m150_ex_haltungen_sel: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
 SELECT
     ha.haltnam,
     ha.schoben,
     ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
-    round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
+    round(IIF(ha.breite>20, ha.breite, ha.breite*1000.0),1) AS breite,
+    ha.laenge, 
+    round(glength(ha.geom),3)                               AS rohrlaenge,
     round(ha.sohleoben,3) AS sohleoben,
     round(ha.sohleunten,3) AS sohleunten,
-    pf.m150 AS profil,
-    ha.strasse,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
+    pf.kuerzel                                              AS profil,
+    st.kuerzel                                              AS strasse,
+    ha.strasse                                              AS strassennname,
+    ma.kuerzel                                              AS material,
+    ea.kuerzel                                              AS entwart,
     ha.baujahr,
-    round(ha.aussendurchmesser,1) AS aussendurchmesser,
     ha.profilauskleidung,
-    mi.m150 AS innenmaterial,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
+    mi.kuerzel                                              AS innenmaterial,
+    si.kuerzel                                              AS simstatus,
+    ha.kommentar,
+    AsBinary(ha.geom) AS gline
 FROM haltungen AS ha
 JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
-                                    ON ha.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
-"
+JOIN ea ON ea.bezqkan = ha.entwart
+JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
 
-m150_ex_wehre_all: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    ha.sohleoben,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    si.m150                                                 AS simstatus,
-    ha.kommentar,
-    ea.m150 AS entwart,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob
-FROM haltungen AS ha
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Wehr'
-"
-
-m150_ex_wehre_sel: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    ha.sohleoben,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    si.m150                                                 AS simstatus,
-    ha.kommentar,
-    ea.m150 AS entwart,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob
-FROM haltungen AS ha
-JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Wehr'
-"
-
-m150_ex_pumpen_all: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    ha.sohleoben,
-    si.m150                                                 AS simstatus,
-    ha.kommentar,
-    ea.m150 AS entwart,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob
-FROM haltungen AS ha
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Pumpe'
-"
-
-m150_ex_pumpen_sel: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    ha.sohleoben,
-    si.m150                                                 AS simstatus,
-    ha.kommentar,
-    ea.m150 AS entwart,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob
+m150_count_haltungen_sel: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
 FROM haltungen AS ha
 JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Pumpe'
-"
+JOIN ea ON ea.bezqkan = ha.entwart
+JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
 
-m150_ex_haltungsinspektionen_all: "
+m150_ex_haltungen_sel_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
 SELECT
     ha.haltnam,
     ha.schoben,
     ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
-    round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
+    round(IIF(ha.hoehe>20, ha.hoehe, ha.hoehe*1000.0),1)    AS hoehe,
+    round(IIF(ha.breite>20, ha.breite, ha.breite*1000.0),1) AS breite,
+    ha.laenge, 
+    round(glength(ha.geom),3)                               AS rohrlaenge,
     round(ha.sohleoben,3) AS sohleoben,
     round(ha.sohleunten,3) AS sohleunten,
-    pf.m150 AS profil,
-    ha.strasse,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
-FROM haltungen AS ha
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-"
-
-m150_ex_haltungsinspektionen_sel: "
-SELECT
-    ha.haltnam,
-    ha.schoben,
-    ha.schunten,
-    round(IIF(ha.hoehe>20, ha.hoehe/1000.0, ha.hoehe),1)    AS hoehe,
-    round(IIF(ha.breite>20, ha.breite/1000.0, ha.breite),1) AS breite,
-    round(coalesce(ha.laenge, glength(ha.geom),0),3)        AS laenge,
-    round(ha.sohleoben,3) AS sohleoben,
-    round(ha.sohleunten,3) AS sohleunten,
-    pf.m150 AS profil,
-    ha.strasse,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150                                                 AS simstatus,
-    round(x(PointN(ha.geom, 1)),3) AS xschob,
-    round(y(PointN(ha.geom, 1)),3) AS yschob,
-    round(x(PointN(ha.geom, -1)),3) AS xschun,
-    round(y(PointN(ha.geom, -1)),3) AS yschun,
-    ha.kommentar
+    pf.kuerzel                                              AS profil,
+    st.kuerzel                                              AS strasse,
+    ha.strasse                                              AS strassennname,
+    ma.kuerzel                                              AS material,
+    ea.kuerzel                                              AS entwart,
+    ha.baujahr,
+    ha.profilauskleidung,
+    mi.kuerzel                                              AS innenmaterial,
+    si.kuerzel                                              AS simstatus,
+    ha.kommentar,
+    AsBinary(ha.geom) AS gline
 FROM haltungen AS ha
 JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
-                                    ON ha.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON ha.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON ha.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON ha.simstatus = si.bezeichnung
-WHERE haltungstyp = 'Haltung' OR haltungstyp IS NULL
-  AND pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-"
+LEFT JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
+
+m150_count_haltungen_sel_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM haltungen AS ha
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
+LEFT JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN pf ON pf.bezqkan = ha.profilnam
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN mi ON mi.bezqkan = ha.innenmaterial
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE (haltungstyp = 'Haltung' OR haltungstyp IS NULL);"
+
+# Wehre sind in M150 Knoten aber in QKan Haltungen
+m150_ex_halwp_all: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT
+    ha.schoben,
+    round(sc.deckelhoehe,3)                         AS deckelhoehe,
+    round(coalesce(sc.sohlhoehe, ha.sohleoben),3)   AS sohlhoehe,
+    round(sc.deckelhoehe - coalesce(sc.sohlhoehe, ha.sohleoben),3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
+    sc.baujahr,
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ha.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
+FROM haltungen AS ha
+JOIN ka ON True
+JOIN schaechte AS sc ON sc.schnam = ha.schoben
+JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE haltungstyp = ':bauwerkstyp';"
+
+# Wehre und Pumpen sind in QKan als Linienobjekte in Tabelle haltungen gespeichert
+m150_ex_halwp_all_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT
+    ha.schoben,
+    round(sc.deckelhoehe,3)                         AS deckelhoehe,
+    round(coalesce(sc.sohlhoehe, ha.sohleoben),3)   AS sohlhoehe,
+    round(sc.deckelhoehe - coalesce(sc.sohlhoehe, ha.sohleoben),3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
+    sc.baujahr,
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ha.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
+FROM haltungen AS ha
+JOIN ka ON True
+JOIN schaechte AS sc ON sc.schnam = ha.schoben
+LEFT JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE haltungstyp = ':bauwerkstyp';"
+
+# Wehre und Pumpen sind in QKan als Linienobjekte in Tabelle haltungen gespeichert
+m150_ex_halwp_sel: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT
+    ha.schoben,
+    round(sc.deckelhoehe,3)                         AS deckelhoehe,
+    round(coalesce(sc.sohlhoehe, ha.sohleoben),3)   AS sohlhoehe,
+    round(sc.deckelhoehe - coalesce(sc.sohlhoehe, ha.sohleoben),3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
+    sc.baujahr,
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ha.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
+FROM haltungen AS ha
+JOIN ka ON True
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
+JOIN schaechte AS sc ON sc.schnam = ha.schoben
+JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE haltungstyp = ':bauwerkstyp';"
+
+# Wehre und Pumpen sind in QKan als Linienobjekte in Tabelle haltungen gespeichert
+m150_ex_halwp_sel_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT
+    ha.schoben,
+    round(sc.deckelhoehe,3)                         AS deckelhoehe,
+    round(coalesce(sc.sohlhoehe, ha.sohleoben),3)   AS sohlhoehe,
+    round(sc.deckelhoehe - coalesce(sc.sohlhoehe, ha.sohleoben),3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
+    sc.baujahr,
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ha.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
+FROM haltungen AS ha
+JOIN ka ON True
+JOIN sel_haltungen AS sel           ON sel.pk = ha.pk
+JOIN schaechte AS sc ON sc.schnam = ha.schoben
+LEFT JOIN ea ON ea.bezqkan = ha.entwart
+LEFT JOIN ma ON ma.bezqkan = ha.material
+LEFT JOIN si ON si.bezqkan = ha.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = ha.strasse
+WHERE haltungstyp = ':bauwerkstyp';"
 
 m150_ex_schaechte_all: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
 SELECT
     sc.schnam,
-    round(sc.deckelhoehe,3)         AS deckelhoehe,
-    round(sc.sohlhoehe,3)           AS sohlhoehe,
-    round(sc.durchm,1)              AS durchm,
-    ea.m150                         AS entwart,
+    round(sc.deckelhoehe,3) AS deckelhoehe,
+    round(sc.sohlhoehe,3)   AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
     sc.baujahr,
-    si.m150                         AS simstatus,
-    round(x(sc.geop),3)             AS xsch,
-    round(y(sc.geop),3)             AS ysch,
-    sc.kommentar
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    sc.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
 FROM schaechte AS sc
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
-                                    ON sc.entwart = ea.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON sc.simstatus = si.bezeichnung
-WHERE sc.schachttyp = :schachttyp
-"
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = sc.strasse
+WHERE sc.schachttyp = :schachttyp;"
+
+m150_count_schaechte_all: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = sc.strasse;"
+
+m150_ex_schaechte_all_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT
+    sc.schnam,
+    round(sc.deckelhoehe,3) AS deckelhoehe,
+    round(sc.sohlhoehe,3)   AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
+    sc.baujahr,
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    sc.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
+FROM schaechte AS sc
+LEFT JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = sc.strasse
+WHERE sc.schachttyp = :schachttyp;"
+
+m150_count_schaechte_all_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM schaechte AS sc
+LEFT JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = sc.strasse;"
 
 m150_ex_schaechte_sel: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
 SELECT
     sc.schnam,
-    round(sc.deckelhoehe,3)         AS deckelhoehe,
-    round(sc.sohlhoehe,3)           AS sohlhoehe,
-    round(sc.durchm,1)              AS durchm,
-    ea.m150                         AS entwart,
+    round(sc.deckelhoehe,3) AS deckelhoehe,
+    round(sc.sohlhoehe,3)   AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
     sc.baujahr,
-    si.m150                         AS simstatus,
-    round(x(sc.geop),3)             AS xsch,
-    round(y(sc.geop),3)             AS ysch,
-    sc.kommentar
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    sc.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
 FROM schaechte AS sc
-JOIN sel_schaechte AS sel           ON sel.pk = sc.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea
-                                    ON sc.entwart = ea.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON sc.simstatus = si.bezeichnung
-WHERE sc.schachttyp = :schachttyp
-"
+JOIN sel_schaechte AS sel ON sel.pk = sc.pk
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = sc.strasse
+WHERE sc.schachttyp = :schachttyp;"
+
+m150_count_schaechte_sel: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN sel_schaechte AS sel ON sel.pk = sc.pk
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN st ON st.bezqkan = sc.strasse;"
+
+m150_ex_schaechte_sel_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT
+    sc.schnam,
+    round(sc.deckelhoehe,3) AS deckelhoehe,
+    round(sc.sohlhoehe,3)   AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
+    ka.kuerzel              AS knotenart,
+    round(sc.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    sc.strasse              AS strassenname,
+    sc.baujahr,
+    ba.kuerzel              AS bauwerksart,
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    sc.kommentar,
+    AsBinary(sc.geom)       AS geoline,
+    AsBinary(sc.geop)       AS geopoint
+FROM schaechte AS sc
+JOIN sel_schaechte AS sel ON sel.pk = sc.pk
+LEFT JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN ba ON ba.bezqkan = sc.knotentyp
+LEFT JOIN st ON st.bezqkan = sc.strasse
+WHERE sc.schachttyp = :schachttyp;"
+
+m150_count_schaechte_sel_include: "
+WITH ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+ba AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_bauwerksarten'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Schacht'
+    GROUP BY bezqkan
+)
+SELECT count() AS anz
+FROM schaechte AS sc
+JOIN sel_schaechte AS sel ON sel.pk = sc.pk
+LEFT JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = sc.entwart
+LEFT JOIN ma ON ma.bezqkan = sc.material
+LEFT JOIN si ON si.bezqkan = sc.simstatus
+LEFT JOIN st ON st.bezqkan = sc.strasse;"
 
 m150_ex_anschlussleitungen_all: "
-SELECT
-    al.leitnam,
-    al.schoben,
-    al.schunten,
-    al.hoehe,
-    al.breite,
-    al.laenge,
-    al.sohleoben,
-    al.sohleunten,
-    pf.m150 AS profil,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150 AS simstatus,
-    round(x(PointN(al.geom, 1)),3) AS xschob,
-    round(y(PointN(al.geom, 1)),3) AS yschob,
-    round(x(PointN(al.geom, -1)),3) AS xschun,
-    round(y(PointN(al.geom, -1)),3) AS yschun,
-    al.baujahr,
-    al.aussendurchmesser,
-    al.profilauskleidung,
-    mi.m150 AS innenmaterial,
-    al.kommentar
-FROM anschlussleitungen AS al
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON al.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON al.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON al.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
-                                    ON al.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON al.simstatus = si.bezeichnung
-WHERE pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
-  AND si.m150 IS NOT NULL
-"
-
-# Anschlussleitungen werden indirekt �ber Haltungen selektiert
-m150_ex_anschlussleitungen_sel: "
-WITH sel AS (
-    SELECT al.pk
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
     FROM anschlussleitungen AS al
     JOIN haltungen AS ha ON al.haltnam = ha.haltnam
-    JOIN sel_haltungen AS sel ON sel.pk = ha.pk
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
 )
 SELECT
     al.leitnam,
-    al.schoben,
-    al.schunten,
+    al.schoben AS asoben,
+    al.schunten AS asunten,
+    al.haltnam,
+    ha.schoben AS haoben,
+    ha.schunten AS haunten,
+    al.urstation,
+    iif(lageanschluss IS NULL, NULL, printf('%02d', al.lageanschluss)) AS lageanschluss,
+    ka.kuerzel AS knotenart,
     al.hoehe,
     al.breite,
     al.laenge,
     al.sohleoben,
     al.sohleunten,
-    pf.m150 AS profil,
-    ma.m150 AS material,
-    ea.m150 AS entwart,
-    si.m150 AS simstatus,
-    round(x(PointN(al.geom, 1)),3) AS xschob,
-    round(y(PointN(al.geom, 1)),3) AS yschob,
-    round(x(PointN(al.geom, -1)),3) AS xschun,
-    round(y(PointN(al.geom, -1)),3) AS yschun,
+    st.kuerzel AS strasse,
+    al.strasse AS strassenname,
+    pf.kuerzel AS profil,
+    ma.kuerzel AS material,
+    ea.kuerzel AS entwart,
+    si.kuerzel AS simstatus,
     al.baujahr,
     al.aussendurchmesser,
     al.profilauskleidung,
-    mi.m150 AS innenmaterial,
-    al.kommentar
+    mi.kuerzel AS innenmaterial,
+    al.kommentar,
+    AsBinary(al.geom) AS gline
 FROM anschlussleitungen AS al
-JOIN sel                            ON sel.pk = al.pk
-JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS ea 
-                                    ON al.entwart = ea.bezeichnung
-JOIN (SELECT profilnam, m150 FROM profile GROUP BY profilnam) AS pf
-                                    ON al.profilnam = pf.profilnam
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS ma
-                                    ON al.material = ma.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM material GROUP BY bezeichnung) AS mi
-                                    ON al.innenmaterial = mi.bezeichnung
-JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
-                                    ON al.simstatus = si.bezeichnung
-WHERE pf.m150 IS NOT NULL
-  AND ea.m150 IS NOT NULL
-  AND ma.m150 IS NOT NULL
-  AND mi.m150 IS NOT NULL
-  AND si.m150 IS NOT NULL
-"
+JOIN ha      ON ha.pk = al.pk
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = al.entwart
+JOIN pf ON pf.bezqkan = al.profilnam
+LEFT JOIN ma ON ma.bezqkan = al.material
+LEFT JOIN mi ON mi.bezqkan = al.innenmaterial
+LEFT JOIN si ON si.bezqkan = al.simstatus
+LEFT JOIN st ON st.bezqkan = al.strasse;"
+
+# Anschlussleitungen werden indirekt über Haltungen selektiert
+m150_ex_anschlussleitungen_sel: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+    JOIN sel_haltungen AS sel ON sel.pk = ha.pk
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    al.leitnam,
+    al.schoben AS asoben,
+    al.schunten AS asunten,
+    al.haltnam,
+    ha.schoben AS haoben,
+    ha.schunten AS haunten,
+    al.urstation,
+    iif(lageanschluss IS NULL, NULL, printf('%02d', al.lageanschluss)) AS lageanschluss,
+    ka.kuerzel AS knotenart,
+    al.hoehe,
+    al.breite,
+    al.laenge,
+    al.sohleoben,
+    al.sohleunten,
+    st.kuerzel AS strasse,
+    al.strasse AS strassenname,
+    pf.kuerzel AS profil,
+    ma.kuerzel AS material,
+    ea.kuerzel AS entwart,
+    si.kuerzel AS simstatus,
+    al.baujahr,
+    al.aussendurchmesser,
+    al.profilauskleidung,
+    mi.kuerzel AS innenmaterial,
+    al.kommentar,
+    AsBinary(al.geom) AS gline
+FROM anschlussleitungen AS al
+JOIN ha      ON ha.pk = al.pk
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = al.entwart
+JOIN pf ON pf.bezqkan = al.profilnam
+LEFT JOIN ma ON ma.bezqkan = al.material
+LEFT JOIN mi ON mi.bezqkan = al.innenmaterial
+LEFT JOIN si ON si.bezqkan = al.simstatus
+LEFT JOIN st ON st.bezqkan = al.strasse;"
+
+m150_ex_anschlussleitungen_all_include: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    al.leitnam,
+    al.schoben AS asoben,
+    al.schunten AS asunten,
+    al.haltnam,
+    ha.schoben AS haoben,
+    ha.schunten AS haunten,
+    al.urstation,
+    iif(lageanschluss IS NULL, NULL, printf('%02d', al.lageanschluss)) AS lageanschluss,
+    ka.kuerzel AS knotenart,
+    al.hoehe,
+    al.breite,
+    al.laenge,
+    al.sohleoben,
+    al.sohleunten,
+    st.kuerzel AS strasse,
+    al.strasse AS strassenname,
+    pf.kuerzel AS profil,
+    ma.kuerzel AS material,
+    ea.kuerzel AS entwart,
+    si.kuerzel AS simstatus,
+    al.baujahr,
+    al.aussendurchmesser,
+    al.profilauskleidung,
+    mi.kuerzel AS innenmaterial,
+    al.kommentar,
+    AsBinary(al.geom) AS gline
+FROM anschlussleitungen AS al
+JOIN ha      ON ha.pk = al.pk
+LEFT JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = al.entwart
+LEFT JOIN pf ON pf.bezqkan = al.profilnam
+LEFT JOIN ma ON ma.bezqkan = al.material
+LEFT JOIN mi ON mi.bezqkan = al.innenmaterial
+LEFT JOIN si ON si.bezqkan = al.simstatus
+LEFT JOIN st ON st.bezqkan = al.strasse;"
+
+# Anschlussleitungen werden indirekt über Haltungen selektiert
+m150_ex_anschlussleitungen_sel_include: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+    JOIN sel_haltungen AS sel ON sel.pk = ha.pk
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+pf AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+mi AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    al.leitnam,
+    al.schoben AS asoben,
+    al.schunten AS asunten,
+    al.haltnam,
+    ha.schoben AS haoben,
+    ha.schunten AS haunten,
+    al.urstation,
+    iif(lageanschluss IS NULL, NULL, printf('%02d', al.lageanschluss)) AS lageanschluss,
+    ka.kuerzel AS knotenart,
+    al.hoehe,
+    al.breite,
+    al.laenge,
+    al.sohleoben,
+    al.sohleunten,
+    st.kuerzel AS strasse,
+    al.strasse AS strassenname,
+    pf.kuerzel AS profil,
+    ma.kuerzel AS material,
+    ea.kuerzel AS entwart,
+    si.kuerzel AS simstatus,
+    al.baujahr,
+    al.aussendurchmesser,
+    al.profilauskleidung,
+    mi.kuerzel AS innenmaterial,
+    al.kommentar,
+    AsBinary(al.geom) AS gline
+FROM anschlussleitungen AS al
+JOIN ha      ON ha.pk = al.pk
+LEFT JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = al.entwart
+LEFT JOIN pf ON pf.bezqkan = al.profilnam
+LEFT JOIN ma ON ma.bezqkan = al.material
+LEFT JOIN mi ON mi.bezqkan = al.innenmaterial
+LEFT JOIN si ON si.bezqkan = al.simstatus
+LEFT JOIN st ON st.bezqkan = al.strasse;"
+
+m150_ex_anschlussschaechte_all: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    an.schnam,
+    round(an.sohlhoehe,3)   AS sohlhoehe,
+    round(an.deckelhoehe,3) AS deckelhoehe,
+    round(an.deckelhoehe - an.sohlhoehe,3) AS tiefe,
+    round(an.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    an.strasse              AS strassenname,
+    an.baujahr,             
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ka.kuerzel              AS knotenart,
+    an.kommentar,
+    AsBinary(an.geom)       AS geopoint
+FROM anschlussschaechte AS an
+JOIN ha      ON ha.pk = an.pk
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = an.entwart
+LEFT JOIN ma ON ma.bezqkan = an.material
+LEFT JOIN si ON si.bezqkan = an.simstatus
+LEFT JOIN st ON st.bezqkan = an.strasse;"
+
+m150_ex_anschlussschaechte_all_include: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    an.schnam,
+    round(an.sohlhoehe,3)   AS sohlhoehe,
+    round(an.deckelhoehe,3) AS deckelhoehe,
+    round(an.deckelhoehe - an.sohlhoehe,3) AS tiefe,
+    round(an.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    an.strasse              AS strassenname,
+    an.baujahr,             
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ka.kuerzel              AS knotenart,
+    an.kommentar,
+    AsBinary(an.geom)       AS geopoint
+FROM anschlussschaechte AS an
+LEFT JOIN ha      ON ha.pk = an.pk
+JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = an.entwart
+LEFT JOIN ma ON ma.bezqkan = an.material
+LEFT JOIN si ON si.bezqkan = an.simstatus
+LEFT JOIN st ON st.bezqkan = an.strasse;"
+
+m150_ex_anschlussschaechte_sel: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+    JOIN sel_haltungen AS sel ON sel.pk = ha.pk
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    an.schnam,
+    round(an.sohlhoehe,3)   AS sohlhoehe,
+    round(an.deckelhoehe,3) AS deckelhoehe,
+    round(an.deckelhoehe - an.sohlhoehe,3) AS tiefe,
+    round(an.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    an.strasse              AS strassenname,
+    an.baujahr,             
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ka.kuerzel              AS knotenart,
+    an.kommentar,
+    AsBinary(an.geom)       AS geopoint
+FROM anschlussschaechte AS an
+JOIN ha      ON ha.pk = an.pk
+JOIN ka ON True
+JOIN ea ON ea.bezqkan = an.entwart
+LEFT JOIN ma ON ma.bezqkan = an.material
+LEFT JOIN si ON si.bezqkan = an.simstatus
+LEFT JOIN st ON st.bezqkan = an.strasse;"
+
+m150_ex_anschlussschaechte_sel_include: "
+WITH ha AS (
+    SELECT al.pk, ha.schoben, ha.schunten
+    FROM anschlussleitungen AS al
+    JOIN haltungen AS ha ON al.haltnam = ha.haltnam
+    JOIN sel_haltungen AS sel ON sel.pk = ha.pk
+),
+ea AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+    GROUP BY bezqkan
+),
+ma AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+    GROUP BY bezqkan
+),
+si AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+    GROUP BY bezqkan
+),
+st AS (
+    SELECT bezqkan, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+    GROUP BY bezqkan
+),
+ka AS (
+    SELECT kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+    GROUP BY bezqkan
+)
+SELECT
+    an.schnam,
+    round(an.sohlhoehe,3)   AS sohlhoehe,
+    round(an.deckelhoehe,3) AS deckelhoehe,
+    round(an.deckelhoehe - an.sohlhoehe,3) AS tiefe,
+    round(an.durchm,1)      AS durchm,
+    ea.kuerzel              AS entwart,
+    st.kuerzel              AS strasse,
+    an.strasse              AS strassenname,
+    an.baujahr,             
+    si.kuerzel              AS simstatus,
+    ma.kuerzel              AS material,
+    ka.kuerzel              AS knotenart,
+    an.kommentar,
+    AsBinary(an.geom)       AS geopoint
+FROM anschlussschaechte AS an
+LEFT JOIN ha      ON ha.pk = an.pk
+JOIN ka ON True
+LEFT JOIN ea ON ea.bezqkan = an.entwart
+LEFT JOIN ma ON ma.bezqkan = an.material
+LEFT JOIN si ON si.bezqkan = an.simstatus
+LEFT JOIN st ON st.bezqkan = an.strasse;"
 
 m150_ex_schachtinspektionen_all: "
 SELECT
     sc.schnam,
     round(sc.deckelhoehe,3)         AS deckelhoehe,
     round(sc.sohlhoehe,3)           AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
     round(sc.durchm,1)              AS durchm,
     ea.m150                         AS entwart,
     si.m150                         AS simstatus,
@@ -381,14 +1945,14 @@ JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS
                                     ON sc.entwart = ea.bezeichnung
 JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON sc.simstatus = si.bezeichnung
-WHERE sc.schachttyp = 'Schacht'
-"
+WHERE sc.schachttyp = 'Schacht';"
 
 m150_ex_schachtinspektionen_sel: "
 SELECT
     sc.schnam,
     round(sc.deckelhoehe,3)         AS deckelhoehe,
     round(sc.sohlhoehe,3)           AS sohlhoehe,
+    round(sc.deckelhoehe - sc.sohlhoehe,3) AS tiefe,
     round(sc.durchm,1)              AS durchm,
     ea.m150                         AS entwart,
     si.m150                         AS simstatus,
@@ -401,5 +1965,243 @@ JOIN (SELECT bezeichnung, m150 FROM entwaesserungsarten GROUP BY bezeichnung) AS
                                     ON sc.entwart = ea.bezeichnung
 JOIN (SELECT bezeichnung, m150 FROM simulationsstatus GROUP BY bezeichnung) AS si
                                     ON sc.simstatus = si.bezeichnung
-WHERE sc.schachttyp = 'Schacht'
+WHERE sc.schachttyp = 'Schacht';"
+
+# Alle Daten in refdata aus dem Import für Export hinzufügen, falls noch nicht vorhanden
+m150_insert_refdatafromimport: "
+INSERT INTO refdata (bezqkan, bezext, kuerzel, modul, subject, kommentar, createdat)
+SELECT
+    rd.bezqkan,
+    rd.bezext,
+    rd.kuerzel,
+    rd.modul,
+    'export_' || rd.thema AS subject,
+    'erzeugt aus import_simulationsstatus' AS kommentar,
+    CURRENT_TIMESTAMP AS createdat
+FROM (
+    SELECT
+        bezqkan,
+        bezext,
+        kuerzel,
+        modul,
+        substr(subject, 8) AS thema
+    FROM refdata
+    WHERE modul = 'm150porter' AND substr(subject, 1, 6) = 'import'
+) AS rd
+LEFT JOIN (
+    SELECT pk,
+        bezqkan,
+        substr(subject, 8) AS thema
+    FROM refdata
+    WHERE modul = 'm150porter' AND substr(subject, 1, 6) = 'export'
+) AS nd
+ON nd.thema = rd.thema AND nd.bezqkan = rd.bezqkan
+WHERE nd.pk IS NULL;"
+
+# Knotenarten für M150 in Tabelle refdata hinzufügen
+m150_insert_knotenarten: "
+INSERT INTO refdata (bezext, kuerzel, bezqkan, modul, subject, kommentar, createdat)
+SELECT 
+    column1 AS bezext,
+    column2 AS kuerzel,
+    column3 AS bezqkan,
+    'm150porter' AS modul,
+    'export_knotentypen' AS subject,
+    'M150-Standard von QKan eingefügt' AS kommentar,
+    CURRENT_TIMESTAMP AS createdat
+FROM (
+VALUES 
+    ('Auslass', 'A',            'Auslass'),
+    ('Bauwerk', 'B',            'Speicher'),     /* hier wird bewusst vereinfacht! */
+    ('Schacht', 'S',            'Schacht')
+)
+WHERE bezqkan NOT IN (
+SELECT bezqkan
+FROM  refdata
+WHERE modul = 'm150porter'
+  AND subject = 'export_knotentypen');"
+
+m150_ex_refdata: "
+SELECT bezext, kuerzel, kennung
+FROM (
+    SELECT bezext, kuerzel, '104' AS kennung
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_entwaesserungsarten'
+      AND kuerzel IS NOT NULL
+    GROUP BY kuerzel
+UNION
+    SELECT bezqkan, kuerzel, '106' AS kennung
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_profile'
+      AND kuerzel IS NOT NULL
+    GROUP BY kuerzel
+UNION
+    SELECT bezqkan, kuerzel, '105' AS kennung
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_material'
+      AND kuerzel IS NOT NULL
+    GROUP BY kuerzel
+UNION
+    SELECT bezqkan, kuerzel, '109' AS kennung
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_simulationsstatus'
+      AND kuerzel IS NOT NULL
+    GROUP BY kuerzel
+UNION
+    SELECT bezqkan, kuerzel, '001' AS kennung
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'strassen'
+      AND kuerzel IS NOT NULL
+    GROUP BY kuerzel
+UNION
+    SELECT bezext, kuerzel, '116' AS kennung
+    FROM refdata
+    WHERE modul = 'm150porter'
+      AND subject = 'export_knotentypen'
+      AND bezqkan = 'Anschlussschacht'
+      AND kuerzel IS NOT NULL
+    GROUP BY kuerzel
+) ORDER BY kennung, kuerzel;"
+
+m150_count_empty_refdata: "
+WITH ru AS (
+    SELECT entwart AS bezqkan, 'export_entwaesserungsarten' AS subject
+    FROM haltungen
+    UNION
+    SELECT entwart AS bezqkan, 'export_entwaesserungsarten' AS subject
+    FROM schaechte
+    UNION
+    SELECT material AS bezqkan, 'export_material' AS subject
+    FROM haltungen
+    UNION
+    SELECT material AS bezqkan, 'export_material' AS subject
+    FROM schaechte
+    UNION
+    SELECT profilnam AS bezqkan, 'export_profile' AS subject
+    FROM haltungen
+    UNION
+    SELECT entwart AS bezqkan, 'export_simulationsstatus' AS subject
+    FROM haltungen
+    UNION
+    SELECT entwart AS bezqkan, 'export_simulationsstatus' AS subject
+    FROM schaechte
+    UNION
+    SELECT strasse AS bezqkan, 'strassen' AS subject
+    FROM haltungen
+    UNION
+    SELECT strasse AS bezqkan, 'strassen' AS subject
+    FROM schaechte
+),
+re AS (
+    SELECT pk, bezqkan, subject, kuerzel
+    FROM refdata
+    WHERE modul = 'm150porter'
+)
+SELECT COUNT() AS anzahl
+FROM ru
+JOIN re ON re.bezqkan = ru.bezqkan AND re.subject = ru.subject
+WHERE re.kuerzel IS NULL;"
+
+# Alle in den Datentabellen vorkommenden Einträge, die in refdata fehlen, ergänzen
+m150_insert_refdatafromtables: "
+WITH ru AS (
+    SELECT entwart AS bezqkan, 'export_entwaesserungsarten' AS subject
+    FROM haltungen
+    UNION
+    SELECT entwart AS bezqkan, 'export_entwaesserungsarten' AS subject
+    FROM schaechte
+    UNION
+    SELECT material AS bezqkan, 'export_material' AS subject
+    FROM haltungen
+    UNION
+    SELECT material AS bezqkan, 'export_material' AS subject
+    FROM schaechte
+    UNION
+    SELECT profilnam AS bezqkan, 'export_profile' AS subject
+    FROM haltungen
+    UNION
+    SELECT simstatus AS bezqkan, 'export_simulationsstatus' AS subject
+    FROM haltungen
+    UNION
+    SELECT simstatus AS bezqkan, 'export_simulationsstatus' AS subject
+    FROM schaechte
+    UNION
+    SELECT strasse AS bezqkan, 'strassen' AS subject
+    FROM haltungen
+    UNION
+    SELECT strasse AS bezqkan, 'strassen' AS subject
+    FROM schaechte
+),
+re AS (
+    SELECT pk, bezqkan, subject
+    FROM refdata
+    WHERE modul = 'm150porter'
+)
+INSERT INTO refdata (bezqkan, modul, subject, kommentar, createdat)
+SELECT ru.bezqkan, 'm150porter' AS modul, ru.subject, 'von QKan ergänzt (3)' AS kommentar, CURRENT_TIMESTAMP AS createdat
+FROM ru
+LEFT JOIN re ON re.bezqkan = ru.bezqkan AND re.subject = ru.subject
+WHERE ru.bezqkan IS NOT NULL AND re.pk IS NULL
+GROUP BY ru.bezqkan, ru.subject;"
+
+m150_im_stationierung_umkehren: "
+UPDATE anschlussleitungen
+SET ursprung = q.ursprung
+FROM (
+    SELECT ha.laenge - al.ursprung AS ursprung
+    FROM haltungen AS ha
+    JOIN anschlussleitungen AS al ON al.haltnam = ha.haltnam
+    WHERE al.pk = :leitnam
+) AS q
+WHERE anschlussleitungen.pk = :leitnam;"
+
+m150_im_ha_umkehren: "
+UPDATE anschlussleitungen
+SET geom = q.geom
+FROM (
+    SELECT al.pk, ST_Reverse(al.geom) AS geom
+    FROM haltungen AS ha
+    JOIN anschlussleitungen AS al ON al.haltnam = ha.haltnam
+    WHERE ST_Distance(PointN(ha.geom, 1), al.geom) < ST_Distance(PointN(al.geom, -1), ha.geom)
+) AS q
+WHERE anschlussleitungen.pk = q.pk;"
+
+m150_ex_count_simulationsstatus: "
+SELECT count() AS anzahl
+FROM refdata
+WHERE modul = 'm150porter'
+  AND subject = 'export_simulationsstatus'
 "
+
+m150_ex_count_entwaesserungsarten: "
+SELECT count() AS anzahl
+FROM refdata
+WHERE modul = 'm150porter'
+  AND subject = 'export_entwaesserungsarten'
+"
+
+m150_ex_insert_simulationsstatus: "
+INSERT INTO refdata (bezext, bezqkan, modul, subject, kommentar, createdat)
+VALUES
+    ('in Betrieb',    'in Betrieb',     'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('außer Betrieb', 'außer Betrieb',  'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('geplant',       'geplant',        'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('stillgelegt',   'stillgelegt',    'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('verdämmert',    'verdämmert',     'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('fiktiv',        'fiktiv',         'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('rückgebaut',    'rückgebaut',     'm150porter', 'export_simulationsstatus', 'QKan-Standard', CURRENT_TIMESTAMP);"
+
+m150_ex_insert_entwaesserungsarten: "
+INSERT INTO refdata (bezext, bezqkan, modul, subject, kommentar, createdat)
+VALUES
+    ('Regenwasser',   'Regenwasser',   'm150porter', 'export_entwaesserungsarten', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('Schmutzwasser', 'Schmutzwasser', 'm150porter', 'export_entwaesserungsarten', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('Mischwasser',   'Mischwasser',   'm150porter', 'export_entwaesserungsarten', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('Rinnen/Gräben', 'Rinnen/Gräben', 'm150porter', 'export_entwaesserungsarten', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('stillgelegt',   'stillgelegt',   'm150porter', 'export_entwaesserungsarten', 'QKan-Standard', CURRENT_TIMESTAMP),
+    ('sonstige',      'sonstige',      'm150porter', 'export_entwaesserungsarten', 'QKan-Standard', CURRENT_TIMESTAMP);"

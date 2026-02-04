@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis maxScale="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Relations|Temporal|Legend|Notes" hasScaleBasedVisibilityFlag="0" minScale="0" version="3.28.15-Firenze" readOnly="0">
+<qgis hasScaleBasedVisibilityFlag="0" readOnly="0" maxScale="0" minScale="0" version="3.28.13-Firenze" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|GeometryOptions|Temporal|Legend|Notes">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal endField="" accumulate="0" startField="" endExpression="" fixedDuration="0" mode="0" limitMode="0" durationField="" enabled="0" durationUnit="min" startExpression="">
+  <temporal durationField="" accumulate="0" enabled="0" durationUnit="min" startExpression="" fixedDuration="0" mode="0" limitMode="0" endExpression="" startField="" endField="">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,60 +14,63 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option value="copy" type="QString" name="QFieldSync/action"/>
-      <Option value="{}" type="QString" name="QFieldSync/attachment_naming"/>
-      <Option value="offline" type="QString" name="QFieldSync/cloud_action"/>
-      <Option value="" type="QString" name="QFieldSync/geometry_locked_expression"/>
-      <Option value="{}" type="QString" name="QFieldSync/photo_naming"/>
-      <Option value="{}" type="QString" name="QFieldSync/relationship_maximum_visible"/>
-      <Option value="30" type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters"/>
-      <Option value="1" type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters"/>
-      <Option value="0" type="int" name="QFieldSync/tracking_measurement_type"/>
-      <Option value="30" type="int" name="QFieldSync/tracking_time_requirement_interval_seconds"/>
-      <Option value="0" type="int" name="QFieldSync/value_map_button_interface_threshold"/>
+      <Option type="QString" name="QFieldSync/action" value="copy"/>
+      <Option type="QString" name="QFieldSync/attachment_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/cloud_action" value="offline"/>
+      <Option type="QString" name="QFieldSync/geometry_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/photo_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/relationship_maximum_visible" value="{}"/>
+      <Option type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30"/>
+      <Option type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1"/>
+      <Option type="int" name="QFieldSync/tracking_measurement_type" value="0"/>
+      <Option type="int" name="QFieldSync/tracking_time_requirement_interval_seconds" value="30"/>
+      <Option type="int" name="QFieldSync/value_map_button_interface_threshold" value="0"/>
       <Option type="List" name="dualview/previewExpressions">
-        <Option value="&quot;knotentyp&quot;" type="QString"/>
+        <Option type="QString" value="&quot;knotentyp&quot;"/>
       </Option>
-      <Option value="0" type="int" name="embeddedWidgets/count"/>
+      <Option type="int" name="embeddedWidgets/count" value="0"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
+  <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+    <activeChecks/>
+    <checkConfiguration/>
+  </geometryOptions>
   <legend type="default-vector" showLabelLegend="0"/>
-  <referencedLayers/>
   <fieldConfiguration>
-    <field configurationFlags="None" name="pk">
+    <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="0" type="QString" name="IsMultiline"/>
-            <Option value="0" type="QString" name="UseHtml"/>
+            <Option type="QString" name="IsMultiline" value="0"/>
+            <Option type="QString" name="UseHtml" value="0"/>
           </Option>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="knotentyp">
+    <field name="knotentyp" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="0" type="QString" name="IsMultiline"/>
-            <Option value="0" type="QString" name="UseHtml"/>
+            <Option type="QString" name="IsMultiline" value="0"/>
+            <Option type="QString" name="UseHtml" value="0"/>
           </Option>
         </config>
       </editWidget>
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias field="pk" index="0" name=""/>
-    <alias field="knotentyp" index="1" name="Name"/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="Name" index="1" field="knotentyp"/>
   </aliases>
   <defaults>
-    <default expression="" applyOnUpdate="0" field="pk"/>
-    <default expression="" applyOnUpdate="0" field="knotentyp"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="knotentyp"/>
   </defaults>
   <constraints>
-    <constraint notnull_strength="2" exp_strength="0" field="pk" constraints="3" unique_strength="2"/>
-    <constraint notnull_strength="0" exp_strength="0" field="knotentyp" constraints="0" unique_strength="0"/>
+    <constraint exp_strength="0" unique_strength="2" constraints="3" notnull_strength="2" field="pk"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="knotentyp"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="pk"/>
@@ -77,11 +80,11 @@
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column hidden="0" type="field" width="-1" name="pk"/>
-      <column hidden="0" type="field" width="-1" name="knotentyp"/>
-      <column hidden="1" type="actions" width="-1"/>
+      <column width="-1" type="field" name="pk" hidden="0"/>
+      <column width="-1" type="field" name="knotentyp" hidden="0"/>
+      <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -116,12 +119,12 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="pk"/>
   </editable>
   <labelOnTop>
-    <field name="knotentyp" labelOnTop="0"/>
-    <field name="pk" labelOnTop="0"/>
+    <field labelOnTop="0" name="knotentyp"/>
+    <field labelOnTop="0" name="pk"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="knotentyp"/>
-    <field reuseLastValue="0" name="pk"/>
+    <field name="knotentyp" reuseLastValue="0"/>
+    <field name="pk" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

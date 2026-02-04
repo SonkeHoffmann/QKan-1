@@ -7335,7 +7335,7 @@ class Zustandsklassen_funkt:
 					SET Zustandsklasse_B = ?
 					WHERE Zustandsklasse_B is Null;
 					"""
-			data = (z, )
+			data = (z,)
 			try:
 				db.sql(sql, parameters=data)
 				#db.commit()
@@ -7346,7 +7346,7 @@ class Zustandsklassen_funkt:
 					SET Zustandsklasse_S = ?
 					WHERE Zustandsklasse_S is Null;
 					"""
-			data = (z, )
+			data = (z,)
 			try:
 				db.sql(sql, parameters=data)
 				#db.commit()

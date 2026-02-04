@@ -174,7 +174,7 @@ def run(dbcon: DBConnection) -> bool:
     layerconfs = [
         {'layerbez': enums.LAYERBEZ.HALTUNGEN.value, 'table': 'haltungen', 'geom_column': 'geom',
          'qmlfile': 'Haltungen.qml', 'uifile': 'qkan_haltungen.ui', 'group': 'Haltungen', 'gpos': 0, },
-        {'layerbez': enums.LAYERBEZ.ANSCHLUSSLEITUNGEN.value, 'table': 'anschlussleitungen', 'geom_column': 'geom',
+        {'layerbez': enums.LAYERBEZ.HA_LEITUNGEN.value, 'table': 'anschlussleitungen', 'geom_column': 'geom',
          'qmlfile': 'HA-Leitungen.qml', 'uifile': 'qkan_anschlussleitungen.ui', 'group': 'Haltungen', 'gpos': 1, },
         {'layerbez': enums.LAYERBEZ.HALTUNGSFLAECHEN.value, 'table': 'tezg', 'geom_column': 'geom',
          'qmlfile': 'Einzelflächen.qml', 'uifile': 'qkan_flaechen.ui', 'group': 'Flächen', 'gpos': 0, },
@@ -192,6 +192,7 @@ def run(dbcon: DBConnection) -> bool:
                 layerconf['table'],
                 layerconf['geom_column'],
                 layerconf['qmlfile'],
+                '',
                 layerconf['uifile'],
                 layerconf['group'],
                 layerconf['gpos'],):

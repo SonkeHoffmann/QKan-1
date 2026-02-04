@@ -22,7 +22,7 @@ CREATE TABLE haltungen (
     aussendurchmesser REAL,
     sohleoben REAL,                                 /* Sohlhöhe oben (m) */
     sohleunten REAL,                                /* Sohlhöhe unten (m) */
-    baujahr INT,
+    baujahr INTEGER,
     eigentum TEXT,                                  /* join eigentum.name */
     teilgebiet TEXT,                                /* join teilgebiet.tgnam */
     strasse TEXT,                                   /* für ISYBAU benötigt */
@@ -94,6 +94,7 @@ CREATE TABLE untersuchdat_haltung (
     schunten TEXT,                                  /* join schaechte.schnam */
     id INTEGER,                                     /* absolute Nummer der Inspektion */
     untersuchtag TEXT,
+    untersuchrichtung TEXT,
     bandnr INTEGER,
     videozaehler TEXT,
     inspektionslaenge REAL,
@@ -146,7 +147,8 @@ CREATE TABLE anschlussleitungen (
     haltnam TEXT,                                   /* Anschluss an Haltung */
     urstation REAL,                                 /* Anschlussposition gegen Fließrichtung */
     ursprung TEXT,                                  /* Adresse oder Objektbezeichnung */
-    anschlusstyp TEXT,
+    anschlusstyp TEXT,                              /* M150-Knotenart */
+    lageanschluss INTEGER,                          /* als Uhrzeit 1 - 12 */
     teilgebiet TEXT,                                /* join teilgebiet.tgnam */
     strasse TEXT,                                   /* für ISYBAU benötigt */
     profilnam TEXT DEFAULT 'Kreisquerschnitt',      /* join profile.profilnam */
@@ -356,6 +358,36 @@ SELECT AddGeometryColumn('untersuchdat_schacht', 'geom', :epsg, 'LINESTRING',2);
 
 database_createspatialindex_untersuchdat_schacht_geom: "
 SELECT CreateSpatialIndex('untersuchdat_schacht', 'geom');"
+
+database_create_anschlussschaechte: "
+CREATE TABLE anschlussschaechte (
+    pk INTEGER PRIMARY KEY,
+    schnam TEXT,
+    sohlhoehe REAL,
+    deckelhoehe REAL,
+    durchm REAL,                                    /* Schachtdurchmesser (m) */
+    druckdicht INTEGER, 
+    entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
+    strasse TEXT,
+    baujahr INTEGER,
+    haltnam TEXT,                                   /* Anschluss an Haltung */
+    urstation REAL,                                 /* Anschlussposition gegen Fließrichtung */
+    ursprung TEXT,                                  /* Adresse oder Objektbezeichnung */
+    anschlusstyp TEXT,
+    eigentum TEXT,                                  /* join eigentum.name */
+    teilgebiet TEXT,                                /* join teilgebiet.tgnam */
+    simstatus TEXT DEFAULT 'vorhanden',             /* join simulationsstatus.bezeichnung */
+    material TEXT,                                  /* join material.bezeichnung */
+    xsch REAL, 
+    ysch REAL,
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
+
+database_add_anschlussschaechte_geom: "
+SELECT AddGeometryColumn('anschlussschaechte', 'geom', :epsg, 'POINT', 2);"
+
+database_createspatialindex_anschlussschaechte_geom: "
+SELECT CreateSpatialIndex('anschlussschaechte', 'geom');"
 
 # Einzugsgebiete 
 # Entsprechen in HYSTEM-EXTRAN 7.x den Siedlungstypen
@@ -614,6 +646,18 @@ CREATE TABLE simulationsstatus (
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT);"
 
+database_insert_simulationsstatus: "
+INSERT INTO simulationsstatus (
+bezeichnung, kuerzel, he_nr, mu_nr, kp_nr, kommentar)
+VALUES
+    ('in Betrieb',     'B',    1,    1,    0, 'QKan-Standard'),
+    ('außer Betrieb',  'AB',   4, NULL,    3, 'QKan-Standard'),
+    ('geplant',        'P',    2, NULL,    1, 'QKan-Standard'),
+    ('stillgelegt',    'N', NULL, NULL,    4, 'QKan-Standard'),
+    ('verdämmert',     'V',    5, NULL, NULL, 'QKan-Standard'),
+    ('fiktiv',         'F',    3, NULL,    2, 'QKan-Standard'),
+    ('rückgebaut',     'P', NULL, NULL,    6, 'QKan-Standard');"
+
 database_create_material: "
 CREATE TABLE IF NOT EXISTS material (
     pk INTEGER PRIMARY KEY, 
@@ -623,6 +667,56 @@ CREATE TABLE IF NOT EXISTS material (
     m150 TEXT,                          /* DWA M150 */
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT);"
+
+database_insert_material: "
+INSERT INTO material (
+bezeichnung, kuerzel, m150, m145, isybau, kommentar)
+VALUES
+    ('Asbestzement', 'AZ', 'AZ', '7', 'AZ', NULL),
+    ('Beton', 'B', 'B', '2', 'B', NULL),
+    ('Bitumen', 'BIT', 'BIT', NULL, NULL, NULL),
+    ('Betonsegmente', 'BS', 'BS', NULL, 'BS', NULL),
+    ('Betonsegmente kunststoffmodifiziert', 'BSK', 'BSK', NULL, NULL, NULL),
+    ('Bitumen', 'BT', 'BT', NULL, NULL, NULL),
+    ('Edelstahl', 'CN', 'CN', '22', NULL, NULL),
+    ('Nichtidentifiziertes Metall (z. B. Eisen und Stahl)', 'EIS', 'EIS', NULL, 'EIS', NULL),
+    ('Epoxydharz', 'EPX', 'EPX', NULL, NULL, NULL),
+    ('Epoxydharz mit Synthesefaser', 'EPSF', 'EPSF', NULL, NULL, NULL),
+    ('Faserzement', 'FZ', 'FZ', '6', 'FZ', NULL),
+    ('Glasfaserverstärkter Kunststoff', 'GFK', 'GFK', '51', 'GFK', NULL),
+    ('Grauguß', 'GG', 'GG', '4', 'GG', NULL),
+    ('Duktiles Gußeisen', 'GGG', 'GGG', '5', 'GGG', NULL),
+    ('Nichtidentifizierter Kunststoff', 'KST', 'KST', '50', 'KST', NULL),
+    ('Mauerwerk', 'MA', 'MA', '3', 'MA', NULL),
+    ('Ortbeton', 'OB', 'OB', NULL, 'OB', NULL),
+    ('Polymerbeton', 'PC', 'PC', NULL, 'PC', NULL),
+    ('Polymermodifizierter Zementbeton', 'PCC', 'PCC', NULL, 'PCC', NULL),
+    ('Polyethylen', 'PE', 'PE', '52', 'PE', NULL),
+    ('Polyesterharz', 'PH', 'PH', NULL, 'PH', NULL),
+    ('Polyesterharzbeton', 'PHB', 'PHB', NULL, 'PHB', NULL),
+    ('Polypropylen', 'PP', 'PP', '54', 'PP', NULL),
+    ('Polyurethanharz', 'PUR', 'PUR', NULL, NULL, NULL),
+    ('Polyvinylchlorid modifiziert', 'PVCM', 'PVCM', NULL, NULL, NULL),
+    ('Polyvinylchlorid hart', 'PVCU', 'PVCU', NULL, 'PVCU', NULL),
+    ('Stahlfaserbeton', 'SFB', 'SFB', NULL, 'SFB', NULL),
+    ('Spannbeton', 'SPB', 'SPB', '12', 'SPB', NULL),
+    ('Stahlbeton', 'SB', 'SB', '13', 'SB', NULL),
+    ('Stahl', 'ST', 'ST', '21', 'ST', NULL),
+    ('Steinzeug', 'STZ', 'STZ', '1', 'STZ', NULL),
+    ('Spritzbeton', 'SZB', 'SZB', '14', 'SZB', NULL),
+    ('Spritzbeton kunststoffmodifiziert', 'SZBK', 'SZBK', NULL, NULL, NULL),
+    ('Teerfaser', 'TF', 'TF', NULL, NULL, NULL),
+    ('Ungesättigtes Polyesterharz mit Glasfaser', 'UPGF', 'UPGF', NULL, NULL, NULL),
+    ('Ungesättigtes Polyesterharz mit Synthesefaser', 'UPSF', 'UPSF', NULL, NULL, NULL),
+    ('Vinylesterharz mit Synthesefaser', 'VEGF', 'VEGF', NULL, NULL, NULL),
+    ('Vinylesterharz mit Glasfaser', 'VESF', 'VESF', NULL, NULL, NULL),
+    ('Verbundrohr Beton-/StahlbetonKun', 'VBK', 'VBK', NULL, NULL, NULL),
+    ('Verbundrohr Beton-/Stahlbeton Steinzeug', 'VBS', 'VBS', NULL, NULL, NULL),
+    ('Nichtidentifizierter Werkstoff', 'W', 'W', NULL, NULL, NULL),
+    ('Wickelrohr (PEHD)', 'WPE', 'WPE', NULL, NULL, NULL),
+    ('Wickelrohr (PVCU)', 'WPVC', 'WPVC', NULL, NULL, NULL),
+    ('Zementmörtel', 'ZM', 'ZM', NULL, NULL, NULL),
+    ('Ziegelwerk', 'ZG', 'ZG', NULL, 'ZG', NULL);"
 
 database_create_auslasstypen: "
 CREATE TABLE auslasstypen (
@@ -730,7 +824,6 @@ schachttyp)
 Values
     ('Auslass'),
     ('Schacht'),
-    ('Anschlussschacht'),
     ('Speicher');"
 
 database_create_eigentum: "
@@ -794,6 +887,46 @@ CREATE TABLE profile (
     kommentar TEXT
 );"
 
+database_insert_profile: "
+INSERT INTO profile (
+profilnam, kuerzel, he_nr, kp_key, kommentar)
+VALUES
+    ('Kreis', 'DN', 1, NULL, 'QKan-Standard'),
+    ('Rechteck', 'RE', 2, NULL, 'QKan-Standard'),
+    ('Ei (B:H = 2:3)', 'EI', 3, NULL, 'QKan-Standard'),
+    ('Maul (B:H = 2:1.66)', 'MA', 4, NULL, 'QKan-Standard'),
+    ('Halbschale (offen) (B:H = 2:1)', 'HS', 5, NULL, 'QKan-Standard'),
+    ('Kreis gestreckt (B:H=2:2.5)', NULL, 6, NULL, 'QKan-Standard'),
+    ('Kreis überhöht (B:H=2:3)', NULL, 7, NULL, 'QKan-Standard'),
+    ('Ei überhöht (B:H=2:3.5)', NULL, 8, NULL, 'QKan-Standard'),
+    ('Ei breit (B:H=2:2.5)', NULL, 9, NULL, 'QKan-Standard'),
+    ('Ei gedrückt (B:H=2:2)', NULL, 10, NULL, 'QKan-Standard'),
+    ('Drachen (B:H=2:2)', NULL, 11, NULL, 'QKan-Standard'),
+    ('Maul (DIN) (B:H=2:1.5)', NULL, 12, NULL, 'QKan-Standard'),
+    ('Maul überhöht (B:H=2:2)', NULL, 13, NULL, 'QKan-Standard'),
+    ('Maul gedrückt (B:H=2:1.25)', NULL, 14, NULL, 'QKan-Standard'),
+    ('Maul gestreckt (B:H=2:1.75)', NULL, 15, NULL, 'QKan-Standard'),
+    ('Maul gestaucht (B:H=2:1)', NULL, 16, NULL, 'QKan-Standard'),
+    ('Haube (B:H=2:2.5)', 'BO', 17, NULL, 'QKan-Standard'),
+    ('Parabel (B:H=2:2)', NULL, 18, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter Sohle (B:H=2:1)', NULL, 19, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter Sohle (B:H=1:1)', NULL, 20, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter Sohle (B:H=1:2)', NULL, 21, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter und horizontaler Sohle (B:H=2:1,b=0.2B)', NULL, 22, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:1,b=0.2B)', NULL, 23, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:2,b=0.2B)', NULL, 24, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter und horizontaler Sohle (B:H=2:1,b=0.4B)', NULL, 25, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:1,b=0.4B)', NULL, 26, NULL, 'QKan-Standard'),
+    ('Rechteck mit geneigter und horizontaler Sohle (B:H=1:2,b=0.4B)', NULL, 27, NULL, 'QKan-Standard'),
+    ('Sonderprofil', 68, 2, NULL, 'QKan-Standard'),
+    ('Gerinne', 'RI', 69, NULL, 'QKan-Standard'),
+    ('Trapez (offen)', 'TR', 900, NULL, 'QKan-Standard'),
+    ('Rechteck offen', NULL, NULL, NULL, 'QKan-Standard'),
+    ('Doppeltrapez (offen)', NULL, 901, NULL, 'QKan-Standard'),
+    ('Offener Graben', 'GR', NULL, NULL, 'QKan-Standard'),
+    ('Oval', 'OV', NULL, NULL, 'QKan-Standard')
+"
+
 database_create_entwaesserungsarten: "
 CREATE TABLE entwaesserungsarten (
     pk INTEGER PRIMARY KEY, 
@@ -806,6 +939,18 @@ CREATE TABLE entwaesserungsarten (
     m145 TEXT,                          /* DWA M145 */
     bemerkung TEXT
 );"
+
+database_insert_entwaesserungsarten: "
+INSERT INTO entwaesserungsarten (
+bezeichnung, kuerzel, he_nr, kp_nr, bemerkung)
+VALUES
+    ('Regenwasser', 'R', 1, 2, 'QKan-Standard'),
+    ('Schmutzwasser', 'S', 2, 1, 'QKan-Standard'),
+    ('Mischwasser', 'M', 0, 0, 'QKan-Standard'),
+    ('Rinnen/Gräben', 'GR', NULL, NULL, 'QKan-Standard'),
+    ('stillgelegt', 'X', NULL, NULL, 'QKan-Standard'),
+    ('sonstige', 'U', NULL, NULL, 'QKan-Standard')
+"
 
 database_create_haltungstypen: "
 CREATE TABLE haltungstypen(
@@ -897,6 +1042,18 @@ VALUES
     ('Online Wasserstandsdifferenz', 4, 4),
     ('Ideal', 5, 5);"
 
+database_create_refdata: "
+CREATE TABLE refdata (
+    pk INTEGER PRIMARY KEY,
+    bezext TEXT,                        /* externe Bezeichnung, z. B. gem. DWA-M 150 */
+    bezqkan TEXT,                       /* Standardbezeichnung in QKan */
+    kuerzel TEXT,                       /* Kürzel in QKan */
+    subject TEXT,                       /* Bezeichnung der QKan-Tabelle oder interner Mapping-Tabelle */
+    modul TEXT,                         /* QKan-Modul (= Modulverzeichnis) */
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP
+);"
+
 # Abfragen für Plausibilitätsprüfungen
 database_create_pruefsql: "
 CREATE TABLE IF NOT EXISTS pruefsql (
@@ -959,6 +1116,7 @@ CREATE TABLE IF NOT EXISTS videos (
     pk INTEGER PRIMARY KEY, 
                     name TEXT, 
                     untersuchtag TEXT,
+                    untersuchrichtung TEXT,
                     objekt TEXT,
                     datei TEXT,
                     createdat TEXT DEFAULT CURRENT_TIMESTAMP);"
@@ -1162,10 +1320,11 @@ database_insertdata_anschlussleitungen: "
 INSERT INTO anschlussleitungen
   (leitnam, schoben, schunten,
    hoehe, breite, laenge, aussendurchmesser,
-   sohleoben, sohleunten, baujahr, haltnam,
-   teilgebiet, 
-   entwart, material, profilauskleidung, innenmaterial, ks, anschlusstyp, 
-   simstatus, kommentar, createdat,  
+   sohleoben, sohleunten, baujahr, haltnam, teilgebiet, 
+   urstation, ursprung, anschlusstyp, lageanschluss,
+   strasse, profilnam,
+   entwart, material, profilauskleidung, innenmaterial, ks,
+   simstatus, kommentar, createdat,
    geom)
 VALUES( 
   :leitnam, :schoben, :schunten, 
@@ -1174,8 +1333,10 @@ VALUES(
   :laenge, :aussendurchmesser,
   :sohleoben, :sohleunten, :baujahr, :haltnam,
   :teilgebiet, 
+  :urstation, :ursprung, :anschlusstyp, :lageanschluss,
+  :strasse, :profilnam,
   coalesce(:entwart, 'Regenwasser'), :material, :profilauskleidung, :innenmaterial, coalesce(:ks, 1.5), 
-  :anschlusstyp, coalesce(:simstatus, 'vorhanden'), :kommentar, 
+  coalesce(:simstatus, 'vorhanden'), :kommentar, 
   coalesce(:createdat, CURRENT_TIMESTAMP), 
   CASE WHEN :geom IS NULL
       THEN MakeLine(
@@ -1233,6 +1394,27 @@ SELECT
   :quantnr1, :quantnr2, :streckenschaden, :streckenschaden_lfdnr, :pos_von, :pos_bis, 
   :foto_dateiname, :film_dateiname, :ordner_bild, :ordner_video,
   :ZD, :ZB, :ZS, coalesce(:createdat, CURRENT_TIMESTAMP);"
+
+database_insertdata_anschlussschaechte: "
+INSERT INTO anschlussschaechte (
+    schnam, sohlhoehe, deckelhoehe, 
+    durchm, 
+    druckdicht,
+    entwart, strasse, baujahr, teilgebiet, 
+    simstatus, material,
+    kommentar, createdat, 
+    geom)
+VALUES (
+    :schnam, :sohlhoehe, :deckelhoehe,
+    CASE WHEN :durchm > 200 THEN :durchm/1000. ELSE :durchm END, 
+    :druckdicht, 
+    coalesce(:entwart, 'Regenwasser'), :strasse, :baujahr, :teilgebiet, 
+    coalesce(:simstatus, 'vorhanden'), :material,
+    :kommentar, coalesce(:createdat, CURRENT_TIMESTAMP),
+    CASE WHEN :geom IS NULL
+        THEN MakePoint(:xsch, :ysch, :epsg)
+        ELSE GeomFromWKB(:geom, :epsg)
+    END);"
 
 database_insertdata_schaechte_untersucht: "
 INSERT INTO schaechte_untersucht
@@ -1292,6 +1474,13 @@ VALUES (
     :abflussparameter, :kommentar,
 GeomFromWKB(:geom, :epsg));"
 
+database_insertdata_symbole: "
+INSERT INTO symbole
+  (bezeichnung, art, gruppe, kommentar, geom)
+VALUES (
+:bezeichnung, :art, :gruppe, :kommentar,
+GeomFromWKB(:geom, :epsg));"
+
 database_insertdata_fotos: "
 INSERT INTO fotos
   (name, untersuchtag, objekt, datei, createdat)
@@ -1301,9 +1490,9 @@ coalesce(:createdat, CURRENT_TIMESTAMP));"
 
 database_insertdata_videos: "
 INSERT INTO videos
-  (name, untersuchtag, objekt, datei, createdat)
+  (name, untersuchtag, untersuchrichtung, objekt, datei, createdat)
 VALUES (
-:name, :untersuchtag, :objekt, :datei, 
+:name, :untersuchtag, :untersuchrichtung, :objekt, :datei, 
 coalesce(:createdat, CURRENT_TIMESTAMP));"
 
 database_insertdata_flaechen: "
@@ -1390,10 +1579,14 @@ INSERT INTO {reftable} ({attr_name}, {attr_key}, {attr_short}, {attr_bem})
 VALUES (?, ?, ?, ?);"
 
 database_get_bezeichnung: "
-SELECT bezeichnung FROM {tabnam}"
+SELECT bezext FROM refdata
+WHERE bezqkan IS NULL
+  AND subject       = :subject"
 
 database_set_bezeichnung: "
-UPDATE {tabnam} SET bezeichnung = :qkan_bez WHERE bezeichnung = :bezeichnung"
+UPDATE refdata SET bezqkan = :bezqkan
+WHERE bezext =  :bezext
+  AND subject = :subject"
 
 database_create_sel_haltungen: "
 CREATE TABLE IF NOT EXISTS sel_haltungen (pk INTEGER PRIMARY KEY);"

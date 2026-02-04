@@ -23,6 +23,7 @@ class DynaPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_path,
             text=self.tr("Export in DYNA-Datei..."),
+            toolbar='QKan-Datenaustausch',
             callback=self.dlg_export.run,
             parent=self.iface.mainWindow(),
         )
@@ -31,6 +32,7 @@ class DynaPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_path,
             text=self.tr("Import aus DYNA-Datei (*.EIN)"),
+            toolbar='QKan-Datenaustausch',
             callback=self.dlg_import.run,
             parent=self.iface.mainWindow(),
         )

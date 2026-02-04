@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>542</width>
-    <height>694</height>
+    <height>743</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -38,7 +38,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>660</y>
+     <y>690</y>
      <width>331</width>
      <height>31</height>
     </rect>
@@ -73,7 +73,7 @@
      <x>20</x>
      <y>280</y>
      <width>491</width>
-     <height>331</height>
+     <height>351</height>
     </rect>
    </property>
    <property name="font">
@@ -98,12 +98,12 @@
    </property>
    <widget class="QCheckBox" name="cb_flaechen">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>120</y>
+      <y>140</y>
       <width>121</width>
       <height>20</height>
      </rect>
@@ -182,12 +182,12 @@
    </widget>
    <widget class="QCheckBox" name="cb_tezg">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>140</y>
+      <y>160</y>
       <width>131</width>
       <height>20</height>
      </rect>
@@ -214,7 +214,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>90</y>
+      <y>110</y>
       <width>121</width>
       <height>20</height>
      </rect>
@@ -239,12 +239,12 @@
    </widget>
    <widget class="QCheckBox" name="cb_schaechte_insp">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>210</y>
+      <y>230</y>
       <width>121</width>
       <height>20</height>
      </rect>
@@ -290,12 +290,12 @@
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>190</y>
+      <y>210</y>
       <width>141</width>
       <height>16</height>
      </rect>
@@ -359,12 +359,12 @@ Teilgebiete beschränken:</string>
    </widget>
    <widget class="QCheckBox" name="cb_haltungen_insp">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>230</y>
+      <y>250</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -389,12 +389,12 @@ Teilgebiete beschränken:</string>
    </widget>
    <widget class="QCheckBox" name="cb_haleitungen_insp">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>250</y>
+      <y>270</y>
       <width>121</width>
       <height>20</height>
      </rect>
@@ -419,12 +419,12 @@ Teilgebiete beschränken:</string>
    </widget>
    <widget class="QCheckBox" name="cb_linkfl">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>160</y>
+      <y>180</y>
       <width>131</width>
       <height>20</height>
      </rect>
@@ -449,12 +449,12 @@ Teilgebiete beschränken:</string>
    </widget>
    <widget class="QCheckBox" name="cb_haleitungen_insp_2">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>300</y>
+      <y>320</y>
       <width>141</width>
       <height>20</height>
      </rect>
@@ -479,12 +479,12 @@ Teilgebiete beschränken:</string>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>280</y>
+      <y>300</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -499,6 +499,33 @@ Teilgebiete beschränken:</string>
     </property>
     <property name="text">
      <string>Sonstige</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cb_haschaechte">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussleitungen berücksichtigen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>Hausanschlussleitungen berücksichtigen</string>
+    </property>
+    <property name="text">
+     <string>HA-Schächte</string>
     </property>
    </widget>
   </widget>
@@ -771,7 +798,7 @@ Teilgebiete beschränken:</string>
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>620</y>
+     <y>650</y>
      <width>291</width>
      <height>20</height>
     </rect>

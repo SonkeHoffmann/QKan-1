@@ -1,7 +1,7 @@
 import os
 from typing import Callable, Optional, List
 
-from qgis.core import QgsCoordinateReferenceSystem
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgsProjectionSelectionWidget
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
@@ -15,13 +15,14 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
     QDialogButtonBox,
 )
+import traceback
 
-from qkan import QKan
-from qkan.tools.qkan_utils import  list_selected_items
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError, QkanUserError
+from qkan.tools.qkan_utils import loadLayer
 
-logger = get_logger("QKan.he8.application_dialog")
+logger = get_logger("QKan.m150.application_dialog")
 
 EXPORT_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "res", "xml_export_dialog_base.ui")
@@ -47,8 +48,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     tf_database: QLineEdit
     tf_export: QLineEdit
 
-    pb_database: QPushButton
     pb_export: QPushButton
+    pb_showKeyTable: QPushButton
 
     cb_export_schaechte: QCheckBox
     cb_export_auslaesse: QCheckBox
@@ -57,9 +58,11 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_export_pumpen: QCheckBox
     cb_export_wehre: QCheckBox
     cb_export_anschlussleitungen: QCheckBox
+    cb_export_anschlussschaechte: QCheckBox
+    cb_includeMissingKeys: QCheckBox
+    cb_selectedObjects: QCheckBox
+    cb_cutNames: QCheckBox
 
-    cb_selectedTgbs: QCheckBox
-    lw_teilgebiete: QListWidget
 
     def __init__(
         self,
@@ -71,39 +74,52 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
 
         # Attach events
         self.pb_export.clicked.connect(self.select_export)
-
         self.button_box.helpRequested.connect(self.click_help)
+        self.pb_showKeyTable.clicked.connect(self.showKeyTable)
 
-        # Aktionen zu lw_teilgebiete: QListWidget
-        self.cb_selectedTgbs.stateChanged.connect(self.click_selection)
-        # self.lw_teilgebiete.itemClicked.connect(self.count_selection)      # ist schon in click_lw_teilgebiete enthalten
-        self.lw_teilgebiete.itemClicked.connect(self.click_lw_teilgebiete)
+        # Aktionen zu Selektionen
+        self.cb_selectedObjects.stateChanged.connect(self.count)
+        logger.debug("cb_selectedObjects.stateChanged.connect(self.count)")
+        self.cb_includeMissingKeys.stateChanged.connect(self.count)
+        logger.debug("cb_includeMissingKeys.stateChanged.connect(self.count)")
 
         # Init fields
         self.tf_database.setText(QKan.config.database.qkan)
         self.tf_export.setText(QKan.config.xml.export_file)
         self.cb_export_schaechte.setChecked(
-            getattr(QKan.config.check_export, "export_schaechte", True)
+            getattr(QKan.config.check_export, "schaechte", True)
         )
         self.cb_export_auslaesse.setChecked(
-            getattr(QKan.config.check_export, "export_auslaesse", True)
+            getattr(QKan.config.check_export, "auslaesse", True)
         )
         self.cb_export_speicher.setChecked(
-            getattr(QKan.config.check_export, "export_speicher", True)
+            getattr(QKan.config.check_export, "speicher", True)
         )
         self.cb_export_haltungen.setChecked(
-            getattr(QKan.config.check_export, "export_haltungen", True)
+            getattr(QKan.config.check_export, "haltungen", True)
         )
         self.cb_export_anschlussleitungen.setChecked(
-            getattr(QKan.config.check_export, "export_anschlussleitungen", True)
+            getattr(QKan.config.check_export, "anschlussleitungen", True)
+        )
+        self.cb_export_anschlussschaechte.setChecked(
+            getattr(QKan.config.check_export, "anschlussschaechte", True)
         )
         self.cb_export_pumpen.setChecked(
-            getattr(QKan.config.check_export, "export_pumpen", True)
+            getattr(QKan.config.check_export, "pumpen", True)
         )
         self.cb_export_wehre.setChecked(
-            getattr(QKan.config.check_export, "export_wehre", True)
+            getattr(QKan.config.check_export, "wehre", True)
         )
-
+        self.cb_includeMissingKeys.setChecked(
+            getattr(QKan.config.check_export, "includeMissingKeys", True)
+        )
+        self.cb_selectedObjects.setChecked(
+            getattr(QKan.config.selections, "selectedObjects", False)
+        )
+        self.cb_cutNames.setChecked(
+            getattr(QKan.config.check_export, "cutNames", False)
+        )
+        self._prepared = False                      # self._prepare_refdata() nur einmal in count aufrufen
 
     def select_export(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
@@ -117,149 +133,153 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
             self.tf_export.setText(filename)
             self.default_dir = os.path.dirname(filename)
 
-    def click_selection(self) -> None:
-        """Reagiert auf Checkbox zur Aktivierung der Auswahl"""
-
-        # Checkbox hat den Status nach dem Klick
-        if self.cb_selectedTgbs.isChecked():
-            # Nix tun ...
-            logger.debug("\nChecked = True")
-        else:
-            # Auswahl deaktivieren und Liste zurücksetzen
-            anz = self.lw_teilgebiete.count()
-            for i in range(anz):
-                item = self.lw_teilgebiete.item(i)
-                item.setSelected(False)
-                # self.lw_teilgebiete.setItemSelected(item, False)
-
-            # Anzahl in der Anzeige aktualisieren
-            self.count_selection()
-
-    def click_lw_teilgebiete(self) -> None:
-        """Reaktion auf Klick in Tabelle"""
-
-        self.cb_selectedTgbs.setChecked(True)
-        self.count_selection()
-
-    def count_selection(self) -> bool:
-        """ Zählung mit Herstellung der Datenbankverbindung
-        """
-        with DBConnection() as db_qkan:
-            self.count(db_qkan)
-
-    def count(self, db_qkan: DBConnection) -> bool:
+    def count(self) -> None:
         """ Zählt nach Änderung der Auswahlen in den Listen im Formular die Anzahl
             der betroffenen Flächen und Haltungen
         """
-        teilgebiete: List[str] = list_selected_items(self.lw_teilgebiete)
-        # teilgebiete: List[str] = []        # Todo: wieder aktivieren
+        logger.debug('Event: SelectionChanged')
 
-        # Zu berücksichtigende Flächen zählen
-        auswahl = ""
-        if len(teilgebiete) != 0:
-            auswahl = " WHERE flaechen.teilgebiet in ('{}')".format(
-                "', '".join(teilgebiete)
+        if QgsProject.instance().fileName() != '':
+            with DBConnection() as db_qkan:
+                db_qkan.loadmodule('m150porter')
+
+                dbname = db_qkan.dbname
+
+                # Datenbankpfad in Dialog übernehmen
+                QKan.config.database.qkan = dbname
+
+                self.tf_database.setText(QKan.config.database.qkan)
+
+                # Checkbox hat den Status nach dem Klick
+                selected = self.cb_selectedObjects.isChecked()
+                if selected:
+                    selection = '_sel'
+                else:
+                    selection = '_all'
+
+                # Checkbox hat den Status nach dem Klick
+                included = self.cb_includeMissingKeys.isChecked()
+                if included:
+                    selection += '_include'
+
+                # Ausgewählte Objekte in temporäre Tabellen übernehmen
+                n_haltungen, n_schaechte, _ = db_qkan.getSelection(selected)        # flaechen not used here
+                logger.debug(f'Selection in Layern: {n_haltungen=}, {n_schaechte=}')
+
+                if not db_qkan.sqlyml('m150_count_haltungen' + selection, f'count selected haltungen ({selection=})'):
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 105")
+                n_haltungen = db_qkan.fetchone()[0]
+                if not db_qkan.sqlyml('m150_count_schaechte' + selection, f'count selected schaechte ({selection=})'):
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 106")
+                n_schaechte = db_qkan.fetchone()[0]
+
+                self.lf_anzahl_haltungen.setText(f'{n_haltungen}')
+                self.lf_anzahl_schaechte.setText(f'{n_schaechte}')
+
+                if not self._prepared:
+                    self._prepare_refdata(db_qkan)
+                    self._prepared = True
+
+    def showKeyTable(self):
+        """Anzeige des Attributlayers M150-Kürzel zur Kontrolle fehlender Einträg"""
+
+        project = QgsProject().instance()
+        layerobjects = project.mapLayersByName(enums.LAYERBEZ.M150_KUERZEL_ERG.value)
+        layerexists = (len(layerobjects) > 0)
+        if not layerexists:
+            grouppath = [
+                enums.LAYERBEZ.QKAN_GROUP.value,
+                enums.LAYERBEZ.REFERENZTABELLEN_GROUP.value,
+                    enums.LAYERBEZ.M150_GROUP.value,
+            ]
+
+            loadLayer(
+                layerbez=   enums.LAYERBEZ.M150_KUERZEL_ERG.value,
+                table=      "refdata",
+                geom_column=None,
+                qmlfile=    "qkan_m150_kuerzel_erg.qml",
+                filter=     "(kuerzel IS NULL OR kuerzel = '') AND modul = 'm150porter'",
+                uifile=     None,
+                group=      grouppath
             )
+            project.write()
 
-        sql = f"SELECT count(*) AS anzahl FROM flaechen {auswahl}"
+            # msg = ('\n\nIn der M150-Datei sind individuelle Knotentypen definiert. Vor einem Import muss \n'
+            #        'in der Referenztabelle "M150 Knotenarten" der QKan-Schachttyp ausgewählt werden. \n\n'
+            #        'Anschließend muss der Import neu gestartet werden. \n(siehe <a href='
+            #        '"https://qkan.eu/versionen/new/QKan_XML.html#start-des-importes">QKan Dokumentation</a>)!\n\n')
+            # self.log.warning_user(msg)
 
-        if not db_qkan.sql(sql, "QKan_ExportHE.application.countselection (1)"):
-            return False
-        daten = db_qkan.fetchone()
-        if not (daten is None):
-            self.lf_anzahl_flaechen.setText(str(daten[0]))
-        else:
-            self.lf_anzahl_flaechen.setText("0")
+        # Attributtabelle zur Bearbeitung anzeigen
+        layer = project.mapLayersByName(enums.LAYERBEZ.M150_KUERZEL_ERG.value, )[0]
+        self.iface.showAttributeTable(layer)
 
-        # Zu berücksichtigende Schächte zählen
-        auswahl = ""
-        if len(teilgebiete) != 0:
-            auswahl = " WHERE schaechte.teilgebiet in ('{}')".format(
-                "', '".join(teilgebiete)
-            )
+    def _prepare_refdata(self, db_qkan: DBConnection) -> None:
+        """Fügt Refernzdaten aus dem Import für den Export hinzu und ergänzt falls nicht
+        vorhanden Knotenarten
+        """
+        sqls = [
+            'm150_insert_refdatafromimport',
+            'm150_insert_knotenarten',
+            'm150_insert_refdatafromtables',
+        ]
+        for sqlnam in sqls:
+            if not db_qkan.sqlyml(
+                sqlnam
+            ):
+                raise QkanDbError
 
-        sql = f"SELECT count(*) AS anzahl FROM schaechte {auswahl}"
-        if not db_qkan.sql(sql, "QKan_ExportHE.application.countselection (2) "):
-            return False
-        daten = db_qkan.fetchone()
-        if not (daten is None):
-            self.lf_anzahl_schaechte.setText(str(daten[0]))
-        else:
-            self.lf_anzahl_schaechte.setText("0")
+        # Leere Referenztabellen mit Standardwerten füllen
+        subjects = ['simulationsstatus', 'entwaesserungsarten']
+        for subject in subjects:
+            sqlnam = f'm150_ex_count_{subject}'
+            if not db_qkan.sqlyml(
+                sqlnam
+            ):
+                raise QkanDbError
 
-        # Zu berücksichtigende Haltungen zählen
-        auswahl = ""
-        if len(teilgebiete) != 0:
-            auswahl = " WHERE haltungen.teilgebiet in ('{}')".format(
-                "', '".join(teilgebiete)
-            )
-
-        sql = f"SELECT count(*) AS anzahl FROM haltungen {auswahl}"
-        if not db_qkan.sql(sql, "QKan_ExportHE.application.countselection (3) "):
-            return False
-        daten = db_qkan.fetchone()
-        if not (daten is None):
-            self.lf_anzahl_haltungen.setText(str(daten[0]))
-        else:
-            self.lf_anzahl_haltungen.setText("0")
-        return True
-
-    def prepareDialog(self, db_qkan: DBConnection) -> bool:
-        """Füllt Auswahllisten im Export-Dialog"""
-
-        # Alle Teilgebiete in Flächen, Schächten und Haltungen, die noch nicht in Tabelle "teilgebiete" enthalten
-        # sind, ergänzen
-
-        sql = """WITH tgb AS (
-                SELECT teilgebiet FROM flaechen
-                WHERE teilgebiet IS NOT NULL
-                UNION
-                SELECT teilgebiet FROM haltungen
-                WHERE teilgebiet IS NOT NULL
-                UNION
-                SELECT teilgebiet FROM schaechte
-                WHERE teilgebiet IS NOT NULL
-                )
-                INSERT INTO teilgebiete (tgnam)
-                SELECT teilgebiet FROM tgb
-                WHERE teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
-                GROUP BY teilgebiet"""
-        if not db_qkan.sql(sql, "he8porter.application_dialog.connectQKanDB (1) "):
-            return False
+            if db_qkan.fetchone()[0] == 0:
+                sqlnam = f'm150_ex_insert_{subject}'
+                if not db_qkan.sqlyml(
+                    sqlnam
+                ):
+                    raise QkanDbError
 
         db_qkan.commit()
 
-        # Anlegen der Tabelle zur Auswahl der Teilgebiete
-
-        # Zunächst wird die Liste der beim letzten Mal gewählten Teilgebiete aus config gelesen
-        teilgebiete = QKan.config.selections.teilgebiete
-
-        # Abfragen der Tabelle teilgebiete nach Teilgebieten
-        sql = 'SELECT "tgnam" FROM "teilgebiete" GROUP BY "tgnam"'
-        if not db_qkan.sql(sql, "he8porter.application_dialog.connectQKanDB (4) "):
-            return False
-        daten = db_qkan.fetchall()
-        self.lw_teilgebiete.clear()
-
-        for ielem, elem in enumerate(daten):
-            self.lw_teilgebiete.addItem(QListWidgetItem(elem[0]))
-            try:
-                if elem[0] in teilgebiete:
-                    self.lw_teilgebiete.setCurrentRow(ielem)
-            except BaseException as err:
-                fehlermeldung = "he8porter.application_dialog.connectQKanDB, " + \
-                        f"Fehler {repr(err)} in elem = {elem}\n"
-                logger.error(fehlermeldung)
-                raise Exception(f"{self.__class__.__name__}: {fehlermeldung}")
-
+    def prepareDialog(self, iface) -> bool:
         # Initialisierung der Anzeige der Anzahl zu exportierender Objekte
-        self.count(db_qkan)
+
+        self.iface = iface
+
+        # Für 3 Layer Selection-Change-Events definieren
+        for layernam in ['Haltungen', 'Schächte', 'Flächen']:
+            layerobjects = QgsProject().instance().mapLayersByName(layernam)
+            for layer in layerobjects:
+                layer.selectionChanged.connect(self.count)
+
+        try:
+            self.count()
+        except:
+            logger.error_code('prepareDialog: Fehler beim Aufruf von count')
+            return False
+
+        return True
+
+    def finishDialog(self) -> bool:
+        # Aufheben der Anzeige der Anzahl zu exportierender Objekte
+
+        # Aufheben der Selections-Change-Events
+        for layernam in ['Haltungen', 'Schächte', 'Flächen']:
+            layerobjects = QgsProject().instance().mapLayersByName(layernam)
+            for layer in layerobjects:
+                layer.selectionChanged.disconnect()
 
         return True
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        help_file = "https://qkan.eu/QKan_XML.html#import-aus-dwa-xml"
+        help_file = "https://qkan.eu/QKan_XML.html#export-nach-dwa-m150"
         os.startfile(help_file)
 
 
@@ -317,17 +337,9 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         self.epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
         self.tf_project.setText(QKan.config.project.file)
 
-        self.checkBox.setChecked(
-            getattr(QKan.config.xml, "import_stamm", True)
-        )
-
-        self.checkBox_2.setChecked(
-            getattr(QKan.config.xml, "import_haus", True)
-        )
-
-        self.checkBox_3.setChecked(
-            getattr(QKan.config.xml, "import_zustand", True)
-        )
+        self.cb_impStamm.setChecked(getattr(QKan.config.xml, "import_stamm", True))
+        self.cb_impAnschluesse.setChecked(getattr(QKan.config.xml, "import_haus", True))
+        self.cb_zustand.setChecked(getattr(QKan.config.xml, "import_zustand", True))
 
     def select_import(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
@@ -389,5 +401,5 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
     def click_help(self) -> None:
         """Reaktion auf Klick auf Help-Schaltfläche"""
-        help_file = "https://qkan.eu/QKan_XML.html#import-aus-dwa-xml"
+        help_file = "https://qkan.eu/QKan_XML.html#import-aus-dwa-m-150"
         os.startfile(help_file)

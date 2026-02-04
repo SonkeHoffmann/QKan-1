@@ -11,7 +11,7 @@ from qgis.core import (
 )
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import  QkanUserError, QkanDbError, QkanAbortError, get_logger
 from qkan import enums
 
 logger = get_logger("QKan.swmm_erg")
@@ -162,6 +162,9 @@ class ImportTask:
                     vlayer.loadNamedStyle(template)
                     vlayer.triggerRepaint()
                 except:
-                    errormsg = "Fehler in QKan_Results_from_HE\n" + \
+                    msg = (
+                        "Fehler in QKan_Results_from_HE\n" + \
                                'Stildatei "Überstauhäufigkeit.qml" wurde nicht gefunden!\nAbbruch!'
-                    logger.warning(errormsg)
+                    )
+                    logger.warning_user(msg)
+                    raise QkanAbortError(msg)

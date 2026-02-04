@@ -160,13 +160,9 @@ class ReadData:  # type: ignore
                 self.table_name
             ].copy()
         else:
-            QgsMessageLog.logMessage(
-                f'In die Tabelle "{self.table_name}" kann QKan (noch) nicht einfügen.',
-                "QKan Clipboard",
-                level=Qgis.MessageLevel.Info,
-                notifyUser=True,
+            logger.warning_user(
+                f'In die Tabelle "{self.table_name}" kann QKan (noch) nicht einfügen.'
             )
-            self.iface.openMessageLog()
             return
 
         if self.schacht_types.get(self.layer_name, None):
@@ -210,7 +206,7 @@ class ReadData:  # type: ignore
                 for colnamQKan in patternLis.keys():
                     for patt in patternLis[colnamQKan]:
                         if fnmatch(colClip, patt):
-                            if not head_match[icol]:
+                            if head_match[icol] is None:
                                 # only if not just matched
                                 head_match[icol] = colnamQKan
                             found = True

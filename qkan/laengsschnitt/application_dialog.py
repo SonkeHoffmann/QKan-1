@@ -78,6 +78,9 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         super().__init__(default_dir, tr, parent)
 
         # Attach events
+        help_button = self.buttonBox.button(QDialogButtonBox.Help)
+        help_button.clicked.disconnect()
+        help_button.clicked.connect(self.click_help)
         self.pushButton.clicked.connect(self.export_cad)
         self.pushButton_2.clicked.connect(self.refresh)
         self.checkBox.stateChanged.connect(self.check)
@@ -88,7 +91,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         #self.geschw_2.sliderReleased.connect(self.animiert_laengs)
         #self.horizontalSlider_3.sliderMoved.connect(self.animiert_laengs)
         #self.horizontalSlider_3.sliderPressed.connect(self.stop_laengs)
-        #self.horizontalSlider_3.sliderReleased.connect(self.slider_released)
+        self.horizontalSlider_3.sliderReleased.connect(self.slider_released)
         self.pushButton_7.clicked.connect(self.select_erg)
         self.checkBox.toggled.connect(self.clicked)
         self.refresh_function = None
@@ -150,8 +153,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.canv_2.flush_events()
         self.fig_2.clear()
         self.db_erg = self.lineEdit_4.text()
-        self.anim = None
-        self.anf = 0
+        self.anf = self.horizontalSlider_3.value()
         self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3,
                                       self.canv_3, self.selected, self.auswahl,
                                       self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max,
@@ -162,7 +164,6 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.fig_2.clear()
         self.anf = self.horizontalSlider_3.value()
         self.db_erg = self.lineEdit_4.text()
-        self.anim = None
         self.animiert_laengs_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3,
                                       self.canv_3, self.selected, self.auswahl,
                                       self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max,
@@ -170,6 +171,15 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
 
 
     def export_cad(self):
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            self.tr("Zu erstellende DXF-Datei"),
+            self.default_dir,
+            "*.dxf",
+        )
+        if filename:
+            self.lineEdit.setText(filename)
+
         self.db_erg = self.lineEdit_4.text()
         self.point = self.lineEdit.text()
         self.massstab = self.lineEdit_2.text()
@@ -180,6 +190,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         self.show_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def refresh(self):
+        self.fig.clear()
         self.db_erg = self.lineEdit_4.text()
         #self.refresh_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
@@ -202,12 +213,12 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
             self.lineEdit_4.setText(filename)
 
     def ganglinie(self):
+        self.fig_3.clear()
         self.db_erg = self.lineEdit_4.text()
         self.ausgabe = self.comboBox.currentText()
         self.gang_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl, self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
     def animiert_laengs(self):
-        self.anim = None
         self.canv_2.flush_events()
         self.fig_2.clear()
         #self.anf = 0
@@ -217,10 +228,16 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
                            self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
 
 
-    def stop_laengs(self):
-        self.anf = 0
-        self.canv_2.flush_events()
-        self.fig_2.clear()
-        self.db_erg = self.lineEdit_4.text()
-        self.stop_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl,
-                           self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
+    # def stop_laengs(self):
+    #     self.anf = 0
+    #     self.canv_2.flush_events()
+    #     self.fig_2.clear()
+    #     self.db_erg = self.lineEdit_4.text()
+    #     self.stop_function(self.database, self.fig, self.canv, self.fig_2, self.canv_2, self.fig_3, self.canv_3, self.selected, self.auswahl,
+    #                        self.point, self.massstab, self.features, self.db_erg, self.ausgabe, self.max, self.label_4, self.pushButton_4, self.horizontalSlider_3, self.geschw_2, self.anf)
+    #
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Daten.html#langsschnitt"
+        os.startfile(help_file)
