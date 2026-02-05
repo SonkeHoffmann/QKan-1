@@ -161,6 +161,78 @@ class UploadPostgisTask:
         except Exception as e:
             raise QkanError(f"Fehler beim Verbinden zu PostGIS: {str(e)}")
 
+    def _check_and_reconnect_postgis(self) -> bool:
+        """
+        Prüft die PostgreSQL-Verbindung und stellt sie bei Bedarf wieder her.
+        
+        Returns:
+            bool: True wenn Verbindung OK oder erfolgreich wiederhergestellt
+        """
+        try:
+            # Schnelle Verbindungsprüfung
+            if self.pg_conn is None or self.pg_conn.closed:
+                logger.warning("PostgreSQL-Verbindung ist geschlossen - versuche Reconnect...")
+                self._reconnect_to_target_database()
+                return True
+            
+            # Aktive Prüfung mit einfacher Query
+            try:
+                self.pg_cursor.execute("SELECT 1")
+                self.pg_cursor.fetchone()
+                return True
+            except Exception as query_error:
+                logger.warning(f"Verbindungsprüfung fehlgeschlagen: {query_error}")
+                self._reconnect_to_target_database()
+                return True
+                
+        except Exception as e:
+            logger.error(f"Verbindungswiederherstellung fehlgeschlagen: {str(e)}")
+            return False
+
+    def _reconnect_to_target_database(self) -> None:
+        """Stellt die Verbindung zur Zieldatenbank wieder her"""
+        try:
+            # Alte Verbindung schließen falls noch vorhanden
+            try:
+                if self.pg_cursor:
+                    self.pg_cursor.close()
+                if self.pg_conn:
+                    self.pg_conn.close()
+            except:
+                pass
+            
+            # Neue Verbindung aufbauen
+            params = self.connection_params.copy()
+            params['database'] = self.target_database
+            
+            conn_parts = [
+                f"host='{params['host']}'",
+                f"port={params['port']}",
+                f"dbname='{params['database']}'",
+                f"user='{params['user']}'"
+            ]
+            
+            if params.get('password'):
+                conn_parts.append(f"password='{params['password']}'")
+                
+            if params.get('sslmode'):
+                conn_parts.append(f"sslmode='{params['sslmode']}'")
+            
+            conn_parts.append("connect_timeout=10")
+            conn_string = ' '.join(conn_parts)
+            
+            self.pg_conn = psycopg2.connect(conn_string)
+            self.pg_conn.autocommit = True
+            self.pg_cursor = self.pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            # Search path wieder setzen
+            self.pg_cursor.execute(f"SET search_path TO {self.schema_name}, public")
+            
+            logger.info(f"✓ Verbindung zu {self.target_database} erfolgreich wiederhergestellt")
+            
+        except Exception as e:
+            raise QkanError(f"Reconnect zur Zieldatenbank fehlgeschlagen: {str(e)}")
+
     def _disconnect_postgis(self) -> None:
         """PostGIS-Verbindung schließen"""
         try:
@@ -655,6 +727,8 @@ class UploadPostgisTask:
             # Daten in Batches übertragen
             batch_size = 500
             inserted_records = 0
+            consecutive_errors = 0  # Zähler für aufeinanderfolgende Fehler
+            max_consecutive_errors = 10  # Abbruch nach 10 Fehlern in Folge
             
             for i in range(0, len(all_data), batch_size):
                 batch = all_data[i:i + batch_size]
@@ -666,7 +740,21 @@ class UploadPostgisTask:
                             values = list(row)
                             self.pg_cursor.execute(insert_sql, values)
                             inserted_records += 1
+                            consecutive_errors = 0  # Fehler-Zähler zurücksetzen bei Erfolg
                         except Exception as row_error:
+                            consecutive_errors += 1
+                            error_str = str(row_error).lower()
+                            
+                            # Bei Verbindungsproblemen sofort abbrechen
+                            if 'connection' in error_str or 'closed' in error_str or 'timeout' in error_str:
+                                logger.error(f"Verbindungsproblem bei {table_name}: {str(row_error)}")
+                                raise  # Abbrechen und Verbindung neu aufbauen lassen
+                            
+                            # Bei zu vielen aufeinanderfolgenden Fehlern Tabelle überspringen
+                            if consecutive_errors >= max_consecutive_errors:
+                                logger.error(f"Zu viele aufeinanderfolgende Fehler ({consecutive_errors}) bei {table_name} - breche Tabelle ab")
+                                return inserted_records
+                            
                             logger.debug(f"Fehler bei Datensatz in {table_name}: {str(row_error)}")
                             continue
                     
@@ -683,6 +771,10 @@ class UploadPostgisTask:
                     
                 except Exception as e:
                     logger.error(f"Fehler beim Übertragen der Daten für Tabelle {table_name}: {str(e)}")
+                    # Bei Batch-Fehler: Prüfen ob Verbindung noch steht
+                    error_str = str(e).lower()
+                    if 'connection' in error_str or 'closed' in error_str or 'timeout' in error_str:
+                        raise  # Nach oben propagieren für Reconnect
             
             return inserted_records
             
@@ -939,79 +1031,111 @@ class UploadPostgisTask:
                 self.tables_failed = []
                 
                 for table_name in tables:
-                    # Tabellenfortschritt aktualisieren
-                    self._update_table_progress(processed_tables, total_tables, table_name)
-                    
-                    logger.info(f"Verarbeite Tabelle: {table_name}")
-                    
-                    # Tabellenstruktur ermitteln
-                    columns = self._get_table_structure(table_name)
-                    
-                    if not columns:
-                        logger.warning(f"Keine Spalten für Tabelle {table_name} gefunden - überspringe")
-                        self.tables_skipped.append({'name': table_name, 'reason': 'Keine Spalten gefunden'})
-                        processed_tables += 1
-                        continue
-                    
-                    # Geometrie-Information ermitteln
-                    geom_info = self._get_geometry_info(table_name)
-                    
-                    # PostgreSQL-Tabelle erstellen
+                    # Jede Tabelle in einem eigenen try-except verarbeiten,
+                    # damit Fehler bei einer Tabelle nicht den gesamten Upload abbrechen
                     try:
-                        table_created = self._create_postgres_table(table_name, columns, geom_info)
+                        # PostgreSQL-Verbindung prüfen und bei Bedarf wiederherstellen
+                        if not self._check_and_reconnect_postgis():
+                            logger.error(f"Verbindung zu PostgreSQL verloren - breche Upload ab")
+                            break
                         
-                        if not table_created:
-                            self.tables_skipped.append({'name': table_name, 'reason': 'Tabelle existiert bereits'})
+                        # Tabellenfortschritt aktualisieren
+                        self._update_table_progress(processed_tables, total_tables, table_name)
+                        
+                        logger.info(f"Verarbeite Tabelle: {table_name}")
+                        
+                        # Tabellenstruktur ermitteln
+                        try:
+                            columns = self._get_table_structure(table_name)
+                        except Exception as struct_error:
+                            logger.error(f"Fehler beim Ermitteln der Tabellenstruktur für {table_name}: {str(struct_error)}")
+                            self.tables_failed.append({'name': table_name, 'reason': f'Tabellenstruktur: {str(struct_error)}'})
                             processed_tables += 1
                             continue
-                    except Exception as create_error:
-                        logger.error(f"Fehler beim Erstellen der Tabelle {table_name}: {str(create_error)}")
-                        self.tables_failed.append({'name': table_name, 'reason': str(create_error)})
+                        
+                        if not columns:
+                            logger.warning(f"Keine Spalten für Tabelle {table_name} gefunden - überspringe")
+                            self.tables_skipped.append({'name': table_name, 'reason': 'Keine Spalten gefunden'})
+                            processed_tables += 1
+                            continue
+                        
+                        # Geometrie-Information ermitteln
+                        try:
+                            geom_info = self._get_geometry_info(table_name)
+                        except Exception as geom_error:
+                            logger.warning(f"Fehler beim Ermitteln der Geometrie-Info für {table_name}: {str(geom_error)}")
+                            geom_info = None  # Fortfahren ohne Geometrie
+                        
+                        # PostgreSQL-Tabelle erstellen
+                        try:
+                            table_created = self._create_postgres_table(table_name, columns, geom_info)
+                            
+                            if not table_created:
+                                self.tables_skipped.append({'name': table_name, 'reason': 'Tabelle existiert bereits'})
+                                processed_tables += 1
+                                continue
+                        except Exception as create_error:
+                            logger.error(f"Fehler beim Erstellen der Tabelle {table_name}: {str(create_error)}")
+                            self.tables_failed.append({'name': table_name, 'reason': str(create_error)})
+                            processed_tables += 1
+                            continue
+                        
+                        # Daten übertragen
+                        try:
+                            transferred_records = self._transfer_table_data(table_name, columns, geom_info)
+                        except Exception as transfer_error:
+                            logger.error(f"Fehler bei Datenübertragung für {table_name}: {str(transfer_error)}")
+                            self.tables_failed.append({'name': table_name, 'reason': f'Datenübertragung: {str(transfer_error)}'})
+                            transferred_records = 0
+                        
+                        # Datensatz-Progress Bar zurücksetzen
+                        if self.progress_bar_records:
+                            self.progress_bar_records.setValue(0)
+                            self.progress_bar_records.setMaximum(100)
+                        
+                        # Spatial-Index erstellen für Geometrie-Tabellen
+                        if geom_info:
+                            try:
+                                self._create_spatial_index(table_name, geom_info)
+                            except Exception as idx_error:
+                                logger.warning(f"Spatial-Index für {table_name} fehlgeschlagen: {str(idx_error)}")
+                            geometry_tables_count += 1
+                        
+                        # Tabelle finalisieren
+                        try:
+                            self._finalize_table(table_name)
+                        except Exception as fin_error:
+                            logger.warning(f"Finalisierung für {table_name} fehlgeschlagen: {str(fin_error)}")
+                        
+                        # Tracking für WebSuite-Registrierung und Statistik
+                        table_info = {
+                            'name': table_name,
+                            'records': transferred_records,
+                            'has_geometry': geom_info is not None,
+                            'geom_info': geom_info
+                        }
+                        self.uploaded_tables.append(table_info)
+                        
+                        # Statistik: Mit Daten oder leer?
+                        if transferred_records > 0:
+                            self.tables_with_data.append(table_info)
+                        else:
+                            self.tables_empty.append(table_name)
+                        
                         processed_tables += 1
+                        
+                        # Fortschritt nach Abschluss der Tabelle aktualisieren
+                        self._update_table_progress(processed_tables, total_tables, f"{table_name} ✓ ({transferred_records} Datensätze)")
+                        
+                        logger.info(f"Tabelle {table_name} erfolgreich übertragen: {transferred_records} Datensätze")
+                        
+                    except Exception as table_error:
+                        # Unerwarteter Fehler bei dieser Tabelle - protokollieren und mit nächster fortfahren
+                        logger.error(f"Unerwarteter Fehler bei Tabelle {table_name}: {str(table_error)}")
+                        self.tables_failed.append({'name': table_name, 'reason': f'Unerwarteter Fehler: {str(table_error)}'})
+                        processed_tables += 1
+                        # Weiter mit der nächsten Tabelle statt Abbruch
                         continue
-                    
-                    # Daten übertragen
-                    try:
-                        transferred_records = self._transfer_table_data(table_name, columns, geom_info)
-                    except Exception as transfer_error:
-                        logger.error(f"Fehler bei Datenübertragung für {table_name}: {str(transfer_error)}")
-                        self.tables_failed.append({'name': table_name, 'reason': f'Datenübertragung: {str(transfer_error)}'})
-                        transferred_records = 0
-                    
-                    # Datensatz-Progress Bar zurücksetzen
-                    if self.progress_bar_records:
-                        self.progress_bar_records.setValue(0)
-                        self.progress_bar_records.setMaximum(100)
-                    
-                    # Spatial-Index erstellen für Geometrie-Tabellen
-                    if geom_info:
-                        self._create_spatial_index(table_name, geom_info)
-                        geometry_tables_count += 1
-                    
-                    # Tabelle finalisieren
-                    self._finalize_table(table_name)
-                    
-                    # Tracking für WebSuite-Registrierung und Statistik
-                    table_info = {
-                        'name': table_name,
-                        'records': transferred_records,
-                        'has_geometry': geom_info is not None,
-                        'geom_info': geom_info
-                    }
-                    self.uploaded_tables.append(table_info)
-                    
-                    # Statistik: Mit Daten oder leer?
-                    if transferred_records > 0:
-                        self.tables_with_data.append(table_info)
-                    else:
-                        self.tables_empty.append(table_name)
-                    
-                    processed_tables += 1
-                    
-                    # Fortschritt nach Abschluss der Tabelle aktualisieren
-                    self._update_table_progress(processed_tables, total_tables, f"{table_name} ✓ ({transferred_records} Datensätze)")
-                    
-                    logger.info(f"Tabelle {table_name} erfolgreich übertragen: {transferred_records} Datensätze")
             
             finally:
                 # SQLite-Verbindung schließen
