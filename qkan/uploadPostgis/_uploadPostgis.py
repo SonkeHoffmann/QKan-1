@@ -14,8 +14,8 @@ import json
 import sqlite3
 from typing import Optional, Dict, List, Any, Tuple, Callable
 
-from qgis.PyQt.QtCore import QSettings
-from qgis.PyQt.QtWidgets import QProgressBar
+from qgis.PyQt.QtCore import QSettings, QCoreApplication
+from qgis.PyQt.QtWidgets import QProgressBar, QApplication
 from qgis.core import QgsProject, QgsVectorLayer, QgsDataSourceUri
 from qgis.utils import spatialite_connect
 
@@ -383,29 +383,13 @@ class UploadPostgisTask:
         logger.info(message)
 
     def _get_sqlite_tables(self) -> List[str]:
-        """Alle relevanten Tabellen aus SQLite-Datenbank ermitteln"""
-        # Zuerst alle Tabellen abrufen
+        """Alle Tabellen aus SQLite-Datenbank ermitteln (ohne SQLite-interne Tabellen)"""
+        # Alle Tabellen abrufen - nur SQLite-interne und Index-Tabellen ausschließen
         self.db_cursor.execute("""
             SELECT name, sql FROM sqlite_master 
             WHERE type='table' 
             AND name NOT LIKE 'sqlite_%' 
             AND name NOT LIKE 'idx_%'
-            AND name NOT IN ('geometry_columns', 'spatial_ref_sys', 
-                            'spatialite_history', 'sql_statements_log',
-                            'SpatialIndex', 'ElementaryGeometries',
-                            'geometry_columns_auth', 'geometry_columns_field_infos',
-                            'geometry_columns_statistics', 'geometry_columns_time',
-                            'spatial_ref_sys_aux', 'views_geometry_columns',
-                            'views_geometry_columns_auth', 'views_geometry_columns_field_infos',
-                            'views_geometry_columns_statistics', 'virts_geometry_columns',
-                            'virts_geometry_columns_auth', 'virts_geometry_columns_field_infos',
-                            'virts_geometry_columns_statistics', 'geom_cols_ref_sys',
-                            'raster_coverages', 'raster_coverages_srid',
-                            'raster_coverages_keyword', 'vector_coverages',
-                            'vector_coverages_srid', 'vector_coverages_keyword',
-                            'data_licenses', 'vector_layers', 'vector_layers_auth',
-                            'vector_layers_field_infos', 'vector_layers_statistics',
-                            'KNN')
             ORDER BY name
         """)
         tables = self.db_cursor.fetchall()
@@ -426,7 +410,21 @@ class UploadPostgisTask:
         return regular_tables
 
     def _get_geometry_info(self, table_name: str) -> Optional[Dict[str, Any]]:
-        """Geometrie-Information für eine Tabelle ermitteln"""
+        """Geometrie-Information für eine Tabelle ermitteln (Hauptgeometrie)"""
+        # Hole alle Geometrien und gib die erste zurück (für Kompatibilität)
+        all_geoms = self._get_all_geometry_info(table_name)
+        return all_geoms[0] if all_geoms else None
+
+    def _get_all_geometry_info(self, table_name: str) -> List[Dict[str, Any]]:
+        """ALLE Geometrie-Informationen für eine Tabelle ermitteln (z.B. geom UND geop)"""
+        geom_type = 'GEOMETRY'
+        srid = self.default_srid
+        coord_dim = 2
+        
+        # Dict für Geometrie-Infos aus geometry_columns
+        geom_cols_info = {}
+        
+        # SCHRITT 1: Prüfe geometry_columns Tabelle (falls vorhanden)
         try:
             self.db_cursor.execute(f"""
                 SELECT f_geometry_column, type, coord_dimension, srid
@@ -435,21 +433,92 @@ class UploadPostgisTask:
             """)
             geom_info = self.db_cursor.fetchall()
             
-            if geom_info:
-                srid = geom_info[0][3]
-                # Verwende Standard-SRID wenn keiner definiert
-                if srid is None or srid == 0 or srid == -1:
-                    srid = self.default_srid
-                    
-                return {
-                    'column': geom_info[0][0],
-                    'type': geom_info[0][1] or 'GEOMETRY',
-                    'coord_dimension': geom_info[0][2] or 2,
-                    'srid': srid
+            for row in geom_info:
+                col_name = row[0]
+                geom_cols_info[col_name.lower()] = {
+                    'column': col_name,
+                    'type': row[1] or 'GEOMETRY',
+                    'coord_dimension': row[2] or 2,
+                    'srid': row[3] if row[3] and row[3] > 0 else self.default_srid
                 }
+                logger.debug(f"geometry_columns für {table_name}: Spalte '{col_name}'")
         except Exception as e:
-            logger.debug(f"Keine Geometrie-Info für {table_name}: {str(e)}")
-        return None
+            logger.debug(f"Keine geometry_columns Tabelle oder Fehler: {str(e)}")
+        
+        # SCHRITT 2: Prüfe ALLE Spalten mit typischen Geometrie-Namen
+        result = []
+        try:
+            self.db_cursor.execute(f"PRAGMA table_info({table_name})")
+            columns = self.db_cursor.fetchall()
+            
+            for col in columns:
+                col_name = col[1]
+                col_name_lower = col_name.lower()
+                col_type = (col[2] or '').upper()
+                
+                # Prüfe auf typische Geometrie-Spaltennamen
+                if col_name_lower in ['geom', 'geop', 'geometry', 'geobject', 'shape', 'the_geom']:
+                    # Auch INTEGER-Typen berücksichtigen (oft falsch typisierte BLOBs in SQLite)
+                    if col_type in ['BLOB', 'GEOMETRY', 'INTEGER', '']:
+                        # Prüfe ob Info aus geometry_columns vorhanden
+                        if col_name_lower in geom_cols_info:
+                            info = geom_cols_info[col_name_lower]
+                        else:
+                            # Fallback mit Standardwerten
+                            info = {
+                                'column': col_name,
+                                'type': geom_type,
+                                'coord_dimension': coord_dim,
+                                'srid': srid
+                            }
+                        result.append(info)
+                        logger.debug(f"Geometrie-Spalte in {table_name}: '{col_name}' (Typ: {col_type})")
+                    
+        except Exception as e:
+            logger.debug(f"Fehler bei Spalten-Prüfung für {table_name}: {str(e)}")
+        
+        # Falls keine Kandidaten gefunden, aber geometry_columns Einträge hat
+        if not result and geom_cols_info:
+            result = list(geom_cols_info.values())
+        
+        if result:
+            logger.info(f"Tabelle {table_name} hat {len(result)} Geometrie-Spalte(n): {[g['column'] for g in result]}")
+        
+        return result
+
+    def _split_geometry_infos(self, geom_infos: List[Dict[str, Any]]) -> Tuple[Optional[Dict[str, Any]], List[Dict[str, Any]]]:
+        """
+        Teilt Geometrie-Informationen in primäre und sekundäre Geometrien auf.
+        
+        Bei mehreren Geometrie-Spalten kann PostgreSQL (insbesondere mit bestimmten
+        Clients wie GBD WebSuite) Probleme haben. Diese Funktion teilt die Geometrien
+        so auf, dass nur die ERSTE als echte PostGIS-Geometrie gespeichert wird
+        und alle weiteren als TEXT (WKT) gespeichert werden.
+        
+        Args:
+            geom_infos: Liste aller Geometrie-Informationen
+            
+        Returns:
+            Tuple aus (primäre_geometrie, liste_sekundärer_geometrien)
+            - primäre_geometrie: Dict mit Info zur ersten Geometrie (oder None)
+            - sekundäre_geometrien: Liste der Geometrien, die als TEXT gespeichert werden
+        """
+        if not geom_infos:
+            return None, []
+        
+        if len(geom_infos) == 1:
+            # Nur eine Geometrie - keine Aufteilung nötig
+            return geom_infos[0], []
+        
+        # Mehrere Geometrien: Erste als primär, Rest als sekundär (werden als TEXT gespeichert)
+        primary_geom = geom_infos[0]
+        secondary_geoms = geom_infos[1:]
+        
+        logger.info(f"Mehrere Geometrie-Spalten erkannt: "
+                   f"'{primary_geom['column']}' als Geometrie, "
+                   f"{[g['column'] for g in secondary_geoms]} als TEXT (WKT)")
+        
+        return primary_geom, secondary_geoms
 
     def _get_table_structure(self, table_name: str) -> List[Dict[str, Any]]:
         """Tabellenstruktur aus SQLite ermitteln"""
@@ -499,8 +568,16 @@ class UploadPostgisTask:
         return type_map.get(sqlite_type_upper, 'TEXT')
 
     def _create_postgres_table(self, table_name: str, columns: List[Dict[str, Any]], 
-                              geom_info: Optional[Dict[str, Any]] = None) -> bool:
-        """PostgreSQL-Tabelle erstellen für WebSuite-Kompatibilität"""
+                              geom_infos: Optional[List[Dict[str, Any]]] = None,
+                              secondary_geom_infos: Optional[List[Dict[str, Any]]] = None) -> bool:
+        """PostgreSQL-Tabelle erstellen für WebSuite-Kompatibilität
+        
+        Args:
+            table_name: Name der Tabelle
+            columns: Liste der Spalten
+            geom_infos: Liste der Geometrie-Informationen für echte PostGIS-Geometrien
+            secondary_geom_infos: Liste der Geometrien, die als TEXT (WKT) gespeichert werden
+        """
         
         try:
             # Bei Overwrite: bestehende Tabelle löschen
@@ -529,11 +606,23 @@ class UploadPostgisTask:
             col_definitions = []
             primary_key_cols = []
             
+            # Liste der zu überspringenden Geometrie-Spaltennamen (case-insensitive)
+            # ALLE Geometrie-Spalten müssen übersprungen werden (primäre UND sekundäre)!
+            skip_columns = set(['geom', 'geop', 'geometry', 'geobject', 'shape', 'the_geom'])
+            if geom_infos:
+                for gi in geom_infos:
+                    skip_columns.add(gi['column'].lower())
+            if secondary_geom_infos:
+                for gi in secondary_geom_infos:
+                    skip_columns.add(gi['column'].lower())
+            
             for col in columns:
-                col_name = col['name'].lower()
+                col_name = col['name']
+                col_name_lower = col_name.lower()
                 
-                # Geometrie-Spalte wird separat hinzugefügt
-                if geom_info and col_name in ['geom', 'geop', 'geometry']:
+                # Geometrie-Spalten überspringen - werden separat als PostGIS-Geometrie hinzugefügt
+                if col_name_lower in skip_columns:
+                    logger.debug(f"Überspringe Geometrie-Spalte '{col_name}' bei Tabellenerstellung für {table_name}")
                     continue
                     
                 pg_type = self._sqlite_to_postgres_type(col['type'], col['name'])
@@ -578,13 +667,8 @@ class UploadPostgisTask:
                 except Exception as pk_error:
                     logger.warning(f"Primärschlüssel für {table_name} konnte nicht erstellt werden: {str(pk_error)}")
             
-            # Geometrie-Spalte hinzufügen für WebSuite-Kartendarstellung
-            if geom_info:
-                geom_type = geom_info['type'].upper()
-                coord_dim = geom_info.get('coord_dimension', 2)
-                srid = geom_info['srid']
-                geom_col = geom_info['column']
-                
+            # ALLE Geometrie-Spalten hinzufügen für WebSuite-Kartendarstellung
+            if geom_infos:
                 # Geometrie-Typ für PostGIS normalisieren
                 geom_type_map = {
                     'POINT': 'POINT',
@@ -596,26 +680,50 @@ class UploadPostgisTask:
                     'GEOMETRYCOLLECTION': 'GEOMETRYCOLLECTION',
                     'GEOMETRY': 'GEOMETRY'
                 }
-                pg_geom_type = geom_type_map.get(geom_type, 'GEOMETRY')
                 
-                try:
-                    # AddGeometryColumn für WebSuite-Kompatibilität
-                    add_geom_sql = f"""
-                        SELECT AddGeometryColumn('{self.schema_name}', '{table_name}', 
-                            '{geom_col}', {srid}, '{pg_geom_type}', {coord_dim})
-                    """
-                    self.pg_cursor.execute(add_geom_sql)
-                    logger.info(f"Geometrie-Spalte {geom_col} ({pg_geom_type}, SRID {srid}) für {table_name} erstellt")
-                except Exception as geom_error:
-                    logger.warning(f"Geometrie-Spalte für {table_name} konnte nicht erstellt werden: {str(geom_error)}")
-                    # Fallback: Direkte Spaltenerstellung
+                for geom_info in geom_infos:
+                    geom_type = geom_info['type'].upper()
+                    coord_dim = geom_info.get('coord_dimension', 2)
+                    srid = geom_info['srid']
+                    geom_col = geom_info['column']
+                    
+                    logger.info(f"Erstelle Geometrie-Spalte '{geom_col}' für {table_name} (SRID: {srid})")
+                    
+                    pg_geom_type = geom_type_map.get(geom_type, 'GEOMETRY')
+                    
+                    try:
+                        # AddGeometryColumn für WebSuite-Kompatibilität
+                        add_geom_sql = f"""
+                            SELECT AddGeometryColumn('{self.schema_name}', '{table_name}', 
+                                '{geom_col}', {srid}, '{pg_geom_type}', {coord_dim})
+                        """
+                        self.pg_cursor.execute(add_geom_sql)
+                        logger.info(f"Geometrie-Spalte {geom_col} ({pg_geom_type}, SRID {srid}) für {table_name} erstellt")
+                    except Exception as geom_error:
+                        logger.warning(f"Geometrie-Spalte '{geom_col}' für {table_name} konnte nicht erstellt werden: {str(geom_error)}")
+                        # Fallback: Direkte Spaltenerstellung
+                        try:
+                            self.pg_cursor.execute(f"""
+                                ALTER TABLE {self.schema_name}.{table_name}
+                                ADD COLUMN "{geom_col}" geometry({pg_geom_type}, {srid})
+                            """)
+                            logger.info(f"Geometrie-Spalte {geom_col} per ALTER TABLE erstellt")
+                        except Exception as e2:
+                            logger.error(f"Auch Fallback für Geometrie '{geom_col}' fehlgeschlagen: {str(e2)}")
+            
+            # Sekundäre Geometrie-Spalten als TEXT hinzufügen (WKT-Format)
+            # Dies ist notwendig, wenn PostgreSQL/WebSuite nicht mit mehreren Geometrie-Spalten umgehen kann
+            if secondary_geom_infos:
+                for geom_info in secondary_geom_infos:
+                    geom_col = geom_info['column']
                     try:
                         self.pg_cursor.execute(f"""
                             ALTER TABLE {self.schema_name}.{table_name}
-                            ADD COLUMN "{geom_col}" geometry({pg_geom_type}, {srid})
+                            ADD COLUMN "{geom_col}" TEXT
                         """)
-                    except Exception as e2:
-                        logger.error(f"Auch Fallback für Geometrie fehlgeschlagen: {str(e2)}")
+                        logger.info(f"Sekundäre Geometrie-Spalte '{geom_col}' als TEXT für {table_name} erstellt (WKT)")
+                    except Exception as text_error:
+                        logger.warning(f"TEXT-Spalte '{geom_col}' für {table_name} konnte nicht erstellt werden: {str(text_error)}")
             
             logger.info(f"Tabelle {table_name} erstellt")
             return True
@@ -638,8 +746,20 @@ class UploadPostgisTask:
         """
 
     def _transfer_table_data(self, table_name: str, 
-                           columns: List[Dict[str, Any]], geom_info: Optional[Dict[str, Any]] = None) -> int:
-        """Daten von SQLite zu PostgreSQL übertragen mit Geometrie-Konvertierung"""
+                           columns: List[Dict[str, Any]], 
+                           geom_infos: Optional[List[Dict[str, Any]]] = None,
+                           secondary_geom_infos: Optional[List[Dict[str, Any]]] = None) -> int:
+        """Daten von SQLite zu PostgreSQL übertragen mit optimiertem Batch-Insert
+        
+        Unterstützt primäre Geometrie-Spalten (als PostGIS-Geometrie) und 
+        sekundäre Geometrie-Spalten (als TEXT/WKT)
+        
+        Args:
+            table_name: Name der Tabelle
+            columns: Liste der Spalten
+            geom_infos: Primäre Geometrie-Spalten (als echte PostGIS-Geometrie)
+            secondary_geom_infos: Sekundäre Geometrie-Spalten (als TEXT/WKT)
+        """
         
         try:
             # Anzahl der Datensätze ermitteln
@@ -653,42 +773,59 @@ class UploadPostgisTask:
             
             logger.info(f"Übertrage {total_records} Datensätze für Tabelle {table_name}")
             
-            # Spaltennamen für SELECT/INSERT vorbereiten
-            non_geom_columns = [col['name'] for col in columns 
-                               if not (geom_info and col['name'].lower() in ['geom', 'geop', 'geometry'])]
+            # Alle Geometrie-Spaltennamen sammeln (primäre UND sekundäre)
+            geom_col_names = set(['geom', 'geop', 'geometry', 'geobject', 'shape', 'the_geom'])
+            if geom_infos:
+                for gi in geom_infos:
+                    geom_col_names.add(gi['column'].lower())
+            if secondary_geom_infos:
+                for gi in secondary_geom_infos:
+                    geom_col_names.add(gi['column'].lower())
             
-            if geom_info:
-                geom_col = geom_info['column']
-                srid = geom_info['srid']
-                
-                # Prüfen ob SpatiaLite-Funktionen verfügbar sind
-                use_spatialite = getattr(self, 'use_spatialite', False)
-                
-                if use_spatialite:
-                    # Daten mit WKT-konvertierter Geometrie laden (SpatiaLite)
-                    select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
-                    select_sql = f"""
-                        SELECT {select_cols}, 
-                            CASE 
-                                WHEN "{geom_col}" IS NOT NULL THEN AsText("{geom_col}")
-                                ELSE NULL 
-                            END as geom_wkt
-                        FROM {table_name}
-                    """
-                else:
-                    # Ohne SpatiaLite: Geometrie als Hex-BLOB lesen
-                    select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
-                    select_sql = f"""
-                        SELECT {select_cols}, 
-                            CASE 
-                                WHEN "{geom_col}" IS NOT NULL THEN hex("{geom_col}")
-                                ELSE NULL 
-                            END as geom_hex
-                        FROM {table_name}
-                    """
-            else:
-                select_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
-                select_sql = f"SELECT {select_cols} FROM {table_name}"
+            # Spaltennamen für SELECT/INSERT vorbereiten (ohne Geometrie-Spalten)
+            non_geom_columns = [col['name'] for col in columns 
+                               if col['name'].lower() not in geom_col_names]
+            
+            use_spatialite = getattr(self, 'use_spatialite', False)
+            
+            # SELECT-Statement aufbauen
+            select_parts = [f'"{c}"' for c in non_geom_columns]
+            
+            # Primäre Geometrie-Spalten hinzufügen (konvertiert zu WKT oder Hex für PostGIS)
+            if geom_infos:
+                for gi in geom_infos:
+                    geom_col = gi['column']
+                    if use_spatialite:
+                        select_parts.append(f'''CASE 
+                            WHEN "{geom_col}" IS NOT NULL THEN AsText("{geom_col}")
+                            ELSE NULL 
+                        END as "{geom_col}_wkt"''')
+                    else:
+                        select_parts.append(f'''CASE 
+                            WHEN "{geom_col}" IS NOT NULL THEN hex("{geom_col}")
+                            ELSE NULL 
+                        END as "{geom_col}_hex"''')
+            
+            # Sekundäre Geometrie-Spalten hinzufügen (als WKT für TEXT-Spalte)
+            if secondary_geom_infos:
+                for gi in secondary_geom_infos:
+                    geom_col = gi['column']
+                    if use_spatialite:
+                        select_parts.append(f'''CASE 
+                            WHEN "{geom_col}" IS NOT NULL THEN AsText("{geom_col}")
+                            ELSE NULL 
+                        END as "{geom_col}_wkt"''')
+                    else:
+                        # Bei Standard-SQLite: Hex auslesen und später konvertieren
+                        # HINWEIS: Ohne SpatiaLite können wir WKT nicht direkt erzeugen,
+                        # daher versuchen wir es trotzdem mit AsText (funktioniert manchmal)
+                        # oder geben NULL zurück wenn es fehlschlägt
+                        select_parts.append(f'''CASE 
+                            WHEN "{geom_col}" IS NOT NULL THEN hex("{geom_col}")
+                            ELSE NULL 
+                        END as "{geom_col}_hex_secondary"''')
+            
+            select_sql = f"SELECT {', '.join(select_parts)} FROM {table_name}"
             
             self.db_cursor.execute(select_sql)
             all_data = self.db_cursor.fetchall()
@@ -696,91 +833,183 @@ class UploadPostgisTask:
             if not all_data:
                 return 0
             
-            # INSERT-Statement vorbereiten
-            use_spatialite = getattr(self, 'use_spatialite', False)
+            # INSERT-Statement aufbauen
+            insert_col_parts = [f'"{c}"' for c in non_geom_columns]
+            template_parts = ['%s'] * len(non_geom_columns)
             
-            if geom_info:
-                geom_col = geom_info['column']
-                srid = geom_info['srid']
-                
-                insert_cols = ', '.join([f'"{c}"' for c in non_geom_columns] + [f'"{geom_col}"'])
-                
-                if use_spatialite:
-                    # SpatiaLite: WKT-Format
-                    placeholders = ', '.join(['%s'] * len(non_geom_columns) + [f'ST_GeomFromText(%s, {srid})'])
-                else:
-                    # Ohne SpatiaLite: Hex-EWKB-Format (SpatiaLite speichert im GPKG/EWKB-Format)
-                    placeholders = ', '.join(['%s'] * len(non_geom_columns) + [f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})"])
-                
-                insert_sql = f"""
-                    INSERT INTO {self.schema_name}.{table_name} ({insert_cols})
-                    VALUES ({placeholders})
-                """
-            else:
-                insert_cols = ', '.join([f'"{c}"' for c in non_geom_columns])
-                placeholders = ', '.join(['%s'] * len(non_geom_columns))
-                insert_sql = f"""
-                    INSERT INTO {self.schema_name}.{table_name} ({insert_cols})
-                    VALUES ({placeholders})
-                """
+            # Primäre Geometrie-Spalten mit PostGIS-Konvertierung hinzufügen
+            if geom_infos:
+                for gi in geom_infos:
+                    geom_col = gi['column']
+                    srid = gi['srid']
+                    insert_col_parts.append(f'"{geom_col}"')
+                    if use_spatialite:
+                        template_parts.append(f'ST_GeomFromText(%s, {srid})')
+                    else:
+                        template_parts.append(f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})")
             
-            # Daten in Batches übertragen
-            batch_size = 500
+            # Sekundäre Geometrie-Spalten als TEXT hinzufügen (WKT oder hex-zu-WKT konvertiert)
+            if secondary_geom_infos:
+                for gi in secondary_geom_infos:
+                    geom_col = gi['column']
+                    srid = gi['srid']
+                    insert_col_parts.append(f'"{geom_col}"')
+                    if use_spatialite:
+                        # WKT direkt einfügen
+                        template_parts.append('%s')
+                    else:
+                        # Hex zu WKT konvertieren mit ST_AsText(ST_GeomFromWKB(...))
+                        template_parts.append(f"ST_AsText(ST_GeomFromWKB(decode(%s, 'hex'), {srid}))")
+            
+            insert_cols = ', '.join(insert_col_parts)
+            value_template = '(' + ', '.join(template_parts) + ')'
+            insert_sql = f"INSERT INTO {self.schema_name}.{table_name} ({insert_cols}) VALUES %s"
+            
+            # Optimierter Batch-Insert mit execute_values (viel schneller als einzelne Inserts)
+            batch_size = 2000  # Größere Batches für bessere Performance
             inserted_records = 0
-            consecutive_errors = 0  # Zähler für aufeinanderfolgende Fehler
-            max_consecutive_errors = 10  # Abbruch nach 10 Fehlern in Folge
+            error_count = 0
             
-            for i in range(0, len(all_data), batch_size):
-                batch = all_data[i:i + batch_size]
-                
-                try:
-                    for row in batch:
-                        try:
-                            # Konvertiere None/NULL-Werte korrekt
-                            values = list(row)
-                            self.pg_cursor.execute(insert_sql, values)
-                            inserted_records += 1
-                            consecutive_errors = 0  # Fehler-Zähler zurücksetzen bei Erfolg
-                        except Exception as row_error:
-                            consecutive_errors += 1
-                            error_str = str(row_error).lower()
-                            
-                            # Bei Verbindungsproblemen sofort abbrechen
-                            if 'connection' in error_str or 'closed' in error_str or 'timeout' in error_str:
-                                logger.error(f"Verbindungsproblem bei {table_name}: {str(row_error)}")
-                                raise  # Abbrechen und Verbindung neu aufbauen lassen
-                            
-                            # Bei zu vielen aufeinanderfolgenden Fehlern Tabelle überspringen
-                            if consecutive_errors >= max_consecutive_errors:
-                                logger.error(f"Zu viele aufeinanderfolgende Fehler ({consecutive_errors}) bei {table_name} - breche Tabelle ab")
-                                return inserted_records
-                            
-                            logger.debug(f"Fehler bei Datensatz in {table_name}: {str(row_error)}")
-                            continue
+            # Autocommit temporär deaktivieren für Transaktions-Batches
+            old_autocommit = self.pg_conn.autocommit
+            self.pg_conn.autocommit = False
+            
+            try:
+                for i in range(0, len(all_data), batch_size):
+                    batch = all_data[i:i + batch_size]
                     
-                    # Progress aktualisieren - separate Progress Bar für Datensätze
-                    if self.progress_bar_records and total_records > 0:
-                        self.progress_bar_records.setMaximum(total_records)
-                        self.progress_bar_records.setValue(inserted_records)
-                    
-                    # Callback für detaillierte Fortschrittsmeldung
-                    if self.record_progress_callback:
-                        # Sende Updates alle 500 Datensätze oder bei Abschluss
-                        if inserted_records % 500 == 0 or inserted_records == total_records:
+                    try:
+                        # Batch als Liste von Tupeln vorbereiten und NUL-Zeichen entfernen
+                        batch_values = []
+                        for row in batch:
+                            cleaned_row = []
+                            for value in row:
+                                if isinstance(value, str) and '\x00' in value:
+                                    cleaned_row.append(value.replace('\x00', ''))
+                                else:
+                                    cleaned_row.append(value)
+                            batch_values.append(tuple(cleaned_row))
+                        
+                        # execute_values ist VIEL schneller als einzelne execute() Aufrufe
+                        psycopg2.extras.execute_values(
+                            self.pg_cursor,
+                            insert_sql,
+                            batch_values,
+                            template=value_template,
+                            page_size=batch_size
+                        )
+                        
+                        self.pg_conn.commit()
+                        inserted_records += len(batch)
+                        
+                        # Progress aktualisieren
+                        if self.progress_bar_records and total_records > 0:
+                            self.progress_bar_records.setMaximum(total_records)
+                            self.progress_bar_records.setValue(inserted_records)
+                        
+                        # Callback für detaillierte Fortschrittsmeldung
+                        if self.record_progress_callback:
                             self.record_progress_callback(inserted_records, total_records, table_name)
-                    
-                except Exception as e:
-                    logger.error(f"Fehler beim Übertragen der Daten für Tabelle {table_name}: {str(e)}")
-                    # Bei Batch-Fehler: Prüfen ob Verbindung noch steht
-                    error_str = str(e).lower()
-                    if 'connection' in error_str or 'closed' in error_str or 'timeout' in error_str:
-                        raise  # Nach oben propagieren für Reconnect
+                        
+                        # WICHTIG: Qt Event-Loop verarbeiten lassen, damit QGIS nicht einfriert
+                        QApplication.processEvents()
+                        
+                    except Exception as batch_error:
+                        self.pg_conn.rollback()
+                        error_str = str(batch_error).lower()
+                        
+                        # Bei Verbindungsproblemen sofort abbrechen
+                        if 'connection' in error_str or 'closed' in error_str or 'timeout' in error_str:
+                            logger.error(f"Verbindungsproblem bei {table_name}: {str(batch_error)}")
+                            raise
+                        
+                        # Bei Batch-Fehler: Fallback auf Einzelinserts für diesen Batch
+                        logger.warning(f"Batch-Insert fehlgeschlagen für {table_name}, versuche Einzelinserts: {str(batch_error)[:100]}")
+                        
+                        single_insert_count, single_error_count = self._transfer_batch_single(
+                            table_name, batch, non_geom_columns, geom_infos, secondary_geom_infos
+                        )
+                        inserted_records += single_insert_count
+                        error_count += single_error_count
+                        self.pg_conn.commit()
+                
+            finally:
+                # Autocommit wiederherstellen
+                self.pg_conn.autocommit = old_autocommit
+            
+            # Zusammenfassung der Fehler am Ende
+            if error_count > 0:
+                logger.warning(f"Tabelle {table_name}: {error_count} von {total_records} Datensätzen konnten nicht übertragen werden")
             
             return inserted_records
             
         except Exception as e:
             logger.error(f"Fehler bei Datenübertragung für {table_name}: {str(e)}")
             return 0
+
+    def _transfer_batch_single(self, table_name: str, batch: List[tuple], 
+                               non_geom_columns: List[str], 
+                               geom_infos: Optional[List[Dict[str, Any]]] = None,
+                               secondary_geom_infos: Optional[List[Dict[str, Any]]] = None) -> Tuple[int, int]:
+        """Fallback: Einzelne Datensätze übertragen wenn Batch-Insert fehlschlägt
+        
+        Unterstützt primäre Geometrie-Spalten (als PostGIS-Geometrie) und 
+        sekundäre Geometrie-Spalten (als TEXT/WKT)
+        """
+        inserted = 0
+        errors = 0
+        use_spatialite = getattr(self, 'use_spatialite', False)
+        
+        # INSERT-Statement aufbauen
+        insert_col_parts = [f'"{c}"' for c in non_geom_columns]
+        placeholder_parts = ['%s'] * len(non_geom_columns)
+        
+        # Primäre Geometrie-Spalten hinzufügen
+        if geom_infos:
+            for gi in geom_infos:
+                geom_col = gi['column']
+                srid = gi['srid']
+                insert_col_parts.append(f'"{geom_col}"')
+                if use_spatialite:
+                    placeholder_parts.append(f'ST_GeomFromText(%s, {srid})')
+                else:
+                    placeholder_parts.append(f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})")
+        
+        # Sekundäre Geometrie-Spalten als TEXT hinzufügen
+        if secondary_geom_infos:
+            for gi in secondary_geom_infos:
+                geom_col = gi['column']
+                srid = gi['srid']
+                insert_col_parts.append(f'"{geom_col}"')
+                if use_spatialite:
+                    # WKT direkt einfügen
+                    placeholder_parts.append('%s')
+                else:
+                    # Hex zu WKT konvertieren mit ST_AsText(ST_GeomFromWKB(...))
+                    placeholder_parts.append(f"ST_AsText(ST_GeomFromWKB(decode(%s, 'hex'), {srid}))")
+        
+        insert_cols = ', '.join(insert_col_parts)
+        placeholders = ', '.join(placeholder_parts)
+        insert_sql = f"INSERT INTO {self.schema_name}.{table_name} ({insert_cols}) VALUES ({placeholders})"
+        
+        for row in batch:
+            try:
+                # NUL-Zeichen aus Strings entfernen (PostgreSQL erlaubt keine \x00 in Strings)
+                cleaned_row = []
+                for value in row:
+                    if isinstance(value, str) and '\x00' in value:
+                        cleaned_row.append(value.replace('\x00', ''))
+                    else:
+                        cleaned_row.append(value)
+                
+                self.pg_cursor.execute(insert_sql, cleaned_row)
+                inserted += 1
+            except Exception as e:
+                errors += 1
+                if errors <= 3:
+                    logger.debug(f"Einzelinsert-Fehler in {table_name}: {str(e)[:100]}")
+        
+        return inserted, errors
 
     def _create_spatial_index(self, table_name: str, geom_info: Optional[Dict[str, Any]] = None) -> None:
         """Spatial-Index erstellen für WebSuite-Performance"""
@@ -885,7 +1114,7 @@ class UploadPostgisTask:
             for table_info in self.uploaded_tables:
                 if table_info.get('has_geometry'):
                     table_name = table_info['name']
-                    geom_info = table_info['geom_info']
+                    geom_infos = table_info.get('geom_infos', [])
                     
                     # Aktualisiere geometry_columns Metadaten für WebSuite
                     try:
@@ -895,8 +1124,9 @@ class UploadPostgisTask:
                     except Exception as e:
                         logger.debug(f"Populate_Geometry_Columns für {table_name}: {str(e)}")
                     
-                    # Spatial-Index sicherstellen
-                    self._create_spatial_index(table_name, geom_info)
+                    # Spatial-Index sicherstellen für ALLE Geometrie-Spalten
+                    for gi in geom_infos:
+                        self._create_spatial_index(table_name, gi)
             
             logger.info("WebSuite-Registrierung abgeschlossen")
             
@@ -1059,16 +1289,25 @@ class UploadPostgisTask:
                             processed_tables += 1
                             continue
                         
-                        # Geometrie-Information ermitteln
+                        # Geometrie-Information ermitteln (ALLE Geometrie-Spalten)
                         try:
-                            geom_info = self._get_geometry_info(table_name)
+                            all_geom_infos = self._get_all_geometry_info(table_name)
                         except Exception as geom_error:
                             logger.warning(f"Fehler beim Ermitteln der Geometrie-Info für {table_name}: {str(geom_error)}")
-                            geom_info = None  # Fortfahren ohne Geometrie
+                            all_geom_infos = []  # Fortfahren ohne Geometrie
                         
-                        # PostgreSQL-Tabelle erstellen
+                        # Bei mehreren Geometrie-Spalten: Erste als Geometrie, Rest als TEXT (WKT)
+                        primary_geom, secondary_geoms = self._split_geometry_infos(all_geom_infos)
+                        # geom_infos enthält nur die primäre Geometrie (als Liste für Kompatibilität)
+                        geom_infos = [primary_geom] if primary_geom else None
+                        
+                        # PostgreSQL-Tabelle erstellen (primäre Geometrie + sekundäre als TEXT)
                         try:
-                            table_created = self._create_postgres_table(table_name, columns, geom_info)
+                            table_created = self._create_postgres_table(
+                                table_name, columns, 
+                                geom_infos if geom_infos else None,
+                                secondary_geoms if secondary_geoms else None
+                            )
                             
                             if not table_created:
                                 self.tables_skipped.append({'name': table_name, 'reason': 'Tabelle existiert bereits'})
@@ -1080,9 +1319,13 @@ class UploadPostgisTask:
                             processed_tables += 1
                             continue
                         
-                        # Daten übertragen
+                        # Daten übertragen (primäre Geometrie als PostGIS, sekundäre als TEXT/WKT)
                         try:
-                            transferred_records = self._transfer_table_data(table_name, columns, geom_info)
+                            transferred_records = self._transfer_table_data(
+                                table_name, columns, 
+                                geom_infos if geom_infos else None,
+                                secondary_geoms if secondary_geoms else None
+                            )
                         except Exception as transfer_error:
                             logger.error(f"Fehler bei Datenübertragung für {table_name}: {str(transfer_error)}")
                             self.tables_failed.append({'name': table_name, 'reason': f'Datenübertragung: {str(transfer_error)}'})
@@ -1093,12 +1336,13 @@ class UploadPostgisTask:
                             self.progress_bar_records.setValue(0)
                             self.progress_bar_records.setMaximum(100)
                         
-                        # Spatial-Index erstellen für Geometrie-Tabellen
-                        if geom_info:
-                            try:
-                                self._create_spatial_index(table_name, geom_info)
-                            except Exception as idx_error:
-                                logger.warning(f"Spatial-Index für {table_name} fehlgeschlagen: {str(idx_error)}")
+                        # Spatial-Index erstellen für ALLE Geometrie-Spalten
+                        if geom_infos:
+                            for gi in geom_infos:
+                                try:
+                                    self._create_spatial_index(table_name, gi)
+                                except Exception as idx_error:
+                                    logger.warning(f"Spatial-Index für {table_name}.{gi['column']} fehlgeschlagen: {str(idx_error)}")
                             geometry_tables_count += 1
                         
                         # Tabelle finalisieren
@@ -1111,8 +1355,9 @@ class UploadPostgisTask:
                         table_info = {
                             'name': table_name,
                             'records': transferred_records,
-                            'has_geometry': geom_info is not None,
-                            'geom_info': geom_info
+                            'has_geometry': bool(geom_infos),
+                            'geom_infos': geom_infos,  # Primäre Geometrie(n)
+                            'secondary_geom_infos': secondary_geoms  # Sekundäre als TEXT/WKT
                         }
                         self.uploaded_tables.append(table_info)
                         
@@ -1128,6 +1373,9 @@ class UploadPostgisTask:
                         self._update_table_progress(processed_tables, total_tables, f"{table_name} ✓ ({transferred_records} Datensätze)")
                         
                         logger.info(f"Tabelle {table_name} erfolgreich übertragen: {transferred_records} Datensätze")
+                        
+                        # Qt Event-Loop verarbeiten lassen nach jeder Tabelle
+                        QApplication.processEvents()
                         
                     except Exception as table_error:
                         # Unerwarteter Fehler bei dieser Tabelle - protokollieren und mit nächster fortfahren
@@ -1161,8 +1409,10 @@ class UploadPostgisTask:
                 layers_added = 0
                 
                 for table_info in self.uploaded_tables:
-                    if table_info.get('has_geometry') and table_info.get('geom_info'):
-                        if self._add_layer_to_qgis(table_info['name'], table_info['geom_info']):
+                    geom_infos = table_info.get('geom_infos', [])
+                    if table_info.get('has_geometry') and geom_infos:
+                        # Füge Layer für die erste Geometrie-Spalte hinzu (typisch: geom)
+                        if self._add_layer_to_qgis(table_info['name'], geom_infos[0]):
                             layers_added += 1
                 
                 logger.info(f"{layers_added} Layer zu QGIS hinzugefügt")

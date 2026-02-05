@@ -130,7 +130,7 @@
    </widget>
   </widget>
   
-  <widget class="QGroupBox" name="groupBox_database">
+  <widget class="QGroupBox" name="groupBox_schema">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -140,10 +140,10 @@
     </rect>
    </property>
    <property name="title">
-    <string>PostGIS Zieldatenbank</string>
+    <string>PostGIS Ziel-Schema</string>
    </property>
    
-   <widget class="QListWidget" name="listWidget_databases">
+   <widget class="QListWidget" name="listWidget_schemas">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -154,7 +154,7 @@
     </property>
    </widget>
    
-   <widget class="QPushButton" name="pb_refresh_databases">
+   <widget class="QPushButton" name="pb_refresh_schemas">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -168,7 +168,7 @@
     </property>
    </widget>
    
-   <widget class="QCheckBox" name="cb_create_new_database">
+   <widget class="QCheckBox" name="cb_create_new_schema">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -178,11 +178,11 @@
      </rect>
     </property>
     <property name="text">
-     <string>Neue Datenbank erstellen</string>
+     <string>Neues Schema erstellen</string>
     </property>
    </widget>
    
-   <widget class="QLineEdit" name="le_new_database_name">
+   <widget class="QLineEdit" name="le_new_schema_name">
     <property name="geometry">
      <rect>
       <x>360</x>
@@ -195,7 +195,7 @@
      <bool>false</bool>
     </property>
     <property name="placeholderText">
-     <string>Name der neuen Datenbank</string>
+     <string>Name des neuen Schemas</string>
     </property>
    </widget>
    

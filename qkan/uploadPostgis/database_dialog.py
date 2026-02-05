@@ -49,11 +49,11 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     pb_select_database: QPushButton
     pb_remove_file: QPushButton
     
-    # Zieldatenbank-Auswahl
-    listWidget_databases: QListWidget
-    pb_refresh_databases: QPushButton
-    cb_create_new_database: QCheckBox
-    le_new_database_name: QLineEdit
+    # Ziel-Schema-Auswahl
+    listWidget_schemas: QListWidget
+    pb_refresh_schemas: QPushButton
+    cb_create_new_schema: QCheckBox
+    le_new_schema_name: QLineEdit
     cb_overwrite_existing: QCheckBox
     
     # Control buttons
@@ -76,6 +76,9 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     
     # Connection status
     connection_available: bool
+    
+    # Aktive Datenbank (wird automatisch ermittelt)
+    target_database: str
 
     def __init__(
         self,
@@ -89,6 +92,7 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         # Initialize file list
         self.selected_files = []
         self.connection_available = False
+        self.target_database = ""  # Wird beim Laden der Schemata gesetzt
         
         # Get actual host from settings for display
         settings = QSettings()
@@ -108,11 +112,11 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.pb_remove_file.clicked.connect(self.remove_selected_file)
         self.listWidget_source_files.itemSelectionChanged.connect(self.on_source_file_selected)
         
-        # Connect target database signals
-        self.pb_refresh_databases.clicked.connect(self.refresh_databases)
-        self.cb_create_new_database.toggled.connect(self.toggle_new_database)
-        self.listWidget_databases.itemSelectionChanged.connect(self.on_database_selected)
-        self.le_new_database_name.textChanged.connect(self.update_upload_button_state)
+        # Connect target schema signals
+        self.pb_refresh_schemas.clicked.connect(self.refresh_schemas)
+        self.cb_create_new_schema.toggled.connect(self.toggle_new_schema)
+        self.listWidget_schemas.itemSelectionChanged.connect(self.on_schema_selected)
+        self.le_new_schema_name.textChanged.connect(self.update_upload_button_state)
         
         # Connect control buttons
         self.pb_help.clicked.connect(self.show_help)
@@ -120,8 +124,8 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.pb_upload.clicked.connect(self.start_upload)
         self.pb_export_sql.clicked.connect(self.export_to_sql_dump)
         
-        # Load available databases
-        self.load_databases()
+        # Load available schemas
+        self.load_schemas()
         
         # Initial state - upload button and remove button disabled
         self.pb_upload.setEnabled(False)
@@ -179,30 +183,30 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         has_selection = self.listWidget_source_files.currentItem() is not None
         self.pb_remove_file.setEnabled(has_selection)
 
-    def on_database_selected(self):
-        """Reagiert auf Auswahl einer Zieldatenbank"""
+    def on_schema_selected(self):
+        """Reagiert auf Auswahl eines Ziel-Schemas"""
         self.update_upload_button_state()
 
     def update_upload_button_state(self):
         """Upload-Button aktivieren/deaktivieren je nach Eingaben"""
         has_source = len(self.selected_files) > 0
-        has_target = (self.listWidget_databases.currentItem() is not None or 
-                      self.cb_create_new_database.isChecked())
+        has_target = (self.listWidget_schemas.currentItem() is not None or 
+                      self.cb_create_new_schema.isChecked())
         
-        if self.cb_create_new_database.isChecked():
-            has_target = bool(self.le_new_database_name.text().strip())
+        if self.cb_create_new_schema.isChecked():
+            has_target = bool(self.le_new_schema_name.text().strip())
         
         self.pb_upload.setEnabled(has_source and has_target)
 
-    def refresh_databases(self):
-        """Datenbankliste aktualisieren"""
-        self.load_databases()
+    def refresh_schemas(self):
+        """Schema-Liste aktualisieren"""
+        self.load_schemas()
 
-    def toggle_new_database(self, checked: bool):
-        """Neue Datenbank-Option umschalten"""
-        self.le_new_database_name.setEnabled(checked)
+    def toggle_new_schema(self, checked: bool):
+        """Neues Schema-Option umschalten"""
+        self.le_new_schema_name.setEnabled(checked)
         if checked:
-            self.le_new_database_name.setFocus()
+            self.le_new_schema_name.setFocus()
         self.update_upload_button_state()
 
     def export_to_sql_dump(self):
@@ -291,9 +295,14 @@ QUELLDATENBANKEN AUSWÄHLEN:
 • Mehrere Dateien können gleichzeitig ausgewählt werden
 • Mit "Entfernen" können Sie Dateien aus der Liste löschen
 
+ZIEL-SCHEMA AUSWÄHLEN:
+• Die Zieldatenbank wird automatisch ermittelt (erste verfügbare)
+• Wählen Sie ein bestehendes Schema aus der Liste ODER
+• Erstellen Sie ein neues Schema (nur Buchstaben, Zahlen, Unterstriche)
+• Mit "Bestehende Tabellen überschreiben" werden vorhandene Daten ersetzt
+
 OPTION 1: DIREKTER UPLOAD (wenn PostgreSQL-Port erreichbar)
-• Zieldatenbank wählen aus der Liste ODER
-• Neue Datenbank erstellen (nur Buchstaben, Zahlen, Unterstriche, max. 63 Zeichen)
+• Schema aus der Liste wählen ODER neues Schema erstellen
 • Klicken Sie "Upload starten"
 
 OPTION 2: SQL-DUMP EXPORT (für GBD WebSuite OHNE direkten DB-Zugriff)
@@ -303,12 +312,12 @@ OPTION 2: SQL-DUMP EXPORT (für GBD WebSuite OHNE direkten DB-Zugriff)
 • Importieren per SSH: psql -d datenbank -f dump.sql
 
 OPTIONEN:
-• Bestehende Tabellen überschreiben: Löscht vorhandene QKan-Tabellen 
+• Bestehende Tabellen überschreiben: Löscht vorhandene Tabellen im Schema
   vor dem Import (ACHTUNG: Datenverlust!)
 
 UPLOAD-PROZESS (Direkter Upload):
 1. SQLite-Datenbank analysieren
-2. PostGIS-Tabellen erstellen
+2. PostGIS-Tabellen im gewählten Schema erstellen
 3. Geometrien konvertieren und übertragen
 4. Spatial-Indizes erstellen
 5. Layer zu QGIS hinzufügen (optional)
@@ -322,22 +331,6 @@ GBD WEBSUITE SPEZIFISCH:
 • Falls der direkte PostgreSQL-Zugriff blockiert ist, verwenden Sie SQL-Dump
 • Bei Verbindungsproblemen: Prüfen Sie Firewall/SSH-Tunnel
 • Standard-Port: 5432 (oft nur über VPN/SSH erreichbar)
-
-OPTIONEN:
-• Bestehende Tabellen überschreiben: Löscht vorhandene QKan-Tabellen 
-  vor dem Import (ACHTUNG: Datenverlust!)
-
-UPLOAD-PROZESS:
-1. SQLite-Datenbank analysieren
-2. PostGIS-Tabellen erstellen
-3. Geometrien konvertieren und übertragen
-4. Spatial-Indizes erstellen
-5. Layer zu QGIS hinzufügen (optional)
-
-HINWEISE:
-• PostGIS-Erweiterung wird automatisch aktiviert falls nötig
-• Geometrien werden mit korrektem SRID übertragen
-• Der Upload kann je nach Datenmenge einige Minuten dauern
         """
         
         QMessageBox.information(
@@ -383,47 +376,56 @@ HINWEISE:
                 self.export_to_sql_dump()
             return
         
-        # Zieldatenbank validieren
-        target_database = None
-        if self.cb_create_new_database.isChecked():
-            new_db_name = self.le_new_database_name.text().strip()
-            if not new_db_name:
+        # Ziel-Schema validieren
+        target_schema = None
+        if self.cb_create_new_schema.isChecked():
+            new_schema_name = self.le_new_schema_name.text().strip()
+            if not new_schema_name:
                 QMessageBox.warning(
                     self,
                     "Validierungsfehler",
-                    "Bitte geben Sie einen Namen für die neue Datenbank ein."
+                    "Bitte geben Sie einen Namen für das neue Schema ein."
                 )
-                self.le_new_database_name.setFocus()
+                self.le_new_schema_name.setFocus()
                 return
             
-            # Validierung des Datenbanknamens
-            if not self.is_valid_database_name(new_db_name):
+            # Validierung des Schema-Namens
+            if not self.is_valid_schema_name(new_schema_name):
                 QMessageBox.warning(
                     self,
                     "Validierungsfehler", 
-                    "Ungültiger Datenbankname. Verwenden Sie nur Buchstaben, Zahlen und Unterstriche.\nDer Name darf nicht mit einer Zahl beginnen."
+                    "Ungültiger Schema-Name. Verwenden Sie nur Buchstaben, Zahlen und Unterstriche.\nDer Name darf nicht mit einer Zahl beginnen."
                 )
-                self.le_new_database_name.setFocus()
+                self.le_new_schema_name.setFocus()
                 return
             
-            target_database = new_db_name
+            target_schema = new_schema_name
         else:
-            # Bestehende Datenbank ausgewählt
-            if not self.listWidget_databases.currentItem():
+            # Bestehendes Schema ausgewählt
+            if not self.listWidget_schemas.currentItem():
                 QMessageBox.warning(
                     self,
                     "Validierungsfehler",
-                    "Bitte wählen Sie eine Datenbank aus der Liste aus."
+                    "Bitte wählen Sie ein Schema aus der Liste aus."
                 )
                 return
-            target_database = self.listWidget_databases.currentItem().text()
+            target_schema = self.listWidget_schemas.currentItem().text()
+        
+        # Zieldatenbank prüfen
+        if not self.target_database:
+            QMessageBox.warning(
+                self,
+                "Validierungsfehler",
+                "Keine Zieldatenbank verfügbar. Bitte prüfen Sie die Verbindung."
+            )
+            return
         
         # Warnung bei Überschreiben
         if self.cb_overwrite_existing.isChecked():
             reply = QMessageBox.question(
                 self,
                 "Bestätigung erforderlich",
-                "ACHTUNG: Bestehende QKan-Tabellen werden überschrieben!\n\nAlle vorhandenen QKan-Daten in der Zieldatenbank gehen verloren.\n\nMöchten Sie fortfahren?",
+                f"ACHTUNG: Bestehende Tabellen im Schema '{target_schema}' werden überschrieben!\n\nAlle vorhandenen Daten im Schema gehen verloren.\n\nMöchten Sie fortfahren?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No
             )
@@ -451,7 +453,8 @@ HINWEISE:
                     logger.info(f"Starte Upload von: {source_file}")
                     self.perform_upload(
                         connection_name=self.connection_name,
-                        target_database=target_database,
+                        target_database=self.target_database,
+                        target_schema=target_schema,
                         source_file=source_file,
                         overwrite=self.cb_overwrite_existing.isChecked()
                     )
@@ -477,7 +480,7 @@ HINWEISE:
                 QMessageBox.information(
                     self,
                     "Upload erfolgreich",
-                    f"Alle {successful_uploads} QKan-Datenbanken wurden erfolgreich zu '{target_database}' hochgeladen."
+                    f"Alle {successful_uploads} QKan-Datenbanken wurden erfolgreich nach '{self.target_database}.{target_schema}' hochgeladen."
                 )
             
             self.accept()
@@ -490,11 +493,11 @@ HINWEISE:
             )
             logger.error(f"Upload fehlgeschlagen: {str(e)}")
     
-    def perform_upload(self, connection_name: str, target_database: str, source_file: str, overwrite: bool):
+    def perform_upload(self, connection_name: str, target_database: str, target_schema: str, source_file: str, overwrite: bool):
         """Führt den Upload durch mit Fortschrittsanzeige"""
         from ._uploadPostgis import UploadPostgisTask
         
-        logger.info(f"perform_upload aufgerufen: connection={connection_name}, db={target_database}, file={source_file}")
+        logger.info(f"perform_upload aufgerufen: connection={connection_name}, db={target_database}, schema={target_schema}, file={source_file}")
         
         # Reset progress bars
         self.progressBar_upload.setValue(0)
@@ -508,7 +511,7 @@ HINWEISE:
             server_connection=connection_name,
             target_database=target_database,
             source_database_file=source_file,
-            schema_name="qkan",
+            schema_name=target_schema,
             overwrite=overwrite,
             progress_bar=self.progressBar_upload,
             progress_callback=self.update_progress_status,
@@ -597,9 +600,16 @@ HINWEISE:
         pattern = r'^[a-zA-Z_][a-zA-Z0-9_]*$'
         return bool(re.match(pattern, name)) and len(name) <= 63
 
-    def load_databases(self):
-        """Verfügbare Datenbanken vom PostGIS-Server laden"""
-        self.listWidget_databases.clear()
+    def is_valid_schema_name(self, name: str) -> bool:
+        """Validiert einen Schema-Namen"""
+        import re
+        # PostgreSQL Schema-Name-Regeln (gleich wie Datenbankname)
+        pattern = r'^[a-zA-Z_][a-zA-Z0-9_]*$'
+        return bool(re.match(pattern, name)) and len(name) <= 63
+
+    def load_schemas(self):
+        """Verfügbare Schemata vom PostGIS-Server laden"""
+        self.listWidget_schemas.clear()
         
         # Verbindungsparameter aus QSettings laden
         settings = QSettings()
@@ -624,12 +634,12 @@ HINWEISE:
             logger.info(f"WebSuite-Verbindung: {username}@{host}:{port} (sslmode={ssl_mode})")
         
         if not host:
-            self.listWidget_databases.addItem("Fehler: Kein Host konfiguriert")
+            self.listWidget_schemas.addItem("Fehler: Kein Host konfiguriert")
             logger.error(f"Kein Host für Verbindung '{self.connection_name}' gefunden")
             return
             
         if not username:
-            self.listWidget_databases.addItem("Fehler: Kein Benutzername konfiguriert")
+            self.listWidget_schemas.addItem("Fehler: Kein Benutzername konfiguriert")
             logger.error(f"Kein Benutzername für Verbindung '{self.connection_name}' gefunden")
             return
         
@@ -650,7 +660,7 @@ HINWEISE:
                 logger.warning(f"DNS-Auflösung fehlgeschlagen für {host}: {dns_error}")
                 # Verwende Original-Hostname
             
-            # Verbindung zu postgres-Datenbank (für Liste aller DBs)
+            # Schritt 1: Verbindung zu postgres-Datenbank um erste verfügbare DB zu finden
             conn_string = (
                 f"host='{resolved_host}' "
                 f"port={port} "
@@ -671,24 +681,66 @@ HINWEISE:
             server_version = cursor.fetchone()[0]
             logger.info(f"Verbunden mit: {server_version[:50]}...")
             
-            # Alle Datenbanken abfragen (außer System-DBs)
+            # Erste verfügbare Benutzer-Datenbank finden
             cursor.execute("""
                 SELECT datname 
                 FROM pg_database 
                 WHERE datistemplate = false 
                 AND datname NOT IN ('postgres', 'template0', 'template1')
                 ORDER BY datname
+                LIMIT 1
             """)
             
-            databases = cursor.fetchall()
+            db_result = cursor.fetchone()
+            cursor.close()
+            conn.close()
             
-            if databases:
-                logger.info(f"Gefundene Datenbanken auf {host}: {[db[0] for db in databases]}")
-                for db in databases:
-                    self.listWidget_databases.addItem(db[0])
-            else:
-                self.listWidget_databases.addItem("(Keine Benutzer-Datenbanken gefunden)")
+            if not db_result:
+                self.listWidget_schemas.addItem("(Keine Benutzer-Datenbanken gefunden)")
                 logger.info(f"Keine Benutzer-Datenbanken auf {host} gefunden")
+                return
+            
+            # Zieldatenbank setzen
+            self.target_database = db_result[0]
+            logger.info(f"Verwende Datenbank: {self.target_database}")
+            
+            # Server-Info Label aktualisieren mit Datenbank
+            self.label_server_info.setText(
+                f"Server: {self.connection_name} ({host}:{port}) - Datenbank: {self.target_database}"
+            )
+            
+            # Schritt 2: Mit Zieldatenbank verbinden und Schemata laden
+            conn_string = (
+                f"host='{resolved_host}' "
+                f"port={port} "
+                f"dbname='{self.target_database}' "
+                f"user='{username}' "
+                f"password='{password}' "
+                f"sslmode='{ssl_mode}' "
+                f"connect_timeout=10"
+            )
+            
+            conn = psycopg2.connect(conn_string)
+            cursor = conn.cursor()
+            
+            # Alle Benutzer-Schemata abfragen (außer System-Schemata)
+            cursor.execute("""
+                SELECT schema_name 
+                FROM information_schema.schemata 
+                WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast', 'pg_temp_1', 'pg_toast_temp_1')
+                AND schema_name NOT LIKE 'pg_%'
+                ORDER BY schema_name
+            """)
+            
+            schemas = cursor.fetchall()
+            
+            if schemas:
+                logger.info(f"Gefundene Schemata in {self.target_database}: {[s[0] for s in schemas]}")
+                for schema in schemas:
+                    self.listWidget_schemas.addItem(schema[0])
+            else:
+                self.listWidget_schemas.addItem("(Keine Benutzer-Schemata gefunden)")
+                logger.info(f"Keine Benutzer-Schemata in {self.target_database} gefunden")
             
             cursor.close()
             conn.close()
@@ -697,21 +749,21 @@ HINWEISE:
             self.connection_available = True
             
         except ImportError:
-            self.listWidget_databases.addItem("Fehler: psycopg2 nicht installiert")
+            self.listWidget_schemas.addItem("Fehler: psycopg2 nicht installiert")
             logger.error("psycopg2 nicht installiert")
             self.connection_available = False
             self._show_sql_export_hint()
         except psycopg2.OperationalError as e:
             error_msg = str(e)
-            self.listWidget_databases.addItem(f"Verbindungsfehler: {error_msg[:50]}...")
-            self.listWidget_databases.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
+            self.listWidget_schemas.addItem(f"Verbindungsfehler: {error_msg[:50]}...")
+            self.listWidget_schemas.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
             logger.error(f"PostGIS Verbindungsfehler zu {host}:{port}: {error_msg}")
             self.connection_available = False
             self._show_sql_export_hint()
         except Exception as e:
-            self.listWidget_databases.addItem(f"Fehler: {str(e)[:50]}...")
-            self.listWidget_databases.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
-            logger.error(f"Unerwarteter Fehler beim Laden der Datenbanken von {host}: {e}")
+            self.listWidget_schemas.addItem(f"Fehler: {str(e)[:50]}...")
+            self.listWidget_schemas.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
+            logger.error(f"Unerwarteter Fehler beim Laden der Schemata von {host}: {e}")
             self.connection_available = False
             self._show_sql_export_hint()
     
@@ -724,15 +776,19 @@ HINWEISE:
                 f"{current_text} - ⚠️ Kein direkter Zugriff möglich"
             )
 
-    def get_selected_database(self):
-        """Ausgewählte Datenbank zurückgeben"""
-        if self.cb_create_new_database.isChecked():
-            return self.le_new_database_name.text().strip()
+    def get_selected_schema(self):
+        """Ausgewähltes Schema zurückgeben"""
+        if self.cb_create_new_schema.isChecked():
+            return self.le_new_schema_name.text().strip()
         else:
-            current_item = self.listWidget_databases.currentItem()
+            current_item = self.listWidget_schemas.currentItem()
             if current_item:
                 return current_item.text()
         return None
+
+    def get_target_database(self):
+        """Zieldatenbank zurückgeben (automatisch ermittelt)"""
+        return self.target_database
 
     def should_overwrite(self):
         """Überprüfen, ob bestehende Tabellen überschrieben werden sollen"""
