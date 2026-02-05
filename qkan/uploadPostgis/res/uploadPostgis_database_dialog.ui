@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>710</height>
+    <height>830</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>710</height>
+    <height>830</height>
    </size>
   </property>
   <property name="font">
@@ -214,11 +214,113 @@
    </widget>
   </widget>
   
-  <widget class="QGroupBox" name="groupBox_progress">
+  <widget class="QGroupBox" name="groupBox_qgis_project">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>540</y>
+     <width>560</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>QGIS-Projekt (Optional)</string>
+   </property>
+   
+   <widget class="QCheckBox" name="cb_upload_project">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>280</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>QGIS-Projekt in Datenbank hochladen</string>
+    </property>
+    <property name="toolTip">
+     <string>Lädt das aktuelle oder eine ausgewählte QGIS-Projektdatei in die PostgreSQL-Datenbank hoch</string>
+    </property>
+   </widget>
+   
+   <widget class="QLineEdit" name="le_project_file">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>440</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="placeholderText">
+     <string>Projektdatei auswählen (.qgs) oder leer lassen für aktuelles Projekt</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_select_project">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>49</y>
+      <width>90</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Durchsuchen...</string>
+    </property>
+    <property name="toolTip">
+     <string>Wählen Sie eine QGIS-Projektdatei (.qgs oder .qgz)</string>
+    </property>
+   </widget>
+   
+   <widget class="QLineEdit" name="le_project_name">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>80</y>
+      <width>450</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="placeholderText">
+     <string>Name für das Projekt in der Datenbank (optional)</string>
+    </property>
+   </widget>
+   
+   <widget class="QLabel" name="label_project_name">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>82</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Projektname:</string>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  
+  <widget class="QGroupBox" name="groupBox_progress">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>660</y>
      <width>560</width>
      <height>110</height>
     </rect>
@@ -294,7 +396,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>660</y>
+     <y>780</y>
      <width>100</width>
      <height>35</height>
     </rect>
@@ -316,7 +418,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>660</y>
+     <y>780</y>
      <width>150</width>
      <height>35</height>
     </rect>
@@ -341,7 +443,7 @@
    <property name="geometry">
     <rect>
      <x>440</x>
-     <y>660</y>
+     <y>780</y>
      <width>70</width>
      <height>35</height>
     </rect>
@@ -363,7 +465,7 @@
    <property name="geometry">
     <rect>
      <x>520</x>
-     <y>660</y>
+     <y>780</y>
      <width>70</width>
      <height>35</height>
     </rect>

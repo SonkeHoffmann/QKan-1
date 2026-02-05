@@ -534,6 +534,46 @@ class UploadPostgisTask:
             'pk': col[5]
         } for col in columns]
 
+    def _check_column_data_type(self, table_name: str, column_name: str, declared_type: str) -> str:
+        """
+        Prüft, ob eine Spalte tatsächlich dem deklarierten Typ entspricht.
+        
+        Wichtig für SQLite, da es dynamic typing verwendet und z.B. Text in INTEGER-Spalten erlaubt,
+        während PostgreSQL strikt typisiert ist.
+        
+        Args:
+            table_name: Name der Tabelle
+            column_name: Name der Spalte
+            declared_type: Deklarierter SQLite-Typ
+            
+        Returns:
+            Empfohlener PostgreSQL-Typ (ggf. korrigiert)
+        """
+        # Nur für INTEGER-Spalten prüfen (häufigste Quelle für Typkonflikte)
+        if declared_type.upper() not in ('INTEGER', 'INT', 'SMALLINT', 'BIGINT'):
+            return declared_type
+        
+        try:
+            # Prüfe, ob es nicht-numerische Werte gibt
+            self.db_cursor.execute(f'''
+                SELECT COUNT(*) FROM "{table_name}" 
+                WHERE "{column_name}" IS NOT NULL 
+                AND TYPEOF("{column_name}") != 'integer'
+            ''')
+            non_numeric_count = self.db_cursor.fetchone()[0]
+            
+            if non_numeric_count > 0:
+                logger.warning(
+                    f"Spalte {table_name}.{column_name} ist als INTEGER deklariert, "
+                    f"enthält aber {non_numeric_count} nicht-numerische Werte. "
+                    f"Wird als TEXT gespeichert."
+                )
+                return 'TEXT'
+        except Exception as e:
+            logger.debug(f"Typ-Prüfung für {table_name}.{column_name} fehlgeschlagen: {e}")
+        
+        return declared_type
+
     def _sqlite_to_postgres_type(self, sqlite_type: str, column_name: str = "") -> str:
         """SQLite-Datentyp zu PostgreSQL-Datentyp konvertieren"""
         type_map = {
@@ -624,8 +664,10 @@ class UploadPostgisTask:
                 if col_name_lower in skip_columns:
                     logger.debug(f"Überspringe Geometrie-Spalte '{col_name}' bei Tabellenerstellung für {table_name}")
                     continue
-                    
-                pg_type = self._sqlite_to_postgres_type(col['type'], col['name'])
+                
+                # Typ-Prüfung: Prüfe ob INTEGER-Spalten tatsächlich nur Zahlen enthalten
+                effective_type = self._check_column_data_type(table_name, col_name, col['type'])
+                pg_type = self._sqlite_to_postgres_type(effective_type, col_name)
                 
                 # Spaltenname quotieren für Sicherheit
                 col_def = f'"{col["name"]}" {pg_type}'
@@ -637,6 +679,16 @@ class UploadPostgisTask:
                     default_val = col['default']
                     # NULL als Default-Wert behandeln
                     if str(default_val).upper() != 'NULL':
+                        # SQLite strftime() zu PostgreSQL konvertieren
+                        default_val_str = str(default_val)
+                        if 'strftime' in default_val_str.lower():
+                            # strftime('%Y-%m-%d %H:%M:%S','now') -> CURRENT_TIMESTAMP
+                            # strftime('%Y-%m-%d','now') -> CURRENT_DATE
+                            if '%H:%M:%S' in default_val_str or '%H:%M' in default_val_str:
+                                default_val = "CURRENT_TIMESTAMP"
+                            else:
+                                default_val = "CURRENT_DATE"
+                            logger.debug(f"Konvertiere strftime DEFAULT zu {default_val} für {table_name}.{col_name}")
                         col_def += f" DEFAULT {default_val}"
                     
                 if col['pk']:
