@@ -183,6 +183,9 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         else:
             self.le_project_file.setStyleSheet("")
             self.project_file_path = None
+        
+        # Button-State aktualisieren, da Projekt als Quelle gilt
+        self.update_upload_button_state()
 
     def select_project_file(self):
         """QGIS-Projektdatei auswählen"""
@@ -275,7 +278,8 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
 
     def update_upload_button_state(self):
         """Upload-Button aktivieren/deaktivieren je nach Eingaben"""
-        has_source = len(self.selected_files) > 0
+        # Mindestens eine Quelle muss vorhanden sein: SQLite-Dateien ODER QGIS-Projekt
+        has_source = len(self.selected_files) > 0 or self.cb_upload_project.isChecked()
         has_target = (self.listWidget_schemas.currentItem() is not None or 
                       self.cb_create_new_schema.isChecked())
         
@@ -379,6 +383,13 @@ QUELLDATENBANKEN AUSWÄHLEN:
 • Unterstützte Formate: .sqlite, .sqlite3, .db, .gpkg
 • Mehrere Dateien können gleichzeitig ausgewählt werden
 • Mit "Entfernen" können Sie Dateien aus der Liste löschen
+• OPTIONAL: Sie können auch NUR ein QGIS-Projekt hochladen (siehe unten)
+
+QGIS-PROJEKT HOCHLADEN (Optional):
+• Aktivieren Sie "QGIS-Projekt hochladen"
+• Verwenden Sie das aktuell geöffnete Projekt ODER wählen Sie eine .qgs/.qgz Datei
+• Kann zusammen mit Datenbanken ODER alleine hochgeladen werden
+• Nur eine Projektdatei wird pro Schema gespeichert (alte wird überschrieben)
 
 ZIEL-SCHEMA AUSWÄHLEN:
 • Die Zieldatenbank wird automatisch ermittelt (erste verfügbare)
@@ -388,6 +399,7 @@ ZIEL-SCHEMA AUSWÄHLEN:
 
 OPTION 1: DIREKTER UPLOAD (wenn PostgreSQL-Port erreichbar)
 • Schema aus der Liste wählen ODER neues Schema erstellen
+• Wählen Sie SQLite-Datenbanken UND/ODER QGIS-Projekt
 • Klicken Sie "Upload starten"
 
 OPTION 2: SQL-DUMP EXPORT (für GBD WebSuite OHNE direkten DB-Zugriff)
@@ -401,16 +413,18 @@ OPTIONEN:
   vor dem Import (ACHTUNG: Datenverlust!)
 
 UPLOAD-PROZESS (Direkter Upload):
-1. SQLite-Datenbank analysieren
+1. SQLite-Datenbank analysieren (falls ausgewählt)
 2. PostGIS-Tabellen im gewählten Schema erstellen
 3. Geometrien konvertieren und übertragen
 4. Spatial-Indizes erstellen
-5. Layer zu QGIS hinzufügen (optional)
+5. QGIS-Projekt hochladen (falls aktiviert)
+6. Layer zu QGIS hinzufügen (optional)
 
 HINWEISE:
 • PostGIS-Erweiterung wird automatisch aktiviert falls nötig
 • Geometrien werden mit korrektem SRID übertragen
 • Der Upload kann je nach Datenmenge einige Minuten dauern
+• Sie können NUR ein Projekt, NUR Datenbanken oder BEIDES hochladen
 
 GBD WEBSUITE SPEZIFISCH:
 • Falls der direkte PostgreSQL-Zugriff blockiert ist, verwenden Sie SQL-Dump
@@ -426,27 +440,31 @@ GBD WEBSUITE SPEZIFISCH:
 
     def start_upload(self):
         """Upload-Prozess für mehrere Dateien starten"""
-        # Quelldatenbanken validieren
-        if not self.selected_files:
+        # Validierung: Mindestens SQLite-Dateien ODER QGIS-Projekt muss ausgewählt sein
+        has_database_files = len(self.selected_files) > 0
+        has_project = self.cb_upload_project.isChecked()
+        
+        if not has_database_files and not has_project:
             QMessageBox.warning(
                 self,
                 "Validierungsfehler",
-                "Bitte wählen Sie mindestens eine QKan SQLite-Quelldatenbank aus."
+                "Bitte wählen Sie mindestens eine QKan SQLite-Quelldatenbank aus\nODER aktivieren Sie den QGIS-Projekt-Upload."
             )
             return
         
-        # Prüfe ob alle Dateien existieren
-        missing_files = [f for f in self.selected_files if not os.path.exists(f)]
-        if missing_files:
-            QMessageBox.warning(
-                self,
-                "Validierungsfehler",
-                f"Folgende Dateien existieren nicht:\n" + "\n".join(missing_files)
-            )
-            return
+        # Prüfe ob alle Dateien existieren (falls welche ausgewählt wurden)
+        if has_database_files:
+            missing_files = [f for f in self.selected_files if not os.path.exists(f)]
+            if missing_files:
+                QMessageBox.warning(
+                    self,
+                    "Validierungsfehler",
+                    f"Folgende Dateien existieren nicht:\n" + "\n".join(missing_files)
+                )
+                return
         
-        # Wenn keine Verbindung möglich ist, SQL-Export vorschlagen
-        if not self.connection_available:
+        # Wenn keine Verbindung möglich ist, SQL-Export vorschlagen (nur wenn Datenbanken vorhanden)
+        if not self.connection_available and has_database_files:
             reply = QMessageBox.question(
                 self,
                 "Keine Datenbankverbindung",
@@ -459,6 +477,15 @@ GBD WEBSUITE SPEZIFISCH:
             
             if reply == QMessageBox.Yes:
                 self.export_to_sql_dump()
+            return
+        elif not self.connection_available:
+            # Nur Projekt-Upload, aber keine Verbindung
+            QMessageBox.critical(
+                self,
+                "Keine Datenbankverbindung",
+                "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
+                "Für den Projekt-Upload ist eine aktive Verbindung erforderlich."
+            )
             return
         
         # Ziel-Schema validieren
@@ -528,55 +555,61 @@ GBD WEBSUITE SPEZIFISCH:
             self.pb_upload.setEnabled(False)
             self.pb_cancel.setEnabled(False)
             
-            for file_index, source_file in enumerate(self.selected_files):
-                try:
-                    # Fortschrittsanzeige für mehrere Dateien
-                    if total_files > 1:
-                        self.label_progress_tables.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
-                        QApplication.processEvents()
-                    
-                    logger.info(f"Starte Upload von: {source_file}")
-                    self.perform_upload(
-                        connection_name=self.connection_name,
-                        target_database=self.target_database,
-                        target_schema=target_schema,
-                        source_file=source_file,
-                        overwrite=self.cb_overwrite_existing.isChecked()
-                    )
-                    successful_uploads += 1
-                except Exception as e:
-                    failed_uploads.append((os.path.basename(source_file), str(e)))
-                    logger.error(f"Upload fehlgeschlagen für {source_file}: {str(e)}")
+            # Nur SQLite-Dateien hochladen wenn welche vorhanden sind
+            if has_database_files:
+                for file_index, source_file in enumerate(self.selected_files):
+                    try:
+                        # Fortschrittsanzeige für mehrere Dateien
+                        if total_files > 1:
+                            self.label_progress_tables.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
+                            QApplication.processEvents()
+                        
+                        logger.info(f"Starte Upload von: {source_file}")
+                        self.perform_upload(
+                            connection_name=self.connection_name,
+                            target_database=self.target_database,
+                            target_schema=target_schema,
+                            source_file=source_file,
+                            overwrite=self.cb_overwrite_existing.isChecked()
+                        )
+                        successful_uploads += 1
+                    except Exception as e:
+                        failed_uploads.append((os.path.basename(source_file), str(e)))
+                        logger.error(f"Upload fehlgeschlagen für {source_file}: {str(e)}")
             
             # UI wieder aktivieren
             self.pb_upload.setEnabled(True)
             self.pb_cancel.setEnabled(True)
             
-            # Zusammenfassung anzeigen
+            # Zusammenfassung anzeigen (nur bei Fehlern)
             if failed_uploads:
                 error_details = "\n".join([f"• {name}: {error}" for name, error in failed_uploads])
                 QMessageBox.warning(
                     self,
                     "Upload teilweise erfolgreich",
-                    f"Erfolgreich hochgeladen: {successful_uploads} von {len(self.selected_files)} Dateien\n\n"
+                    f"Erfolgreich hochgeladen: {successful_uploads} von {total_files} Dateien\n\n"
                     f"Fehlgeschlagene Uploads:\n{error_details}"
                 )
-            else:
-                QMessageBox.information(
-                    self,
-                    "Upload erfolgreich",
-                    f"Alle {successful_uploads} QKan-Datenbanken wurden erfolgreich nach '{self.target_database}.{target_schema}' hochgeladen."
-                )
+            # Bei Erfolg: Kein Dialog, nur Logging
+            elif has_database_files:
+                logger.info(f"Upload erfolgreich: {successful_uploads} Datenbank(en) nach '{self.target_database}.{target_schema}' hochgeladen")
             
-            # QGIS-Projekt hochladen (optional, nach erfolgreichem Daten-Upload)
-            if self.cb_upload_project.isChecked() and successful_uploads > 0:
+            # QGIS-Projekt hochladen (optional, wenn aktiviert)
+            # Erlaubt jetzt auch Projekt-Upload OHNE vorherige Daten-Uploads
+            if self.cb_upload_project.isChecked():
                 try:
                     self.upload_qgis_project(target_schema)
+                    if not has_database_files:
+                        # Nur Projekt wurde hochgeladen
+                        logger.info(f"Projekt-Upload erfolgreich nach '{self.target_database}.{target_schema}'")
                 except Exception as proj_error:
+                    error_message = f"Projekt-Upload fehlgeschlagen:\n\n{str(proj_error)}"
+                    if has_database_files and successful_uploads > 0:
+                        error_message = f"Die Daten wurden erfolgreich hochgeladen, aber der Projekt-Upload ist fehlgeschlagen:\n\n{str(proj_error)}"
                     QMessageBox.warning(
                         self,
                         "Projekt-Upload fehlgeschlagen",
-                        f"Die Daten wurden erfolgreich hochgeladen, aber der Projekt-Upload ist fehlgeschlagen:\n\n{str(proj_error)}"
+                        error_message
                     )
                     logger.error(f"QGIS-Projekt-Upload fehlgeschlagen: {str(proj_error)}")
             
@@ -972,18 +1005,10 @@ GBD WEBSUITE SPEZIFISCH:
                 VALUES (%s, %s, %s::jsonb)
             """, (project_name, psycopg2.Binary(compressed_content), metadata_json))
             
-            logger.info(f"✓ QGIS-Projekt '{project_name}' hochgeladen")
-            logger.info(f"  Original: {len(project_bytes)/1024:.1f} KB")
-            logger.info(f"  Komprimiert: {len(compressed_content)/1024:.1f} KB")
-            
-            QMessageBox.information(
-                self, "Projekt-Upload erfolgreich",
-                f"✓ QGIS-Projekt '{project_name}' wurde erfolgreich hochgeladen!\n\n"
-                f"Datenbank: {self.target_database}\nSchema: {schema}\n"
-                f"Original-Größe: {len(project_bytes)/1024:.1f} KB\n"
-                f"Komprimiert: {len(compressed_content)/1024:.1f} KB\n\n"
-                f"Zum Laden in QGIS:\nProjekt → Öffnen von → PostgreSQL"
-            )
+            #logger.info(f"✓ QGIS-Projekt '{project_name}' hochgeladen")
+            #logger.info(f"  Original: {len(project_bytes)/1024:.1f} KB")
+            #logger.info(f"  Komprimiert: {len(compressed_content)/1024:.1f} KB")
+            #logger.info(f"  Zum Laden in QGIS: Projekt → Öffnen von → PostgreSQL")
         finally:
             cursor.close()
             conn.close()
