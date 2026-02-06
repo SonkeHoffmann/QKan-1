@@ -414,6 +414,7 @@
    </property>
   </widget>
   
+  <!-- SQL-Dump: Button für SQL-Dump Export deaktiviert
   <widget class="QPushButton" name="pb_export_sql">
    <property name="geometry">
     <rect>
@@ -438,6 +439,7 @@
     <string>Erstellt einen PostgreSQL SQL-Dump für manuelle Installation (z.B. bei GBD WebSuite ohne direkten DB-Zugriff)</string>
    </property>
   </widget>
+  SQL-Dump -->
   
   <widget class="QPushButton" name="pb_cancel">
    <property name="geometry">

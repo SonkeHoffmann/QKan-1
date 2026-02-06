@@ -67,7 +67,7 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     pb_help: QPushButton
     pb_cancel: QPushButton
     pb_upload: QPushButton
-    pb_export_sql: QPushButton  # Neuer Button für SQL-Export
+    # SQL-Dump: pb_export_sql: QPushButton  # Neuer Button für SQL-Export
     
     # Info labels
     label_server_info: QLabel  # Label für Server-Info
@@ -133,7 +133,7 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.pb_help.clicked.connect(self.show_help)
         self.pb_cancel.clicked.connect(self.reject)
         self.pb_upload.clicked.connect(self.start_upload)
-        self.pb_export_sql.clicked.connect(self.export_to_sql_dump)
+        # SQL-Dump: self.pb_export_sql.clicked.connect(self.export_to_sql_dump)
         
         # Connect QGIS project upload signals
         self.cb_upload_project.toggled.connect(self.toggle_project_upload)
@@ -299,75 +299,76 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
             self.le_new_schema_name.setFocus()
         self.update_upload_button_state()
 
-    def export_to_sql_dump(self):
-        """Exportiert SQLite-Dateien als SQL-Dump für GBD WebSuite"""
-        if not self.selected_files:
-            QMessageBox.warning(
-                self,
-                "SQL-Export",
-                "Bitte wählen Sie zuerst mindestens eine SQLite-Datenbank aus."
-            )
-            return
-        
-        from .export_sql_dump import export_to_sql_dump
-        
-        exported_files = []
-        
-        for source_file in self.selected_files:
-            # Ausgabedatei-Namen generieren
-            base_name = os.path.splitext(source_file)[0]
-            default_output = f"{base_name}_websuite.sql"
-            
-            # Datei-Dialog für Ausgabe
-            output_file, _ = QFileDialog.getSaveFileName(
-                self,
-                f"SQL-Dump speichern für: {os.path.basename(source_file)}",
-                default_output,
-                "SQL-Dateien (*.sql);;Alle Dateien (*.*)"
-            )
-            
-            if not output_file:
-                logger.info(f"Export abgebrochen für {source_file}")
-                continue
-            
-            try:
-                logger.info(f"Exportiere {source_file} nach {output_file}")
-                success = export_to_sql_dump(source_file, output_file, schema_name="qkan")
-                
-                if success:
-                    exported_files.append(output_file)
-                    logger.info(f"✓ Export erfolgreich: {output_file}")
-                    
-            except Exception as e:
-                QMessageBox.critical(
-                    self,
-                    "Export fehlgeschlagen",
-                    f"Fehler beim Exportieren von {os.path.basename(source_file)}:\n\n{str(e)}"
-                )
-                logger.error(f"SQL-Export fehlgeschlagen für {source_file}: {e}")
-        
-        # Zusammenfassung anzeigen
-        if exported_files:
-            file_list = "\n".join([f"• {os.path.basename(f)}" for f in exported_files])
-            
-            QMessageBox.information(
-                self,
-                "Export erfolgreich",
-                f"✓ {len(exported_files)} SQL-Dump(s) erfolgreich erstellt:\n\n{file_list}\n\n"
-                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                f"NÄCHSTE SCHRITTE (GBD WebSuite):\n"
-                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                f"1. Datei auf Server kopieren:\n"
-                f"   scp datei.sql user@server:/tmp/\n\n"
-                f"2. Per SSH verbinden:\n"
-                f"   ssh user@server\n\n"
-                f"3. SQL-Dump importieren:\n"
-                f"   psql -d websuite_db -f /tmp/datei.sql\n\n"
-                f"4. Tabellen prüfen:\n"
-                f"   psql -d websuite_db -c '\\dt qkan.*'\n\n"
-                f"Alternativ: Import über pgAdmin, DBeaver\n"
-                f"oder WebSuite Admin-Interface (falls vorhanden)"
-            )
+    # SQL-Dump: Gesamte Methode export_to_sql_dump() deaktiviert
+    # def export_to_sql_dump(self):
+    #     """Exportiert SQLite-Dateien als SQL-Dump für GBD WebSuite"""
+    #     if not self.selected_files:
+    #         QMessageBox.warning(
+    #             self,
+    #             "SQL-Export",
+    #             "Bitte wählen Sie zuerst mindestens eine SQLite-Datenbank aus."
+    #         )
+    #         return
+    #
+    #     from .export_sql_dump import export_to_sql_dump
+    #
+    #     exported_files = []
+    #
+    #     for source_file in self.selected_files:
+    #         # Ausgabedatei-Namen generieren
+    #         base_name = os.path.splitext(source_file)[0]
+    #         default_output = f"{base_name}_websuite.sql"
+    #
+    #         # Datei-Dialog für Ausgabe
+    #         output_file, _ = QFileDialog.getSaveFileName(
+    #             self,
+    #             f"SQL-Dump speichern für: {os.path.basename(source_file)}",
+    #             default_output,
+    #             "SQL-Dateien (*.sql);;Alle Dateien (*.*)"
+    #         )
+    #
+    #         if not output_file:
+    #             logger.info(f"Export abgebrochen für {source_file}")
+    #             continue
+    #
+    #         try:
+    #             logger.info(f"Exportiere {source_file} nach {output_file}")
+    #             success = export_to_sql_dump(source_file, output_file, schema_name="qkan")
+    #
+    #             if success:
+    #                 exported_files.append(output_file)
+    #                 logger.info(f"✓ Export erfolgreich: {output_file}")
+    #
+    #         except Exception as e:
+    #             QMessageBox.critical(
+    #                 self,
+    #                 "Export fehlgeschlagen",
+    #                 f"Fehler beim Exportieren von {os.path.basename(source_file)}:\n\n{str(e)}"
+    #             )
+    #             logger.error(f"SQL-Export fehlgeschlagen für {source_file}: {e}")
+    #
+    #     # Zusammenfassung anzeigen
+    #     if exported_files:
+    #         file_list = "\n".join([f"• {os.path.basename(f)}" for f in exported_files])
+    #
+    #         QMessageBox.information(
+    #             self,
+    #             "Export erfolgreich",
+    #             f"✓ {len(exported_files)} SQL-Dump(s) erfolgreich erstellt:\n\n{file_list}\n\n"
+    #             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+    #             f"NÄCHSTE SCHRITTE (GBD WebSuite):\n"
+    #             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+    #             f"1. Datei auf Server kopieren:\n"
+    #             f"   scp datei.sql user@server:/tmp/\n\n"
+    #             f"2. Per SSH verbinden:\n"
+    #             f"   ssh user@server\n\n"
+    #             f"3. SQL-Dump importieren:\n"
+    #             f"   psql -d websuite_db -f /tmp/datei.sql\n\n"
+    #             f"4. Tabellen prüfen:\n"
+    #             f"   psql -d websuite_db -c '\\dt qkan.*'\n\n"
+    #             f"Alternativ: Import über pgAdmin, DBeaver\n"
+    #             f"oder WebSuite Admin-Interface (falls vorhanden)"
+    #         )
 
     def show_help(self):
         """Hilfe anzeigen"""
@@ -376,7 +377,7 @@ QKan PostGIS Datenbank-Upload / SQL-Export
 
 === FÜR GBD WEBSUITE ===
 Wenn Sie eine GBD WebSuite verwenden und KEINEN direkten PostgreSQL-Zugriff 
-haben, nutzen Sie die SQL-Dump-Export-Funktion (siehe unten).
+haben, wenden Sie sich an den Administrator.
 
 QUELLDATENBANKEN AUSWÄHLEN:
 • Klicken Sie auf "Hinzufügen..." um QKan SQLite-Datenbanken auszuwählen
@@ -402,12 +403,6 @@ OPTION 1: DIREKTER UPLOAD (wenn PostgreSQL-Port erreichbar)
 • Wählen Sie SQLite-Datenbanken UND/ODER QGIS-Projekt
 • Klicken Sie "Upload starten"
 
-OPTION 2: SQL-DUMP EXPORT (für GBD WebSuite OHNE direkten DB-Zugriff)
-• Wählen Sie SQLite-Datenbank(en) aus
-• Im Dialog gibt es einen "Als SQL-Dump exportieren" Button
-• Laden Sie den generierten .sql-Dump auf Ihren WebSuite-Server hoch
-• Importieren per SSH: psql -d datenbank -f dump.sql
-
 OPTIONEN:
 • Bestehende Tabellen überschreiben: Löscht vorhandene Tabellen im Schema
   vor dem Import (ACHTUNG: Datenverlust!)
@@ -427,7 +422,6 @@ HINWEISE:
 • Sie können NUR ein Projekt, NUR Datenbanken oder BEIDES hochladen
 
 GBD WEBSUITE SPEZIFISCH:
-• Falls der direkte PostgreSQL-Zugriff blockiert ist, verwenden Sie SQL-Dump
 • Bei Verbindungsproblemen: Prüfen Sie Firewall/SSH-Tunnel
 • Standard-Port: 5432 (oft nur über VPN/SSH erreichbar)
         """
@@ -463,20 +457,28 @@ GBD WEBSUITE SPEZIFISCH:
                 )
                 return
         
-        # Wenn keine Verbindung möglich ist, SQL-Export vorschlagen (nur wenn Datenbanken vorhanden)
+        # SQL-Dump: Fallback auf SQL-Dump Export deaktiviert
+        # if not self.connection_available and has_database_files:
+        #     reply = QMessageBox.question(
+        #         self,
+        #         "Keine Datenbankverbindung",
+        #         "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
+        #         "Möchten Sie stattdessen einen SQL-Dump exportieren?\n"
+        #         "Dieser kann dann manuell auf dem Server importiert werden.",
+        #         QMessageBox.Yes | QMessageBox.No,
+        #         QMessageBox.Yes
+        #     )
+        #
+        #     if reply == QMessageBox.Yes:
+        #         self.export_to_sql_dump()
+        #     return
         if not self.connection_available and has_database_files:
-            reply = QMessageBox.question(
+            QMessageBox.critical(
                 self,
                 "Keine Datenbankverbindung",
                 "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
-                "Möchten Sie stattdessen einen SQL-Dump exportieren?\n"
-                "Dieser kann dann manuell auf dem Server importiert werden.",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.Yes
+                "Bitte prüfen Sie die Verbindungseinstellungen."
             )
-            
-            if reply == QMessageBox.Yes:
-                self.export_to_sql_dump()
             return
         elif not self.connection_available:
             # Nur Projekt-Upload, aber keine Verbindung
@@ -875,29 +877,30 @@ GBD WEBSUITE SPEZIFISCH:
             self.listWidget_schemas.addItem("Fehler: psycopg2 nicht installiert")
             logger.error("psycopg2 nicht installiert")
             self.connection_available = False
-            self._show_sql_export_hint()
+            # SQL-Dump: self._show_sql_export_hint()
         except psycopg2.OperationalError as e:
             error_msg = str(e)
             self.listWidget_schemas.addItem(f"Verbindungsfehler: {error_msg[:50]}...")
-            self.listWidget_schemas.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
+            # SQL-Dump: self.listWidget_schemas.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
             logger.error(f"PostGIS Verbindungsfehler zu {host}:{port}: {error_msg}")
             self.connection_available = False
-            self._show_sql_export_hint()
+            # SQL-Dump: self._show_sql_export_hint()
         except Exception as e:
             self.listWidget_schemas.addItem(f"Fehler: {str(e)[:50]}...")
-            self.listWidget_schemas.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
+            # SQL-Dump: self.listWidget_schemas.addItem("💡 Tipp: Verwenden Sie 'Als SQL-Dump exportieren'")
             logger.error(f"Unerwarteter Fehler beim Laden der Schemata von {host}: {e}")
             self.connection_available = False
-            self._show_sql_export_hint()
+            # SQL-Dump: self._show_sql_export_hint()
     
-    def _show_sql_export_hint(self):
-        """Zeigt Hinweis für SQL-Export bei Verbindungsproblemen"""
-        # Update Label mit Hinweis
-        current_text = self.label_server_info.text()
-        if "Kein direkter Zugriff" not in current_text:
-            self.label_server_info.setText(
-                f"{current_text} - ⚠️ Kein direkter Zugriff möglich"
-            )
+    # SQL-Dump: Gesamte Methode _show_sql_export_hint() deaktiviert
+    # def _show_sql_export_hint(self):
+    #     """Zeigt Hinweis für SQL-Export bei Verbindungsproblemen"""
+    #     # Update Label mit Hinweis
+    #     current_text = self.label_server_info.text()
+    #     if "Kein direkter Zugriff" not in current_text:
+    #         self.label_server_info.setText(
+    #             f"{current_text} - Kein direkter Zugriff möglich"
+    #         )
 
     def upload_qgis_project(self, schema: str):
         """Lädt das QGIS-Projekt in die PostgreSQL-Datenbank hoch."""
