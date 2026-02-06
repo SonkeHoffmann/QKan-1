@@ -979,19 +979,22 @@ GBD WEBSUITE SPEZIFISCH:
                 )
             """)
             
+            # Tabelle vorher leeren, sodass immer nur eine Projektdatei im Schema liegt
+            cursor.execute(f"""
+                DELETE FROM {schema}.qgis_projects
+            """)
+            logger.info(f"qgis_projects Tabelle in Schema '{schema}' geleert")
+            
             # Metadaten im gewünschten Format
             metadata_json = json.dumps({
                 'last_modified_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
                 'last_modified_user': current_user
             })
             
-            # Projekt speichern mit komprimiertem Content
+            # Projekt speichern mit komprimiertem Content (jetzt als INSERT ohne ON CONFLICT)
             cursor.execute(f"""
                 INSERT INTO {schema}.qgis_projects (name, content, metadata)
                 VALUES (%s, %s, %s::jsonb)
-                ON CONFLICT (name) DO UPDATE SET 
-                    content = EXCLUDED.content,
-                    metadata = EXCLUDED.metadata
             """, (project_name, psycopg2.Binary(compressed_content), metadata_json))
             
             logger.info(f"✓ QGIS-Projekt '{project_name}' hochgeladen")
