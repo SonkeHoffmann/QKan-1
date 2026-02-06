@@ -3,7 +3,7 @@ import os
 from qgis.core import QgsProject, QgsEditorWidgetSetup
 
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError
 from qgis.utils import pluginDirectory
 from qkan import QKan, enums
 from qkan.tools.qkan_utils import loadLayer, get_database_QKan
@@ -37,6 +37,16 @@ def run(dbcon: DBConnection) -> bool:
         logger.error_code(f"Fehler {err} in {__name__}.0040, {sql_file =}")
         return False
 
+    # Tabelle wurde bereits mit sql_file erstellt
+    epsg = QKan.config.epsg
+    sql = f"SELECT AddGeometryColumn('anschlussschaechte', 'geom', {epsg}, 'POINT', 2);"
+    if not dbcon.sql(sql, f"migration 0040, Version {VERSION}: Geoobjekt für anschlussschaechte"):
+        raise QkanDbError
+
+    sql = f"SELECT CreateSpatialIndex('anschlussschaechte', 'geom');"
+    if not dbcon.sql(sql, f"migration 0040, Version {VERSION}: Geoindex für anschlussschaechte"):
+        raise QkanDbError
+
     if 'urstation' not in dbcon.attrlist('anschlussleitungen'):
         try:
             dbcon.sql(
@@ -55,6 +65,100 @@ def run(dbcon: DBConnection) -> bool:
         except:
             logger.error_code('Fehlgeschlagen: migration_0040, ursprung ergänzen')
 
+    if 'lageanschluss' not in dbcon.attrlist('anschlussleitungen'):
+        try:
+            dbcon.sql(
+                'ALTER TABLE anschlussleitungen ADD COLUMN lageanschluss INTEGER;',
+                'migration_0040, lageanschluss ergänzen'
+            )
+        except:
+            logger.error_code('Fehlgeschlagen: migration_0040, lageanschluss ergänzen')
+
+    if 'eigentum' not in dbcon.attrlist('anschlussleitungen'):
+        try:
+            dbcon.sql(
+                'ALTER TABLE anschlussleitungen ADD COLUMN eigentum TEXT;',
+                'migration_0040, eigentum ergänzen'
+            )
+        except:
+            logger.error_code('Fehlgeschlagen: migration_0040, eigentum ergänzen')
+
+    # Übertragen der M150-Daten der einzelnen Referenztabellen in die neue Tabelle refdata
+    # 1. für Schächte und Haltungen
+    reftabs = [
+        # tabellenname,          attributname, attributname in Tabellen schaechte & haltungen, begrenzung der attribute
+        ['entwaesserungsarten', 'bezeichnung',   'entwart', 3],
+        ['material',            'bezeichnung',  'material', 2],
+        ['simulationsstatus',   'bezeichnung', 'simstatus', 3]
+    ]
+    modules = [
+        ['m150', 'm150porter'],
+        ['isybau', 'isyporter'],
+        ['he_nr', 'he8porter']
+    ]
+    for tabnam, attrnam, attrdat, nk in reftabs:
+        for mattr, module in modules[:nk]:
+            sql = f"""
+                WITH refsall AS (
+                    SELECT {attrdat}
+                    FROM haltungen
+                    UNION
+                    SELECT {attrdat}
+                    FROM schaechte
+                ),
+                ru AS (
+                    SELECT {attrdat} AS bezqkan
+                    FROM refsall
+                    GROUP BY {attrdat}
+                )
+                INSERT INTO refdata (bezext, bezqkan, kuerzel, subject, modul, kommentar)
+                SELECT 
+                    NULL AS bezext, 
+                    rt.{attrnam} AS bezqkan,
+                    rt.{mattr} AS kuerzel,
+                    'export_{tabnam}' AS subject,
+                    '{module}' AS modul,
+                    'Migration 0040: Übertragung aus alter Referenztabelle {tabnam}' AS kommentar
+                FROM {tabnam} AS rt
+                JOIN ru ON ru.bezqkan = rt.{attrnam}
+                GROUP BY rt.{attrnam}"""
+            dbcon.sql(sql, f'migration_0040: Übertragung aus alter Referenztabelle {tabnam}')
+
+    # 2. nur für Haltungen
+    reftabs = [
+        # tabellenname,          attributname in Tabellen schaechte & haltungen, begrenzung der attribute
+        ['profile',             'profilnam', 'profilnam', 3],
+    ]
+    modules = [
+        ['m150', 'm150porter'],
+        ['isybau', 'isyporter'],
+        ['he_nr', 'he8porter']
+    ]
+    for tabnam, attrnam, attrdat, nk in reftabs:
+        for mattr, module in modules[:nk]:
+            sql = f"""
+                WITH refsall AS (
+                    SELECT {attrdat}
+                    FROM haltungen
+                ),
+                ru AS (
+                    SELECT {attrdat} AS bezqkan
+                    FROM refsall
+                    GROUP BY {attrdat}
+                )
+                INSERT INTO refdata (bezext, bezqkan, kuerzel, subject, modul, kommentar)
+                SELECT 
+                    NULL AS bezext, 
+                    rt.{attrnam} AS bezqkan,
+                    rt.{mattr} AS kuerzel,
+                    'export_{tabnam}' AS subject,
+                    '{module}' AS modul,
+                    'Migration 0040: Übertragung aus alter Referenztabelle {tabnam}' AS kommentar
+                FROM {tabnam} AS rt
+                JOIN ru ON ru.bezqkan = rt.{attrnam}
+                GROUP BY rt.{attrnam}"""
+            dbcon.sql(sql, f'migration_0040: Übertragung aus alter Referenztabelle {tabnam}')
+
     dbcon.commit()
 
     project.read()
@@ -65,16 +169,17 @@ def run(dbcon: DBConnection) -> bool:
         enums.LAYERBEZ.SCHAECHTE_GROUP.value,
     ]
     loadLayer(
-        layerbez=enums.LAYERBEZ.ANSCHLUSSSCHAECHTE.value,
+        layerbez=enums.LAYERBEZ.HA_SCHAECHTE.value,
         table="schaechte",
         geom_column='geop',
         qmlfile="HA-Schächte.qml",
+        filter='',
         uifile="qkan_anschlussschaechte.ui",
         group=grouppath,
         gpos=4,
     )
 
-    layers = project.mapLayersByName(enums.LAYERBEZ.ANSCHLUSSSCHAECHTE.value)         # können mehrere sein, auch wenn's nicht gewollt ist ...
+    layers = project.mapLayersByName(enums.LAYERBEZ.HA_SCHAECHTE.value)         # können mehrere sein, auch wenn's nicht gewollt ist ...
     for layer in layers:
         qmlfile = os.path.join(pluginDirectory("qkan"), 'templates/qml', "HA-Schächte.qml")
         try:
@@ -99,6 +204,7 @@ def run(dbcon: DBConnection) -> bool:
         table='material',
         geom_column=None,
         qmlfile='Material.qml',
+        filter='',
         uifile='qkan_material.ui',
         group='Referenztabellen',
         gpos=6,
@@ -127,8 +233,9 @@ def run(dbcon: DBConnection) -> bool:
     # Wertebezeichnungen für das Feld "abflusstyp" in Layer "Anbindungen Flächen" korrigieren
     reflayers = project.mapLayersByName(enums.LAYERBEZ.ABFLUSSTYPEN.value)
     if (anz := len(reflayers)) != 1:
-        logger.error_data(f'Es gibt {anz} Layer "{enums.LAYERBEZ.ABFLUSSTYPEN.value}". '
-                          f'Es darf aber nur einen geben!')
+        logger.warning_user(f'Es gibt {anz} Layer "{enums.LAYERBEZ.ABFLUSSTYPEN.value}". '
+                          f'Es darf aber nur einen geben!\n'
+                          f'Es wird empfohlen, mit dem Menü "QKan-Projekt übertragen" das Projekt zu aktualisieren')
     else:
         reflayer = reflayers[0]
         layers = project.mapLayersByName(enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value)
@@ -155,15 +262,15 @@ def run(dbcon: DBConnection) -> bool:
     # Wertebeziehungen, die bisher auf Schächte verweisen, auf Knotentypen ändern
     reflayers = project.mapLayersByName(enums.LAYERBEZ.KNOTENTYP.value)
     if len(reflayers) != 1:
-        logger.error_data('Entweder fehlt der Layer "Knotentypen oder es gibt mehr als einen Layer mit '
-                          'diesem Namen')
+        logger.warning_user('Entweder fehlt der Layer "Knotentypen oder es gibt mehr als einen Layer mit '
+                            'diesem Namen')
     else:
         reflayer = reflayers[0]                 # Layer, auf den die Werteliste referenziert
         layerlist = [
             (enums.LAYERBEZ.ANBINDUNG_FLAECHEN, 'schnam'),
             (enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN, 'schnam'),
             (enums.LAYERBEZ.EINZELFLAECHEN, 'schnam'),
-            (enums.LAYERBEZ.ANSCHLUSSLEITUNGEN, 'schoben', 'schunten'),
+            (enums.LAYERBEZ.HA_LEITUNGEN, 'schoben', 'schunten'),
             (enums.LAYERBEZ.AUSSENGEBIETE, 'schnam'),
             (enums.LAYERBEZ.DROSSELN, 'schoben', 'schunten'),
             (enums.LAYERBEZ.DIREKTEINLEITUNGEN, 'schnam'),
@@ -194,5 +301,7 @@ def run(dbcon: DBConnection) -> bool:
                     logger.debug(f'Layer {layer.name()} geändert')
 
     project.write(pname)
+    project.clear()
+    project.setDirty(False)
 
     return True

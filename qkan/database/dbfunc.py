@@ -176,7 +176,7 @@ class DBConnection:
             get_database_QKan()
             self.dbname = QKan.config.database.qkan
             self.dbtype = QKan.dbtype
-            if not self.dbname:
+            if self.dbname is None:
                 logger.warning_user("Fehler: Für die gewählte Funktion muss ein Projekt geladen sein!")
                 raise QkanUserError
         else:
@@ -238,7 +238,12 @@ class DBConnection:
                                 shutil.copy(self.dbname, bakdir)
 
                             if self.writeQgsBackup:
-                                shutil.copy(QKan.config.project.file, bakdir)
+                                projectfile = QgsProject.instance().fileName()
+                                try:
+                                    shutil.copy(projectfile, bakdir)
+                                except:
+                                    logger.error_code(f'Projektdatei {projectfile} konnte nicht auf {bakdir} kopiert werden')
+                                    raise QkanAbortError
 
                         self.upgrade_database()
                     else:
@@ -256,6 +261,9 @@ class DBConnection:
                         self.connected = False
 
                         return None
+                else:
+                    # nu aus Kompatibilitätsgründen
+                    self.isCurrentVersion = True
 
             # Create new database
             else:
@@ -299,6 +307,7 @@ class DBConnection:
                     "untersuchdat_haltung",
                     "anschlussleitungen",
                     "anschlussleitungen_untersucht",
+                    "anschlussschaechte",
                     "untersuchdat_anschlussleitung",
                     "schaechte",
                     "untersuchdat_schacht",
@@ -359,6 +368,7 @@ class DBConnection:
                     "pruefliste",
                     "reflist_zustand",
                     "info",
+                    "refdata",
                     "fotos",
                     "videos",
                 ]
@@ -516,6 +526,10 @@ class DBConnection:
                     "bewertungsart",
                     "pumpentypen",
                     "symbolkatalog",
+                    "simulationsstatus",
+                    "material",
+                    "profile",
+                    "entwaesserungsarten",
                 ]
 
                 for tabnam in tablis:
@@ -761,7 +775,7 @@ class DBConnection:
             stmt_category: str = "allgemein",
             mute_logger: bool = False,
             ignore: bool = False,  # ignore error and continue
-            parameters: [dict, tuple] = None
+            parameters: dict[Union[str, Any], Union[Union[str, float, int], Any]] = None
     ) -> bool:
         """Fügt einen Datensatz mit Geo-Objekt hinzu
 
@@ -908,6 +922,7 @@ class DBConnection:
                 "schunten",
                 "id",
                 "untersuchtag",
+                "untersuchrichtung",
                 "bandnr",
                 "videozaehler",
                 "inspektionslaenge",
@@ -956,13 +971,18 @@ class DBConnection:
                 "sohleunten",
                 "baujahr",
                 "haltnam",
+                "urstation",
+                "ursprung",
+                "anschlusstyp",
+                "lageanschluss",
                 "teilgebiet",
+                "strasse",
+                "profilnam",
                 "entwart",
                 "material",
                 "profilauskleidung",
                 "innenmaterial",
                 "ks",
-                "anschlusstyp",
                 "simstatus",
                 "kommentar",
                 "createdat",
@@ -1079,6 +1099,40 @@ class DBConnection:
 
             sqlnam = 'database_insertdata_untersuchdat_anschlussleitung'
 
+        elif tabnam == "anschlussschaechte":
+            parlis = [
+                "schnam",
+                "sohlhoehe",
+                "deckelhoehe",
+                "durchm",
+                "druckdicht",
+                "ueberstauflaeche",
+                "entwart",
+                "strasse",
+                "baujahr",
+                "teilgebiet",
+                "knotentyp",
+                "auslasstyp",
+                "schachttyp",
+                "simstatus",
+                "material",
+                "kommentar",
+                "createdat",
+                "xsch",
+                "ysch",
+                "geom",
+                "epsg",
+            ]
+            for el in parlis:
+                if param1.get(el, None) is None:
+                    if isinstance(parameters, tuple):
+                        for ds in parameters:
+                            ds[el] = None
+                    else:
+                        parameters[el] = None
+
+            sqlnam = 'database_insertdata_anschlussschaechte'
+
         elif tabnam == "schaechte_untersucht":
             parlis = [
                 "schnam",
@@ -1157,6 +1211,7 @@ class DBConnection:
             parlis = [
                 "name",
                 "untersuchtag",
+                "untersuchrichtung",
                 "objekt",
                 "datei",
                 "createdat",
@@ -1232,6 +1287,19 @@ class DBConnection:
 
             # wkt_geom = param1.get("geom")
             sqlnam = 'database_insertdata_teilgebiete'
+
+        elif tabnam == 'symbole':
+            parlis = ['bezeichnung', 'art', 'gruppe', 'kommentar', 'geom', 'epsg']
+            for el in parlis:
+                if param1.get(el, None) is None:
+                    if isinstance(parameters, tuple):
+                        for ds in parameters:
+                            ds[el] = None
+                    else:
+                        parameters[el] = None
+
+            # wkt_geom = param1.get("geom")
+            sqlnam = 'database_insertdata_symbole'
 
         else:
             logger.warning(
@@ -1373,6 +1441,7 @@ class DBConnection:
         logger.debug(f"0 - versiondbQK = {self.current_dbversion.base_version}")
 
         self.isCurrentDbVersion = (self.actDbVersion <= self.current_dbversion)
+        self.isCurrentVersion = self.isCurrentDbVersion                    # nur aus Kompatibilitätsgründen
 
         # Warnung, falls geladene Datenbank neuer als die Datenbankversion zu diesem QKan-Plugin ist.
         # if self.actDbVersion > self.current_dbversion:
@@ -1758,6 +1827,7 @@ class DBConnection:
             return False
 
         self.isCurrentDbVersion = True
+        self.isCurrentVersion = True                    # nur aus Kompatibilitätsgründen
 
         return True
 
@@ -1766,15 +1836,14 @@ class DBConnection:
             key: str,
             mapper: dict,
             table: str,
-            reftable: str,
-            attr_name: str,
-            attr_key: str,
+            reftable: str = None,
+            attr_name: str = None,
+            attr_key: str = None,
             attr_bem: str = None,
             attr_short: str = None,
             default: str = None
     ) -> Union[bool, str, None]:
-        """
-    Liefert Langbezeichnung für einen key mit Hilfe eines mappers.
+        """Liefert Langbezeichnung für einen key mit Hilfe eines mappers.
     Wenn der key im mapper nicht vorhanden ist, wird der key sowohl
     im mapper als auch der zugehörigen Datenbanktabelle ergänzt.
 
@@ -1793,7 +1862,8 @@ class DBConnection:
             result = mapper[key]
         elif key is None:
             result = default
-        else:
+        elif reftable is not None:
+            # interne Mapper ausschließen
             result = key
             mapper[key] = key  # Ergänzung des Dict braucht nicht zurückgegeben werden
 
@@ -1826,6 +1896,10 @@ class DBConnection:
                     )
                 ):
                     return False
+        else:
+            result = key
+            mapper[key] = key  # Ergänzung des Dict braucht nicht zurückgegeben werden
+
         return result
 
     def consume_mapper(self, sql: str, subject: str, target: Dict[str, str]) -> None:
@@ -1840,50 +1914,49 @@ class DBConnection:
         for row in self.fetchall():
             target[row[0]] = row[1]
 
-    def _adapt_reftable(self, tabnam: str):
+    def _adapt_reftable(self, module: str, subject: str) -> None:
         """Ersetzt die importierten Bezeichnungen der Referenztabelle durch die QKan-Standards.
-           Die entsprechenden Attribute in den Detailtabellen werden automatisch durch die definierten
-           Trigger angepasst."""
-        patterns = QKan.config.tools.clipboardattributes.qkan_patterns.get(tabnam)
+        Die Zuordnungen werden aus einer YAML-Datei "patterns.yml" im Modulverzeichnis gelesen.
+
+        :param modul:   Modulname = Verzeichnisname
+        :param subject: Bezeichnung der QKan-Tabelle oder interner Mapping-Tabelle
+        :returns: None
+           """
+
+        filename = os.path.join(pluginDirectory("qkan"), module, 'patterns.yml')
+        with open(filename) as fr:
+            patternDict = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+        patterns = patternDict[subject]
+
         if patterns is None:
-            logger.warning(f'{self.__class__.__name__}, Für diese Tabelle ist kein pattern in'
-                           f' config.py definiert {tabnam=}')
-            return False
+            logger.error_code(f'Für {subject} konnten keine Einträge gefunden werden.')
+            raise QkanAbortError
 
         if not self.sqlyml(
-                sqlnam='database_get_bezeichnung',
-                stmt_category= f'Anpassen der Referenztabelle {tabnam} an den QKan-Standard (1)',
-                replacefun=lambda sqltext: sqltext.format(tabnam=tabnam)
+            sqlnam='database_get_bezeichnung',
+            stmt_category= f'Anpassen der Referenzdaten zum Thema {module}.{subject} an den QKan-Standard (1)',
+            parameters={'subject': subject}
         ):
-            logger.error_code(f'{self.__class__.__name__}._adapt_reftable: Fehler beim Einlesen der '
-                              f'Bezeichnungen aus {tabnam}')
+            raise QkanDbError
+
         for data in self.fetchall():
-            bezeichnung = data[0]
-            for qkan_patt in patterns.keys():
+            # data enthält nur Datensätze, bei denen die Zuordnung leer ist.
+            bezext = data[0]
+            for bezqkan in patterns.keys():
                 # Schleife über alle QKan-Bezeichnungen
-                for patt in patterns[qkan_patt]:
+                for patt in patterns[bezqkan]:
                     # Schleife über die Matchliste
-                    if fnmatch(bezeichnung.strip().lower(), patt):
+                    if fnmatch(bezext.strip().lower(), patt.lower()):
                         # Match gefunden
-                        qkan_bez = qkan_patt
-                        if qkan_bez != bezeichnung:
-                            if not self.sqlyml(
-                                sqlnam='database_set_bezeichnung',
-                                stmt_category=f'Anpassen der Referenztabelle {tabnam} an den '
-                                              f'QKan-Standard (2)',
-                                parameters={'qkan_bez': qkan_bez, 'bezeichnung': bezeichnung},
-                                replacefun=lambda sqltext: sqltext.format(tabnam=tabnam)
-                            ):
-                                logger.error_code(
-                                    f'{self.__class__.__name__}: '
-                                    f'_adapt_reftable: Fehler beim Wechsel der Bezeichnungen in {tabnam}')
-                            logger.debug(
-                                f'Muster in {tabnam} passt (2): {bezeichnung=} = {patt=}. '
-                                f'Wechsel {bezeichnung} -> {qkan_bez}')
+                        logger.debug(f'Match gefunden: {bezext=}, {patt=}')
+                        if not self.sqlyml(
+                            sqlnam='database_set_bezeichnung',
+                            stmt_category=f'Anpassen der Referenzdaten an den QKan-Standard (2)',
+                            parameters={'bezqkan': bezqkan, 'bezext': bezext, 'subject': subject},
+                        ):
+                            raise QkanDbError
                         break
-                else:
-                    continue            # nichts in der Matchliste gefunden, gehe zum nächsten QKan-Bezeichnungen
-                break                   # eine QKan-Bezeichnung gefunden, gehe zum nächsten Datensatz
+                    logger.debug(f'Match passt nicht: {bezext=}, {patt=}')
         self.commit()
 
     def getSelection(self, selected: bool = True):

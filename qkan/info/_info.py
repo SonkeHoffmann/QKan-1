@@ -22,7 +22,9 @@ logger = get_logger("QKan.xml.info")
 
 
 class Info:
-    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, fig_7, canv_7, fig_8, canv_8, fig_9, canv_9, fig_10, canv_10, combo, dat1, dat2, dat3, dat8, dat9, db_qkan: DBConnection, check):
+    def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, fig_7,
+                 canv_7, fig_8, canv_8, fig_9, canv_9, fig_10, canv_10, combo, dat1, dat2, dat3, dat8, dat9,
+                 db_qkan: DBConnection, check):
         self.db_qkan = db_qkan
         self.anz_haltungen = 0
         self.anz_schaechte = 0
@@ -569,9 +571,9 @@ class Info:
 
             if len(labels)>1:
                 label = [str(baujahr) if (baujahr is not None and baujahr % 50 == 0)  else str(baujahr) for baujahr in labels]
-                new_plot.set_xticklabels(label)
+                new_plot.set_xticklabels(label, rotation=90)
             else:
-                new_plot.set_xticklabels(labels)
+                new_plot.set_xticklabels(labels, rotation=90)
 
             #new_plot.bar(y_pos, values, align='center')
             bars = new_plot.bar(y_pos, values, align='center')
@@ -617,9 +619,9 @@ class Info:
 
             if len(labels)>1:
                 label = [str(baujahr) if baujahr % 50 == 0 else str(baujahr) for baujahr in labels]
-                new_plot.set_xticklabels(label)
+                new_plot.set_xticklabels(label, rotation=90)
             else:
-                new_plot.set_xticklabels(labels)
+                new_plot.set_xticklabels(labels, rotation=90)
             #new_plot.bar(y_pos, values, align='center')
             bars = new_plot.bar(y_pos, values, align='center')
             new_plot.set_xticks(y_pos)
@@ -664,13 +666,14 @@ class Info:
 
             if len(labels)>1:
                 label = [
-                    str(baujahr) if (baujahr is not None and baujahr != 'sonstige' and baujahr % 50 == 0)
-                    else "" if baujahr is not None
-                    else "None"
-                    for baujahr in labels]
-                new_plot.set_xticklabels(label)
+                            b if isinstance(b, str) and b.isdigit() and int(b) % 50 == 0
+                            else str(b) if isinstance(b, int) and b % 5 == 0
+                            else ""
+                            for b in labels
+                        ]
+                new_plot.set_xticklabels(label, rotation=90)
             else:
-                new_plot.set_xticklabels(labels)
+                new_plot.set_xticklabels(labels, rotation=90)
             bars = new_plot.bar(y_pos, values, align='center')
             new_plot.set_xticks(y_pos)
             #new_plot.invert_yaxis()
@@ -1541,7 +1544,12 @@ class Info:
                                         COUNT(*) AS anzahl
                                     FROM haltungen_untersucht  
                                     LEFT JOIN haltungen  ON haltungen_untersucht.haltnam = haltungen.haltnam
-                                    {self.abfrage_where_halt}
+                                    WHERE haltungen_untersucht.rowid IN (SELECT rowid
+												FROM haltungen_untersucht haltungen_untersucht2
+												WHERE haltungen_untersucht2.haltnam = haltungen_untersucht.haltnam
+												ORDER BY haltungen_untersucht2.untersuchtag DESC, haltungen_untersucht2.rowid DESC
+												LIMIT 1)
+                                    {self.abfrage_and_halt}
                                     GROUP BY CASE
                                     WHEN MIN(max_ZD, max_ZS, max_ZB) IS NULL THEN 'sonstige'
                                         WHEN MIN(max_ZD, max_ZS, max_ZB) NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1583,7 +1591,11 @@ class Info:
             # plt.figure(figure_3.number)
             new_plot_2 = figure_3.add_subplot(gs[1])
             l_bezeich = []
-            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_untersucht.haltnam {self.abfrage_where_halt}"""
+            sql = f"""select DISTINCT MIN(max_ZD,max_ZS,max_ZB) from haltungen_untersucht LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_untersucht.haltnam WHERE haltungen_untersucht.rowid IN (SELECT rowid
+												FROM haltungen_untersucht haltungen_untersucht2
+												WHERE haltungen_untersucht2.haltnam = haltungen_untersucht.haltnam
+												ORDER BY haltungen_untersucht2.untersuchtag DESC, haltungen_untersucht2.rowid DESC
+												LIMIT 1) {self.abfrage_and_halt}"""
 
             if not self.db_qkan.sql(sql):
                 return
@@ -1596,7 +1608,11 @@ class Info:
 
             for i in data.keys():
                 if i not in ['None', 63, '63']:
-                    sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} {self.abfrage_and_halt}"""
+                    sql = f"""select count(*) from haltungen_untersucht LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_untersucht.haltnam WHERE MIN(max_ZD,max_ZS,max_ZB) = {i} and haltungen_untersucht.rowid IN (SELECT rowid
+												FROM haltungen_untersucht haltungen_untersucht2
+												WHERE haltungen_untersucht2.haltnam = haltungen_untersucht.haltnam
+												ORDER BY haltungen_untersucht2.untersuchtag DESC, haltungen_untersucht2.rowid DESC
+												LIMIT 1) {self.abfrage_and_halt}"""
 
                     if not self.db_qkan.sql(sql):
                         return
@@ -1662,7 +1678,12 @@ class Info:
                                         COUNT(*) AS anzahl
                                     FROM haltungen_untersucht_bewertung  
                                     LEFT JOIN haltungen  ON haltungen_untersucht_bewertung.haltnam = haltungen.haltnam
-                                    {self.abfrage_where_halt}
+                                    WHERE haltungen_untersucht_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_untersucht_bewertung haltungen_untersucht_bewertung2
+												WHERE haltungen_untersucht_bewertung2.haltnam = haltungen_untersucht_bewertung.haltnam
+												ORDER BY haltungen_untersucht_bewertung2.untersuchtag DESC, haltungen_untersucht_bewertung2.rowid DESC
+												LIMIT 1)
+                                    {self.abfrage_and_halt}
                                     GROUP BY CASE
                                         WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                         WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1686,7 +1707,11 @@ class Info:
 
 
                 sql = f"""
-                                         select kuerzel,count(*) from untersuchdat_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where_halt} group by kuerzel
+                                         select kuerzel,count(*) from untersuchdat_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE haltungen_untersucht_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_untersucht_bewertung haltungen_untersucht_bewertung2
+												WHERE haltungen_untersucht_bewertung2.haltnam = haltungen_untersucht_bewertung.haltnam
+												ORDER BY haltungen_untersucht_bewertung2.untersuchtag DESC, haltungen_untersucht_bewertung2.rowid DESC
+												LIMIT 1){self.abfrage_and_halt} group by kuerzel
                                     """
 
                 self._barplot(
@@ -1701,7 +1726,11 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_3.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_untersucht_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal {self.abfrage_where_halt}"""
+                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_untersucht_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE haltungen_untersucht_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_untersucht_bewertung haltungen_untersucht_bewertung2
+												WHERE haltungen_untersucht_bewertung2.haltnam = haltungen_untersucht_bewertung.haltnam
+												ORDER BY haltungen_untersucht_bewertung2.untersuchtag DESC, haltungen_untersucht_bewertung2.rowid DESC
+												LIMIT 1) {self.abfrage_and_halt}"""
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -1714,7 +1743,11 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from haltungen_untersucht_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE objektklasse_gesamt = {i}  {self.abfrage_and_halt} """
+                        sql = f"""select count(*) from haltungen_untersucht_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal WHERE objektklasse_gesamt = {i} AND haltungen_untersucht_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_untersucht_bewertung haltungen_untersucht_bewertung2
+												WHERE haltungen_untersucht_bewertung2.haltnam = haltungen_untersucht_bewertung.haltnam
+												ORDER BY haltungen_untersucht_bewertung2.untersuchtag DESC, haltungen_untersucht_bewertung2.rowid DESC
+												LIMIT 1)  {self.abfrage_and_halt} """
 
                         if not self.db_qkan.sql(sql):
                             return
@@ -1782,7 +1815,12 @@ class Info:
                                         COUNT(*) AS anzahl
                                     FROM haltungen_substanz_bewertung  
                                     LEFT JOIN haltungen  ON haltungen_substanz_bewertung.haltnam = haltungen.haltnam
-                                    {self.abfrage_where_halt}
+                                    WHERE haltungen_substanz_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_substanz_bewertung haltungen_substanz_bewertung2
+												WHERE haltungen_substanz_bewertung2.haltnam = haltungen_substanz_bewertung.haltnam
+												ORDER BY haltungen_substanz_bewertung2.untersuchtag DESC, haltungen_substanz_bewertung2.rowid DESC
+												LIMIT 1)
+                                    {self.abfrage_and_halt}
                                     GROUP BY CASE
                                     WHEN objektklasse_gesamt IS NULL THEN 'sonstige'
                                         WHEN objektklasse_gesamt NOT IN (0, 1, 2, 3, 4, 5) THEN 'sonstige'
@@ -1805,7 +1843,11 @@ class Info:
                 )
 
                 sql = f"""
-                            select kuerzel,count(*) from substanz_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where_halt} group by kuerzel
+                            select kuerzel,count(*) from substanz_haltung_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam WHERE haltungen_substanz_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_substanz_bewertung haltungen_substanz_bewertung2
+												WHERE haltungen_substanz_bewertung2.haltnam = haltungen_substanz_bewertung.haltnam
+												ORDER BY haltungen_substanz_bewertung2.untersuchtag DESC, haltungen_substanz_bewertung2.rowid DESC
+												LIMIT 1) {self.abfrage_and_halt} group by kuerzel
                                                 """
 
                 self._barplot(
@@ -1820,7 +1862,11 @@ class Info:
                 # plt.figure(figure_3.number)
                 new_plot_2 = figure_3.add_subplot(gs[1])
                 l_bezeich = []
-                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam {self.abfrage_where_halt} """
+                sql = f"""select DISTINCT objektklasse_gesamt from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam WHERE haltungen_substanz_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_substanz_bewertung haltungen_substanz_bewertung2
+												WHERE haltungen_substanz_bewertung2.haltnam = haltungen_substanz_bewertung.haltnam
+												ORDER BY haltungen_substanz_bewertung2.untersuchtag DESC, haltungen_substanz_bewertung2.rowid DESC
+												LIMIT 1) {self.abfrage_and_halt} """
 
                 if not self.db_qkan.sql(sql):
                     return
@@ -1833,7 +1879,11 @@ class Info:
 
                 for i in data.keys():
                     if i not in ['None', 63]:
-                        sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam WHERE objektklasse_gesamt = {i}  {self.abfrage_and_halt}"""
+                        sql = f"""select count(*) from haltungen_substanz_bewertung LEFT JOIN haltungen  ON haltungen.haltnam = haltungen_substanz_bewertung.haltnam WHERE objektklasse_gesamt = {i} AND haltungen_substanz_bewertung.rowid IN (SELECT rowid
+												FROM haltungen_substanz_bewertung haltungen_substanz_bewertung2
+												WHERE haltungen_substanz_bewertung2.haltnam = haltungen_substanz_bewertung.haltnam
+												ORDER BY haltungen_substanz_bewertung2.untersuchtag DESC, haltungen_substanz_bewertung2.rowid DESC
+												LIMIT 1)  {self.abfrage_and_halt}"""
 
                         if not self.db_qkan.sql(sql):
                             return

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>501</width>
-    <height>482</height>
+    <height>485</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -26,8 +26,8 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>420</y>
+     <x>20</x>
+     <y>430</y>
      <width>461</width>
      <height>41</height>
     </rect>
@@ -208,10 +208,10 @@
   <widget class="QGroupBox" name="groupBox_3">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>320</x>
      <y>200</y>
-     <width>231</width>
-     <height>201</height>
+     <width>161</width>
+     <height>231</height>
     </rect>
    </property>
    <property name="font">
@@ -271,7 +271,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>150</y>
       <width>91</width>
       <height>17</height>
      </rect>
@@ -292,7 +292,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>150</y>
+      <y>170</y>
       <width>91</width>
       <height>17</height>
      </rect>
@@ -313,7 +313,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>170</y>
+      <y>190</y>
       <width>91</width>
       <height>17</height>
      </rect>
@@ -356,7 +356,7 @@
      <rect>
       <x>20</x>
       <y>90</y>
-      <width>151</width>
+      <width>141</width>
       <height>17</height>
      </rect>
     </property>
@@ -376,8 +376,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
-      <width>141</width>
+      <y>130</y>
+      <width>121</width>
       <height>21</height>
      </rect>
     </property>
@@ -393,14 +393,35 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
+   <widget class="QCheckBox" name="cb_export_anschlussschaechte">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>141</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Anschlussschächte</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_6">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>200</y>
-     <width>211</width>
-     <height>151</height>
+     <width>281</width>
+     <height>161</height>
     </rect>
    </property>
    <property name="font">
@@ -417,8 +438,8 @@
    <widget class="QLabel" name="label_32">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>80</y>
+      <x>80</x>
+      <y>50</y>
       <width>71</width>
       <height>20</height>
      </rect>
@@ -438,9 +459,9 @@
    <widget class="QLabel" name="lf_anzahl_schaechte">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>80</y>
-      <width>61</width>
+      <x>20</x>
+      <y>50</y>
+      <width>51</width>
       <height>20</height>
      </rect>
     </property>
@@ -448,8 +469,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="frameShape">
@@ -465,9 +486,9 @@
    <widget class="QLabel" name="lf_anzahl_haltungen">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>110</y>
-      <width>61</width>
+      <x>140</x>
+      <y>50</y>
+      <width>51</width>
       <height>20</height>
      </rect>
     </property>
@@ -475,8 +496,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="frameShape">
@@ -492,8 +513,8 @@
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>110</y>
+      <x>200</x>
+      <y>50</y>
       <width>71</width>
       <height>20</height>
      </rect>
@@ -516,7 +537,7 @@
       <x>20</x>
       <y>20</y>
       <width>171</width>
-      <height>51</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -528,8 +549,110 @@
      </font>
     </property>
     <property name="text">
-     <string>Nur ausgewählte
-Objekte berücksichtigen:</string>
+     <string>nur ausgewählte Objekte</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cb_includeMissingKeys">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fehlende M150-Kürzel für Entwässerungsart und Profilart zulassen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>Fehlende M150-Kürzel für Entwässerungsart und Profilart zulassen</string>
+    </property>
+    <property name="text">
+     <string>Fehlende Profil- und
+Entwässerungsart zulassen</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_showKeyTable">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>120</y>
+      <width>161</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Attributtabelle &quot;M150-Kürzel&quot; anzeigen ...</string>
+    </property>
+    <property name="statusTip">
+     <string>Attributtabelle &quot;M150-Kürzel&quot; anzeigen ...</string>
+    </property>
+    <property name="text">
+     <string>M150-Kürzel anzeigen</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>370</y>
+     <width>281</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>Optionen:</string>
+   </property>
+   <widget class="QCheckBox" name="cb_cutNames">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>191</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungs- und Schachtbezeichnungen gemäß DWA M150 auf 33 bzw. 16 Zeichen abschneiden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="statusTip">
+     <string>Haltungs- und Schachtbezeichnungen gemäß DWA M150 auf 33 bzw. 16 Zeichen abschneiden</string>
+    </property>
+    <property name="text">
+     <string>Bezeichnungen begrenzen</string>
     </property>
    </widget>
   </widget>

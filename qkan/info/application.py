@@ -89,6 +89,7 @@ class Infos(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Infos zum QKan Projekt"),
+            toolbar='QKan-Allgemein',
             callback=self.run,
             parent=self.iface.mainWindow(),
         )

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>486</width>
     <height>686</height>
    </rect>
   </property>
@@ -61,7 +61,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>598</width>
+        <width>484</width>
         <height>684</height>
        </rect>
       </property>
@@ -586,63 +586,47 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <widget class="QCheckBox" name="cb_impStamm">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>20</y>
-            <width>131</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Stammdaten</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="cb_impAnschluesse">
-          <property name="geometry">
-           <rect>
-            <x>190</x>
-            <y>20</y>
-            <width>131</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Hausanschlüsse</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="cb_zustand">
-          <property name="geometry">
-           <rect>
-            <x>400</x>
-            <y>20</y>
-            <width>131</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Zustandsdaten</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QCheckBox" name="cb_impStamm">
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Stammdaten</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cb_impAnschluesse">
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Hausanschlüsse</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cb_zustand">
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Zustandsdaten</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -693,7 +677,7 @@
              </font>
             </property>
             <property name="title">
-             <string>Verzeichnis mit den Daten der TV-Befahrungen (Bilder)</string>
+             <string>Verzeichnis mit den Daten der TV-Befahrungen (Fotos)</string>
             </property>
             <property name="flat">
              <bool>false</bool>

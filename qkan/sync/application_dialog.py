@@ -46,15 +46,16 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
     pb_select_extdb: QPushButton
     pb_project: QPushButton
 
-    cb_haltungen: QCheckBox
     cb_schaechte: QCheckBox
+    cb_haltungen: QCheckBox
+    cb_haschaechte: QCheckBox
     cb_haleitungen: QCheckBox
     cb_flaechen: QCheckBox
     cb_tezg: QCheckBox
     cb_linkfl: QCheckBox
-    cb_schaechte_inspek: QCheckBox
-    cb_haltungen_inspek: QCheckBox
-    cb_haleitungen_inspek: QCheckBox
+    cb_schaechte_insp: QCheckBox
+    cb_haltungen_insp: QCheckBox
+    cb_haleitungen_insp: QCheckBox
     cb_teilgebiete: QCheckBox
     cb_showComparetables: QCheckBox
 
@@ -112,6 +113,7 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
 
         self.cb_schaechte.setChecked(QKan.config.sync.check_schaechte)
         self.cb_haltungen.setChecked(QKan.config.sync.check_haltungen)
+        self.cb_haschaechte.setChecked(QKan.config.sync.check_haschaechte)
         self.cb_haleitungen.setChecked(QKan.config.sync.check_haleitungen)
         self.cb_flaechen.setChecked(QKan.config.sync.check_flaechen)
         self.cb_tezg.setChecked(QKan.config.sync.check_tezg)
@@ -129,6 +131,7 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
 
         QKan.config.sync.check_schaechte = self.cb_schaechte.isChecked()
         QKan.config.sync.check_haltungen = self.cb_haltungen.isChecked()
+        QKan.config.sync.check_haschaechte = self.cb_haschaechte.isChecked()
         QKan.config.sync.check_haleitungen = self.cb_haleitungen.isChecked()
         QKan.config.sync.check_flaechen = self.cb_flaechen.isChecked()
         QKan.config.sync.check_tezg = self.cb_tezg.isChecked()

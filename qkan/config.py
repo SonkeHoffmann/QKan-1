@@ -152,6 +152,7 @@ class CheckExport(ClassObject):
     speicher: bool = True
     haltungen: bool = True
     anschlussleitungen: bool = True
+    anschlussschaechte: bool = True
     pumpen: bool = True
     wehre: bool = True
     drosseln: bool = True
@@ -168,6 +169,8 @@ class CheckExport(ClassObject):
     tezg_hf: bool = (
         False  # Sonderfall: Keine Flächenobjekte, stattdessen Befestigungsgrade in tezg
     )
+    includeMissingKeys: bool = False
+    cutNames:           bool = False
 
     # Referenztabellen
     abflussparameter: bool = True
@@ -240,6 +243,7 @@ class SyncConfig(ClassObject):
     ext: str = ""
     check_schaechte: bool = True
     check_haltungen: bool = True
+    check_haschaechte: bool = True
     check_haleitungen: bool = True
     check_flaechen: bool = True
     check_tezg: bool = True
@@ -834,7 +838,7 @@ class ZustandConfig(ClassObject):
     abstand_knoten_1: float = 1.0
     abstand_knoten_2: float = 1.5
     abstand_knoten_end: float = 4.0
-    versatz_anschlusstexte: float = 3.0             # Versatz der Zustandstexte relativ zu den Haltungen
+    versatz_anschlusstexte: float = 1.0             # Versatz der Zustandstexte relativ zu den Haltungen
     kriterienschaeden: dict = {'haltung': '[ABC][A-E][A-Z]', 'schacht': '[D][A-E][A-Z]'}
 
 

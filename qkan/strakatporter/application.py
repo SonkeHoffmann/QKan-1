@@ -34,6 +34,7 @@ class StrakatPorter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus STRAKAT"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )
@@ -161,13 +162,15 @@ class StrakatPorter(QKanPlugin):
         self.log.debug("Closed DB")
 
         if not loadLayer(
-                enums.LAYERBEZ.STRAKAT_SYMBOLE.value,
-                'symbole',
-                'geom',
-                'STRAKAT-Symbole.qml',
-                'qkan_symbole.ui',
-                'Symbole',
-                2,):
+                layerbez=   enums.LAYERBEZ.STRAKAT_SYMBOLE.value,
+                table=      'symbole',
+                geom_column='geom',
+                qmlfile=    'STRAKAT-Symbole.qml',
+                filter=     '',
+                uifile=     'qkan_symbole.ui',
+                group=      'Symbole',
+                gpos=       2,
+        ):
             logger.error(
                 f"Fehler beim Einfügen des Layers STRAKAT-Symbole"
             )

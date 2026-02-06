@@ -1,12 +1,12 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis maxScale="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Relations|Temporal|Legend|Notes" hasScaleBasedVisibilityFlag="0" minScale="1e+08" version="3.28.15-Firenze" readOnly="0">
+<qgis hasScaleBasedVisibilityFlag="0" readOnly="0" maxScale="0" minScale="1e+08" version="3.28.13-Firenze" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|GeometryOptions|Temporal|Legend|Notes">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal endField="" accumulate="0" startField="" endExpression="" fixedDuration="0" mode="0" limitMode="0" durationField="" enabled="0" durationUnit="min" startExpression="">
+  <temporal durationField="" accumulate="0" enabled="0" durationUnit="min" startExpression="" fixedDuration="0" mode="0" limitMode="0" endExpression="" startField="" endField="">
     <fixedRange>
       <start></start>
       <end></end>
@@ -14,50 +14,42 @@
   </temporal>
   <customproperties>
     <Option type="Map">
-      <Option value="copy" type="QString" name="QFieldSync/action"/>
-      <Option value="{}" type="QString" name="QFieldSync/attachment_naming"/>
-      <Option value="offline" type="QString" name="QFieldSync/cloud_action"/>
-      <Option value="" type="QString" name="QFieldSync/geometry_locked_expression"/>
-      <Option value="{}" type="QString" name="QFieldSync/photo_naming"/>
-      <Option value="{}" type="QString" name="QFieldSync/relationship_maximum_visible"/>
-      <Option value="30" type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters"/>
-      <Option value="1" type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters"/>
-      <Option value="0" type="int" name="QFieldSync/tracking_measurement_type"/>
-      <Option value="30" type="int" name="QFieldSync/tracking_time_requirement_interval_seconds"/>
-      <Option value="0" type="int" name="QFieldSync/value_map_button_interface_threshold"/>
       <Option type="List" name="dualview/previewExpressions">
-        <Option value="&quot;bezeichnung&quot;" type="QString"/>
+        <Option type="QString" value="&quot;bezeichnung&quot;"/>
       </Option>
-      <Option value="0" type="int" name="embeddedWidgets/count"/>
+      <Option type="int" name="embeddedWidgets/count" value="0"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
   </customproperties>
+  <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+    <activeChecks/>
+    <checkConfiguration/>
+  </geometryOptions>
   <legend type="default-vector" showLabelLegend="0"/>
-  <referencedLayers/>
   <fieldConfiguration>
-    <field configurationFlags="None" name="pk">
+    <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="bezeichnung">
+    <field name="bezeichnung" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="gruppe">
+    <field name="gruppe" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="kommentar">
+    <field name="kommentar" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -66,22 +58,22 @@
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias field="pk" index="0" name=""/>
-    <alias field="bezeichnung" index="1" name=""/>
-    <alias field="gruppe" index="2" name=""/>
-    <alias field="kommentar" index="3" name=""/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="" index="1" field="bezeichnung"/>
+    <alias name="" index="2" field="gruppe"/>
+    <alias name="" index="3" field="kommentar"/>
   </aliases>
   <defaults>
-    <default expression="" applyOnUpdate="0" field="pk"/>
-    <default expression="" applyOnUpdate="0" field="bezeichnung"/>
-    <default expression="" applyOnUpdate="0" field="gruppe"/>
-    <default expression="" applyOnUpdate="0" field="kommentar"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="bezeichnung"/>
+    <default applyOnUpdate="0" expression="" field="gruppe"/>
+    <default applyOnUpdate="0" expression="" field="kommentar"/>
   </defaults>
   <constraints>
-    <constraint notnull_strength="1" exp_strength="0" field="pk" constraints="3" unique_strength="1"/>
-    <constraint notnull_strength="0" exp_strength="0" field="bezeichnung" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="gruppe" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="kommentar" constraints="0" unique_strength="0"/>
+    <constraint exp_strength="0" unique_strength="1" constraints="3" notnull_strength="1" field="pk"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="bezeichnung"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="gruppe"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="kommentar"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="pk"/>
@@ -93,13 +85,13 @@
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column hidden="0" type="field" width="-1" name="pk"/>
-      <column hidden="0" type="field" width="-1" name="bezeichnung"/>
-      <column hidden="0" type="field" width="-1" name="kommentar"/>
-      <column hidden="0" type="field" width="-1" name="gruppe"/>
-      <column hidden="1" type="actions" width="-1"/>
+      <column width="-1" type="field" name="pk" hidden="0"/>
+      <column width="-1" type="field" name="bezeichnung" hidden="0"/>
+      <column width="-1" type="field" name="kommentar" hidden="0"/>
+      <column width="-1" type="field" name="gruppe" hidden="0"/>
+      <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -134,16 +126,16 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="pk"/>
   </editable>
   <labelOnTop>
-    <field name="bezeichnung" labelOnTop="0"/>
-    <field name="gruppe" labelOnTop="0"/>
-    <field name="kommentar" labelOnTop="0"/>
-    <field name="pk" labelOnTop="0"/>
+    <field labelOnTop="0" name="bezeichnung"/>
+    <field labelOnTop="0" name="gruppe"/>
+    <field labelOnTop="0" name="kommentar"/>
+    <field labelOnTop="0" name="pk"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="bezeichnung"/>
-    <field reuseLastValue="0" name="gruppe"/>
-    <field reuseLastValue="0" name="kommentar"/>
-    <field reuseLastValue="0" name="pk"/>
+    <field name="bezeichnung" reuseLastValue="0"/>
+    <field name="gruppe" reuseLastValue="0"/>
+    <field name="kommentar" reuseLastValue="0"/>
+    <field name="pk" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

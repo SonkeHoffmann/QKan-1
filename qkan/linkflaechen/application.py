@@ -73,6 +73,7 @@ class LinkFl(QKanPlugin):
             text=self.tr(
                 "Zuordnung zu Teilgebiet"
             ),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_assigntgeb,
             parent=self.iface.mainWindow(),
         )
@@ -81,6 +82,7 @@ class LinkFl(QKanPlugin):
         QKan.instance.add_action(
             icon_createlinefl_path,
             text=self.tr("Erzeuge Verknüpfungslinien von Flächen zu Haltungen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_createlinefl,
             parent=self.iface.mainWindow(),
         )
@@ -91,6 +93,7 @@ class LinkFl(QKanPlugin):
             text=self.tr(
                 "Erzeuge Verknüpfungslinien von Einzeleinleitungen zu Haltungen"
             ),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_createlinesw,
             parent=self.iface.mainWindow(),
         )
@@ -99,6 +102,7 @@ class LinkFl(QKanPlugin):
         QKan.instance.add_action(
             icon_updatelinks_path,
             text=self.tr("Verknüpfungen bereinigen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_updatelinks,
             parent=self.iface.mainWindow(),
         )
@@ -107,6 +111,7 @@ class LinkFl(QKanPlugin):
         QKan.instance.add_action(
             icon_managegroups_path,
             text=self.tr("Teilgebietszuordnungen als Gruppen verwalten"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_managegroups,
             parent=self.iface.mainWindow(),
         )

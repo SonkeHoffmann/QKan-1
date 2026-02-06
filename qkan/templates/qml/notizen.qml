@@ -1,53 +1,53 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis maxScale="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|Relations|Temporal|Legend|Notes" simplifyAlgorithm="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyDrawingHints="0" symbologyReferenceScale="-1" simplifyDrawingTol="1" minScale="100000000" simplifyLocal="1" labelsEnabled="0" version="3.28.15-Firenze" readOnly="0">
+<qgis hasScaleBasedVisibilityFlag="0" readOnly="0" maxScale="0" minScale="100000000" simplifyDrawingHints="0" symbologyReferenceScale="-1" simplifyDrawingTol="1" simplifyLocal="1" labelsEnabled="0" simplifyAlgorithm="0" version="3.28.13-Firenze" simplifyMaxScale="1" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|GeometryOptions|Temporal|Legend|Notes">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
-  <temporal endField="" accumulate="0" startField="" endExpression="" fixedDuration="0" mode="0" limitMode="0" durationField="" enabled="0" durationUnit="min" startExpression="">
+  <temporal durationField="" accumulate="0" enabled="0" durationUnit="min" startExpression="" fixedDuration="0" mode="0" limitMode="0" endExpression="" startField="" endField="">
     <fixedRange>
       <start></start>
       <end></end>
     </fixedRange>
   </temporal>
-  <renderer-v2 symbollevels="0" referencescale="-1" forceraster="0" enableorderby="0" type="singleSymbol">
+  <renderer-v2 symbollevels="0" forceraster="0" referencescale="-1" type="singleSymbol" enableorderby="0">
     <symbols>
-      <symbol clip_to_extent="1" force_rhr="0" is_animated="0" type="marker" frame_rate="10" alpha="1" name="0">
+      <symbol type="marker" clip_to_extent="1" name="0" alpha="1" is_animated="0" force_rhr="0" frame_rate="10">
         <data_defined_properties>
           <Option type="Map">
-            <Option value="" type="QString" name="name"/>
+            <Option type="QString" name="name" value=""/>
             <Option name="properties"/>
-            <Option value="collection" type="QString" name="type"/>
+            <Option type="QString" name="type" value="collection"/>
           </Option>
         </data_defined_properties>
-        <layer pass="0" locked="0" class="SvgMarker" enabled="1">
+        <layer pass="0" enabled="1" class="SvgMarker" locked="0">
           <Option type="Map">
-            <Option value="0" type="QString" name="angle"/>
-            <Option value="35,35,35,255" type="QString" name="color"/>
-            <Option value="0" type="QString" name="fixedAspectRatio"/>
-            <Option value="1" type="QString" name="horizontal_anchor_point"/>
-            <Option value="amenity/amenity_information.svg" type="QString" name="name"/>
-            <Option value="0,0" type="QString" name="offset"/>
-            <Option value="3x:0,0,0,0,0,0" type="QString" name="offset_map_unit_scale"/>
-            <Option value="MM" type="QString" name="offset_unit"/>
-            <Option value="35,35,35,255" type="QString" name="outline_color"/>
-            <Option value="0.2" type="QString" name="outline_width"/>
-            <Option value="3x:0,0,0,0,0,0" type="QString" name="outline_width_map_unit_scale"/>
-            <Option value="MM" type="QString" name="outline_width_unit"/>
+            <Option type="QString" name="angle" value="0"/>
+            <Option type="QString" name="color" value="35,35,35,255"/>
+            <Option type="QString" name="fixedAspectRatio" value="0"/>
+            <Option type="QString" name="horizontal_anchor_point" value="1"/>
+            <Option type="QString" name="name" value="amenity/amenity_information.svg"/>
+            <Option type="QString" name="offset" value="0,0"/>
+            <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="offset_unit" value="MM"/>
+            <Option type="QString" name="outline_color" value="35,35,35,255"/>
+            <Option type="QString" name="outline_width" value="0.2"/>
+            <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="outline_width_unit" value="MM"/>
             <Option name="parameters"/>
-            <Option value="diameter" type="QString" name="scale_method"/>
-            <Option value="5" type="QString" name="size"/>
-            <Option value="3x:0,0,0,0,0,0" type="QString" name="size_map_unit_scale"/>
-            <Option value="MM" type="QString" name="size_unit"/>
-            <Option value="1" type="QString" name="vertical_anchor_point"/>
+            <Option type="QString" name="scale_method" value="diameter"/>
+            <Option type="QString" name="size" value="5"/>
+            <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+            <Option type="QString" name="size_unit" value="MM"/>
+            <Option type="QString" name="vertical_anchor_point" value="1"/>
           </Option>
           <data_defined_properties>
             <Option type="Map">
-              <Option value="" type="QString" name="name"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option value="collection" type="QString" name="type"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
@@ -58,46 +58,49 @@
   </renderer-v2>
   <customproperties>
     <Option type="Map">
-      <Option value="copy" type="QString" name="QFieldSync/action"/>
-      <Option value="{}" type="QString" name="QFieldSync/attachment_naming"/>
-      <Option value="offline" type="QString" name="QFieldSync/cloud_action"/>
-      <Option value="" type="QString" name="QFieldSync/geometry_locked_expression"/>
-      <Option value="{}" type="QString" name="QFieldSync/photo_naming"/>
-      <Option value="{}" type="QString" name="QFieldSync/relationship_maximum_visible"/>
-      <Option value="30" type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters"/>
-      <Option value="1" type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters"/>
-      <Option value="0" type="int" name="QFieldSync/tracking_measurement_type"/>
-      <Option value="30" type="int" name="QFieldSync/tracking_time_requirement_interval_seconds"/>
-      <Option value="0" type="int" name="QFieldSync/value_map_button_interface_threshold"/>
+      <Option type="QString" name="QFieldSync/action" value="copy"/>
+      <Option type="QString" name="QFieldSync/attachment_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/cloud_action" value="offline"/>
+      <Option type="QString" name="QFieldSync/geometry_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/photo_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/relationship_maximum_visible" value="{}"/>
+      <Option type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30"/>
+      <Option type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1"/>
+      <Option type="int" name="QFieldSync/tracking_measurement_type" value="0"/>
+      <Option type="int" name="QFieldSync/tracking_time_requirement_interval_seconds" value="30"/>
+      <Option type="int" name="QFieldSync/value_map_button_interface_threshold" value="0"/>
       <Option type="List" name="dualview/previewExpressions">
-        <Option value="&quot;notiz&quot;" type="QString"/>
+        <Option type="QString" value="&quot;notiz&quot;"/>
       </Option>
-      <Option value="0" type="int" name="embeddedWidgets/count"/>
-      <Option name="variableNames"/>
-      <Option name="variableValues"/>
+      <Option type="int" name="embeddedWidgets/count" value="0"/>
+      <Option type="invalid" name="variableNames"/>
+      <Option type="invalid" name="variableValues"/>
     </Option>
   </customproperties>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <layerOpacity>1</layerOpacity>
+  <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+    <activeChecks/>
+    <checkConfiguration/>
+  </geometryOptions>
   <legend type="default-vector" showLabelLegend="0"/>
-  <referencedLayers/>
   <fieldConfiguration>
-    <field configurationFlags="None" name="pk">
+    <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="notiz">
+    <field name="notiz" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="None" name="createdat">
+    <field name="createdat" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -106,19 +109,19 @@
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias field="pk" index="0" name=""/>
-    <alias field="notiz" index="1" name=""/>
-    <alias field="createdat" index="2" name=""/>
+    <alias name="" index="0" field="pk"/>
+    <alias name="" index="1" field="notiz"/>
+    <alias name="" index="2" field="createdat"/>
   </aliases>
   <defaults>
-    <default expression="" applyOnUpdate="0" field="pk"/>
-    <default expression="" applyOnUpdate="0" field="notiz"/>
-    <default expression="" applyOnUpdate="0" field="createdat"/>
+    <default applyOnUpdate="0" expression="" field="pk"/>
+    <default applyOnUpdate="0" expression="" field="notiz"/>
+    <default applyOnUpdate="0" expression="" field="createdat"/>
   </defaults>
   <constraints>
-    <constraint notnull_strength="1" exp_strength="0" field="pk" constraints="3" unique_strength="1"/>
-    <constraint notnull_strength="0" exp_strength="0" field="notiz" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="createdat" constraints="0" unique_strength="0"/>
+    <constraint exp_strength="0" unique_strength="1" constraints="3" notnull_strength="1" field="pk"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="notiz"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="createdat"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="pk"/>
@@ -129,12 +132,12 @@
   <attributeactions>
     <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column hidden="0" type="field" width="-1" name="pk"/>
-      <column hidden="0" type="field" width="-1" name="notiz"/>
-      <column hidden="0" type="field" width="-1" name="createdat"/>
-      <column hidden="1" type="actions" width="-1"/>
+      <column width="-1" type="field" name="pk" hidden="0"/>
+      <column width="-1" type="field" name="notiz" hidden="0"/>
+      <column width="-1" type="field" name="createdat" hidden="0"/>
+      <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -168,14 +171,14 @@ def my_form_open(dialog, layer, feature):
     <field editable="1" name="pk"/>
   </editable>
   <labelOnTop>
-    <field name="createdat" labelOnTop="0"/>
-    <field name="notiz" labelOnTop="0"/>
-    <field name="pk" labelOnTop="0"/>
+    <field labelOnTop="0" name="createdat"/>
+    <field labelOnTop="0" name="notiz"/>
+    <field labelOnTop="0" name="pk"/>
   </labelOnTop>
   <reuseLastValue>
-    <field reuseLastValue="0" name="createdat"/>
-    <field reuseLastValue="0" name="notiz"/>
-    <field reuseLastValue="0" name="pk"/>
+    <field name="createdat" reuseLastValue="0"/>
+    <field name="notiz" reuseLastValue="0"/>
+    <field name="pk" reuseLastValue="0"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>

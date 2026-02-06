@@ -314,7 +314,7 @@ class FloodanimationTask:
         # timeController.setTemporalExtents(timerange)
 
         # set navigation mode to 'animated'
-        timeController.setNavigationMode(1)
+        # timeController.setNavigationMode(1)
 
         urlWithParams = f"crs=EPSG:{self.epsg}&format=image/png&layers=web&" \
                         f"styles&url=https://sgx.geodatenzentrum.de/wms_topplus_open"

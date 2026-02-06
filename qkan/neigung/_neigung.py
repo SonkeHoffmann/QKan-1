@@ -1,9 +1,10 @@
 from qgis.utils import iface
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger, QkanError
+from qkan.utils import  QkanUserError, QkanDbError, QkanAbortError, get_logger
 from qgis import processing
-
+import requests
+import re
 
 import urllib.request
 import os
@@ -43,7 +44,13 @@ class NeigungTask:
         return kacheln
 
     def download(self, base_url, x, y):
-        return f"{base_url}dgm1_32_{x}_{y}_1_nw_2022.tif"
+        prefix = f"dgm1_32_{x}_{y}_1_nw"
+        response = requests.get(base_url)
+        xml = response.text
+
+        pattern = fr'name="({prefix}[^"]+)"'
+        files = re.findall(pattern, xml)
+        return files
 
     def laden(self, url, verzeichnis):
         with urllib.request.urlopen(url) as response:
@@ -51,8 +58,11 @@ class NeigungTask:
                 with open(verzeichnis, 'wb') as out_file:
                     out_file.write(response.read())
             else:
-                logger.error('Daten konnten nicht heruntergeladen werden')
-                raise QkanError
+                msg = (
+                    f"Daten konnten nicht heruntergeladen werden"
+                )
+                logger.warning_user(msg)
+                raise QkanUserError(msg)
 
 
 
@@ -60,7 +70,7 @@ class NeigungTask:
         layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
         parameter = {
             'INPUT': layer,
-            'TARGET_CRS': 'EPSG:'+self.epsg,
+            'TARGET_CRS': 'EPSG:'+str(self.epsg),
             'OUTPUT': 'memory:Reprojected'
         }
         result = processing.run('native:reprojectlayer', parameter)['OUTPUT']
@@ -80,10 +90,10 @@ class NeigungTask:
 
             for x, y in kacheln:
                 url = self.download(self.base_url, x, y)
-                dateiname = os.path.basename(url)
+                dateiname = os.path.basename(url[0])
                 ordner = os.path.join(self.zielordner_dmg, dateiname)
-                self.laden(url, ordner)
-                dgm_layer.append(self.zielordner_dmg+'/'+dateiname)
+                self.laden(self.base_url + url[0], ordner)
+                dgm_layer.append(self.zielordner_dmg + '/' + dateiname)
 
             #DGM Daten verschmelzen
             dgm = processing.run("gdal:merge", {
@@ -92,9 +102,21 @@ class NeigungTask:
                 'DATA_TYPE': 5, 'OUTPUT': self.zielordner_dmg+'/'+'dgm_gesamt.tif'})
 
             dgm_gesamt = self.zielordner_dmg+'/'+'dgm_gesamt.tif'
+            if dgm_gesamt == '':
+                msg = (
+                    f"Keine Daten ausgewählt"
+                )
+                logger.warning_user(msg)
+                raise QkanUserError(msg)
 
         elif self.cb['cb2']:
             dgm_gesamt = self.speicherort_dgm
+            if dgm_gesamt == '':
+                msg = (
+                    f"Keine Daten ausgewählt"
+                )
+                logger.warning_user(msg)
+                raise QkanUserError(msg)
 
         #Hangneigung ermitteln
 
