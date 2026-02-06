@@ -10,11 +10,10 @@ import psycopg2
 import psycopg2.extras
 import getpass
 import datetime
-import json
 import sqlite3
 from typing import Optional, Dict, List, Any, Tuple, Callable
 
-from qgis.PyQt.QtCore import QSettings, QCoreApplication
+from qgis.PyQt.QtCore import QSettings
 from qgis.PyQt.QtWidgets import QProgressBar, QApplication
 from qgis.core import QgsProject, QgsVectorLayer, QgsDataSourceUri
 from qgis.utils import spatialite_connect
@@ -408,12 +407,6 @@ class UploadPostgisTask:
             regular_tables.append(table_name)
         
         return regular_tables
-
-    def _get_geometry_info(self, table_name: str) -> Optional[Dict[str, Any]]:
-        """Geometrie-Information für eine Tabelle ermitteln (Hauptgeometrie)"""
-        # Hole alle Geometrien und gib die erste zurück (für Kompatibilität)
-        all_geoms = self._get_all_geometry_info(table_name)
-        return all_geoms[0] if all_geoms else None
 
     def _get_all_geometry_info(self, table_name: str) -> List[Dict[str, Any]]:
         """ALLE Geometrie-Informationen für eine Tabelle ermitteln (z.B. geom UND geop)"""
@@ -1535,78 +1528,4 @@ class UploadPostgisTask:
             
         finally:
             self._disconnect_postgis()
-
-
-def upload_sqlite_to_postgis(
-    source_db: str,
-    target_host: str,
-    target_database: str,
-    target_user: str,
-    target_password: str = "",
-    target_port: int = 5432,
-    schema_name: str = "qkan",
-    overwrite: bool = False,
-    srid: int = 25832
-) -> bool:
-    """
-    Convenience-Funktion für den direkten Upload einer SQLite-Datenbank nach PostGIS.
-    
-    Diese Funktion kann auch außerhalb von QGIS verwendet werden.
-    
-    Args:
-        source_db: Pfad zur SQLite-Quelldatenbank
-        target_host: Hostname des PostGIS-Servers
-        target_database: Name der Zieldatenbank
-        target_user: Benutzername für PostGIS
-        target_password: Passwort für PostGIS
-        target_port: Port des PostGIS-Servers (Standard: 5432)
-        schema_name: Schema-Name in PostGIS (Standard: qkan)
-        overwrite: Bestehende Tabellen überschreiben
-        srid: Standard-SRID für Geometrien
-        
-    Returns:
-        bool: True wenn erfolgreich
-    """
-    # Verbindungsstring erstellen
-    connection_string = f"{target_host} ({target_host}:{target_port})"
-    
-    # Temporär Verbindungsparameter in QSettings speichern
-    settings = QSettings()
-    temp_connection_name = f"_temp_upload_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-    base_key = f"PostgreSQL/connections/{temp_connection_name}"
-    
-    settings.setValue(f"{base_key}/host", target_host)
-    settings.setValue(f"{base_key}/port", target_port)
-    settings.setValue(f"{base_key}/username", target_user)
-    settings.setValue(f"{base_key}/password", target_password)
-    settings.setValue(f"{base_key}/database", target_database)
-    
-    try:
-        task = UploadPostgisTask(
-            server_connection=connection_string,
-            target_database=target_database,
-            source_database_file=source_db,
-            schema_name=schema_name,
-            overwrite=overwrite,
-            add_layers_to_qgis=False,
-            srid=srid
-        )
-        
-        # Verbindungsparameter direkt setzen
-        task.connection_params = {
-            'host': target_host,
-            'port': target_port,
-            'user': target_user,
-            'password': target_password,
-            'database': target_database,
-            'sslmode': 'prefer'
-        }
-        
-        return task.run()
-        
-    finally:
-        # Temporäre Verbindung wieder entfernen
-        settings.beginGroup(f"PostgreSQL/connections/{temp_connection_name}")
-        settings.remove("")
-        settings.endGroup()
 

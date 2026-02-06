@@ -306,7 +306,6 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
             return
         
         from .export_sql_dump import export_to_sql_dump
-        from qgis.PyQt.QtWidgets import QFileDialog
         
         exported_files = []
         
@@ -533,7 +532,7 @@ GBD WEBSUITE SPEZIFISCH:
                 try:
                     # Fortschrittsanzeige für mehrere Dateien
                     if total_files > 1:
-                        self.label_progress_status.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
+                        self.label_progress_tables.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
                         QApplication.processEvents()
                     
                     logger.info(f"Starte Upload von: {source_file}")
@@ -691,13 +690,6 @@ GBD WEBSUITE SPEZIFISCH:
         self.label_progress_records.setText(f"{table_name}: {current}/{total} Datensätze")
         QApplication.processEvents()
     
-    def is_valid_database_name(self, name: str) -> bool:
-        """Validiert einen Datenbanknamen"""
-        import re
-        # PostgreSQL Datenbankname-Regeln
-        pattern = r'^[a-zA-Z_][a-zA-Z0-9_]*$'
-        return bool(re.match(pattern, name)) and len(name) <= 63
-
     def is_valid_schema_name(self, name: str) -> bool:
         """Validiert einen Schema-Namen"""
         import re
@@ -874,23 +866,6 @@ GBD WEBSUITE SPEZIFISCH:
                 f"{current_text} - ⚠️ Kein direkter Zugriff möglich"
             )
 
-    def get_selected_schema(self):
-        """Ausgewähltes Schema zurückgeben"""
-        if self.cb_create_new_schema.isChecked():
-            return self.le_new_schema_name.text().strip()
-        else:
-            current_item = self.listWidget_schemas.currentItem()
-            if current_item:
-                return current_item.text()
-        return None
-
-    def get_target_database(self):
-        """Zieldatenbank zurückgeben (automatisch ermittelt)"""
-        return self.target_database
-
-    def should_overwrite(self):
-        """Überprüfen, ob bestehende Tabellen überschrieben werden sollen"""
-        return self.cb_overwrite_existing.isChecked()
     def upload_qgis_project(self, schema: str):
         """Lädt das QGIS-Projekt in die PostgreSQL-Datenbank hoch."""
         from qgis.core import QgsProject
