@@ -39,25 +39,25 @@
     <property name="geometry">
      <rect>
       <x>290</x>
-      <y>220</y>
+      <y>180</y>
       <width>281</width>
       <height>81</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für zusätzliche Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_14">
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>200</y>
+      <y>160</y>
       <width>81</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -93,10 +93,12 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Bezeichnung</string>
+     <string>Name</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -108,7 +110,7 @@
       <x>10</x>
       <y>40</y>
       <width>561</width>
-      <height>151</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
@@ -118,13 +120,13 @@
      </font>
     </property>
     <property name="title">
-     <string>Daten</string>
+     <string/>
     </property>
     <widget class="QLineEdit" name="zufluss">
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>30</y>
+       <y>10</y>
        <width>111</width>
        <height>21</height>
       </rect>
@@ -136,18 +138,18 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mittelwert der Einleitmenge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Direktzufluss gem. HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Mittelwert der Einleitmenge</string>
+      <string>Direktzufluss gem. HYSTEM-EXTRAN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
      <property name="geometry">
       <rect>
-       <x>440</x>
-       <y>60</y>
-       <width>41</width>
+       <x>410</x>
+       <y>40</y>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
@@ -158,14 +160,14 @@
       </font>
      </property>
      <property name="text">
-      <string>Zusatz</string>
+      <string>Adresszusatz</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>60</y>
+       <y>40</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -177,14 +179,14 @@
       </font>
      </property>
      <property name="text">
-      <string>Nr</string>
+      <string>H.-Nr.</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="hausnummer">
      <property name="geometry">
       <rect>
        <x>360</x>
-       <y>60</y>
+       <y>40</y>
        <width>41</width>
        <height>21</height>
       </rect>
@@ -196,17 +198,17 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausnummer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Hausnummer</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>10</y>
        <width>111</width>
        <height>21</height>
       </rect>
@@ -228,9 +230,9 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>60</y>
+       <y>41</y>
        <width>111</width>
-       <height>22</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -240,10 +242,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>Name der Haltung, der die Fläche zugeordnet ist</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name der Haltung, welcher die Fläche zugeordnet ist&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Name der Haltung, der die Fläche zugeordnet ist</string>
+      <string>Name der Haltung, welcher die Fläche zugeordnet ist</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -253,7 +255,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -275,7 +277,7 @@
      <property name="geometry">
       <rect>
        <x>360</x>
-       <y>30</y>
+       <y>10</y>
        <width>181</width>
        <height>21</height>
       </rect>
@@ -287,42 +289,17 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name der Straße&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Name der Straße</string>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="einzugsgebiet">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>90</y>
-       <width>111</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auswahl des Einzugsgebiets&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Auswahl des Einzugsgebiets</string>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>30</y>
+       <y>10</y>
        <width>51</width>
        <height>21</height>
       </rect>
@@ -337,33 +314,11 @@
       <string>Straße</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_23">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>90</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Einzugsgebiet</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="zusatz">
      <property name="geometry">
       <rect>
        <x>500</x>
-       <y>60</y>
+       <y>40</y>
        <width>41</width>
        <height>21</height>
       </rect>
@@ -375,17 +330,17 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adresszusatz&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Adresszusatz</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
        <x>260</x>
-       <y>30</y>
+       <y>10</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -400,55 +355,11 @@
       <string>l/s</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="schnam">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>120</y>
-       <width>111</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;angeschlossener Schacht&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>angeschlossener Schacht</string>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_24">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>120</y>
-       <width>80</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Schacht</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_25">
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>90</y>
+       <y>70</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -460,7 +371,7 @@
       </font>
      </property>
      <property name="text">
-      <string>EW</string>
+      <string>Einwohnerwerte</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -469,10 +380,10 @@
     <widget class="QLineEdit" name="ew">
      <property name="geometry">
       <rect>
-       <x>362</x>
-       <y>90</y>
-       <width>81</width>
-       <height>20</height>
+       <x>420</x>
+       <y>70</y>
+       <width>121</width>
+       <height>21</height>
       </rect>
      </property>
     </widget>
@@ -481,7 +392,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>200</y>
+      <y>160</y>
       <width>271</width>
       <height>101</height>
      </rect>
@@ -533,10 +444,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -611,7 +522,6 @@
   <tabstop>elnam</tabstop>
   <tabstop>zufluss</tabstop>
   <tabstop>haltnam</tabstop>
-  <tabstop>einzugsgebiet</tabstop>
   <tabstop>strassenname</tabstop>
   <tabstop>hausnummer</tabstop>
   <tabstop>zusatz</tabstop>

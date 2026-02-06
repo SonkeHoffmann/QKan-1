@@ -3366,6 +3366,68 @@ class Subkans_funkt:
             pass
 
         try:
+            db.sql("""UPDATE haltungen_substanz_bewertung 
+            							SET objektklasse_dichtheit =
+            							(SELECT min(Zustandsklasse_D) 
+            							FROM substanz_haltung_bewertung
+            							WHERE substanz_haltung_bewertung.untersuchhal = haltungen_substanz_bewertung.haltnam AND Zustandsklasse_D <> '-'
+            							GROUP BY substanz_haltung_bewertung.untersuchhal);""")
+
+        except:
+            pass
+
+        try:
+            db.sql("""UPDATE haltungen_substanz_bewertung 
+            							SET objektklasse_betriebssicherheit =
+            							(SELECT min(Zustandsklasse_B) 
+            							FROM substanz_haltung_bewertung
+            							WHERE substanz_haltung_bewertung.untersuchhal = haltungen_substanz_bewertung.haltnam AND Zustandsklasse_D <> '-'
+            							GROUP BY substanz_haltung_bewertung.untersuchhal);""")
+
+        except:
+            pass
+
+        try:
+            db.sql("""UPDATE haltungen_substanz_bewertung 
+            							SET objektklasse_standsicherheit =
+            							(SELECT min(Zustandsklasse_S) 
+            							FROM substanz_haltung_bewertung
+            							WHERE substanz_haltung_bewertung.untersuchhal = haltungen_substanz_bewertung.haltnam AND Zustandsklasse_D <> '-'
+            							GROUP BY substanz_haltung_bewertung.untersuchhal);""")
+
+        except:
+            pass
+
+        try:
+            db.sql("""Update
+                    haltungen_substanz_bewertung
+                    SET objektklasse_gesamt = (
+                    SELECT
+                    CASE
+                    WHEN NOT EXISTS(SELECT 1 FROM untersuchdat_haltung_bewertung WHERE untersuchdat_haltung_bewertung.untersuchhal = haltungen_untersucht_bewertung.haltnam)
+                    THEN '-'
+                    WHEN typeof(objektklasse_dichtheit) = 'text' AND  objektklasse_dichtheit != '-' THEN objektklasse_dichtheit
+                    WHEN typeof(objektklasse_standsicherheit) = 'text' AND  objektklasse_standsicherheit != '-' THEN objektklasse_standsicherheit
+                    WHEN typeof(objektklasse_betriebssicherheit) = 'text' AND  objektklasse_betriebssicherheit != '-' THEN objektklasse_betriebssicherheit
+                    WHEN objektklasse_dichtheit = '-' AND objektklasse_standsicherheit = '-' AND objektklasse_betriebssicherheit = '-' THEN '5'
+
+                    ELSE (
+                    SELECT MIN(wert)
+                    FROM (
+                    SELECT CAST(objektklasse_dichtheit AS REAL) AS wert
+                    UNION ALL
+                    SELECT CAST(objektklasse_standsicherheit AS REAL)
+                    UNION ALL
+                    SELECT CAST(objektklasse_betriebssicherheit AS REAL)
+                        )
+                        )
+                    END AS ergebnis
+                    );""")
+            db.commit()
+        except:
+            pass
+
+        try:
             db.sql("""ALTER TABLE substanz_haltung_bewertung ADD COLUMN Schadensart TEXT ;""")
         except:
             pass

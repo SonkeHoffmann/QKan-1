@@ -52,7 +52,7 @@
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>40</width>
+      <width>51</width>
       <height>20</height>
      </rect>
     </property>
@@ -60,6 +60,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -107,7 +109,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;Platz für eigene Kommentare.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für eigene Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_22">
@@ -220,10 +222,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Länge&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Länge</string>
+      <string/>
      </property>
     </widget>
     <widget class="QComboBox" name="entwart">
@@ -267,10 +269,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profiltyp für das Rohr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Profiltyp für das Rohr</string>
+      <string/>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -349,10 +351,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Höhe&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Höhe</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_16">
@@ -390,10 +392,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bedeutung hängt vom Profiltyp ab&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Breite</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -492,10 +494,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aussendurchmesser&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Aussendurchmesser</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_72">
@@ -527,10 +529,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Material des Schachtes (z.B. Beton, Gussstahl etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Material des Schachtes (z.B. Beton, Gussstahl etc.)</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_23">
@@ -562,10 +564,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baujahr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Baujahr</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_62">
@@ -657,10 +659,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eigentürmer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Eigentürmer</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -698,10 +700,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Straßenname&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Straßenname</string>
+      <string/>
      </property>
     </widget>
    </widget>
@@ -721,15 +723,15 @@
      </font>
     </property>
     <property name="title">
-     <string>Endschacht</string>
+     <string/>
     </property>
     <widget class="QLineEdit" name="sohleunten">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>60</y>
-       <width>120</width>
-       <height>20</height>
+       <y>49</y>
+       <width>111</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -739,18 +741,18 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>von Schachtsohle abweichende Sohlhöhe</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>von Schachtsohle abweichende Sohlhöhe</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
-       <width>71</width>
+       <y>10</y>
+       <width>91</width>
        <height>21</height>
       </rect>
      </property>
@@ -761,16 +763,16 @@
       </font>
      </property>
      <property name="text">
-      <string>Name</string>
+      <string>Schacht unten</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>101</width>
-       <height>21</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -780,15 +782,16 @@
       </font>
      </property>
      <property name="text">
-      <string>abw. Sohlhöhe</string>
+      <string>Sohlhöhe
+Haltungsende</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_15">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>60</y>
-       <width>21</width>
+       <x>250</x>
+       <y>50</y>
+       <width>61</width>
        <height>21</height>
       </rect>
      </property>
@@ -799,16 +802,16 @@
       </font>
      </property>
      <property name="text">
-      <string>m</string>
+      <string>m ü. NHN</string>
      </property>
     </widget>
     <widget class="QComboBox" name="schunten">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>30</y>
+       <y>9</y>
        <width>170</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -844,13 +847,13 @@
      </font>
     </property>
     <property name="title">
-     <string>Anfangsschacht</string>
+     <string/>
     </property>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>10</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -862,16 +865,16 @@
       </font>
      </property>
      <property name="text">
-      <string>Name</string>
+      <string>Schacht oben</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>91</width>
-       <height>21</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -881,15 +884,16 @@
       </font>
      </property>
      <property name="text">
-      <string>abw. Sohlhöhe</string>
+      <string>Sohlhöhe
+Haltungsanfang</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_14">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>60</y>
-       <width>21</width>
+       <x>250</x>
+       <y>50</y>
+       <width>61</width>
        <height>21</height>
       </rect>
      </property>
@@ -900,16 +904,16 @@
       </font>
      </property>
      <property name="text">
-      <string>m</string>
+      <string>m ü. NHN</string>
      </property>
     </widget>
     <widget class="QComboBox" name="schoben">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>30</y>
+       <y>9</y>
        <width>170</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -932,9 +936,9 @@
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>60</y>
-       <width>120</width>
-       <height>20</height>
+       <y>49</y>
+       <width>111</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -944,10 +948,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>von Schachtsohle abweichende Sohlhöhe</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>von Schachtsohle abweichende Sohlhöhe</string>
+      <string/>
      </property>
     </widget>
    </widget>
@@ -985,10 +989,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>

@@ -23,23 +23,16 @@ logger = get_logger("QKan.tools.k_bericht")
 
 
 def bericht(
-    db_qkan, filename, auswahl
+    db_qkan, filename, auswahl, art
 ) -> None:
     """Erzeugt Haltungsberichte.
     """
-
-    #vorher layout ändern und positionierung ändenr
-    #sowie hinterher auch alles wieder zurückändern
+    #TODO: unterscheiden nach art ob _bewertung oder _subkans genutzt werden soll
 
     #Layout verändern
     table = 'untersuchdat_haltung_bewertung'
     layernam = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
     if db_qkan.attrlist(table) != []:
-        # x = QgsProject.instance()
-        # try:
-        #     x.removeMapLayer(x.mapLayersByName(layernam)[0].id())
-        # except:
-        #     pass
         loadLayer(
             layerbez=layernam,
             table=table,
@@ -219,7 +212,7 @@ def bericht(
             layerbez=layernam,
             table=table,
             geom_column='geom',
-            qmlfile='untersuchdat_haltung_bewertung_dwa.qml',
+            qmlfile='untersuchdat_haltung_dwa.qml',
             group=['qkan', 'Ergebnisse'],
         )
 
