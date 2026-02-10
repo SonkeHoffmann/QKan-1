@@ -49,7 +49,7 @@ class _Dialog(QDialog):
 
 class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
 
-    buttonBox: QDialogButtonBox
+    buttonBox_2: QDialogButtonBox
     pushButton: QPushButton
     pushButton_2: QPushButton
     pushButton_3: QPushButton
@@ -78,7 +78,7 @@ class LaengsDialog(_Dialog, LAENGS_CLASS):  # type: ignore
         super().__init__(default_dir, tr, parent)
 
         # Attach events
-        help_button = self.buttonBox.button(QDialogButtonBox.Help)
+        help_button = self.buttonBox_2.button(QDialogButtonBox.Help)
         help_button.clicked.disconnect()
         help_button.clicked.connect(self.click_help)
         self.pushButton.clicked.connect(self.export_cad)

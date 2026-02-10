@@ -30,7 +30,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>120</y>
+      <y>90</y>
       <width>321</width>
       <height>131</height>
      </rect>
@@ -60,10 +60,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -190,7 +190,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>280</y>
+      <y>250</y>
       <width>661</width>
       <height>101</height>
      </rect>
@@ -202,10 +202,10 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;Platz für eigene Kommentare.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für eigene Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -221,6 +221,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -231,7 +233,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>90</y>
       <width>321</width>
       <height>131</height>
      </rect>
@@ -287,9 +289,9 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>30</y>
+       <y>29</y>
        <width>151</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -312,16 +314,16 @@
      <property name="geometry">
       <rect>
        <x>161</x>
-       <y>60</y>
+       <y>59</y>
        <width>81</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baujahr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Baujahr</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_18">
@@ -347,9 +349,9 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>90</y>
+       <y>91</y>
        <width>151</width>
-       <height>22</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -359,10 +361,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eigentümer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Eigentümer</string>
+      <string/>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -389,9 +391,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>260</y>
+      <y>225</y>
       <width>81</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -410,7 +412,7 @@
       <x>350</x>
       <y>40</y>
       <width>321</width>
-      <height>71</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -420,14 +422,14 @@
      </font>
     </property>
     <property name="title">
-     <string>Endschacht</string>
+     <string/>
     </property>
     <widget class="QLabel" name="label_9">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
-       <width>71</width>
+       <y>10</y>
+       <width>91</width>
        <height>21</height>
       </rect>
      </property>
@@ -438,16 +440,16 @@
       </font>
      </property>
      <property name="text">
-      <string>Name</string>
+      <string>Schacht unten</string>
      </property>
     </widget>
     <widget class="QComboBox" name="schunten">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>30</y>
+       <y>9</y>
        <width>170</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -473,7 +475,7 @@
       <x>10</x>
       <y>40</y>
       <width>321</width>
-      <height>71</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -483,13 +485,13 @@
      </font>
     </property>
     <property name="title">
-     <string>Anfangsschacht</string>
+     <string/>
     </property>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>10</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -501,16 +503,16 @@
       </font>
      </property>
      <property name="text">
-      <string>Name</string>
+      <string>Schacht oben</string>
      </property>
     </widget>
     <widget class="QComboBox" name="schoben">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>30</y>
+       <y>9</y>
        <width>170</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">

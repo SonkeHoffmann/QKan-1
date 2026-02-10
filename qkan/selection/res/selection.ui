@@ -12,8 +12,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>500</width>
-    <height>350</height>
+    <width>250</width>
+    <height>150</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>388</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -24,320 +30,376 @@
     <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
    <item>
-    <widget class="QGroupBox" name="gb_choiceObjects">
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
      </property>
-     <property name="title">
-      <string>Auszuwählende Objekte</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QCheckBox" name="cb_selectHaltungen">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="statusTip">
-         <string>Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt</string>
-        </property>
-        <property name="text">
-         <string>Haltungen</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="cb_selectSchaechte">
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="statusTip">
-         <string>Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt</string>
-        </property>
-        <property name="text">
-         <string>Schächte</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="cb_selectFlaechen">
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="statusTip">
-         <string>Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt</string>
-        </property>
-        <property name="text">
-         <string>Einzelflächen</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_choiceObjects_2">
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="title">
-      <string/>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bitte zuerst Schacht markieren, dann:</string>
-        </property>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QPushButton" name="obj_oberhalb">
-        <property name="minimumSize">
-         <size>
-          <width>315</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-          <kerning>true</kerning>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>518</width>
+        <height>348</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QGroupBox" name="gb_choiceObjects">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+           <pointsize>8</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string>Auszuwählende Objekte</string>
+         </property>
+         <widget class="QCheckBox" name="cb_selectHaltungen">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>23</y>
+            <width>82</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="statusTip">
+           <string>Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt</string>
+          </property>
+          <property name="text">
+           <string>Haltungen</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="cb_selectSchaechte">
+          <property name="geometry">
+           <rect>
+            <x>172</x>
+            <y>23</y>
+            <width>75</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="statusTip">
+           <string>Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt</string>
+          </property>
+          <property name="text">
+           <string>Schächte</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="cb_selectFlaechen">
+          <property name="geometry">
+           <rect>
+            <x>334</x>
+            <y>23</y>
+            <width>98</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="statusTip">
+           <string>Aktiviert Auswahl. Wenn deaktiviert, werden alle Entwässerungssysteme berücksichtigt</string>
+          </property>
+          <property name="text">
+           <string>Einzelflächen</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="gb_choiceObjects_2">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Bitte zuerst Schacht markieren, dann:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="obj_oberhalb">
+            <property name="minimumSize">
+             <size>
+              <width>315</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+              <kerning>true</kerning>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
     text-align: left;
     padding-left: 8px;
 }</string>
-        </property>
-        <property name="text">
-         <string>Objekte oberhalb</string>
-        </property>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QPushButton" name="obj_unterhalb">
-        <property name="minimumSize">
-         <size>
-          <width>315</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
+            </property>
+            <property name="text">
+             <string>Objekte oberhalb</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="obj_unterhalb">
+            <property name="minimumSize">
+             <size>
+              <width>315</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
     text-align: left;
     padding-left: 8px;
 }</string>
-        </property>
-        <property name="text">
-         <string>Objekte unterhalb</string>
-        </property>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QPushButton" name="fliessweg">
-        <property name="minimumSize">
-         <size>
-          <width>315</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
+            </property>
+            <property name="text">
+             <string>Objekte unterhalb</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="fliessweg">
+            <property name="minimumSize">
+             <size>
+              <width>315</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
     text-align: left;
     padding-left: 8px;
 }</string>
-        </property>
-        <property name="text">
-         <string>längsten Fließweg oberhalb</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bitte zuerst zwei Schächte oder zwei Haltungen markieren, dann:</string>
-        </property>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QPushButton" name="obj_zwischen">
-        <property name="minimumSize">
-         <size>
-          <width>315</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
+            </property>
+            <property name="text">
+             <string>längsten Fließweg oberhalb</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Bitte zuerst zwei Schächte oder zwei Haltungen markieren, dann:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="obj_zwischen">
+            <property name="minimumSize">
+             <size>
+              <width>315</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
     text-align: left;
     padding-left: 8px;
 }</string>
-        </property>
-        <property name="text">
-         <string>kürzesten Weg zwischen den markierten Elementen</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Bitte zuerst Teilgebiete markieren, dann:</string>
-        </property>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QPushButton" name="obj_innerhalb">
-        <property name="minimumSize">
-         <size>
-          <width>315</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
+            </property>
+            <property name="text">
+             <string>kürzesten Weg zwischen den markierten Elementen</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Bitte zuerst Teilgebiete markieren, dann:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="obj_innerhalb">
+            <property name="minimumSize">
+             <size>
+              <width>315</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
     text-align: left;
     padding-left: 8px;
 }</string>
-        </property>
-        <property name="text">
-         <string>Objekte innerhalb von gewählten Teilgebieten</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+            </property>
+            <property name="text">
+             <string>Objekte innerhalb von gewählten Teilgebieten</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -345,7 +407,7 @@
      <property name="font">
       <font>
        <family>Tahoma</family>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -368,6 +430,8 @@
     </widget>
    </item>
   </layout>
+  <zorder>scrollArea</zorder>
+  <zorder>button_box</zorder>
  </widget>
  <resources/>
  <connections>

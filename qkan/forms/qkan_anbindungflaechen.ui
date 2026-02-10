@@ -35,7 +35,7 @@
       <x>10</x>
       <y>10</y>
       <width>551</width>
-      <height>101</height>
+      <height>91</height>
      </rect>
     </property>
     <property name="font">
@@ -47,7 +47,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Verbindungsdaten</string>
+     <string>Anbindungen Einzelflächen</string>
     </property>
     <widget class="QLabel" name="label_23">
      <property name="geometry">
@@ -67,7 +67,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Haltungsfläche (tezg)</string>
+      <string>Haltungsfläche</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -76,17 +76,17 @@
     <widget class="QComboBox" name="haltnam">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>100</x>
        <y>60</y>
        <width>131</width>
        <height>22</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name der angebundenen Haltung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltung, welche die Fläche anbindet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Name der angebundenen Haltung</string>
+      <string>Haltung, welche die Fläche anbindet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -119,17 +119,17 @@
     <widget class="QComboBox" name="flnam">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>100</x>
        <y>30</y>
        <width>131</width>
        <height>22</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name der angebundenen Fläche&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name der angebundenen Einzelfläche&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Name der angebundenen Fläche</string>
+      <string>Name der angebundenen Einzelfläche</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -153,7 +153,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Fläche</string>
+      <string>Einzelfläche</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -162,7 +162,7 @@
     <widget class="QComboBox" name="tezgnam">
      <property name="geometry">
       <rect>
-       <x>400</x>
+       <x>360</x>
        <y>30</y>
        <width>131</width>
        <height>22</height>
@@ -181,17 +181,17 @@
     <widget class="QComboBox" name="teilgebiet">
      <property name="geometry">
       <rect>
-       <x>400</x>
+       <x>360</x>
        <y>60</y>
        <width>131</width>
        <height>22</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu einem benutzerdefinierten Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Zuordnung zu einem benutzerdefinierten Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -226,9 +226,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>260</y>
+      <y>245</y>
       <width>81</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -245,9 +245,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>280</y>
+      <y>270</y>
       <width>551</width>
-      <height>71</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="font">
@@ -257,17 +257,17 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;Platz für eigene Kommentare.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für eigene Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>110</y>
       <width>551</width>
       <height>131</height>
      </rect>
@@ -379,10 +379,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anzahl der Speicher&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Anzahl der Speicher</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_11">

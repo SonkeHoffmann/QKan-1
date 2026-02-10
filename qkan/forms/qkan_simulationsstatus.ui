@@ -42,10 +42,12 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Bezeichnung</string>
+     <string>Name</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -54,9 +56,9 @@
    <widget class="QLineEdit" name="bezeichnung">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>90</x>
       <y>10</y>
-      <width>151</width>
+      <width>191</width>
       <height>20</height>
      </rect>
     </property>
@@ -74,9 +76,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>70</y>
       <width>271</width>
-      <height>241</height>
+      <height>211</height>
      </rect>
     </property>
     <property name="font">
@@ -86,13 +88,13 @@
      </font>
     </property>
     <property name="title">
-     <string>Daten</string>
+     <string>Nr. Planungsstatus gemäß: </string>
     </property>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>30</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -104,35 +106,13 @@
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hystem-Extran-Nr.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hystem-Extran&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>120</y>
-       <width>121</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Kanal++ Nr.</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -148,7 +128,29 @@
       </font>
      </property>
      <property name="text">
-      <string>Mike-Urban-Nr.</string>
+      <string>Kanal++</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>60</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Mike-Urban</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -161,7 +163,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>60</y>
+       <y>30</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -192,7 +194,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>90</y>
+       <y>60</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -220,7 +222,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>120</y>
+       <y>90</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -235,58 +237,11 @@
       <string/>
      </property>
     </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>30</y>
-       <width>121</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Kürzel</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="kuerzel">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>30</y>
-       <width>171</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>optional: Kürzel</string>
-     </property>
-     <property name="statusTip">
-      <string>optional: Kürzel</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="m150_2">
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>180</y>
+       <y>150</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -302,7 +257,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>210</y>
+       <y>180</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -324,6 +279,28 @@
      <property name="geometry">
       <rect>
        <x>20</x>
+       <y>120</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DWA-M 145&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
        <y>150</y>
        <width>131</width>
        <height>21</height>
@@ -336,29 +313,7 @@
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DWA-M 145 - Nr.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_11">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>180</y>
-       <width>131</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DWA-M 150 - Nr.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DWA-M 150&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -371,7 +326,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>210</y>
+       <y>180</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -408,7 +363,7 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>150</y>
+       <y>120</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -455,10 +410,10 @@
      </size>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für zusätzliche Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_15">
@@ -472,6 +427,53 @@
     </property>
     <property name="text">
      <string>Kommentar</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>40</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Kürzel</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="kuerzel">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>40</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>optional: Kürzel</string>
+    </property>
+    <property name="statusTip">
+     <string>optional: Kürzel</string>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

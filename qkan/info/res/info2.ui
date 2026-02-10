@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1468</width>
-    <height>889</height>
+    <width>993</width>
+    <height>880</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -336,534 +336,778 @@
       <attribute name="title">
        <string>SüwVO - KS</string>
       </attribute>
-      <widget class="QLabel" name="label_6">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>251</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Anweisungen für die Selbstüberwachung:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_11">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>190</y>
-         <width>171</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Angaben zum Gesamtnetz:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_7">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>86</y>
-         <width>104</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Überwachungsberich:t</string>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_7">
-       <property name="geometry">
-        <rect>
-         <x>300</x>
-         <y>60</y>
-         <width>321</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_9">
-       <property name="geometry">
-        <rect>
-         <x>300</x>
-         <y>120</y>
-         <width>321</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_13">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>260</y>
-         <width>141</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_12">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>230</y>
-         <width>141</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_9">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>39</y>
-         <width>191</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Angaben zu den Berichtspflichten:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_8">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>119</y>
-         <width>90</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Betriebsanweisung</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_12">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>210</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Spülplan vorhanden</string>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_10">
-       <property name="geometry">
-        <rect>
-         <x>300</x>
-         <y>150</y>
-         <width>321</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_13">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>230</y>
-         <width>311</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Abschlussjahr der letzmaligen erfassung inc. Klassifizierung</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_15">
-       <property name="geometry">
-        <rect>
-         <x>11</x>
-         <y>310</y>
-         <width>282</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Zustandsbewertung erfolgt nach</string>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_8">
-       <property name="geometry">
-        <rect>
-         <x>300</x>
-         <y>90</y>
-         <width>321</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser_11">
-       <property name="geometry">
-        <rect>
-         <x>339</x>
-         <y>200</y>
-         <width>141</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_14">
-       <property name="geometry">
-        <rect>
-         <x>11</x>
-         <y>260</y>
-         <width>282</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Startjahr aktueller Untersuchungszyklus</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="comboBox">
-       <property name="geometry">
-        <rect>
-         <x>300</x>
-         <y>310</y>
-         <width>69</width>
-         <height>22</height>
-        </rect>
-       </property>
+      <layout class="QVBoxLayout" name="verticalLayout_15">
        <item>
-        <property name="text">
-         <string>DWA</string>
-        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="0,0,0,1">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="0,0,0">
+           <item>
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>Berichtsjahr</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>60</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>2024</string>
+             </property>
+             <property name="dragEnabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_17">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_22">
+           <item>
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>Untersuchungszyklus</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_2">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>2021</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>bis</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_3">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>2035</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_18">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
        <item>
-        <property name="text">
-         <string>ISYBAU</string>
-        </property>
+        <widget class="QLabel" name="label_9">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Angaben zu den Berichtspflichten:</string>
+         </property>
+        </widget>
        </item>
-      </widget>
-      <widget class="QLabel" name="label_10">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>149</y>
-         <width>72</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Betriebsbericht</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pb_exportExcel">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>710</y>
-         <width>201</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Export in Exceldatei</string>
-       </property>
-      </widget>
-      <widget class="QTableWidget" name="tableWidget">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>350</y>
-         <width>1311</width>
-         <height>151</height>
-        </rect>
-       </property>
-       <row>
-        <property name="text">
-         <string>RW</string>
-        </property>
-       </row>
-       <row>
-        <property name="text">
-         <string>SW</string>
-        </property>
-       </row>
-       <row>
-        <property name="text">
-         <string>MW</string>
-        </property>
-       </row>
-       <column>
-        <property name="text">
-         <string>Entwässerungssystem</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Netzlänge [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>0 [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>1 [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>2 [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>3 [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>4 [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>5 [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>untersuchte Kanallänge im aktuellen Untersuchungszyklus [km]</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>untersuchte Kanallänge im Berichtsjahr [km]</string>
-        </property>
-       </column>
-      </widget>
-      <widget class="QTableWidget" name="tableWidget_2">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>540</y>
-         <width>1311</width>
-         <height>161</height>
-        </rect>
-       </property>
-       <row>
-        <property name="text">
-         <string>RW</string>
-        </property>
-       </row>
-       <row>
-        <property name="text">
-         <string>SW</string>
-        </property>
-       </row>
-       <row>
-        <property name="text">
-         <string>MW</string>
-        </property>
-       </row>
-       <column>
-        <property name="text">
-         <string>Entwässerungssystem</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Anzahl der Schächte</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>2</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>3</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>4</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>5</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>untersuchte Schächte im aktuellen Untersuchungszyklus</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>untersuchte Schächte im Berichtsjahr</string>
-        </property>
-       </column>
-      </widget>
-      <widget class="QLabel" name="label_16">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>282</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Berichtsjahr</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pb_exportXML">
-       <property name="geometry">
-        <rect>
-         <x>400</x>
-         <y>710</y>
-         <width>201</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Export in XML-Datei</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>10</y>
-         <width>113</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>2024</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_17">
-       <property name="geometry">
-        <rect>
-         <x>560</x>
-         <y>10</y>
-         <width>282</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Untersuchungszyklus</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_2">
-       <property name="geometry">
-        <rect>
-         <x>720</x>
-         <y>10</y>
-         <width>113</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>2021</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_18">
-       <property name="geometry">
-        <rect>
-         <x>850</x>
-         <y>10</y>
-         <width>282</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>bis</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_3">
-       <property name="geometry">
-        <rect>
-         <x>910</x>
-         <y>10</y>
-         <width>113</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>2035</string>
-       </property>
-      </widget>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_23">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_22">
+           <property name="minimumSize">
+            <size>
+             <width>210</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>210</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Anweisungen für die Selbstüberwachung:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_14">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_19">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_24">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_23">
+           <property name="minimumSize">
+            <size>
+             <width>210</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>210</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Überwachungsbericht:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_15">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_20">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_25">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_24">
+           <property name="minimumSize">
+            <size>
+             <width>210</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>210</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Betriebsanweisung:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_16">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_21">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_26">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_25">
+           <property name="minimumSize">
+            <size>
+             <width>210</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>210</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Betriebsbericht:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_17">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_22">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Angaben zum Gesamtnetz:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_27">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_26">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Spülplan vorhanden:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_18">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_23">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_28">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_27">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Abschlussjahr der letzmaligen erfassung inc. Klassifizierung:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_19">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_24">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_29">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_28">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Startjahr aktueller Untersuchungszyklus:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_20">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_25">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_30">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_29">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Zustandsbewertung erfolgt nach:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <item>
+            <property name="text">
+             <string>DWA</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ISYBAU</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_26">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <row>
+          <property name="text">
+           <string>RW</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>SW</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>MW</string>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>Entwässerungssystem</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Netzlänge [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>0 [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>1 [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>2 [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>3 [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>4 [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>5 [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>untersuchte Kanallänge im aktuellen Untersuchungszyklus [km]</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>untersuchte Kanallänge im Berichtsjahr [km]</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableWidget_2">
+         <row>
+          <property name="text">
+           <string>RW</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>SW</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>MW</string>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>Entwässerungssystem</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Anzahl der Schächte</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>3</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>4</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>untersuchte Schächte im aktuellen Untersuchungszyklus</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>untersuchte Schächte im Berichtsjahr</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_31">
+         <item>
+          <widget class="QPushButton" name="pb_exportExcel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Export in Exceldatei</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pb_exportXML">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Export in XML-Datei</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

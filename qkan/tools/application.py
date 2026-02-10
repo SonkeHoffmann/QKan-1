@@ -1078,17 +1078,8 @@ class QKanTools(QKanPlugin):
                 auswahl = True
             else:
                 auswahl = False
-            # fotopath = self.dlgfp.lineEdit_2.text()
-            # fotopath_2 = self.dlgfp.lineEdit_3.text()
-            # videopath_2 = self.dlgfp.lineEdit_5.text()
-            # fotopath_3 = self.dlgfp.lineEdit_6.text()
-            # videopath_3 = self.dlgfp.lineEdit_7.text()
-            # ausw_haltung = self.dlgfp.checkBox.isChecked()
-            # ausw_schacht = self.dlgfp.checkBox_2.isChecked()
-            # ausw_leitung = self.dlgfp.checkBox_3.isChecked()
-            #
-            # QKan.config.videopath = videopath
-            # QKan.config.fotopath = fotopath
+
+            art = self.dlgb.bewertungsart.currentText()
 
             QKan.config.save()
 
@@ -1105,7 +1096,7 @@ class QKanTools(QKanPlugin):
                 bericht(
                     db_qkan,
                     path,
-                    auswahl
+                    auswahl,art
                 )
 
     def run_zoom_clipboard(self) -> None:
