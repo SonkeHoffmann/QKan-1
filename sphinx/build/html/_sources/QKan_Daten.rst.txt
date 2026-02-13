@@ -42,63 +42,66 @@ eine andere als die vorgegebenen Bezeichnungen zu verwenden, z. B. "Netzstruktur
 vorgegebenen Standardgruppen (z. B. "Geoobjekte", "HYSTEM-EXTRAN", "Netzstruktur") von den Aktualisierungen 
 betroffen sind (siehe auch Abbildung oben: "Plausibilitätsprüfungen"). 
 
-.. _trigger_haltungen:
 
-Automatische Übernahme von Haltungsdaten aus Schächten
-------------------------------------------------------
+.. index:: Auswahl erweitern / Netzverfolgung
 
-QKan bietet die Möglichkeit, bei der Neuerstellung oder Bearbeitung von Haltungen im Lageplan 
-Schachtbezeichnungen und/oder Sohlhöhen automatisch zu übernehmen, wenn ein Ende auf einen Schacht fängt. 
-Bei den Sohlhöhen geschieht dies nur, wenn das Feld vorher leer (NULL) ist. 
+Auswahl erweitern / Netzverfolgung
+----------------------------------
 
-Die Funktion kann über das Menü  :guilabel:`QKan` >  :guilabel:`Allgemein` >  :guilabel:`Optionen` in der 
-Karteikarte  :guilabel:`Autom. Datenübernahme` aktiviert werden. 
+Mit dem Tool |Tool_auswahl| :guilabel:`Auswahl erweitern/Netzverfolgung` kann auf verschiedene Arten eine Auswahl 
+von Elementen im Kanalnetz erzeugt werden. Die ausgewählten Elemente werden 
+automatisch in den Datenbanktabellen sel_schaechte, sel_haltungen und sel_flaechen gespeichert.
 
-Voraussetzung ist weiterhin, dass die QGIS-Fangfunktion aktiviert ist. 
+.. image:: ./QKan_Bilder/Formulare/auswahl_netzverfolgung.png
+.. |Tool_auswahl| image:: ./QKan_Bilder/Tool_auswahl.png
+                             :width: 1.25 em
+
+Bei einer erneuten Auswahl werden die bestehenden Einträge in diesen Tabellen automatisch überschrieben, sodass 
+immer nur die aktuell ausgewählten Elemente berücksichtigt werden.
+Auswahlmöglichkeiten im Detail
+
+1. Kanalnetz oberhalb / unterhalb / längster Fließweg oberhalb
+    - Für diese Auswahlmethoden muss mindestens ein Schacht im Kanalnetz ausgewählt werden.
+    - Das Tool markiert automatisch alle Schächte, Haltungen und zugehörigen Flächen, die stromaufwärts oder 
+      stromabwärts vom ausgewählten Schacht liegen bzw. entlang des längsten 
+      Fließweges oberhalb.
+
+2. Auswahl zwischen zwei Elementen
+    - Hierfür können entweder zwei Schächte oder zwei Haltungen ausgewählt werden.
+    - Das Tool wählt automatisch alle Elemente aus, die zwischen diesen beiden Punkten liegen, unabhängig davon, 
+      wie viele Haltungen dazwischen liegen.
+
+3. Auswahl innerhalb von Teilgebieten
+    - Um alle Elemente eines bestimmten Teilgebiets auszuwählen, muss das entsprechende Teilgebiet ausgewählt werden.
+    - Das Tool markiert dann alle Schächte, Haltungen und Flächen, die zu diesem Teilgebiet gehören.
+
+Hinweise
+    - Jede Auswahl wird sofort in den Datenbanktabellen gespeichert, sodass nachfolgende Funktionen wie Längsschnitt, Substanzklassifizierung oder Export direkt auf dieser 
+      Auswahl arbeiten können.
+    - Bei Änderungen an der Auswahl empfiehlt es sich, die Tabellen ggf. zu aktualisieren, um sicherzustellen, dass 
+      alle Analysen auf den aktuellen Elementen basieren.
 
 
-Referenztabellen
-----------------
+.. index:: Längsschnitt
 
-Diese Tabellen dienen im wesentlichen dazu, einheitliche Bezeichnungen für Attribute zu verwenden, wie z. B. 
-Profile, ("Kreis", oder "Kreisprofil").
+Längsschnitt
+------------
+Mit dem Tool |Tool_laengsschnitt| :guilabel:`Längsschnitt` lassen sich Längsschnitte des Kanalnetzes erzeugen.
 
-In QKan müssen die Bezeichnungen in folgenden Bereichen miteinander korrespondieren: 
+.. image:: ./QKan_Bilder/Formulare/laengsschnitt.png
+.. |Tool_laengsschnitt| image:: ./QKan_Bilder/Tool_laengsschnitt.png
+                             :width: 1.25 em
 
-- Attribute in den Datentabellen 
-- Bezeichnungen in den Referenztabellen
-- Werte in der Symoblisierung der Layer, wenn kategorisierte Symboldarstellungen ausgewählt wurde
-  (siehe Abbildung)
+Um den Längsschnitt nutzen zu können, müssen zunächst Elemente aus dem Layer „Schächte“ oder „Haltungen“ ausgewählt werden. Der Längsschnitt wird entweder 
+zwischen zwei ausgewählten Elementen erzeugt oder entlang einer Reihe mehrerer ausgewählter Elemente.
+Wenn sich die Auswahl oder Eingaben ändern, kann über den Refresh-Button die Anzeige aktualisiert werden.
+Mit dem Button „Auswahl anzeigen“ lassen sich die für den Längsschnitt verwendeten Elemente erneut in der Karte markieren.
+Damit die Anzeige des maximalen Wasserstands, der animierte Längsschnitt sowie die Ganglinie genutzt werden können, muss zunächst eine HYSTEM-EXTRAN-Ergebnisdatei ausgewählt werden.
+Im Anschluss kann im Reiter „Animierter Längsschnitt“ über den Button „Längsschnitt anzeigen“ der animierte Längsschnitt geöffnet werden
+Die Animation kann anschließend über die Steuerelemente im unteren Bereich in Bezug auf Abspielgeschwindigkeit und Zeitpunkt bedient werden.
+Im Reiter „Ganglinien“ lassen sich mit dem Button „Ganglinie anzeigen“ verschiedene Ganglinien aus den Ergebnisdaten erzeugen – beispielsweise Zufluss, Wasserstand oder Durchfluss.
 
-.. image:: ./QKan_Bilder/layereigenschaften_symbolisierung.png
 
-Fehler in den Referenztabellen erkennt man daran, dass in den Datentabellen Attribute mit Klammern 
-gekennzeichnet sind (z. B. "(durchlässig)". Das bedeutet, dass entweder diese Bezeichnung in der 
-zugehörigen Referenztabelle fehlt oder falsch geschrieben ist. 
 
-Trigger zu Referenztabellen
----------------------------
 
-QKan verfügt bei den Referenztabellen über einen sehr praktischen internen Mechanismus (sogenannte "Trigger"), 
-wodurch Änderungen von Bezeichnungen in Referenztabellen automatisch in den Datentabellen nachvollzogen werden. 
-Dabei ist zu **beachten**, dass die Änderungen in den Datentabellen erst ausgeführt werden, **nachdem** die 
-Referenztabelle gespeichert wurde. Außerdem darf sich die Datentabelle **nicht im Bearbeitungsmodus** 
-befinden. Das liegt daran, dass die Trigger die Änderungen in der Datenbank (\*.sqlite) vornehmen, und deshalb erst 
-aktiv werden können, wenn sie von QGIS durch das Speichern in die Datenbank geschrieben worden sind.
-
-+---------------------+------------------------------------+
-| Referenztabelle(n)  | Datentabellen                      |
-+---------------------+------------------------------------+
-| Profile             | Haltungen,                         |
-|                     | Anschlussleitungen                 |
-+---------------------+------------------------------------+
-| Entwässerungsarten, | Haltungen, Hausanschlussleitungen, |
-| Planungsstatus,     | Schächte, Auslässe, Speicher,      |
-| Material            | alle Sonderelemente                |
-+---------------------+------------------------------------+
-| Abflussparameter    | Einzelflächen, Haltungsflächen     |
-+---------------------+------------------------------------+
-
-Die Funktion kann über das Menü  :guilabel:`QKan` >  :guilabel:`Allgemein` >  :guilabel:`Optionen` in der 
-Karteikarte  :guilabel:`Autom. Datenübernahme` aktiviert werden. 
 

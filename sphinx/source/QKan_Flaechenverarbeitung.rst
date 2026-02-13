@@ -57,9 +57,7 @@ werden, sodass jede Fläche eindeutig einer Haltung zugeordnet werden kann.
 Entferne Überlappungen
 ----------------------
 
-..
-    (?Jörg?) Stimmt der Satz vom Inhalt?: Mit der Funktion |Tool_flaechenbereinigung| :guilabel:`Entferne Überlappungen` können automatisch 
-    Flächen überprüft werden und Fehler behoben werden.
+Mit der Funktion |Tool_flaechenbereinigung| :guilabel:`Entferne Überlappungen` können automatisch Flächen überprüft werden und Fehler behoben werden.
 
 .. image:: ./QKan_Bilder/Formulare/flaechenbereinigung.png
 .. |Tool_flaechenbereinigung| image:: ./QKan_Bilder/Tool_flaechenbereinigung.png
@@ -134,6 +132,8 @@ Mit Hilfe der :ref:`Auswahltabelle<selectionTable>` kann die Bearbeitung
 auf Haltungen mit ausgewählten 
 Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt werden. 
 
+Ausführliche Erläuterung zu diesem Thema: :ref:`Anbindungen von Einzeleinleitern <createlinksw>`
+
 
 .. index:: Flächenanbindungen (Menü)
 .. _linkverbindunghaltungflaeche:
@@ -190,7 +190,7 @@ Mit Hilfe der :ref:`Auswahltabelle<selectionTable>` kann die Bearbeitung auf Fl�
 Haltungen mit ausgewählten Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt 
 werden. 
 
-Ausführliche :ref:`Erläuterung<createlinkfl>` zu diesem Thema:
+Ausführliche Erläuterung zu diesem Thema: :ref:`createlinkfl`
 
 
 .. index:: Berechnung von Oberflächenabflussparametern (Menü)
@@ -215,9 +215,8 @@ Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt wer
 Verknüpfungen bereinigen
 ------------------------
 
-..
-    (?Jörg?) Was macht die Funktion genau? Satz vervollständigen...
-    Mit der Funktion |Tool_verknuepfungen_ber| :guilabel:`Verknüpfungen bereinigen`
+Mit der Funktion |Tool_verknuepfungen_ber| :guilabel:`Verknüpfungen bereinigen` können die mit dem Tool Verknüpfungslinien von Flächen zu Haltungen erstellen 
+erstellten Verknüpfen aktualisiert und bereinigt werden.
 
 .. image:: ./QKan_Bilder/Formulare/verknuepfungen_ber.png
 .. |Tool_verknuepfungen_ber| image:: ./QKan_Bilder/Tool_verknuepfungen_ber.png
@@ -231,3 +230,26 @@ Verknüpfungen bereinigen
     -**Datensätze ohne Linienobjekt löschen:**
     -**Flächenobjekt bereinigen:**
     -**Fangradius auf Haltungen:**
+	
+
+Neigungsklasse ermitteln
+------------------------
+
+Das Tool |Tool_neigungsklasse| :guilabel:`Neigungsklassen ermittelt` automatisch anhand von DGM Daten die Neigung von Einzelflächen. Im Menüfenster kann ausgewählt werden, ob ein vorhandenes DGM 
+(Digitales Geländemodell) verwendet oder die DGM-Daten automatisiert heruntergeladen werden sollen.
+
+.. image:: ./QKan_Bilder/Formulare/neigungsklasse.png
+.. |Tool_neigungsklasse| image:: ./QKan_Bilder/Tool_neigungsklasse.png
+                             :width: 1.25 em
+
+
+Automatisierter Download:
+Wenn die DGM-Daten automatisch heruntergeladen werden sollen, muss ein Download-Link angegeben werden. Standardmäßig ist der Link zum Download der DGM-Daten im TIFF-Format 
+für das Bundesland NRW hinterlegt.
+Vorhandene DGM-Daten:
+Bei der Nutzung bereits vorhandener DGM-Daten muss der Ordner angegeben werden, der die entsprechenden TIFF-Dateien enthält. Zusätzlich ist das Koordinatensystem der DGM-Daten 
+anzugeben, damit eine Umrechnung durchgeführt werden kann, falls DGM und Flächendaten in unterschiedlichen Koordinatensystemen vorliegen.
+Abschließend muss ein Speicherort für die Neigungsdaten festgelegt werden. An diesem Ort werden sowohl die heruntergeladenen DGM-Daten als auch eine Shapefile „Neigungsklassen“ 
+gespeichert. Die Shapefile dient als Zwischenschritt für die Berechnung der Neigungsklassen und kann nach Abschluss der Berechnung bei Bedarf wieder gelöscht werden.
+Die berechneten Neigungsklassen werden anschließend automatisch in den Layer „Einzelflächen“ eingetragen.
+                             

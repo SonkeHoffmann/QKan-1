@@ -5,7 +5,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan import QKan, enums
 
 from qkan.utils import get_logger
-from qkan.tools.qkan_utils import loadlayer
+from qkan.tools.qkan_utils import loadLayer
 
 logger = get_logger("QKan.sync._compare")
 
@@ -127,7 +127,7 @@ class CompareTask:
                 layer_sync, layer_ext, layer_loc = layers
 
                 # Synchronisationstabelle
-                loadlayer(
+                loadLayer(
                     layer_sync,
                     f'sync_{table}',
                     'geom',
@@ -137,14 +137,14 @@ class CompareTask:
                 )
 
                 # Externe Tabelle
-                loadlayer(
+                loadLayer(
                     layer_ext,
                     table,
                     'geom',
                     f'{layer_loc}.qml',
                     f'qkan_{table}.ui',
                     grouppath,
-                    ext_qkan_db=QKan.config.sync.ext,
+                    qkan_db=QKan.config.sync.ext,
                 )
 
         # Attributtabellen anzeigen

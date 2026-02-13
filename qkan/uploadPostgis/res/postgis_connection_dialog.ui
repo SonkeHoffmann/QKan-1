@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PostgisConnectionDialogBase</class>
+ <widget class="QDialog" name="PostgisConnectionDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>520</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Tahoma</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>PostGIS Verbindung erstellen/bearbeiten</string>
+  </property>
+  
+  <widget class="QLabel" name="label_title">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>410</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>PostGIS Verbindungsparameter</string>
+   </property>
+  </widget>
+  
+  <!-- Verbindungsname -->
+  <widget class="QLabel" name="label_connection_name">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>120</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Verbindungsname:</string>
+   </property>
+  </widget>
+  
+  <widget class="QLineEdit" name="le_connection_name">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>58</y>
+     <width>280</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Name für diese Verbindung</string>
+   </property>
+  </widget>
+  
+  <!-- Host -->
+  <widget class="QLabel" name="label_host">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>95</y>
+     <width>120</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Host:</string>
+   </property>
+  </widget>
+  
+  <widget class="QLineEdit" name="le_host">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>93</y>
+     <width>280</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>localhost</string>
+   </property>
+   <property name="placeholderText">
+    <string>Server-Hostname oder IP-Adresse</string>
+   </property>
+  </widget>
+  
+  <!-- Port -->
+  <widget class="QLabel" name="label_port">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>130</y>
+     <width>120</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Port:</string>
+   </property>
+  </widget>
+  
+  <widget class="QSpinBox" name="sb_port">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>128</y>
+     <width>100</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>65535</number>
+   </property>
+   <property name="value">
+    <number>5432</number>
+   </property>
+  </widget>
+  
+  <!-- Database -->
+  <widget class="QLabel" name="label_database">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>165</y>
+     <width>120</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Datenbank:</string>
+   </property>
+  </widget>
+  
+  <widget class="QLineEdit" name="le_database">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>163</y>
+     <width>280</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Standard-Datenbank (meist 'postgres')</string>
+   </property>
+  </widget>
+  
+  <!-- Username -->
+  <widget class="QLabel" name="label_username">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>200</y>
+     <width>120</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Benutzername:</string>
+   </property>
+  </widget>
+  
+  <widget class="QLineEdit" name="le_username">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>198</y>
+     <width>280</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>PostgreSQL Benutzername</string>
+   </property>
+  </widget>
+  
+  <!-- Password -->
+  <widget class="QLabel" name="label_password">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>235</y>
+     <width>120</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Passwort:</string>
+   </property>
+  </widget>
+  
+  <widget class="QLineEdit" name="le_password">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>233</y>
+     <width>280</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="echoMode">
+    <enum>QLineEdit::Password</enum>
+   </property>
+   <property name="placeholderText">
+    <string>PostgreSQL Passwort</string>
+   </property>
+  </widget>
+  
+  <!-- Save Password Checkbox -->
+  <widget class="QCheckBox" name="cb_save_password">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>265</y>
+     <width>200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Passwort speichern</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  
+  <!-- SSL Optionen -->
+  <widget class="QGroupBox" name="groupBox_ssl">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>300</y>
+     <width>410</width>
+     <height>120</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>SSL-Verbindung</string>
+   </property>
+   
+   <widget class="QComboBox" name="cb_ssl_mode">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>200</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>disable</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>allow</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>prefer</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>require</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>verify-ca</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>verify-full</string>
+     </property>
+    </item>
+   </widget>
+   
+   <widget class="QLabel" name="label_ssl_mode">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>5</y>
+      <width>100</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SSL-Modus:</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_test_connection">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>60</y>
+      <width>120</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Verbindung testen</string>
+    </property>
+   </widget>
+   
+   <widget class="QLabel" name="label_connection_status">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>65</y>
+      <width>260</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Status: Nicht getestet</string>
+    </property>
+   </widget>
+  </widget>
+  
+  <!-- Dialog Buttons -->
+  <widget class="QPushButton" name="pb_help">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>460</y>
+     <width>80</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Hilfe</string>
+   </property>
+  </widget>
+  
+  <widget class="QPushButton" name="pb_cancel">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>460</y>
+     <width>80</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Abbrechen</string>
+   </property>
+  </widget>
+  
+  <widget class="QPushButton" name="pb_save">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>460</y>
+     <width>80</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Speichern</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

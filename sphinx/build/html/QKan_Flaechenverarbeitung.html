@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flächenverarbeitung &mdash; QKan 3.3.1 Dokumentation</title>
+  <title>Flächenverarbeitung &mdash; QKan 3.4.8 Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=8209df7b" />
 
@@ -38,7 +38,7 @@
             QKan
           </a>
               <div class="version">
-                3.2
+                3.4.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,7 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="QKan_Datenaustausch.html">Datenaustausch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_flaechen.html">Arbeiten mit Flächen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekte</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_qfield.html">QKan-Projekte auf dem Tablet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_edit.html">Erstellen und Bearbeiten von Kanalnetzen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Zustandsklassifizierung.html">Zustandsklassifizierung</a></li>
@@ -73,8 +73,9 @@
 <li class="toctree-l2"><a class="reference internal" href="QKan_Formulare_Allgemein.html">Allgemein</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Verwaltung.html">Verwaltung</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Hystem_Extran.html">Hystem-Extran</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="QKan_XML.html">XML-Importe</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_DYNA.html">DYNA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Mike.html">Mike+</a></li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_SWMM.html">SWMM</a></li>
@@ -97,12 +98,14 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#berechnung-von-oberflachenabflussparametern">Berechnung von Oberflächenabflussparametern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#verknupfungen-bereinigen">Verknüpfungen bereinigen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#neigungsklasse-ermitteln">Neigungsklasse ermitteln</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="QKan_Formulare.html#allgemeine-funktionselemente-in-formularen">Allgemeine Funktionselemente in Formularen</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Tabellen.html">QKan-Tabellen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 </ul>
 
         </div>
@@ -163,6 +166,7 @@ kann so nicht ausgeführt werden.</p></li>
 </section>
 <section id="entferne-uberlappungen">
 <h2>Entferne Überlappungen<a class="headerlink" href="#entferne-uberlappungen" title="Link to this heading"></a></h2>
+<p>Mit der Funktion <a class="reference internal" href="_images/Tool_flaechenbereinigung.png"><img alt="Tool_flaechenbereinigung" src="_images/Tool_flaechenbereinigung.png" style="width: 1.25em;" /></a> <span class="guilabel">Entferne Überlappungen</span> können automatisch Flächen überprüft werden und Fehler behoben werden.</p>
 <img alt="_images/flaechenbereinigung.png" src="_images/flaechenbereinigung.png" />
 </section>
 <section id="zuordnung-zu-teilgebiet">
@@ -198,6 +202,7 @@ groß gewählt werden. Ein zu großer Suchradius verlangsamt jedoch den Suchvorg
 <p>Mit Hilfe der <a class="reference internal" href="QKan_Formulare.html#selectiontable"><span class="std std-ref">Auswahltabelle</span></a> kann die Bearbeitung
 auf Haltungen mit ausgewählten
 Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt werden.</p>
+<p>Ausführliche Erläuterung zu diesem Thema: <a class="reference internal" href="QKan_flaechen.html#createlinksw"><span class="std std-ref">Anbindungen von Einzeleinleitern</span></a></p>
 </section>
 <section id="verknupfungslinien-von-flachen-zu-haltungen-erstellen">
 <span id="linkverbindunghaltungflaeche"></span><span id="index-2"></span><h2>Verknüpfungslinien von Flächen zu Haltungen erstellen<a class="headerlink" href="#verknupfungslinien-von-flachen-zu-haltungen-erstellen" title="Link to this heading"></a></h2>
@@ -243,7 +248,7 @@ sich infolge einer späteren Bearbeitung Änderungen bei den Flächen ergeben ha
 <p>Mit Hilfe der <a class="reference internal" href="QKan_Formulare.html#selectiontable"><span class="std std-ref">Auswahltabelle</span></a> kann die Bearbeitung auf Flächen mit ausgewählten Abflussparametern,
 Haltungen mit ausgewählten Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt
 werden.</p>
-<p>Ausführliche <a class="reference internal" href="QKan_flaechen.html#createlinkfl"><span class="std std-ref">Erläuterung</span></a> zu diesem Thema:</p>
+<p>Ausführliche Erläuterung zu diesem Thema: <a class="reference internal" href="QKan_flaechen.html#createlinkfl"><span class="std std-ref">Grundprinzip</span></a></p>
 </section>
 </section>
 <section id="berechnung-von-oberflachenabflussparametern">
@@ -259,7 +264,24 @@ Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt wer
 </section>
 <section id="verknupfungen-bereinigen">
 <h2>Verknüpfungen bereinigen<a class="headerlink" href="#verknupfungen-bereinigen" title="Link to this heading"></a></h2>
+<p>Mit der Funktion <a class="reference internal" href="_images/Tool_verknuepfungen_ber.png"><img alt="Tool_verknuepfungen_ber" src="_images/Tool_verknuepfungen_ber.png" style="width: 1.25em;" /></a> <span class="guilabel">Verknüpfungen bereinigen</span> können die mit dem Tool Verknüpfungslinien von Flächen zu Haltungen erstellen
+erstellten Verknüpfen aktualisiert und bereinigt werden.</p>
 <img alt="_images/verknuepfungen_ber.png" src="_images/verknuepfungen_ber.png" />
+</section>
+<section id="neigungsklasse-ermitteln">
+<h2>Neigungsklasse ermitteln<a class="headerlink" href="#neigungsklasse-ermitteln" title="Link to this heading"></a></h2>
+<p>Das Tool <a class="reference internal" href="QKan_Bilder/Tool_neigungsklasse.png"><img alt="Tool_neigungsklasse" src="QKan_Bilder/Tool_neigungsklasse.png" style="width: 1.25em;" /></a> <span class="guilabel">Neigungsklassen ermittelt</span> automatisch anhand von DGM Daten die Neigung von Einzelflächen. Im Menüfenster kann ausgewählt werden, ob ein vorhandenes DGM
+(Digitales Geländemodell) verwendet oder die DGM-Daten automatisiert heruntergeladen werden sollen.</p>
+<img alt="_images/neigungsklasse.png" src="_images/neigungsklasse.png" />
+<p>Automatisierter Download:
+Wenn die DGM-Daten automatisch heruntergeladen werden sollen, muss ein Download-Link angegeben werden. Standardmäßig ist der Link zum Download der DGM-Daten im TIFF-Format
+für das Bundesland NRW hinterlegt.
+Vorhandene DGM-Daten:
+Bei der Nutzung bereits vorhandener DGM-Daten muss der Ordner angegeben werden, der die entsprechenden TIFF-Dateien enthält. Zusätzlich ist das Koordinatensystem der DGM-Daten
+anzugeben, damit eine Umrechnung durchgeführt werden kann, falls DGM und Flächendaten in unterschiedlichen Koordinatensystemen vorliegen.
+Abschließend muss ein Speicherort für die Neigungsdaten festgelegt werden. An diesem Ort werden sowohl die heruntergeladenen DGM-Daten als auch eine Shapefile „Neigungsklassen“
+gespeichert. Die Shapefile dient als Zwischenschritt für die Berechnung der Neigungsklassen und kann nach Abschluss der Berechnung bei Bedarf wieder gelöscht werden.
+Die berechneten Neigungsklassen werden anschließend automatisch in den Layer „Einzelflächen“ eingetragen.</p>
 </section>
 </section>
 
@@ -274,7 +296,7 @@ Entwässerungsarten sowie allgemein auf ausgewählte Teilgebiete beschränkt wer
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017 - 2022, Hoettges.</p>
+    <p>&#169; Copyright 2017 - 2025, Hoettges.</p>
   </div>
 
   Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem

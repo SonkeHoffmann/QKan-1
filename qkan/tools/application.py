@@ -8,15 +8,12 @@ from typing import Optional, cast
 from qgis.PyQt.QtWidgets import QListWidgetItem
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
-from qgis.utils import pluginDirectory
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import (
-    fehlermeldung,
     get_database_QKan,
     get_editable_layers,
-    warnung,
     list_selected_items,
 )
 from qkan.plugin import QKanPlugin
@@ -33,7 +30,6 @@ from .dialogs.qgsadapt import QgsAdaptDialog
 from .dialogs.qkanoptions import QKanOptionsDialog
 from .dialogs.read_data import ReadData
 from .dialogs.runoffparams import RunoffParamsDialog
-from .k_dbAdapt import dbAdapt
 from .k_filepath import setfilepath
 from .k_layersadapt import layersadapt
 from .k_qgsadapt import qgsadapt
@@ -393,10 +389,11 @@ class QKanTools(QKanPlugin):
             # elif self.dlgop.rb_postgis.isChecked():
             # QKan.config.database.type = enums.QKanDBChoice.POSTGIS
             else:
-                fehlermeldung(
-                    "tools.application.run",
+                logger.error_code(
+                    "tools.application.run: "
                     f"Fehlerhafte Option: \ndatenbanktyp = {QKan.config.database.type}",
                 )
+                raise QkanError
             QKan.config.epsg = int(self.dlgop.qsw_epsg.crs().postgisSrid())
 
             QKan.config.save()
@@ -466,9 +463,9 @@ class QKanTools(QKanPlugin):
         if len({
                    enums.LAYERBEZ.EINZELFLAECHEN.value,
                } & get_editable_layers()) > 0:
-            warnung(
-                "Bedienerfehler: ",
-                'Die zu verarbeitenden Layer dürfen nicht im Status "bearbeitbar" sein. Abbruch!',
+            logger.warning_user(
+                "Bedienerfehler: "
+                'Die zu verarbeitenden Layer dürfen nicht im Status "bearbeitbar" sein. Abbruch!'
             )
             return
 
@@ -488,13 +485,13 @@ class QKanTools(QKanPlugin):
 
         with DBConnection(dbname=database_qkan) as db_qkan:
             if not db_qkan.connected:
-                fehlermeldung(
-                    "Fehler in tools.application.runoffparams:\n",
+                logger.error_code(
+                    "Fehler in tools.application.runoffparams: "
                     "QKan-Datenbank {:s} wurde nicht gefunden oder war nicht aktuell!\nAbbruch!".format(
                         database_qkan
                     ),
                 )
-                return None
+                raise QkanDbError
 
             # Check, ob alle Teilgebiete in Flächen auch in Tabelle "teilgebiete" enthalten
             sql = """INSERT INTO teilgebiete (tgnam)
@@ -538,9 +535,10 @@ class QKanTools(QKanPlugin):
                         self.dlgro.lw_teilgebiete.setCurrentRow(ielem)
                         self.dlgro.cb_selTgbActive.setChecked(True)
                 except BaseException as err:
-                    fehlermeldung(
+                    logger.error_code(
                         "QKan_Tools (6), Fehler in elem = {}\n".format(elem), repr(err)
                     )
+                    raise QkanError
                     # if len(daten) == 1:
                     # self.dlgro.lw_teilgebiete.setCurrentRow(0)
 
@@ -566,9 +564,11 @@ class QKanTools(QKanPlugin):
                         self.dlgro.lw_abflussparameter.setCurrentRow(ielem)
                         self.dlgro.cb_selParActive.setChecked(True)
                 except BaseException as err:
-                    fehlermeldung(
+                    logger.error_code(
                         "QKan_Tools (6), Fehler in elem = {}\n".format(elem), repr(err)
                     )
+                    raise QkanError
+
                     # if len(daten) == 1:
                     # self.dlgro.lw_abflussparameter.setCurrentRow(0)
 
@@ -623,10 +623,11 @@ class QKanTools(QKanPlugin):
                 elif self.dlgro.rb_maniak.isChecked():
                     runoffparamstype_choice = enums.RunOffParamsType.MANIAK
                 else:
-                    fehlermeldung(
-                        "tools.runoffparams.run_runoffparams",
-                        "Fehlerhafte Option: runoffparamstype_choice",
+                    logger.error_code(
+                        "tools.runoffparams.run_runoffparams: "
+                        "Fehlerhafte Option: runoffparamstype_choice"
                     )
+                    raise QkanError
                 if self.dlgro.rb_kaskade.isChecked():
                     runoffmodeltype_choice = enums.RunOffModelType.SPEICHERKASKADE
                 elif self.dlgro.rb_fliesszeiten.isChecked():
@@ -634,11 +635,11 @@ class QKanTools(QKanPlugin):
                 elif self.dlgro.rb_schwerpunktlaufzeit.isChecked():
                     runoffmodeltype_choice = enums.RunOffModelType.SCHWERPUNKTLAUFZEIT
                 else:
-                    fehlermeldung(
-                        "tools.runoffparams.run_runoffparams",
-                        "Fehlerhafte Option: runoffmodeltype_choice",
+                    logger.error_code(
+                        "tools.runoffparams.run_runoffparams: "
+                        "Fehlerhafte Option: runoffmodeltype_choice"
                     )
-
+                    raise QkanError
                 # Konfigurationsdaten schreiben
                 QKan.config.selections.abflussparameter = liste_abflussparameter
                 QKan.config.selections.teilgebiete = liste_teilgebiete
@@ -750,8 +751,8 @@ class QKanTools(QKanPlugin):
         elif adapt_selected == enums.SelectedLayers.ALL:
             self.dlgla.rb_adaptAll.setChecked(True)
         else:
-            fehlermeldung("Fehler im Programmcode", "Nicht definierte Option")
-            return
+            logger.error_code("Fehler im Programmcode: Nicht definierte Option")
+            raise QkanError
 
         # Checkbox: Fehlende QKan-Layer ergänzen
         fehlende_layer_ergaenzen = QKan.config.adapt.add_missing_layers
@@ -806,8 +807,8 @@ class QKanTools(QKanPlugin):
             elif self.dlgla.rb_adaptSelected.isChecked():
                 adapt_selected = enums.SelectedLayers.SELECTED
             else:
-                fehlermeldung("Fehler im Programmcode", "Nicht definierte Option")
-                return
+                logger.error_code("Fehler im Programmcode: Nicht definierte Option (2)")
+                raise QkanError
 
             # Konfigurationsdaten schreiben -----------------------------------------------------------
 
@@ -909,36 +910,49 @@ class QKanTools(QKanPlugin):
             # Modulaufruf in Logdatei schreiben
             self.log.debug(
                 f"""QKan-Modul Aufruf
-                dbAdapt(
+                DBConnection(
                     "{self.database_name}",
-                    "{project_file}",
-                    "{project}", 
+                    "{True}",
+                    "{writeDbBackup}",
+                    "{writeQgsBackup}",
                 )"""
             )
 
-            dbAdapt(
-                cast(str, self.database_name),
-                project_file,
-                project,
-                writeDbBackup,
-                writeQgsBackup,
-            )
+            # Öffnen der Datenbank, nur um die Aktualisierung durchzuführen.
+            with DBConnection(
+                    dbname=cast(str, self.database_name),
+                    qkan_db_update=True,
+                    writeDbBackup=writeDbBackup,
+                    writeQgsBackup=writeQgsBackup
+            ) as dbQK:  # Datenbankobjekt zur Aktualisierung öffnen
 
-            layersadapt(
-                database_QKan=cast(str, self.database_name),
-                projectTemplate=os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs"),
-                anpassen_ProjektMakros=True,
-                anpassen_svgPaths=False,
-                anpassen_Datenbankanbindung=False,
-                anpassen_Layerstile=True,
-                anpassen_Formulare=True,
-                anpassen_Projektionssystem=False,
-                aktualisieren_Schachttypen=False,
-                zoom_alles=False,
-                fehlende_layer_ergaenzen=False,
-                anpassen_auswahl=enums.SelectedLayers.ALL,
-            )
-            project.readPath(project_file)
+                if not dbQK.connected:
+                    errormsg = (
+                        "Fehler in k_qgsadapt: QKan-Datenbank {self.database_name}"
+                        f" wurde nicht gefunden oder war nicht aktuell!\nAbbruch!"
+                    )
+                    logger.error(errormsg)
+                    raise QkanDbError(f"{__name__}: {errormsg}")
+
+                dbQK.sql("SELECT RecoverSpatialIndex()")  # Geometrie-Indizes bereinigen
+
+            # layersadapt(
+            #     database_QKan=cast(str, self.database_name),
+            #     projectTemplate=os.path.join(pluginDirectory("qkan"), "templates/Projekt.qgs"),
+            #     anpassen_ProjektMakros=True,
+            #     anpassen_svgPaths=False,
+            #     anpassen_Datenbankanbindung=False,
+            #     anpassen_Layerstile=True,
+            #     anpassen_Formulare=True,
+            #     anpassen_Projektionssystem=False,
+            #     aktualisieren_Schachttypen=False,
+            #     zoom_alles=False,
+            #     fehlende_layer_ergaenzen=False,
+            #     anpassen_auswahl=enums.SelectedLayers.ALL,
+            # )
+            # QgsProject.instance().clear()
+            # QgsProject.instance().read()
+            # project.readPath(project_file)
 
 
     def run_help(self) -> None:

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daten &mdash; QKan 3.3.1 Dokumentation</title>
+  <title>Daten &mdash; QKan 3.4.8 Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=8209df7b" />
 
@@ -38,7 +38,7 @@
             QKan
           </a>
               <div class="version">
-                3.2
+                3.4.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -60,9 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="QKan_flaechen.html">Arbeiten mit Flächen</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Daten</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#plausibilitatsprufung">Plausibilitätsprüfung</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#automatische-ubernahme-von-haltungsdaten-aus-schachten">Automatische Übernahme von Haltungsdaten aus Schächten</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#referenztabellen">Referenztabellen</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#trigger-zu-referenztabellen">Trigger zu Referenztabellen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#auswahl-erweitern-netzverfolgung">Auswahl erweitern / Netzverfolgung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#langsschnitt">Längsschnitt</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekte</a></li>
@@ -77,6 +76,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Formulare.html">Formulare</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Tabellen.html">QKan-Tabellen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 </ul>
 
         </div>
@@ -136,62 +136,66 @@ eine andere als die vorgegebenen Bezeichnungen zu verwenden, z. B. „Netzstrukt
 vorgegebenen Standardgruppen (z. B. „Geoobjekte“, „HYSTEM-EXTRAN“, „Netzstruktur“) von den Aktualisierungen
 betroffen sind (siehe auch Abbildung oben: „Plausibilitätsprüfungen“).</p>
 </section>
-<section id="automatische-ubernahme-von-haltungsdaten-aus-schachten">
-<span id="trigger-haltungen"></span><h2>Automatische Übernahme von Haltungsdaten aus Schächten<a class="headerlink" href="#automatische-ubernahme-von-haltungsdaten-aus-schachten" title="Link to this heading"></a></h2>
-<p>QKan bietet die Möglichkeit, bei der Neuerstellung oder Bearbeitung von Haltungen im Lageplan
-Schachtbezeichnungen und/oder Sohlhöhen automatisch zu übernehmen, wenn ein Ende auf einen Schacht fängt.
-Bei den Sohlhöhen geschieht dies nur, wenn das Feld vorher leer (NULL) ist.</p>
-<p>Die Funktion kann über das Menü  <span class="guilabel">QKan</span> &gt;  <span class="guilabel">Allgemein</span> &gt;  <span class="guilabel">Optionen</span> in der
-Karteikarte  <span class="guilabel">Autom. Datenübernahme</span> aktiviert werden.</p>
-<p>Voraussetzung ist weiterhin, dass die QGIS-Fangfunktion aktiviert ist.</p>
-</section>
-<section id="referenztabellen">
-<h2>Referenztabellen<a class="headerlink" href="#referenztabellen" title="Link to this heading"></a></h2>
-<p>Diese Tabellen dienen im wesentlichen dazu, einheitliche Bezeichnungen für Attribute zu verwenden, wie z. B.
-Profile, („Kreis“, oder „Kreisprofil“).</p>
-<p>In QKan müssen die Bezeichnungen in folgenden Bereichen miteinander korrespondieren:</p>
-<ul class="simple">
-<li><p>Attribute in den Datentabellen</p></li>
-<li><p>Bezeichnungen in den Referenztabellen</p></li>
-<li><p>Werte in der Symoblisierung der Layer, wenn kategorisierte Symboldarstellungen ausgewählt wurde
-(siehe Abbildung)</p></li>
+<section id="auswahl-erweitern-netzverfolgung">
+<span id="index-0"></span><h2>Auswahl erweitern / Netzverfolgung<a class="headerlink" href="#auswahl-erweitern-netzverfolgung" title="Link to this heading"></a></h2>
+<p>Mit dem Tool <a class="reference internal" href="QKan_Bilder/Tool_auswahl.png"><img alt="Tool_auswahl" src="QKan_Bilder/Tool_auswahl.png" style="width: 1.25em;" /></a> <span class="guilabel">Auswahl erweitern/Netzverfolgung</span> kann auf verschiedene Arten eine Auswahl
+von Elementen im Kanalnetz erzeugt werden. Die ausgewählten Elemente werden
+automatisch in den Datenbanktabellen sel_schaechte, sel_haltungen und sel_flaechen gespeichert.</p>
+<img alt="_images/auswahl_netzverfolgung.png" src="_images/auswahl_netzverfolgung.png" />
+<p>Bei einer erneuten Auswahl werden die bestehenden Einträge in diesen Tabellen automatisch überschrieben, sodass
+immer nur die aktuell ausgewählten Elemente berücksichtigt werden.
+Auswahlmöglichkeiten im Detail</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Kanalnetz oberhalb / unterhalb / längster Fließweg oberhalb</dt><dd><ul class="simple">
+<li><p>Für diese Auswahlmethoden muss mindestens ein Schacht im Kanalnetz ausgewählt werden.</p></li>
+<li><p>Das Tool markiert automatisch alle Schächte, Haltungen und zugehörigen Flächen, die stromaufwärts oder
+stromabwärts vom ausgewählten Schacht liegen bzw. entlang des längsten
+Fließweges oberhalb.</p></li>
 </ul>
-<img alt="_images/layereigenschaften_symbolisierung.png" src="_images/layereigenschaften_symbolisierung.png" />
-<p>Fehler in den Referenztabellen erkennt man daran, dass in den Datentabellen Attribute mit Klammern
-gekennzeichnet sind (z. B. „(durchlässig)“. Das bedeutet, dass entweder diese Bezeichnung in der
-zugehörigen Referenztabelle fehlt oder falsch geschrieben ist.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Auswahl zwischen zwei Elementen</dt><dd><ul class="simple">
+<li><p>Hierfür können entweder zwei Schächte oder zwei Haltungen ausgewählt werden.</p></li>
+<li><p>Das Tool wählt automatisch alle Elemente aus, die zwischen diesen beiden Punkten liegen, unabhängig davon,
+wie viele Haltungen dazwischen liegen.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Auswahl innerhalb von Teilgebieten</dt><dd><ul class="simple">
+<li><p>Um alle Elemente eines bestimmten Teilgebiets auszuwählen, muss das entsprechende Teilgebiet ausgewählt werden.</p></li>
+<li><p>Das Tool markiert dann alle Schächte, Haltungen und Flächen, die zu diesem Teilgebiet gehören.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<dl class="simple">
+<dt>Hinweise</dt><dd><ul class="simple">
+<li><p>Jede Auswahl wird sofort in den Datenbanktabellen gespeichert, sodass nachfolgende Funktionen wie Längsschnitt, Substanzklassifizierung oder Export direkt auf dieser
+Auswahl arbeiten können.</p></li>
+<li><p>Bei Änderungen an der Auswahl empfiehlt es sich, die Tabellen ggf. zu aktualisieren, um sicherzustellen, dass
+alle Analysen auf den aktuellen Elementen basieren.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
-<section id="trigger-zu-referenztabellen">
-<h2>Trigger zu Referenztabellen<a class="headerlink" href="#trigger-zu-referenztabellen" title="Link to this heading"></a></h2>
-<p>QKan verfügt bei den Referenztabellen über einen sehr praktischen internen Mechanismus (sogenannte „Trigger“),
-wodurch Änderungen von Bezeichnungen in Referenztabellen automatisch in den Datentabellen nachvollzogen werden.
-Dabei ist zu <strong>beachten</strong>, dass die Änderungen in den Datentabellen erst ausgeführt werden, <strong>nachdem</strong> die
-Referenztabelle gespeichert wurde. Außerdem darf sich die Datentabelle <strong>nicht im Bearbeitungsmodus</strong>
-befinden. Das liegt daran, dass die Trigger die Änderungen in der Datenbank (*.sqlite) vornehmen, und deshalb erst
-aktiv werden können, wenn sie von QGIS durch das Speichern in die Datenbank geschrieben worden sind.</p>
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p>Referenztabelle(n)</p></td>
-<td><p>Datentabellen</p></td>
-</tr>
-<tr class="row-even"><td><p>Profile</p></td>
-<td><p>Haltungen,
-Anschlussleitungen</p></td>
-</tr>
-<tr class="row-odd"><td><p>Entwässerungsarten,
-Planungsstatus,
-Material</p></td>
-<td><p>Haltungen, Hausanschlussleitungen,
-Schächte, Auslässe, Speicher,
-alle Sonderelemente</p></td>
-</tr>
-<tr class="row-even"><td><p>Abflussparameter</p></td>
-<td><p>Einzelflächen, Haltungsflächen</p></td>
-</tr>
-</tbody>
-</table>
-<p>Die Funktion kann über das Menü  <span class="guilabel">QKan</span> &gt;  <span class="guilabel">Allgemein</span> &gt;  <span class="guilabel">Optionen</span> in der
-Karteikarte  <span class="guilabel">Autom. Datenübernahme</span> aktiviert werden.</p>
+<section id="langsschnitt">
+<span id="index-1"></span><h2>Längsschnitt<a class="headerlink" href="#langsschnitt" title="Link to this heading"></a></h2>
+<p>Mit dem Tool <a class="reference internal" href="QKan_Bilder/Tool_laengsschnitt.png"><img alt="Tool_laengsschnitt" src="QKan_Bilder/Tool_laengsschnitt.png" style="width: 1.25em;" /></a> <span class="guilabel">Längsschnitt</span> lassen sich Längsschnitte des Kanalnetzes erzeugen.</p>
+<img alt="_images/laengsschnitt.png" src="_images/laengsschnitt.png" />
+<p>Um den Längsschnitt nutzen zu können, müssen zunächst Elemente aus dem Layer „Schächte“ oder „Haltungen“ ausgewählt werden. Der Längsschnitt wird entweder
+zwischen zwei ausgewählten Elementen erzeugt oder entlang einer Reihe mehrerer ausgewählter Elemente.
+Wenn sich die Auswahl oder Eingaben ändern, kann über den Refresh-Button die Anzeige aktualisiert werden.
+Mit dem Button „Auswahl anzeigen“ lassen sich die für den Längsschnitt verwendeten Elemente erneut in der Karte markieren.
+Damit die Anzeige des maximalen Wasserstands, der animierte Längsschnitt sowie die Ganglinie genutzt werden können, muss zunächst eine HYSTEM-EXTRAN-Ergebnisdatei ausgewählt werden.
+Im Anschluss kann im Reiter „Animierter Längsschnitt“ über den Button „Längsschnitt anzeigen“ der animierte Längsschnitt geöffnet werden
+Die Animation kann anschließend über die Steuerelemente im unteren Bereich in Bezug auf Abspielgeschwindigkeit und Zeitpunkt bedient werden.
+Im Reiter „Ganglinien“ lassen sich mit dem Button „Ganglinie anzeigen“ verschiedene Ganglinien aus den Ergebnisdaten erzeugen – beispielsweise Zufluss, Wasserstand oder Durchfluss.</p>
 </section>
 </section>
 
@@ -206,7 +210,7 @@ Karteikarte  <span class="guilabel">Autom. Datenübernahme</span> aktiviert werd
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017 - 2022, Hoettges.</p>
+    <p>&#169; Copyright 2017 - 2025, Hoettges.</p>
   </div>
 
   Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem

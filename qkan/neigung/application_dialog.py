@@ -1,6 +1,8 @@
 import os
 from typing import Callable, Optional, TYPE_CHECKING
 from qgis.PyQt import uic
+from qgis.gui import QgsProjectionSelectionWidget
+from qgis.core import QgsCoordinateReferenceSystem
 from qgis.PyQt.QtWidgets import (
     QFileDialog,
     QLineEdit,
@@ -9,6 +11,7 @@ from qgis.PyQt.QtWidgets import (
     QDialog,
     QRadioButton,
 )
+from qkan import QKan
 
 if TYPE_CHECKING:
     from qkan.tools.application import QKanTools
@@ -33,15 +36,14 @@ NEIGUNG_CLASS, _ = uic.loadUiType(
 
 class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
     #button_box: QDialogButtonBox
-    lineEdit: QLineEdit
-    lineEdit_2: QLineEdit
-    lineEdit_3: QLineEdit
-    lineEdit_4: QLineEdit
-    pushButton: QPushButton
-    pushButton_2: QPushButton
-    pushButton_3: QPushButton
-    radioButton: QRadioButton
-    radioButton_2: QRadioButton
+    speicher_neigung: QLineEdit
+    speicher_dgm: QLineEdit
+    url_dgm_daten: QLineEdit
+    select_ordner_neigung: QPushButton
+    select_ordner_dgm: QPushButton
+    dgm_automatisch: QRadioButton
+    dgm_manuell: QRadioButton
+    epsg: QgsProjectionSelectionWidget
 
 
     def __init__(self,
@@ -51,9 +53,12 @@ class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
     ):
         super().__init__(default_dir, tr, parent)
 
-        self.pushButton.clicked.connect(self.select_dgm_ordner)
+        self.select_ordner_neigung.clicked.connect(self.select_dgm_ordner)
 
-        self.pushButton_2.clicked.connect(self.select_dgm_speicher)
+        self.select_ordner_dgm.clicked.connect(self.select_dgm_speicher)
+
+        self.epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
+        self.button_box.helpRequested.connect(self.click_help)
 
 
     def select_dgm_ordner(self):
@@ -63,7 +68,7 @@ class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
             self.default_dir,
         )
         if dirname:
-            self.lineEdit.setText(dirname)
+            self.speicher_neigung.setText(dirname)
             self.default_dir = os.path.dirname(dirname)
 
 
@@ -76,5 +81,10 @@ class NeigungDialog(_Dialog, NEIGUNG_CLASS):  # type: ignore
         )
 
         if filename:
-            self.lineEdit_2.setText(filename)
+            self.speicher_dgm.setText(filename)
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Flaechenverarbeitung.html#neigungsklasse-ermitteln"
+        os.startfile(help_file)
 

@@ -33,24 +33,37 @@ Mit der Funktion |Tool_export_swmm| :guilabel:`Export in SWMM-Datei` können die
 .. |Tool_export_swmm| image:: ./QKan_Bilder/Tool_export_swmm.png
                              :width: 1.25 em
 
-..
-    (?Jörg?): (Bitte Erklärungen ergänzen)
-    QKan-Projekt-Datenbank
-    ++++++++++++++++++++++
+
+QKan-Projekt-Datenbank
+++++++++++++++++++++++
+In diesem Bereich wird automatisch die aktuelle QKan-Datenbank eingetragen.
+
+Export-Datei
+++++++++++++
+In diesem Bereich werden die Vorlage für die ERstellung der SWMM-Datei und die zu erstellende Ergebnisdatei ausgewählt.
     
-    Export-Datei
-    ++++++++++++
+Nur ausgewählte Teilgebiete berücksichtigen
++++++++++++++++++++++++++++++++++++++++++++
+Soll nur ein Teilgebiet bearbeitet werden, dann kann dies hier, über die Aktivierung der Schaltfläche mit anschließender Auswahl des
+entsprechenden Teilgebiets, geschehen.
     
-    Nur ausgewählte Teilgebiete berücksichtigen
-    +++++++++++++++++++++++++++++++++++++++++++
-    Soll nur ein Teilgebiet bearbeitet werden, dann kann dies hier, über die Aktivierung der Schaltfläche mit anschließender Auswahl des
-    entsprechenden Teilgebiets, geschehen.
-    
-    Tabellen exportieren
-    ++++++++++++++++++++
-    
-    Aktionen beim Export
-    ++++++++++++++++++++
-    -**hinzufügen:**
-    -**ändern:**
-    -**neue Datei erstellen:**
+Tabellen exportieren
+++++++++++++++++++++
+
+Aktionen beim Export
+++++++++++++++++++++
+-**hinzufügen:**
+-**ändern:**
+-**neue Datei erstellen:**
+
+
+Ergebnis Import aus SWMM 
+------------------------
+
+Mit der Funktion |Tool_import_swmm| :guilabel:`Ergebnis Import aus SWMM` können Ergebnisdaten aus einer SWMM-Datei in ein QKan-Projekt geladen werden.
+
+.. image:: ./QKan_Bilder/Formulare/import_swmm_erg.png
+
+Datenquelle
++++++++++++
+In diesem Bereich wird die mit SWMM erstellte Ergebnissdatei (Endung .rpt) ausgewählt. 

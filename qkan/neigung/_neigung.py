@@ -1,7 +1,7 @@
 from qgis.utils import iface
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanError
 from qgis import processing
 
 
@@ -17,7 +17,7 @@ from qgis.core import (
     QgsExpressionContextUtils,
 )
 
-logger = get_logger("QKan.selection")
+logger = get_logger("QKan.neigung")
 
 
 class NeigungTask:
@@ -46,16 +46,14 @@ class NeigungTask:
         return f"{base_url}dgm1_32_{x}_{y}_1_nw_2022.tif"
 
     def laden(self, url, verzeichnis):
-        try:
-            with urllib.request.urlopen(url) as response:
-                if response.status == 200:
-                    with open(verzeichnis, 'wb') as out_file:
-                        out_file.write(response.read())
-                else:
-                    logger.error('Daten konnten nicht heruntergeladen werden')
-        except Exception as e:
-            logger.error('Daten konnten nicht heruntergeladen werden')
-            #TODO: Abbruch einbauen!
+        with urllib.request.urlopen(url) as response:
+            if response.status == 200:
+                with open(verzeichnis, 'wb') as out_file:
+                    out_file.write(response.read())
+            else:
+                logger.error('Daten konnten nicht heruntergeladen werden')
+                raise QkanError
+
 
 
     def run(self) -> None:
@@ -108,7 +106,6 @@ class NeigungTask:
             'INPUT': 'spatialite://dbname=' + self.db_qkan.dbname + ' table="flaechen" (geom)',
             'INPUT_RASTER': self.zielordner_dmg+'/'+'neigung.tif',
             'RASTER_BAND': 1, 'COLUMN_PREFIX': '_', 'STATISTICS': [2], 'OUTPUT': self.zielordner_dmg+'/'+'neigung.shp'})
-
 
         #die daten aus temp zurück in die Datenbank spielen und anhand der mittelwerte die jeweilige klasse ermitteln!
 

@@ -1,19 +1,21 @@
 from pathlib import Path
 
-from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
+
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan, eval_node_types
+from qkan.tools.qkan_utils import get_database_QKan
 from qkan.plugin import QKanPlugin
 from qkan.tools.k_qgsadapt import qgsadapt
-from qkan.tools.qkan_utils import loadlayer
-from qgis.core import QgsMessageLog, Qgis
+from qkan.tools.qkan_utils import loadLayer, zoomAll
 
 from ._export import ExportTask
 from ._import import ImportTask
 from .application_dialog import ExportDialog, ImportDialog
+
+from qkan.utils import QkanDbError
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
@@ -48,14 +50,21 @@ class M150Porter(QKanPlugin):
         self.import_dlg.close()
 
     def run_export(self) -> None:
+        """Anzeigen des Exportformulars und anschließender Start des Exports in eine M150-XML-Datei"""
+
+        # noinspection PyArgumentList
+        if not self.export_dlg.prepareDialog(self.iface):
+            return
+
+        # Formular anzeigen
         self.export_dlg.show()
 
         # Fill dialog with current info
-        get_database_QKan()
-        self.database_name = QKan.config.database.qkan
-        if self.database_name:
-            self.export_dlg.tf_database.setText(self.database_name)
-
+        # get_database_QKan()
+        # self.database_name = QKan.config.database.qkan
+        # if self.database_name:
+        #     self.export_dlg.tf_database.setText(self.database_name)
+        #
         if self.export_dlg.exec_():
             export_file = self.export_dlg.tf_export.text()
             self.database_name = self.export_dlg.tf_database.text()
@@ -85,11 +94,6 @@ class M150Porter(QKanPlugin):
             QKan.config.check_export.export_wehre = (
                 self.export_dlg.cb_export_wehre.isChecked()
             )
-
-            teilgebiete = [
-                _.text() for _ in self.export_dlg.lw_teilgebiete.selectedItems()
-            ]
-            QKan.config.selections.teilgebiete = teilgebiete
 
             QKan.config.save()
 
@@ -121,34 +125,26 @@ class M150Porter(QKanPlugin):
             # Read from form and save to config
             QKan.config.database.qkan = self.import_dlg.tf_database.text()
             QKan.config.project.file = self.import_dlg.tf_project.text()
-            #QKan.config.xml.richt_choice = self.import_dlg.comboBox.currentText()
             QKan.config.xml.data_choice = self.import_dlg.comboBox_2.currentText()
             QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text()
             QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text()
 
-            QKan.config.xml.import_stamm = (
-                self.import_dlg.checkBox.isChecked()
-            )
-
-            QKan.config.xml.import_haus = (
-                self.import_dlg.checkBox_2.isChecked()
-            )
-
-            QKan.config.xml.import_zustand = (
-                self.import_dlg.checkBox_3.isChecked()
+            QKan.config.xml.import_stamm = self.import_dlg.cb_impStamm.isChecked()
+            QKan.config.xml.import_zustand = self.import_dlg.cb_zustand.isChecked()
+            QKan.config.xml.import_haus = self.import_dlg.cb_impAnschluesse.isChecked()
+            # Note: cb_switchAnschluesse doesn't exist in the UI file, use default value
+            QKan.config.xml.import_switchHA = (
+                self.import_dlg.cb_switchAnschluesse.isChecked()
+                if hasattr(self.import_dlg, 'cb_switchAnschluesse')
+                else True
             )
 
             QKan.config.save()
 
             QKan.config.xml.import_file = self.import_dlg.tf_import.text()
             if not QKan.config.xml.import_file:
-                fehlermeldung("Fehler beim Import", "Es wurde keine Datei ausgewählt!")
-                self.iface.messageBar().pushMessage(
-                    "Fehler beim Import",
-                    "Es wurde keine Datei ausgewählt!",
-                    level=Qgis.MessageLevel.Critical,
-                )
-                return
+                self.log.error_data("Fehler beim Import: Es wurde keine Datei ausgewählt!")
+                raise QkanDbError
             else:
                 crs: QgsCoordinateReferenceSystem = self.import_dlg.epsg.crs()
 
@@ -184,20 +180,18 @@ class M150Porter(QKanPlugin):
         """
 
         self.log.info("Creating DB")
+
+        iface = QKan.instance.iface
+
         with DBConnection(
                 dbname=QKan.config.database.qkan, epsg=QKan.config.epsg
         ) as db_qkan:
             if not db_qkan.connected:
-                fehlermeldung(
-                    "Fehler im XML-Import",
+                self.log.error_data(
+                    "Fehler im M150-Import: "
                     f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
                 )
-                self.iface.messageBar().pushMessage(
-                    "Fehler im XML-Import",
-                    f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
-                    level=Qgis.MessageLevel.Critical,
-                )
-                return False
+                raise QkanDbError
 
             self.log.info("DB creation finished, starting importer")
             imp = ImportTask(
@@ -235,10 +229,10 @@ class M150Porter(QKanPlugin):
             if not layerexists:
                 grouppath = [
                     enums.LAYERBEZ.QKAN_GROUP.value,
-                    enums.LAYERBEZ.REFERENZTABELLEN.value,
+                    enums.LAYERBEZ.REFERENZTABELLEN_GROUP.value,
                 ]
 
-                loadlayer(
+                loadLayer(
                     layerbez=   enums.LAYERBEZ.M150_KNOTENARTEN.value,
                     table=      "m150_knotenarten",
                     geom_column=None,
@@ -248,24 +242,31 @@ class M150Porter(QKanPlugin):
                 )
                 project.write()
             if not complete:
-                msg = ('In der M150-Datei sind individuelle Knotentypen definiert. '
-                                'Vor einem Import müssen diese bearbeitet werden (siehe '
-                                '<a href="https://qkan.eu/">QKan Dokumentation</a>)!')
-                # noinspection PyArgumentList
-                QgsMessageLog.logMessage(
-                    message=msg,
-                    tag="QKan",
-                    notifyUser=True,
-                    level=Qgis.MessageLevel.Info,
-                )
+                msg = ('\n\nIn der M150-Datei sind individuelle Knotentypen definiert. Vor einem Import muss \n'
+                       'in der Referenztabelle "M150 Knotenarten" der QKan-Schachttyp ausgewählt werden. \n\n'
+                       'Anschließend muss der Import neu gestartet werden. \n(siehe <a href='
+                       '"https://qkan.eu/versionen/new/QKan_XML.html#start-des-importes">QKan Dokumentation</a>)!\n\n')
+                self.log.warning_user(msg)
 
-                self.iface.openMessageLog()
-                self.iface.messageBar().pushMessage(
-                    "QKan",
-                    msg,
-                    level=Qgis.MessageLevel.Info,
-                    duration=0
-                )
+                # Attributtabelle zur Bearbeitung anzeigen
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.M150_KNOTENARTEN.value,)[0]
+                iface.showAttributeTable(layer)
+
+                # noinspection PyArgumentList
+                # QgsMessageLog.logMessage(
+                #     message=msg,
+                #     tag="QKan",
+                #     notifyUser=True,
+                #     level=Qgis.MessageLevel.Info,
+                # )
+                #
+                # self.iface.openMessageLog()
+                # self.iface.messageBar().pushMessage(
+                #     "QKan",
+                #     msg,
+                #     level=Qgis.MessageLevel.Info,
+                #     duration=0
+                # )
 
             # TODO: Some layers don't have a valid EPSG attached or wrong coordinates
 

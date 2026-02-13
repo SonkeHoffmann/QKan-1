@@ -43,16 +43,15 @@ class _Dialog(QDialog):
 
 class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
     #button_box: QDialogButtonBox
-    radioButton: QRadioButton
-    radioButton_2: QRadioButton
-    radioButton_3: QRadioButton
-    radioButton_4: QRadioButton
-    radioButton_5: QRadioButton
-    radioButton_6: QRadioButton
-    radioButton_7: QRadioButton
-    radioButton_8: QRadioButton
-    radioButton_9: QRadioButton
-    radioButton_10: QRadioButton
+    cb_selectFlaechen: QCheckBox
+    cb_selectHaltungen: QCheckBox
+    cb_selectSchaechte: QCheckBox
+    obj_oberhalb: QPushButton
+    obj_innerhalb: QPushButton
+    obj_unterhalb: QPushButton
+    obj_zwischen: QPushButton
+    fliessweg: QPushButton
+
 
 
     def __init__(self,
@@ -61,4 +60,23 @@ class SelectionDialog(_Dialog, SELECT_CLASS):  # type: ignore
         parent: Optional[QWidget] = None,
     ):
         super().__init__(default_dir, tr, parent)
+
+        self.geklickter_button = None
+
+        # Signale verbinden
+        self.obj_innerhalb.clicked.connect(lambda: self.button_clicked("Teilgebiet"))
+        self.obj_unterhalb.clicked.connect(lambda: self.button_clicked("unterhalb"))
+        self.obj_zwischen.clicked.connect(lambda: self.button_clicked("kuerzester"))
+        self.obj_oberhalb.clicked.connect(lambda: self.button_clicked("oberhalb"))
+        self.fliessweg.clicked.connect(lambda: self.button_clicked("Fliessweg"))
+        self.button_box.helpRequested.connect(self.click_help)
+
+    def button_clicked(self, name):
+        self.geklickter_button = name
+        self.accept()
+
+    def click_help(self) -> None:
+        """Reaktion auf Klick auf Help-Schaltfläche"""
+        help_file = "https://qkan.eu/QKan_Daten.html#auswahl-erweitern-netzverfolgung"
+        os.startfile(help_file)
 

@@ -17,7 +17,7 @@ from qgis.gui import QgsProjectionSelectionWidget
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.he8.application_dialog")
 
@@ -171,7 +171,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         # Anzahl in der Anzeige aktualisieren
         self.count()
 
-    def count(self) -> bool:
+    def count(self) -> None:
         """ Zählt nach Änderung der Auswahlen in den Listen im Formular die Anzahl
             der betroffenen Flächen und Haltungen
         """
@@ -192,25 +192,25 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
             if selected:
                 n_haltungen, n_schaechte, n_flaechen = db_qkan.getSelection(selected)
                 logger.debug(f'Selection 2: {n_haltungen}, {n_schaechte}, {n_flaechen}')
-                if not db_qkan.sqlyml('he8_count_sel_haltungen', 'count selected haltungen'):
-                    raise Exception(f"{self.__class__.__name__}: errno. 105")
+                if not db_qkan.sqlyml('he8_count_haltungen_sel', 'count selected haltungen'):
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 105")
                 n_haltungen = db_qkan.fetchone()[0]
                 if not db_qkan.sqlyml('he8_count_sel_schaechte', 'count selected schaechte'):
-                    raise Exception(f"{self.__class__.__name__}: errno. 106")
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 106")
                 n_schaechte = db_qkan.fetchone()[0]
                 if not db_qkan.sqlyml('he8_count_sel_flaechen', 'count selected flaechen'):
-                    raise Exception(f"{self.__class__.__name__}: errno. 107")
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 107")
                 n_flaechen = db_qkan.fetchone()[0]
 
             else:
                 if not db_qkan.sqlyml('he8_count_haltungen_all', 'count selected haltungen'):
-                    raise Exception(f"{self.__class__.__name__}: errno. 105")
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 105")
                 n_haltungen = db_qkan.fetchone()[0]
                 if not db_qkan.sqlyml('he8_count_schaechte_all', 'count selected schaechte'):
-                    raise Exception(f"{self.__class__.__name__}: errno. 106")
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 106")
                 n_schaechte = db_qkan.fetchone()[0]
                 if not db_qkan.sqlyml('he8_count_flaechen_all', 'count selected flaechen'):
-                    raise Exception(f"{self.__class__.__name__}: errno. 107")
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 107")
                 n_flaechen = db_qkan.fetchone()[0]
 
             self.lf_anzahl_haltungen.setText(f'{n_haltungen}')
@@ -245,6 +245,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         """Reaktion auf Klick auf Help-Schaltfläche"""
         help_file = "https://qkan.eu/QKan_Hystem_Extran.html#export-nach-hystem-extran"
         os.startfile(help_file)
+
 
 IMPORT_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "res", "he8_import_dialog_base.ui")
@@ -445,8 +446,8 @@ class ResultsDialog(_Dialog, RESULTS_CLASS):  # type: ignore
             self.rb_none.setChecked(True)
         else:
             fehlermeldung = "Nicht definierte Option"
-            logger.error(fehlermeldung)
-            raise Exception(f"{self.__class__.__name__}: {fehlermeldung}")
+            logger.error_code(fehlermeldung)
+            raise QkanAbortError(f"{self.__class__.__name__}: {fehlermeldung}")
 
         # Individuelle Stildatei
         self.tf_qmlfile.setText(QKan.config.he8.qml_file_results)

@@ -1,6 +1,4 @@
 import os
-import webbrowser
-from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
 from qgis.PyQt import uic
@@ -42,5 +40,5 @@ class DbAdaptDialog(QKanDBDialog, QKanProjectDialog, FORM_CLASS_dbAdapt):  # typ
         self.button_box.helpRequested.connect(self.click_help)
 
     def click_help(self) -> None:
-        help_file = "https://qkan.eu/Qkan_Formulare.html#datenbank-aktualisieren"
+        help_file = "https://qkan.eu/QKan_Formulare_Allgemein.html#datenbank-aktualisieren"
         os.startfile(help_file)

@@ -2089,7 +2089,7 @@ class ImportTask(Schadenstexte):
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
                 AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)          -- kein Symbol
-                AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
+                AND substr(stb.atv_kuerzel, 1, 1) in ('C', 'D') AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                 AND (   (stb.untersuchungsrichtung = 1 AND stb.station_untersucher < 0.01) 
                      OR (stb.untersuchungsrichtung = 0 AND stb.station_untersucher > stk.laenge * 0.9)
                     ) 
@@ -2131,7 +2131,7 @@ class ImportTask(Schadenstexte):
                 AND stk.rw_gerinne_o Is Not Null
                 AND stk.hw_gerinne_o Is Not Null
                 AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)          -- kein Symbol
-                AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
+                AND substr(stb.atv_kuerzel, 1, 1) in ('C', 'D') AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                 AND (   (stb.untersuchungsrichtung = 0 AND stb.station_untersucher < 0.01) 
                      OR (stb.untersuchungsrichtung = 1 AND stb.station_untersucher > stk.laenge * 0.9)
                     ) 
@@ -2219,7 +2219,7 @@ class ImportTask(Schadenstexte):
                   AND stb.geloescht = 0
                   AND stb.hausanschlid = '00000000-0000-0000-0000-000000000000'
                   AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)                -- kein Symbol
-                  AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
+                  AND substr(stb.atv_kuerzel, 1, 1) in ('C', 'D') AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                   AND (   (stb.untersuchungsrichtung = 1 AND stb.station_untersucher < 0.01) 
                        OR (stb.untersuchungsrichtung = 0 AND stb.station_untersucher > stk.laenge * 0.9)
                       ) 
@@ -2265,7 +2265,7 @@ class ImportTask(Schadenstexte):
                   AND stb.geloescht = 0
                   AND stb.hausanschlid = '00000000-0000-0000-0000-000000000000'
                   AND (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0)                -- kein Symbol
-                  AND substr(stb.atv_kuerzel, 1, 1) = 'D' AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
+                  AND substr(stb.atv_kuerzel, 1, 1) in ('C', 'D') AND substr(stb.atv_kuerzel, 2, 1) <> '-' 
                   AND (   (stb.untersuchungsrichtung = 0 AND stb.station_untersucher < 0.01) 
                        OR (stb.untersuchungsrichtung = 1 AND stb.station_untersucher > stk.laenge * 0.9)
                       ) 
@@ -2384,7 +2384,7 @@ class ImportTask(Schadenstexte):
                    hu.pk IS NULL AND
                    stb.hausanschlid = '00000000-0000-0000-0000-000000000000' AND
                    (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0) AND               -- kein Symbol
-                   (substr(stb.atv_kuerzel, 1, 1) <> 'D' OR substr(stb.atv_kuerzel, 2, 1) = '-') 
+                   (substr(stb.atv_kuerzel, 1, 1) not in ('C', 'D') OR substr(stb.atv_kuerzel, 2, 1) = '-') 
             GROUP BY stk.strakatid, stb.datum
         """
 
@@ -2471,7 +2471,7 @@ class ImportTask(Schadenstexte):
                   usd.pk IS NULL AND
                   stb.hausanschlid = '00000000-0000-0000-0000-000000000000' AND
                   (stk.zuflussnummer1 > 0 OR stk.abflussnummer1 > 0) AND                -- kein Symbol
-                  (substr(stb.atv_kuerzel, 1, 1) <> 'D' OR substr(stb.atv_kuerzel, 2, 1) = '-')
+                  (substr(stb.atv_kuerzel, 1, 1) not in ('C', 'D') OR substr(stb.atv_kuerzel, 2, 1) = '-')
         """
 
         params = {'ordner_bild': self.ordner_bild, 'ordner_video': self.ordner_video}

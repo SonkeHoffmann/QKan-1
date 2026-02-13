@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Datenaustausch &mdash; QKan 3.3.1 Dokumentation</title>
+  <title>Datenaustausch &mdash; QKan 3.4.8 Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=8209df7b" />
 
@@ -38,7 +38,7 @@
             QKan
           </a>
               <div class="version">
-                3.2
+                3.4.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -57,12 +57,18 @@
 <p class="caption" role="heading"><span class="caption-text">Funktionen</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Datenaustausch</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#datenaustausch-mit-xml-dateien">Datenaustausch mit XML-Dateien</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dwa-m-150">DWA-M 150</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#referenztabellen">Referenztabellen</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#baufachliche-richtlinien-abwasser-vormals-isybau">Baufachliche Richtlinien Abwasser (vormals ISYBAU)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#import-von-kanaldaten-aus-einfachen-tabellen">Import von Kanaldaten aus einfachen Tabellen</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_flaechen.html">Arbeiten mit Flächen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Daten.html">Daten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_workflow.html">Beispielprojekte</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_qfield.html">QKan-Projekte auf dem Tablet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_edit.html">Erstellen und Bearbeiten von Kanalnetzen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Zustandsklassifizierung.html">Zustandsklassifizierung</a></li>
@@ -74,6 +80,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Formulare.html">Formulare</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QKan_Tabellen.html">QKan-Tabellen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QKan_Synchro.html">Synchronisation</a></li>
 </ul>
 
         </div>
@@ -102,6 +109,43 @@
              
   <section id="datenaustausch">
 <h1>Datenaustausch<a class="headerlink" href="#datenaustausch" title="Link to this heading"></a></h1>
+<section id="datenaustausch-mit-xml-dateien">
+<h2>Datenaustausch mit XML-Dateien<a class="headerlink" href="#datenaustausch-mit-xml-dateien" title="Link to this heading"></a></h2>
+<p>Für den Datenaustausch von Kanalnetzdaten existieren zwei etablierte XML-Formate. Die DWA hat mit dem Merkblatt
+DWA-M 150 „Datenaustauschformat für die Zustandserfassung von Entwässerungssystemen“ im Jahr 2003 einen Standard
+herausgegeben, der seitdem in der Praxis einige kleinere Anpassungen erfahren hat, so dass insbesondere
+im Bereich der Kanalzustandserfassung mehrere Versionen existieren. Aktuell steht mit dem neuen Merkblatt DWA-M 145
+eine überarbeitete und erweiterte Version zur Verfügung, deren Einführung in der Praxis sicherlich noch einige
+Jahre in Anspruch nehmen wird.</p>
+<p>Der Bund hat im Jahr 2006 die erste Version des ISYBAU-XML-Austauschformates veröffentlicht, das seitdem mit den
+Versionen 2013, 2017 und 2024 mehrfach überarbeitet wurde.</p>
+<section id="dwa-m-150">
+<span id="id1"></span><h3>DWA-M 150<a class="headerlink" href="#dwa-m-150" title="Link to this heading"></a></h3>
+<p>Das Datenaustauschformat gemäß DWA-M M150 (kurz: <em>M150</em>) umfasst je nach Bedarf Kanalstammdaten, Hausanschlussdaten
+sowie Zustandsdaten. Beim Datenimport ist zu berücksichtigen, dass QKan anstelle von Schlüsselwerten (z. B. <em>RW</em> für
+<em>Regenwasser</em>) in den Datentabellen (Haltungen, Schächte, etc.) die Langbezeichnungen verwendet. Hintergrund ist, dass
+der Anwender die Tabellen auch direkt in der QGIS-Ansicht <em>Attributtabellen</em> bearbeiten kann.</p>
+<p>Die Schlüsselwerte für den Datenaustausch sind in der QKan-Gruppe <em>Referenztabellen</em> zu finden. Die Schlüsselwerte
+der DWA-M 150 befinden sich in der entsprechenden Spalte.</p>
+</section>
+<section id="referenztabellen">
+<h3>Referenztabellen<a class="headerlink" href="#referenztabellen" title="Link to this heading"></a></h3>
+<p>Folgende Referenztabellen sind für den Datenimport relevant, um Schlüsselwerte aus der zu importierenden XML-Datei den entsprechenden
+Attributen von QKan zuzuordnen:</p>
+<ul class="simple">
+<li><p>Entwässerungsarten</p></li>
+<li><p>Profile</p></li>
+<li><p>Material</p></li>
+<li><p>Planungsstatus</p></li>
+<li><p>Wetter</p></li>
+<li><p>Knotenarten</p></li>
+</ul>
+</section>
+</section>
+<section id="baufachliche-richtlinien-abwasser-vormals-isybau">
+<h2>Baufachliche Richtlinien Abwasser (vormals ISYBAU)<a class="headerlink" href="#baufachliche-richtlinien-abwasser-vormals-isybau" title="Link to this heading"></a></h2>
+<p>(Dieses Kapitel befindet sich noch in der Erstellung)</p>
+</section>
 <section id="import-von-kanaldaten-aus-einfachen-tabellen">
 <h2>Import von Kanaldaten aus einfachen Tabellen<a class="headerlink" href="#import-von-kanaldaten-aus-einfachen-tabellen" title="Link to this heading"></a></h2>
 <p>Der Import von Daten aus einfachen Tabellen ist prinzipiell mit allen Methoden möglich, die QGIS zur Verfügung
@@ -173,7 +217,7 @@ wenn Datensätze mit Geometrien kopiert und in eine Textdatei eingefügt werden.
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017 - 2022, Hoettges.</p>
+    <p>&#169; Copyright 2017 - 2025, Hoettges.</p>
   </div>
 
   Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
