@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/plugins/qkan/uploadPostgis" >
+        <file>res/icon_uploadPostgis.png</file>
+        <file>res/uploadPostgis_dialog_base.ui</file>
+        <file>res/uploadPostgis_database_dialog.ui</file>
+        <file>res/postgis_connection_dialog.ui</file>
+    </qresource>
+</RCC>

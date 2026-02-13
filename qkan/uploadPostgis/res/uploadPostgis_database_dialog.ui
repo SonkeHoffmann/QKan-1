@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>550</height>
+    <height>830</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>550</height>
+    <height>830</height>
    </size>
   </property>
   <property name="font">
@@ -74,24 +74,24 @@
      <x>20</x>
      <y>85</y>
      <width>560</width>
-     <height>80</height>
+     <height>150</height>
     </rect>
    </property>
    <property name="title">
-    <string>QKan postgres-Quelldatenbank</string>
+    <string>QKan SQLite-Quelldatenbanken</string>
    </property>
    
-   <widget class="QLineEdit" name="le_database_file">
+   <widget class="QListWidget" name="listWidget_source_files">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>25</y>
       <width>440</width>
-      <height>30</height>
+      <height>110</height>
      </rect>
     </property>
-    <property name="placeholderText">
-     <string>Pfad zur QKan postgres-Quelldatenbank...</string>
+    <property name="toolTip">
+     <string>Ausgewählte Quelldatenbanken für den Upload</string>
     </property>
    </widget>
    
@@ -105,25 +105,45 @@
      </rect>
     </property>
     <property name="text">
-     <string>Auswählen...</string>
+     <string>Hinzufügen...</string>
+    </property>
+    <property name="toolTip">
+     <string>Wählen Sie eine oder mehrere QKan-Datenbanken aus</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_remove_file">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>65</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Entfernen</string>
+    </property>
+    <property name="toolTip">
+     <string>Ausgewählte Datei aus der Liste entfernen</string>
     </property>
    </widget>
   </widget>
   
-  <widget class="QGroupBox" name="groupBox_database">
+  <widget class="QGroupBox" name="groupBox_schema">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>180</y>
+     <y>250</y>
      <width>560</width>
      <height>280</height>
     </rect>
    </property>
    <property name="title">
-    <string>PostGIS Zieldatenbank</string>
+    <string>PostGIS Ziel-Schema</string>
    </property>
    
-   <widget class="QListWidget" name="listWidget_databases">
+   <widget class="QListWidget" name="listWidget_schemas">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -134,7 +154,7 @@
     </property>
    </widget>
    
-   <widget class="QPushButton" name="pb_refresh_databases">
+   <widget class="QPushButton" name="pb_refresh_schemas">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -148,7 +168,7 @@
     </property>
    </widget>
    
-   <widget class="QCheckBox" name="cb_create_new_database">
+   <widget class="QCheckBox" name="cb_create_new_schema">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -158,11 +178,11 @@
      </rect>
     </property>
     <property name="text">
-     <string>Neue Datenbank erstellen</string>
+     <string>Neues Schema erstellen</string>
     </property>
    </widget>
    
-   <widget class="QLineEdit" name="le_new_database_name">
+   <widget class="QLineEdit" name="le_new_schema_name">
     <property name="geometry">
      <rect>
       <x>360</x>
@@ -175,7 +195,7 @@
      <bool>false</bool>
     </property>
     <property name="placeholderText">
-     <string>Name der neuen Datenbank</string>
+     <string>Name des neuen Schemas</string>
     </property>
    </widget>
    
@@ -194,13 +214,191 @@
    </widget>
   </widget>
   
+  <widget class="QGroupBox" name="groupBox_qgis_project">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>540</y>
+     <width>560</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>QGIS-Projekt (Optional)</string>
+   </property>
+   
+   <widget class="QCheckBox" name="cb_upload_project">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>280</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>QGIS-Projekt in Datenbank hochladen</string>
+    </property>
+    <property name="toolTip">
+     <string>Lädt das aktuelle oder eine ausgewählte QGIS-Projektdatei in die PostgreSQL-Datenbank hoch</string>
+    </property>
+   </widget>
+   
+   <widget class="QLineEdit" name="le_project_file">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>440</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="placeholderText">
+     <string>Projektdatei auswählen (.qgs) oder leer lassen für aktuelles Projekt</string>
+    </property>
+   </widget>
+   
+   <widget class="QPushButton" name="pb_select_project">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>49</y>
+      <width>90</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Durchsuchen...</string>
+    </property>
+    <property name="toolTip">
+     <string>Wählen Sie eine QGIS-Projektdatei (.qgs oder .qgz)</string>
+    </property>
+   </widget>
+   
+   <widget class="QLineEdit" name="le_project_name">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>80</y>
+      <width>450</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="placeholderText">
+     <string>Name für das Projekt in der Datenbank (optional)</string>
+    </property>
+   </widget>
+   
+   <widget class="QLabel" name="label_project_name">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>82</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Projektname:</string>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  
+  <widget class="QGroupBox" name="groupBox_progress">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>660</y>
+     <width>560</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Upload-Fortschritt</string>
+   </property>
+   
+   <widget class="QLabel" name="label_progress_tables">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>540</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tabellen:</string>
+    </property>
+   </widget>
+   
+   <widget class="QProgressBar" name="progressBar_upload">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>38</y>
+      <width>540</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+   </widget>
+   
+   <widget class="QLabel" name="label_progress_records">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>62</y>
+      <width>540</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Datensätze:</string>
+    </property>
+   </widget>
+   
+   <widget class="QProgressBar" name="progressBar_records">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>540</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  
   <widget class="QPushButton" name="pb_help">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>490</y>
-     <width>80</width>
-     <height>32</height>
+     <y>780</y>
+     <width>100</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -216,13 +414,40 @@
    </property>
   </widget>
   
+  <!-- SQL-Dump: Button für SQL-Dump Export deaktiviert
+  <widget class="QPushButton" name="pb_export_sql">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>780</y>
+     <width>150</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>9</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>📄 SQL-Dump Export</string>
+   </property>
+   <property name="toolTip">
+    <string>Erstellt einen PostgreSQL SQL-Dump für manuelle Installation (z.B. bei GBD WebSuite ohne direkten DB-Zugriff)</string>
+   </property>
+  </widget>
+  SQL-Dump -->
+  
   <widget class="QPushButton" name="pb_cancel">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>490</y>
-     <width>80</width>
-     <height>32</height>
+     <x>440</x>
+     <y>780</y>
+     <width>70</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
@@ -241,10 +466,10 @@
   <widget class="QPushButton" name="pb_upload">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>490</y>
-     <width>80</width>
-     <height>32</height>
+     <x>520</x>
+     <y>780</y>
+     <width>70</width>
+     <height>35</height>
     </rect>
    </property>
    <property name="font">
