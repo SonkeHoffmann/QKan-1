@@ -154,11 +154,11 @@ class ExportTask:
                     "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": formatm150(baujahr),
+                    "KG303": None if baujahr is None else f'{baujahr:d}',
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": formatm150(durchm),
+                    "KG309": None if durchm is None else f'{durchm:d}',
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -184,7 +184,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(sohlhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -207,7 +207,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(deckelhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -292,11 +292,11 @@ class ExportTask:
                     "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": formatm150(baujahr),
+                    "KG303": None if baujahr is None else f'{baujahr:d}',
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": formatm150(durchm),
+                    "KG309": None if durchm is None else f'{durchm:d}',
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -322,7 +322,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(sohlhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -345,7 +345,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(deckelhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -431,11 +431,11 @@ class ExportTask:
                     "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": formatm150(baujahr),
+                    "KG303": None if baujahr is None else f'{baujahr:d}',
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": formatm150(durchm),
+                    "KG309": None if durchm is None else f'{durchm:d}',
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -461,7 +461,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(sohlhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -484,7 +484,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(deckelhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -582,11 +582,11 @@ class ExportTask:
                     "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": formatm150(baujahr),
+                    "KG303": None if baujahr is None else f'{baujahr:d}',
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": formatm150(durchm),
+                    "KG309": None if durchm is None else f'{durchm:d}',
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -612,7 +612,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(sohlhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -635,7 +635,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(deckelhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -721,11 +721,11 @@ class ExportTask:
                     "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": formatm150(baujahr),
+                    "KG303": None if baujahr is None else f'{baujahr:d}',
                     "KG304": material,
                     "KG305": knotenart,
                     "KG306": bauwerksart,
-                    "KG309": formatm150(durchm),
+                    "KG309": None if durchm is None else f'{durchm:d}',
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -751,7 +751,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(sohlhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -774,7 +774,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(deckelhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -852,7 +852,7 @@ class ExportTask:
                     "HG102": strassenname,
                     "HG301": 'K',
                     "HG302": entwart,
-                    "HG303": formatm150(baujahr),
+                    "HG303": None if baujahr is None else f'{baujahr:d}',
                     "HG304": material,
                     "HG305": profil,
                     "HG306": formatm150(breite),
@@ -989,7 +989,7 @@ class ExportTask:
                     "HG102": strassenname,
                     "HG301": 'K',
                     "HG302": entwart,
-                    "HG303": formatm150(baujahr),
+                    "HG303": None if baujahr is None else f'{baujahr:d}',
                     "HG304": material,
                     "HG306": formatm150(breite),
                     "HG307": formatm150(hoehe),
@@ -1114,10 +1114,10 @@ class ExportTask:
                     "KG211": formatm150(tiefe),
                     "KG301": 'K',
                     "KG302": entwart,
-                    "KG303": formatm150(baujahr),
+                    "KG303": None if baujahr is None else f'{baujahr:d}',
                     "KG304": material,
                     "KG305": knotenart,
-                    "KG309": formatm150(durchm),
+                    "KG309": None if durchm is None else f'{durchm:d}',
                     "KG401": simstatus,
                     "KG407": 'B',
                     "KG999": kommentar,
@@ -1143,7 +1143,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(sohlhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 
@@ -1166,7 +1166,7 @@ class ExportTask:
                     self.gp_x: formatm150(xsch),
                     self.gp_y: formatm150(ysch),
                     "GP007": formatm150(deckelhoehe),
-                    "GP010": 'NHN',
+                    "GP010": QKan.config.check_export.hoehensystem,
                 },
             )
 

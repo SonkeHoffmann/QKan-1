@@ -56,6 +56,10 @@ class UntersuchBezugpunkt(enum.Enum):
     GERINNEMITTELPUNKT  = 'Gerinnemittelpunkt'
 
 
+class Hoehensystem(enum.Enum):
+    METER_UEBER_NN      = 'mnn'
+    NORMAL_HOEHENNULL   = 'nhn'
+
 class LAYERBEZ(enum.Enum):
     #Allgemeine Layer
     NOTIZ               = "Notizen"

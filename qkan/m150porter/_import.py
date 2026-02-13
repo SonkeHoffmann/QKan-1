@@ -1,6 +1,6 @@
 import re, os
 import xml.etree.ElementTree as ElementTree
-from typing import Dict, Iterator
+from typing import Dict, Iterator, Union
 
 from qgis.PyQt.QtCore import QByteArray
 from qgis.PyQt.QtWidgets import QProgressBar
@@ -258,7 +258,7 @@ class ImportTask(Schadenstexte):
                    name: str,
                    durchmesser: float = 1.0,
                    link: bool = False,
-                   ) -> ([str, None], [str, None], [float, None], [float, None]):
+                   ) -> tuple[Union[str, None], Union[str, None], Union[float, None], Union[float, None]]:
         """Liest Knotenobjekte sowie Sohl- und Deckelhoehe aus einem KG/GO-Block
 
         - geop:          Punktobjekt
@@ -587,7 +587,7 @@ class ImportTask(Schadenstexte):
 
         return geom_wkb, sohleoben, sohleunten
 
-    def run(self) -> list[str]:
+    def run(self) -> bool:
         """Import ausführen.
 
         Einlesen der M150-Daten in zwei Schritten:
@@ -595,14 +595,14 @@ class ImportTask(Schadenstexte):
            Standardwerte gesetzt.
         2. Import der M150-Daten
 
-        Der Status wird in _reftables() festgestellt, Wenn das Ergebnis refs_uncomplete nicht leer ist, wird der Import
+        Der Status wird in _reftables() festgestellt, Wenn das Ergebnis knotenarten_uncomplete nicht leer ist, wird der Import
         zunächst beendet und der Benutzer aufgefordert, den Knotentyp für jeden Schachttyp im Layer M150:Knotenarten
         festzulegen.
 
-        :returns:   refs_uncomplete, layerexists
-        :rtype:     list, bool
+        :returns:   knotenarten_uncomplete
+        :rtype:     bool, bool
 
-        **refs_uncomplete** gibt an, ob in allen Datensätzen der Referenztabelle refdata die
+        **knotenarten_uncomplete** gibt an, ob in allen Datensätzen der Referenztabelle refdata die
         QKan-Bezeichnung (Attribut "bezqkan") nicht leer ist.
         **tabM150Exists** gibt an, ob die Tabelle m150_knotenarten (und der dazugehörige Layer) existiert
         """
@@ -619,9 +619,7 @@ class ImportTask(Schadenstexte):
         status_message.layout().addWidget(self.progress_bar)
         iface.messageBar().pushWidget(status_message, Qgis.MessageLevel.Info, 10)
 
-        refs_uncomplete = self._reftables()           ;self.progress_bar.setValue(5)
-        if len(refs_uncomplete) > 0:
-            return refs_uncomplete
+        knotenarten_uncomplete = self._reftables()           ;self.progress_bar.setValue(5)
 
         self._init_mappers()
 #        if getattr(QKan.config.xml, "import_stamm", True):
@@ -648,20 +646,21 @@ class ImportTask(Schadenstexte):
 #        self.progress_bar.setValue(100)
         status_message.setText("Fertig! M150-Import abgeschlossen.")
 
-        return refs_uncomplete
+        return knotenarten_uncomplete
 
-    def _reftables(self) -> list[str]:
+    def _reftables(self) -> bool:
         """Referenztabellen mit Datensätzen für DWA-Import füllen
 
-        :returns:   refs_uncomplete
+        :returns:   knotenarten_uncomplete
         :rtype:     bool
 
-        **refs_uncomplete** gibt an, ob in allen Datensätzen der Referenztabelle refdata die
-        QKan-Bezeichnung (Attribut "bezqkan") nicht leer ist.
+        **knotenarten_uncomplete** gibt an, ob in der Referenztabelle refdata die
+        QKan-Bezeichnung (Attribut "bezqkan") für die Datensätze
+        (modul = 'm150porter' AND 'subject = 'import_knotentypen') nicht leer ist.
+        Die Zuordnung zu 'Schacht', 'Auslass', etc. ist in der Layertabelle im Attribut
+        'Bezeichnung' hinterlegt.
         """
         # Hinweis: 'None' bewirkt beim Import eine Zuordnung unabhängig vom Wert - SQLite
-
-        refs_uncomplete = []
 
         # Referenztabelle Entwässerungsarten
 
@@ -723,18 +722,6 @@ class ImportTask(Schadenstexte):
 
         # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
         self.db_qkan._adapt_reftable('m150porter','import_entwaesserungsarten')
-
-        # Prüfung, ob noch Zuordnungen NULL oder leer sind
-        sql = """SELECT pk
-            FROM refdata
-            WHERE (bezqkan IS NULL OR bezqkan = '') 
-              AND modul = 'm150porter'
-              AND subject = 'import_entwaesserungsarten'"""
-
-        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-        data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_entwaesserungsarten')
 
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO entwaesserungsarten (
@@ -841,18 +828,6 @@ class ImportTask(Schadenstexte):
         # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
         self.db_qkan._adapt_reftable('m150porter', 'import_profile')
 
-        # Prüfung, ob noch Zuordnungen NULL oder leer sind
-        sql = """SELECT pk
-            FROM refdata
-            WHERE (bezqkan IS NULL OR bezqkan = '') 
-              AND modul = 'm150porter'
-              AND subject = 'import_profile'"""
-
-        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-        data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_profile')
-
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO profile (
                     profilnam, kuerzel, kommentar)
@@ -930,18 +905,6 @@ class ImportTask(Schadenstexte):
 
         # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
         self.db_qkan._adapt_reftable('m150porter', 'import_simulationsstatus')
-
-        # Prüfung, ob noch Zuordnungen NULL oder leer sind
-        sql = """SELECT pk
-            FROM refdata
-            WHERE (bezqkan IS NULL OR bezqkan = '') 
-              AND modul = 'm150porter'
-              AND subject = 'import_simulationsstatus'"""
-
-        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-        data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_simulationsstatus')
 
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO simulationsstatus (
@@ -1059,18 +1022,6 @@ class ImportTask(Schadenstexte):
         # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
         self.db_qkan._adapt_reftable('m150porter', 'import_material')
 
-        # Prüfung, ob noch Zuordnungen NULL oder leer sind
-        sql = """SELECT pk
-            FROM refdata
-            WHERE (bezqkan IS NULL OR bezqkan = '') 
-              AND modul = 'm150porter'
-              AND subject = 'import_material'"""
-
-        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-        data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_material')
-
         # Neue Datensätze aus der Importdatei hinzufügen
         sql = """INSERT INTO material (
                         bezeichnung, kuerzel, kommentar)
@@ -1165,18 +1116,6 @@ class ImportTask(Schadenstexte):
         # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
         self.db_qkan._adapt_reftable('m150porter', 'import_bauwerksarten')
 
-        # Prüfung, ob noch Zuordnungen NULL oder leer sind
-        sql = """SELECT pk
-            FROM refdata
-            WHERE (bezqkan IS NULL OR bezqkan = '') 
-              AND modul = 'm150porter'
-              AND subject = 'import_bauwerksarten'"""
-
-        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-        data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_bauwerksarten')
-
         # Straßen - in refdata, aber keine eigene Referenztabelle
 
         params = []
@@ -1226,8 +1165,8 @@ class ImportTask(Schadenstexte):
         for block in blocks:
             kuerzel = block.findtext("RT002", None)
             bez = block.findtext("RT004", None)
-            # Falls einer der beiden Einträge fehlt:
-            if kuerzel is None or bez is None:
+            # Falls Kürzel nicht verwendet oder einer der beiden Einträge fehlt:
+            if len(self.xml.findall(f".//KG[KG305='{kuerzel}']")) == 0 or kuerzel is None or bez is None:
                 continue
             params.append(
                 {
@@ -1292,8 +1231,7 @@ class ImportTask(Schadenstexte):
 
         self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
         data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_knotentypen')
+        knotenarten_uncomplete = (data is not None)
 
         # Referenztabelle Haltungsart (HG313)
 
@@ -1355,24 +1293,12 @@ class ImportTask(Schadenstexte):
         # Patterns anwenden, damit möglicherweise der Anwender keine Zuordnungen mehr bearbeiten muss ...
         self.db_qkan._adapt_reftable('m150porter','import_haltungsarten')
 
-        # Prüfung, ob noch Zuordnungen NULL oder leer sind
-        sql = """SELECT pk
-            FROM refdata
-            WHERE (bezqkan IS NULL OR bezqkan = '') 
-              AND modul = 'm150porter'
-              AND subject = 'import_haltungsarten'"""
-
-        self.db_qkan.sql(sql, f'{self.__class__.__name__}._reftables()')
-        data = self.db_qkan.fetchone()
-        if data is not None:
-            refs_uncomplete.append('import_haltungsarten')
-
         # todo: Einlesen, Patterns, Mapper beim Einlesen von Haltungen, Anschlussleitungen einsetzen,
         #       Schächte ohne Koordinaten aus Haltungspunktdaten holen
 
         self.db_qkan.commit()
 
-        return refs_uncomplete
+        return knotenarten_uncomplete
 
     def _init_mappers(self) -> None:
 

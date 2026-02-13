@@ -99,7 +99,7 @@ class He8Porter(QKanPlugin):
             QKan.config.check_export.qregler = self.export_dlg.cb_qregler.isChecked()
             QKan.config.check_export.hregler = self.export_dlg.cb_hregler.isChecked()
             QKan.config.check_export.grundseitenauslaesse = self.export_dlg.cb_grundseitenauslaesse.isChecked()
-            QKan.config.check_export.flaechen = self.export_dlg.rb_flaechen.isChecked()
+            QKan.config.check_export.flaechen = self.export_dlg.cb_flaechen.isChecked()
             QKan.config.check_export.rohrprofile = (
                 self.export_dlg.cb_rohrprofile.isChecked()
             )
@@ -119,7 +119,7 @@ class He8Porter(QKanPlugin):
                 self.export_dlg.cb_einzugsgebiete.isChecked()
             )
             QKan.config.check_export.tezg = self.export_dlg.cb_tezg.isChecked()
-            QKan.config.check_export.tezg_hf = self.export_dlg.rb_tezg_hf.isChecked()
+            QKan.config.check_export.tezg_hf = self.export_dlg.cb_tezg_hf.isChecked()
 
             QKan.config.check_export.append = True # self.export_dlg.rb_append.isChecked()
             # QKan.config.check_export.update = self.export_dlg.rb_update.isChecked()

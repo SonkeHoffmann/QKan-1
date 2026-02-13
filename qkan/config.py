@@ -172,6 +172,8 @@ class CheckExport(ClassObject):
     includeMissingKeys: bool = False
     cutNames:           bool = False
 
+    hoehensystem: enums.Hoehensystem = enums.Hoehensystem.METER_UEBER_NN
+
     # Referenztabellen
     abflussparameter: bool = True
     bodenklassen: bool = True

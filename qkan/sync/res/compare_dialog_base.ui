@@ -400,7 +400,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schächte exportieren&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schächte inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -421,13 +421,31 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungen exportieren&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
                 </property>
                 <property name="text">
                  <string>Haltungen (inkl. Sonderelemente)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cb_haschaechte">
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussschächte inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>HA-Schächte</string>
                 </property>
                </widget>
               </item>
@@ -442,7 +460,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussleitungen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -470,7 +488,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Einzelflächen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -494,7 +512,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Einzugsgebiete exportieren (umfasst nur Tabellendaten)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -518,7 +536,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verknüpfungen zu Einzelflächen und SW-Einleitungen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verknüpfungen zu Einzelflächen und SW-Einleitungen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>Verknüpfungen zu Einzelflächen und SW-Einleitungen</string>
@@ -564,7 +582,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der Schächte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -588,7 +606,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungen exportieren&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der Haltungen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -612,7 +630,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der HA-Leitungen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -661,7 +679,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Referenztabellen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>

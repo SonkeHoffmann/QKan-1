@@ -14,11 +14,12 @@ from ._export import ExportTask
 from ._import import ImportTask
 from .application_dialog import ExportDialog, ImportDialog
 
-from qkan.utils import QkanDbError
+from qkan.utils import get_logger, QkanDbError
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 
+logger = get_logger("QKan.m150.application")
 
 class M150Porter(QKanPlugin):
     def __init__(self, iface: QgisInterface):
@@ -108,6 +109,12 @@ class M150Porter(QKanPlugin):
             QKan.config.check_export.cutNames = (
                 self.export_dlg.cb_cutNames.isChecked()
             )
+            if self.export_dlg.rb_mnn.isChecked():
+                QKan.config.check_export.hoehensystem = enums.Hoehensystem.METER_UEBER_NN
+            elif self.export_dlg.rb_nhn.isChecked():
+                QKan.config.check_export.hoehensystem = enums.Hoehensystem.NORMAL_HOEHENNULL
+            else:
+                logger.error_code("Hoehensystem not recognized")
 
             QKan.config.save()
 
@@ -209,7 +216,7 @@ class M150Porter(QKanPlugin):
                 QKan.config.xml.ordner_bild,
                 QKan.config.xml.ordner_video
             )
-            refs_uncomplete = imp.run()
+            knotentypen_uncomplete = imp.run()
             del imp
 
             # eval_node_types(db_qkan)  # in qkan.database.qkan_utils
@@ -251,7 +258,7 @@ class M150Porter(QKanPlugin):
                 group=      grouppath
             )
             project.write()
-            if 'import_knotentypen' in refs_uncomplete:
+            if knotentypen_uncomplete:
                 msg = ('\n\nIn der M150-Datei sind individuelle Knotentypen definiert. Vor einem Import muss \n'
                        'in der Referenztabelle "M150 Knotenarten" der QKan-Schachttyp ausgewählt werden. \n\n'
                        'Anschließend muss der Import neu gestartet werden. \n(siehe <a href='
@@ -262,15 +269,6 @@ class M150Porter(QKanPlugin):
                 # Attributtabelle zur Bearbeitung anzeigen
                 layer = project.mapLayersByName(enums.LAYERBEZ.M150_KNOTENARTEN.value,)[0]
                 iface.showAttributeTable(layer)
-                refs_uncomplete.remove('import_knotentypen')
-
-            if len(refs_uncomplete) > 0:
-                msg = ('\n\n In der M150-Datei sind individuelle Referenztabellen enthalten, die keinen \n'
-                       'QKan-Werten zugeordnet werden konnten. Vor dem Import müssen diese zunächst bearbeitet \n'
-                       'werden, bevor der Import mit der bereits angelegten QKan-Datenbank erneut \n'
-                       'durchgeführt werden kann. \n(siehe <a href='
-                       '"https://qkan.eu/versionen/new/QKan_XML.html#start-des-importes">QKan Dokumentation</a>)!\n\n'
-                       )
 
         self.log.debug("Closed DB")
 

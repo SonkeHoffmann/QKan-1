@@ -1,6 +1,7 @@
 import os
 from typing import Callable, Optional, List
 
+from PyQt5.QtWidgets import QRadioButton
 from qgis.core import QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgsProjectionSelectionWidget
 from qgis.PyQt import uic
@@ -19,7 +20,7 @@ import traceback
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
-from qkan.utils import get_logger, QkanDbError, QkanUserError
+from qkan.utils import get_logger, QkanDbError
 from qkan.tools.qkan_utils import loadLayer
 
 logger = get_logger("QKan.m150.application_dialog")
@@ -62,6 +63,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_includeMissingKeys: QCheckBox
     cb_selectedObjects: QCheckBox
     cb_cutNames: QCheckBox
+    rb_mnn: QRadioButton
+    rb_nhn: QRadioButton
 
 
     def __init__(
@@ -119,6 +122,13 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.cb_cutNames.setChecked(
             getattr(QKan.config.check_export, "cutNames", False)
         )
+        if QKan.config.check_export.hoehensystem == enums.Hoehensystem.METER_UEBER_NN:
+            self.rb_mnn.setChecked(True)
+        elif QKan.config.check_export.hoehensystem == enums.Hoehensystem.NORMAL_HOEHENNULL:
+            self.rb_nhn.setChecked(True)
+        else:
+            logger.error("Hoehensystem not recognized")
+
         self._prepared = False                      # self._prepare_refdata() nur einmal in count aufrufen
 
     def select_export(self) -> None:

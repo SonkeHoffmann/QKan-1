@@ -562,6 +562,7 @@ class DBConnection:
                 self.commit()
         elif self.dbtype == enums.QKanDBChoice.POSTGIS:
             self.consl = None
+            self.isCurrentDbVersion = True
         else:
             logger.error_code(
                 f'{self.__class__.__name__}: '
