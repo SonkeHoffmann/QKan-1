@@ -46,6 +46,9 @@
        </item>
        <item>
         <widget class="QRadioButton" name="select_auswahl">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <pointsize>10</pointsize>
@@ -75,6 +78,9 @@
          </item>
          <item>
           <widget class="QComboBox" name="bewertungsart">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="font">
             <font>
              <pointsize>10</pointsize>
