@@ -1069,17 +1069,16 @@ class QKanTools(QKanPlugin):
         # Run the dialog event loop
         result = self.dlgb.exec()
 
+        path = self.dlgb.save_path.text()
+        if self.dlgb.select_auswahl.isChecked():
+            auswahl = True
+        else:
+            auswahl = False
+
+        art = self.dlgb.bewertungsart.currentText()
+
         # See if OK was pressed
         if result:
-
-            # Abrufen der ausgewählten Elemente in den Listen
-            path = self.dlgb.save_path.text()
-            if self.dlgb.select_auswahl.isChecked():
-                auswahl = True
-            else:
-                auswahl = False
-
-            art = self.dlgb.bewertungsart.currentText()
 
             QKan.config.save()
 
@@ -1096,7 +1095,7 @@ class QKanTools(QKanPlugin):
                 bericht(
                     db_qkan,
                     path,
-                    auswahl,art
+                    auswahl, art
                 )
 
     def run_zoom_clipboard(self) -> None:

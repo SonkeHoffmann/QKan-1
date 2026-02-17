@@ -8,6 +8,7 @@ from qgis.PyQt.QtWidgets import (
     QDialogButtonBox,
     QFileDialog,
     QGroupBox,
+    QComboBox,
     QLineEdit,
     QPushButton,
     QWidget,
@@ -34,6 +35,7 @@ class QgsBerichtDialog(QKanDBDialog, FORM_CLASS_bericht):  # type: ignore
     select_auswahl: QRadioButton
     save_path: QLineEdit
     select_path: QPushButton
+    bewertungsart: QComboBox
 
 
     def __init__(self, plugin: "QKanTools", parent: Optional[QWidget] = None):
@@ -42,7 +44,6 @@ class QgsBerichtDialog(QKanDBDialog, FORM_CLASS_bericht):  # type: ignore
         self.select_path.clicked.connect(self.select_pfad)
 
         self.buttonBox.helpRequested.connect(self.click_help)
-
 
 
     def click_help(self) -> None:

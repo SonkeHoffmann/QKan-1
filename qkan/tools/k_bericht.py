@@ -13,7 +13,13 @@ from qgis.core import (
     QgsVectorLayer,
     QgsPrintLayout,
     QgsReadWriteContext,
+    QgsField,
+    QgsFields,
+    QgsFeature,
+    QgsRectangle,
+    QgsGeometry,
 )
+from PyQt5.QtCore import QVariant
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.utils import pluginDirectory
 from pathlib import Path
@@ -21,6 +27,27 @@ from pathlib import Path
 
 logger = get_logger("QKan.tools.k_bericht")
 
+
+# # Feature erweitern
+# def create_buffered_geometry(feature: QgsFeature):
+#     geom = feature.geometry()
+#     length = geom.length()
+#
+#     # Pufferwerte
+#     left_pct = 0.1
+#     right_pct = 0.05
+#     top_bottom_pct = 0.025
+#
+#     # Bounding Box der Linie
+#     bbox = geom.boundingBox()
+#
+#     # Asymmetrische Erweiterung
+#     x_min = bbox.xMinimum() - left_pct * length
+#     x_max = bbox.xMaximum() + right_pct * length
+#     y_min = bbox.yMinimum() - top_bottom_pct * length
+#     y_max = bbox.yMaximum() + top_bottom_pct * length
+#
+#     return QgsRectangle(x_min, y_min, x_max, y_max)
 
 def bericht(
     db_qkan, filename, auswahl, art
@@ -40,33 +67,6 @@ def bericht(
             qmlfile='untersuchdat_haltung_bewertung_dwa_bericht.qml',
             group=['qkan', 'Ergebnisse'],
         )
-
-    # uri = QgsDataSourceUri()
-    # uri.setDatabase(db_qkan.dbname)
-    # schema = ''
-    # table = 'untersuchdat_haltung_bewertung'
-    # geom_column = 'geom'
-    # uri.setDataSource(schema, table, geom_column)
-    # untersuchdat_haltung_bewertung = enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value
-    # vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-    # x = QgsProject.instance()
-    # try:
-    #     x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-    # except:
-    #     pass
-    #
-    # x = os.path.dirname(os.path.abspath(__file__))
-    # vlayer.loadNamedStyle(x + '/untersuchdat_haltung_bewertung_dwa_bericht.qml')
-    # # QgsProject.instance().addMapLayer(vlayer)
-    # group = 'Ergebnisse'
-    # layersRoot = QgsProject.instance().layerTreeRoot()
-    # QgsProject.instance().addMapLayer(vlayer, False)
-    # atcGroup = layersRoot.findGroup(group)
-    # if atcGroup is None:
-    #     atcGroup = layersRoot.addGroup(group)
-    # atcGroup.addLayer(vlayer)
-
-    # Beschriftung verändern und neu berechnen
 
     # Konfiguration zwischenspeichern
     storedvalues = [
@@ -113,7 +113,7 @@ def bericht(
 
         # Layout zum Projekt hinzufügen
         x.layoutManager().addLayout(layout)
-        layout = x.layoutManager().layoutByName('Haltungsbericht')
+        #layout = x.layoutManager().layoutByName('Haltungsbericht')
 
 
         image_path = str(
@@ -131,11 +131,28 @@ def bericht(
 
     atlas = layout.atlas()
     atlas.setEnabled(True)
+    # layer = atlas.coverageLayer()
+    #
+    # # Temporärer Layer
+    # temp_layer = QgsVectorLayer("LineString?crs=EPSG:25832", "atlas_buffered", "memory")
+    # pr = temp_layer.dataProvider()
+    # pr.addAttributes(layer.fields())
+    # pr.addAttributes([QgsField("bbox_geom", QVariant.String, len=255)])
+    # temp_layer.updateFields()
+    #
+    # for feat in layer.getFeatures():
+    #     bbox = create_buffered_geometry(feat)
+    #     if bbox is not None and not bbox.isEmpty():
+    #         bbox_geom = QgsGeometry.fromRect(bbox)
+    #         new_feat = QgsFeature(temp_layer.fields())
+    #         new_feat.setGeometry(feat.geometry())  # originale Linie
+    #         new_feat["bbox_geom"] = bbox_geom.asWkt()  # WKT speichern
+    #         pr.addFeature(new_feat)
 
     exporter = QgsLayoutExporter(layout)
     settings = QgsLayoutExporter.PdfExportSettings()
-
-    layer = atlas.coverageLayer()
+    base_folder = filename
+    coverage_layer = atlas.coverageLayer()
 
     if auswahl:
 
@@ -143,59 +160,92 @@ def bericht(
 
         haltungen_layer = QgsProject.instance().mapLayersByName(haltungen_layer_name)[0]
 
-
         sql = f"""
-        SELECT h.*
-        FROM haltungen AS h
-        JOIN sel_haltungen AS s
-        ON h.pk = s.pk
-        """
+                SELECT pk from sel_haltungen
+                """
+        db_qkan.sql(sql)
 
-        vl_name = "vl_haltungen_filtered"
-        vl = QgsVectorLayer(f"virtual:{sql}", vl_name, "virtual")
-        coverage_layer = atlas.coverageLayer()
+        selected_ids =  [row[0] for row in db_qkan.fetchall()]
 
-        if not vl.isValid():
-            print("Fehler: Virtueller Layer konnte nicht erstellt werden!")
+        fields = haltungen_layer.fields()
+        temp_layer = QgsVectorLayer(f"{haltungen_layer.geometryType()}?crs={haltungen_layer.crs().authid()}",
+                                    "vl_atlas_temp", "memory")
+        pr = temp_layer.dataProvider()
+        pr.addAttributes(fields)
+        temp_layer.updateFields()
 
-        else:
-            QgsProject.instance().addMapLayer(vl)
+        for feat in haltungen_layer.getFeatures():
+            if feat["pk"] in selected_ids:
+                new_feat = QgsFeature(fields)
+                new_feat.setGeometry(feat.geometry())
+                for f in fields:
+                    new_feat[f.name()] = feat[f.name()]
+                pr.addFeature(new_feat)
+
+        QgsProject.instance().addMapLayer(temp_layer, addToLegend=False)
+
+        atlas = layout.atlas()
+        atlas.setEnabled(True)
+        atlas.setCoverageLayer(temp_layer)
+        atlas.setFilterFeatures(True)
+
+        # expression = """
+        # "haltnam" IN (
+        #     aggregate(
+        #         layer:='vl_atlas_temp',
+        #         aggregate:='array_agg',
+        #         expression:="haltnam"
+        #     )
+        # )
+        # """
+        # temp_layer.setSubsetString(expression)
 
 
-            expression = f"""
-                "haltnam" IN (
-                    aggregate(
-                        layer:='{vl_name}',
-                        aggregate:='array_agg',
-                        expression:="haltnam"
-                    )
-                )
-            """
-            coverage_layer.setSubsetString(expression)
+        atlas.setFilterFeatures(True)
 
-        features = list(layer.getFeatures())
+        layout.refresh() 
 
         atlas.beginRender()
-        for i in range(len(features)):
-            atlas.next()  # Atlas auf die nächste Seite setzen
-            feature = features[atlas.currentFeatureNumber()]
-            filename = filename + rf"\{feature['haltnam']}.pdf"
-            exporter.exportToPdf(filename, settings)
+        for i in range(temp_layer.featureCount()):
+            print(i)
+            atlas.next()
+            idx = atlas.currentFeatureNumber()
+            feature = (temp_layer.getFeature(idx))
+
+            pdf_path = rf"{base_folder}\{feature['haltnam']}.pdf"
+            exporter.exportToPdf(pdf_path, settings)
         atlas.endRender()
 
         haltungen_layer.setSubsetString("")
-        coverage_layer.setSubsetString("")
+        #coverage_layer.setSubsetString("")
 
     else:
         haltungen = QgsProject.instance().mapLayersByName("Haltungen")[0]
-        features = list(layer.getFeatures())
+        features = list(coverage_layer.getFeatures())
         coverage_layer = atlas.coverageLayer()
         coverage_layer.setSubsetString("")
         atlas.beginRender()
         for i in range(len(features)):
             atlas.next()  # Atlas auf die nächste Seite setzen
             feature = features[atlas.currentFeatureNumber()]
-            exporter.exportToPdf(filename+ rf"\{feature['haltnam']}.pdf", settings)
+
+            # bbox = create_buffered_geometry(i)
+            #
+            # # 1️⃣ Coverage Layer: nur aktuelles Feature
+            # #coverage_layer.setSubsetString(f'"id" = {feature.id()}')
+            #
+            # # 2️⃣ Alle anderen Layer: Filter auf gepufferten Bereich
+            # for lyr in QgsProject.instance().mapLayers().values():
+            #     if lyr == coverage_layer or not hasattr(lyr, 'setSubsetString'):
+            #         continue
+            #     x_min, x_max, y_min, y_max = bbox.xMinimum(), bbox.xMaximum(), bbox.yMinimum(), bbox.yMaximum()
+            #     lyr.setSubsetString(
+            #         f"xmin($geometry) <= {x_max} AND xmax($geometry) >= {x_min} "
+            #         f"AND ymin($geometry) <= {y_max} AND ymax($geometry) >= {y_min}"
+            #     )
+
+            pdf_path = rf"{base_folder}\{feature['haltnam']}.pdf"
+            exporter.exportToPdf(pdf_path, settings)
         atlas.endRender()
 
         haltungen.setSubsetString("")
