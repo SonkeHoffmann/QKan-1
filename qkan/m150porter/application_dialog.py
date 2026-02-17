@@ -59,7 +59,6 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_export_pumpen: QCheckBox
     cb_export_wehre: QCheckBox
     cb_export_anschlussleitungen: QCheckBox
-    cb_export_anschlussschaechte: QCheckBox
     cb_includeMissingKeys: QCheckBox
     cb_selectedObjects: QCheckBox
     cb_cutNames: QCheckBox
@@ -103,9 +102,6 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         )
         self.cb_export_anschlussleitungen.setChecked(
             getattr(QKan.config.check_export, "anschlussleitungen", True)
-        )
-        self.cb_export_anschlussschaechte.setChecked(
-            getattr(QKan.config.check_export, "anschlussschaechte", True)
         )
         self.cb_export_pumpen.setChecked(
             getattr(QKan.config.check_export, "pumpen", True)
@@ -349,9 +345,6 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
         self.cb_impStamm.setChecked(getattr(QKan.config.xml, "import_stamm", True))
         self.cb_impAnschluesse.setChecked(getattr(QKan.config.xml, "import_haus", True))
-        # Note: cb_switchAnschluesse doesn't exist in the UI file
-        if hasattr(self, 'cb_switchAnschluesse'):
-            self.cb_switchAnschluesse.setChecked(getattr(QKan.config.xml, "import_switchHA", True))
         self.cb_zustand.setChecked(getattr(QKan.config.xml, "import_zustand", True))
 
     def select_import(self) -> None:

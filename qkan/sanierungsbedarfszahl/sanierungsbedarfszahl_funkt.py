@@ -5,6 +5,7 @@ import sqlite3
 import math
 import pandas as pd
 from qkan.tools.qkan_utils import loadLayer
+from qkan import enums
 
 
 class SanierungsbedarfszahlFunkt:
@@ -396,7 +397,7 @@ class SanierungsbedarfszahlFunkt:
         curs = db.cursor()
 
         try:
-            curs.execute("""ALTER TABLE Untersuchdat_schacht_bewertung ADD COLUMN Schadenslaenge INTEGER ;""")
+            curs.execute("""ALTER TABLE untersuchdat_schacht_bewertung ADD COLUMN Schadenslaenge INTEGER ;""")
             db.commit()
         except:
             pass
@@ -405,23 +406,23 @@ class SanierungsbedarfszahlFunkt:
         curs = db.cursor()
         sql = """
                     SELECT
-                        Untersuchdat_schacht_bewertung.pk,
-                        Untersuchdat_schacht_bewertung.untersuchsch,
-                        Untersuchdat_schacht_bewertung.id,
-                        Untersuchdat_schacht_bewertung.videozaehler,
-                        Untersuchdat_schacht_bewertung.vertikale_lage,
-                        Untersuchdat_schacht_bewertung.timecode,
-                        Untersuchdat_schacht_bewertung.kuerzel,
-                        Untersuchdat_schacht_bewertung.charakt1,
-                        Untersuchdat_schacht_bewertung.charakt2,
-                        Untersuchdat_schacht_bewertung.quantnr1,
-                        Untersuchdat_schacht_bewertung.quantnr2,
-                        Untersuchdat_schacht_bewertung.streckenschaden,
-                        Untersuchdat_schacht_bewertung.streckenschaden_lfdnr,
-                        Untersuchdat_schacht_bewertung.pos_von,
-                        Untersuchdat_schacht_bewertung.pos_bis,
-                        Untersuchdat_schacht_bewertung.foto_dateiname,
-                        Untersuchdat_schacht_bewertung.createdat,
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.vertikale_lage,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.streckenschaden_lfdnr,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.createdat,
                         schaechte_untersucht_bewertung.schnam,
                         schaechte_untersucht_bewertung.untersuchtag,
                         schaechte_untersucht_bewertung.untersucher,
@@ -429,8 +430,8 @@ class SanierungsbedarfszahlFunkt:
                         schaechte_untersucht_bewertung.bewertungsart,
                         schaechte_untersucht_bewertung.bewertungstag,
                         schaechte_untersucht_bewertung.createdat
-                    FROM Untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
-                    WHERE schaechte_untersucht_bewertung.schnam = Untersuchdat_schacht_bewertung.untersuchsch AND substr(Untersuchdat_schacht_bewertung.createdat, 0, 17) = ? AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? 
+                    FROM untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
+                    WHERE schaechte_untersucht_bewertung.schnam = untersuchdat_schacht_bewertung.untersuchsch AND substr(untersuchdat_schacht_bewertung.createdat, 0, 17) = ? AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? 
                 """
 
         data = (date, date)
@@ -469,9 +470,9 @@ class SanierungsbedarfszahlFunkt:
                             l = l_2 - l_1
 
                             sql = f"""
-                                        UPDATE Untersuchdat_schacht_bewertung
+                                        UPDATE untersuchdat_schacht_bewertung
                                         SET Schadenslaenge = ?
-                                        WHERE Untersuchdat_schacht_bewertung.pk = ?
+                                        WHERE untersuchdat_schacht_bewertung.pk = ?
                                         """
                             data = (l, id)
                             try:
@@ -902,65 +903,23 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'haltungen_untersucht_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        haltungen_untersucht_bewertung = 'haltungen_untersucht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN_GESAMT.value,
+            table='haltungen_untersucht_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
+            uifile='haltungen_untersucht_bewertung_dwa.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
-
-        qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'haltungen_untersucht_bewertung_dwa.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'untersuchdat_haltung_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
-
-
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_haltung_bewertung_dwa.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value,
+            table='untersuchdat_haltung_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
+            uifile='untersuchdat_haltung_bewertung_dwa.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
 
 
@@ -1375,67 +1334,23 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'untersuchdat_anschlussleitung_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        untersuchdat_haltung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+            table='anschlussleitungen_untersucht_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
+            uifile='anschlussleitungen_untersucht_bewertung_dwa.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
-
-
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltungen_bewertung.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        ui= editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_anschlussleitung_bewertung.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'anschlussleitungen_untersucht_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        haltungen_untersucht_bewertung = 'anschlussleitungen_untersucht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
-
-
-        qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'anschlussleitungen_untersucht_bewertung_dwa.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HA_LEITUNGEN.value,
+            table='untersuchdat_anschlussleitung_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltungen_bewertung.qml'),
+            uifile='untersuchdat_anschlussleitung_bewertung.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
     def sanierungszahl_dwa_schacht(self):
         db = self.db
@@ -1458,27 +1373,27 @@ class SanierungsbedarfszahlFunkt:
 
         sql = """
                 SELECT
-                Untersuchdat_schacht_bewertung.pk,
-                Untersuchdat_schacht_bewertung.untersuchsch,
-                Untersuchdat_schacht_bewertung.id,
-                Untersuchdat_schacht_bewertung.videozaehler,
-                Untersuchdat_schacht_bewertung.timecode,
-                Untersuchdat_schacht_bewertung.kuerzel,
-                Untersuchdat_schacht_bewertung.charakt1,
-                Untersuchdat_schacht_bewertung.charakt2,
-                Untersuchdat_schacht_bewertung.quantnr1,
-                Untersuchdat_schacht_bewertung.quantnr2,
-                Untersuchdat_schacht_bewertung.streckenschaden,
-                Untersuchdat_schacht_bewertung.Schadenslaenge,
-                Untersuchdat_schacht_bewertung.vertikale_lage,
-                Untersuchdat_schacht_bewertung.pos_von,
-                Untersuchdat_schacht_bewertung.pos_bis,
-                Untersuchdat_schacht_bewertung.bereich,
-                Untersuchdat_schacht_bewertung.foto_dateiname,
-                Untersuchdat_schacht_bewertung.Zustandsklasse_D,
-                Untersuchdat_schacht_bewertung.Zustandsklasse_S,
-                Untersuchdat_schacht_bewertung.Zustandsklasse_B,
-                Untersuchdat_schacht_bewertung.createdat,
+                untersuchdat_schacht_bewertung.pk,
+                untersuchdat_schacht_bewertung.untersuchsch,
+                untersuchdat_schacht_bewertung.id,
+                untersuchdat_schacht_bewertung.videozaehler,
+                untersuchdat_schacht_bewertung.timecode,
+                untersuchdat_schacht_bewertung.kuerzel,
+                untersuchdat_schacht_bewertung.charakt1,
+                untersuchdat_schacht_bewertung.charakt2,
+                untersuchdat_schacht_bewertung.quantnr1,
+                untersuchdat_schacht_bewertung.quantnr2,
+                untersuchdat_schacht_bewertung.streckenschaden,
+                untersuchdat_schacht_bewertung.Schadenslaenge,
+                untersuchdat_schacht_bewertung.vertikale_lage,
+                untersuchdat_schacht_bewertung.pos_von,
+                untersuchdat_schacht_bewertung.pos_bis,
+                untersuchdat_schacht_bewertung.bereich,
+                untersuchdat_schacht_bewertung.foto_dateiname,
+                untersuchdat_schacht_bewertung.Zustandsklasse_D,
+                untersuchdat_schacht_bewertung.Zustandsklasse_S,
+                untersuchdat_schacht_bewertung.Zustandsklasse_B,
+                untersuchdat_schacht_bewertung.createdat,
                 
                 schaechte_untersucht_bewertung.schnam,
                 schaechte_untersucht_bewertung.untersuchtag,
@@ -1496,11 +1411,11 @@ class SanierungsbedarfszahlFunkt:
                 schaechte_untersucht_bewertung.ueberdeckung,
                 schaechte_untersucht_bewertung.bodengruppe,
                 schaechte_untersucht_bewertung.createdat,
-                Untersuchdat_schacht_bewertung.inspektionslaenge
-                FROM Untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
-                WHERE schaechte_untersucht_bewertung.schnam = Untersuchdat_schacht_bewertung.untersuchsch AND substr(Untersuchdat_schacht_bewertung.createdat, 0, 17) = ? AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? 
+                untersuchdat_schacht_bewertung.inspektionslaenge
+                FROM untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
+                WHERE schaechte_untersucht_bewertung.schnam = untersuchdat_schacht_bewertung.untersuchsch AND substr(untersuchdat_schacht_bewertung.createdat, 0, 17) = ? AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? 
                 """
-        #WHERE schaechte_untersucht_bewertung.schnam = Untersuchdat_schacht_bewertung.untersuchsch AND Untersuchdat_schacht_bewertung.createdat=? AND schaechte_untersucht_bewertung.createdat = Untersuchdat_schacht_bewertung.createdat AND Untersuchdat_schacht_bewertung.streckenschaden='A' OR Untersuchdat_schacht_bewertung.streckenschaden='not found'
+        #WHERE schaechte_untersucht_bewertung.schnam = untersuchdat_schacht_bewertung.untersuchsch AND untersuchdat_schacht_bewertung.createdat=? AND schaechte_untersucht_bewertung.createdat = untersuchdat_schacht_bewertung.createdat AND untersuchdat_schacht_bewertung.streckenschaden='A' OR untersuchdat_schacht_bewertung.streckenschaden='not found'
 
         data = (date, date)
 
@@ -1743,7 +1658,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');"""
+        sql = """SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');"""
         data = (crs,)
         try:
             curs.execute(sql, data)
@@ -1751,66 +1666,23 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'Untersuchdat_schacht_bewertung'
-        geom_column = 'geop'
-        uri.setDataSource(schema, table, geom_column)
-        Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(Untersuchdat_schacht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value,
+            table='schaechte_untersucht_bewertung',
+            geom_column='geop',
+            qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
+            uifile='schaechte_untersucht_bewertung_dwa.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
-
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_schacht_bewertung_dwa.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'schaechte_untersucht_bewertung'
-        geom_column = 'geop'
-        uri.setDataSource(schema, table, geom_column)
-        schaechte_untersucht_bewertung = 'schaechte_untersucht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(schaechte_untersucht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
-
-
-
-        qmlpath = os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'schaechte_untersucht_bewertung_dwa.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_SCHAECHTE.value,
+            table='untersuchdat_schacht_bewertung',
+            geom_column='geop',
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml'),
+            uifile='untersuchdat_schacht_bewertung_dwa.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
     def systemzahl_isy_haltung(self):
         db = self.db
@@ -2196,66 +2068,23 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'untersuchdat_haltung_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        untersuchdat_haltung_bewertung = 'untersuchdat_haltung_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN_GESAMT.value,
+            table='haltungen_untersucht_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml'),
+            uifile='haltungen_untersucht_bewertung_isy.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
-
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_isy.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_haltung_bewertung_isy.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'haltungen_untersucht_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        haltungen_untersucht_bewertung = 'haltungen_untersucht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
-
-
-
-        qmlpath = os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'haltungen_untersucht_bewertung_isy.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HALTUNGEN.value,
+            table='untersuchdat_haltung_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_isy.qml'),
+            uifile='untersuchdat_haltung_bewertung_isy.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
     def systemzahl_isy_leitung(self):
         db = self.db
@@ -2633,65 +2462,23 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'untersuchdat_anschlussleitung_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        untersuchdat_haltung_bewertung = 'untersuchdat_anschlussleitung_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), untersuchdat_haltung_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(untersuchdat_haltung_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+            table='anschlussleitungen_untersucht_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml'),
+            uifile='anschlussleitungen_untersucht_bewertung_isy.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
-
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_isy.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_anschlussleitung_bewertung_isy.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'anschlussleitungen_untersucht_bewertung'
-        geom_column = 'geom'
-        uri.setDataSource(schema, table, geom_column)
-        haltungen_untersucht_bewertung = 'anschlussleitungen_untersucht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), haltungen_untersucht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(haltungen_untersucht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
-
-
-        qmlpath = os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'anschlussleitungen_untersucht_bewertung_isy.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HA_LEITUNGEN.value,
+            table='untersuchdat_anschlussleitung_bewertung',
+            geom_column='geom',
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_isy.qml'),
+            uifile='untersuchdat_anschlussleitung_bewertung_isy.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
     def systemzahl_isy_schacht(self):
         db = self.db
@@ -2711,28 +2498,28 @@ class SanierungsbedarfszahlFunkt:
         sql = """
                 SELECT
                     schaechte_untersucht_bewertung.pk,
-                    Untersuchdat_schacht_bewertung.untersuchsch,
-                    Untersuchdat_schacht_bewertung.id,
-                    Untersuchdat_schacht_bewertung.videozaehler,
-                    Untersuchdat_schacht_bewertung.timecode,
-                    Untersuchdat_schacht_bewertung.kuerzel,
-                    Untersuchdat_schacht_bewertung.charakt1,
-                    Untersuchdat_schacht_bewertung.charakt2,
-                    Untersuchdat_schacht_bewertung.quantnr1,
-                    Untersuchdat_schacht_bewertung.quantnr2,
-                    Untersuchdat_schacht_bewertung.streckenschaden,
-                    Untersuchdat_schacht_bewertung.Schadenslaenge,
-                    Untersuchdat_schacht_bewertung.vertikale_lage,
-                    Untersuchdat_schacht_bewertung.pos_von,
-                    Untersuchdat_schacht_bewertung.pos_bis,
-                    Untersuchdat_schacht_bewertung.bereich,
-                    Untersuchdat_schacht_bewertung.foto_dateiname,
-                    Untersuchdat_schacht_bewertung.ordner_bild,
-                    Untersuchdat_schacht_bewertung.bw_bs,
-                    Untersuchdat_schacht_bewertung.createdat,
-                    Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_D,
-                    Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_S,
-                    Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_B,
+                    untersuchdat_schacht_bewertung.untersuchsch,
+                    untersuchdat_schacht_bewertung.id,
+                    untersuchdat_schacht_bewertung.videozaehler,
+                    untersuchdat_schacht_bewertung.timecode,
+                    untersuchdat_schacht_bewertung.kuerzel,
+                    untersuchdat_schacht_bewertung.charakt1,
+                    untersuchdat_schacht_bewertung.charakt2,
+                    untersuchdat_schacht_bewertung.quantnr1,
+                    untersuchdat_schacht_bewertung.quantnr2,
+                    untersuchdat_schacht_bewertung.streckenschaden,
+                    untersuchdat_schacht_bewertung.Schadenslaenge,
+                    untersuchdat_schacht_bewertung.vertikale_lage,
+                    untersuchdat_schacht_bewertung.pos_von,
+                    untersuchdat_schacht_bewertung.pos_bis,
+                    untersuchdat_schacht_bewertung.bereich,
+                    untersuchdat_schacht_bewertung.foto_dateiname,
+                    untersuchdat_schacht_bewertung.ordner_bild,
+                    untersuchdat_schacht_bewertung.bw_bs,
+                    untersuchdat_schacht_bewertung.createdat,
+                    untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_D,
+                    untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_S,
+                    untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_B,
 
                     schaechte_untersucht_bewertung.schnam,
                     schaechte_untersucht_bewertung.untersuchtag,
@@ -2747,9 +2534,9 @@ class SanierungsbedarfszahlFunkt:
                     schaechte_untersucht_bewertung.Bodenart,
                     schaechte_untersucht_bewertung.Lage_an_Bauteilverbindung,
                     schaechte_untersucht_bewertung.createdat,
-                    Untersuchdat_schacht_bewertung.inspektionslaenge
-                FROM Untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
-                WHERE schaechte_untersucht_bewertung.schnam = Untersuchdat_schacht_bewertung.untersuchsch AND substr(Untersuchdat_schacht_bewertung.createdat, 0, 17) = ? AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ?
+                    untersuchdat_schacht_bewertung.inspektionslaenge
+                FROM untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
+                WHERE schaechte_untersucht_bewertung.schnam = untersuchdat_schacht_bewertung.untersuchsch AND substr(untersuchdat_schacht_bewertung.createdat, 0, 17) = ? AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ?
             """
         data = (date, date)
 
@@ -2995,7 +2782,7 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        sql = """SELECT RecoverGeometryColumn('Untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');"""
+        sql = """SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');"""
         data = (crs,)
         try:
             curs.execute(sql, data)
@@ -3003,66 +2790,23 @@ class SanierungsbedarfszahlFunkt:
         except:
             pass
 
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'Untersuchdat_schacht_bewertung'
-        geom_column = 'geop'
-        uri.setDataSource(schema, table, geom_column)
-        Untersuchdat_schacht_bewertung = 'Untersuchdat_schacht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), Untersuchdat_schacht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(Untersuchdat_schacht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value,
+            table='schaechte_untersucht_bewertung',
+            geom_column='geop',
+            qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml'),
+            uifile='schaechte_untersucht_bewertung_isy.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
-
-
-        qmlpath = os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_isy.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'untersuchdat_schacht_bewertung_isy.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
-
-        uri = QgsDataSourceUri()
-        uri.setDatabase(db_x)
-        schema = ''
-        table = 'schaechte_untersucht_bewertung'
-        geom_column = 'geop'
-        uri.setDataSource(schema, table, geom_column)
-        schaechte_untersucht_bewertung = 'schaechte_untersucht_bewertung'
-        vlayer = QgsVectorLayer(uri.uri(), schaechte_untersucht_bewertung, 'spatialite')
-        x = QgsProject.instance()
-        try:
-            x.removeMapLayer(x.mapLayersByName(schaechte_untersucht_bewertung)[0].id())
-        except:
-            pass
-        group = 'Ergebnisse'
-        layersRoot = QgsProject.instance().layerTreeRoot()
-        QgsProject.instance().addMapLayer(vlayer, False)
-        atcGroup = layersRoot.findGroup(group)
-        if atcGroup is None:
-            atcGroup = layersRoot.addGroup(group)
-        atcGroup.addLayer(vlayer)
-
-
-        qmlpath = os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml')
-        vlayer.loadNamedStyle(qmlpath)
-        # Adapt path to forms directory
-        editFormConfig = vlayer.editFormConfig()
-        editFormConfig.setUiForm(os.path.join(self.formsDir, 'schaechte_untersucht_bewertung_isy.ui'))
-        vlayer.setEditFormConfig(editFormConfig)
-        QgsProject.instance().addMapLayer(vlayer)
+        loadLayer(
+            layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_SCHAECHTE.value,
+            table='untersuchdat_schacht_bewertung',
+            geom_column='geop',
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_isy.qml'),
+            uifile='untersuchdat_schacht_bewertung_isy.ui',
+            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+        )
 
     def atlas(self):
         mass =  self.massstab
@@ -3624,29 +3368,29 @@ class SanierungsbedarfszahlFunkt:
         if db_format == "Datenbank mit DWA-M 149 Daten":
             sql2 = """
                     SELECT
-                        Untersuchdat_schacht_bewertung.pk,
-                        Untersuchdat_schacht_bewertung.id,
-                        Untersuchdat_schacht_bewertung.untersuchsch,
-                        Untersuchdat_schacht_bewertung.videozaehler,
-                        Untersuchdat_schacht_bewertung.timecode,
-                        Untersuchdat_schacht_bewertung.vertikale_lage,
-                        Untersuchdat_schacht_bewertung.kuerzel,
-                        Untersuchdat_schacht_bewertung.charakt1,
-                        Untersuchdat_schacht_bewertung.charakt2,
-                        Untersuchdat_schacht_bewertung.bereich,
-                        Untersuchdat_schacht_bewertung.quantnr1,
-                        Untersuchdat_schacht_bewertung.quantnr2,
-                        Untersuchdat_schacht_bewertung.streckenschaden,
-                        Untersuchdat_schacht_bewertung.streckenschaden_lfdnr,
-                        Untersuchdat_schacht_bewertung.pos_von,
-                        Untersuchdat_schacht_bewertung.pos_bis,
-                        Untersuchdat_schacht_bewertung.bw_bs,
-                        Untersuchdat_schacht_bewertung.Zustandsklasse_D,
-                        Untersuchdat_schacht_bewertung.Zustandsklasse_S,
-                        Untersuchdat_schacht_bewertung.Zustandsklasse_B,
-                        Untersuchdat_schacht_bewertung.inspektionslaenge,
-                        Untersuchdat_schacht_bewertung.foto_dateiname,
-                        Untersuchdat_schacht_bewertung.createdat,
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.vertikale_lage,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.bereich,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.streckenschaden_lfdnr,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.bw_bs,
+                        untersuchdat_schacht_bewertung.Zustandsklasse_D,
+                        untersuchdat_schacht_bewertung.Zustandsklasse_S,
+                        untersuchdat_schacht_bewertung.Zustandsklasse_B,
+                        untersuchdat_schacht_bewertung.inspektionslaenge,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.createdat,
                         
                         schaechte_untersucht_bewertung.schnam,
                         schaechte_untersucht_bewertung.untersuchtag,
@@ -3666,39 +3410,39 @@ class SanierungsbedarfszahlFunkt:
                         schaechte_untersucht_bewertung.Sanierungsbedarfszahl,
                         schaechte_untersucht_bewertung.Handlungsbedarf,
                         schaechte_untersucht_bewertung.createdat
-                    FROM Untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
-                     WHERE schaechte_untersucht_bewertung.schnam = Untersuchdat_schacht_bewertung.untersuchsch AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? AND substr(Untersuchdat_schacht_bewertung.createdat, 0, 17) = ? 
+                    FROM untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
+                     WHERE schaechte_untersucht_bewertung.schnam = untersuchdat_schacht_bewertung.untersuchsch AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? AND substr(untersuchdat_schacht_bewertung.createdat, 0, 17) = ? 
                 """
 
         elif db_format == "Datenbank mit ISYBAU Daten":
             sql2 = """
                 SELECT
-                    Untersuchdat_schacht_bewertung.pk,
-                    Untersuchdat_schacht_bewertung.id,
-                    Untersuchdat_schacht_bewertung.untersuchsch,
-                    Untersuchdat_schacht_bewertung.videozaehler,
-                    Untersuchdat_schacht_bewertung.timecode,
-                    Untersuchdat_schacht_bewertung.vertikale_lage,
-                    Untersuchdat_schacht_bewertung.kuerzel,
-                    Untersuchdat_schacht_bewertung.charakt1,
-                    Untersuchdat_schacht_bewertung.charakt2,
-                    Untersuchdat_schacht_bewertung.bereich,
-                    Untersuchdat_schacht_bewertung.quantnr1,
-                    Untersuchdat_schacht_bewertung.quantnr2,
-                    Untersuchdat_schacht_bewertung.streckenschaden,
-                    Untersuchdat_schacht_bewertung.streckenschaden_lfdnr,
-                    Untersuchdat_schacht_bewertung.pos_von,
-                    Untersuchdat_schacht_bewertung.pos_bis,
-                    Untersuchdat_schacht_bewertung.bw_bs,
-                    Untersuchdat_schacht_bewertung.Schadensklasse_D,
-                    Untersuchdat_schacht_bewertung.Schadensklasse_S,
-                    Untersuchdat_schacht_bewertung.Schadensklasse_B,
-                    Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_D,
-                    Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_S,
-                    Untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_B,
-                    Untersuchdat_schacht_bewertung.Schadenslaenge,
-                    Untersuchdat_schacht_bewertung.foto_dateiname,
-                    Untersuchdat_schacht_bewertung.createdat,
+                    untersuchdat_schacht_bewertung.pk,
+                    untersuchdat_schacht_bewertung.id,
+                    untersuchdat_schacht_bewertung.untersuchsch,
+                    untersuchdat_schacht_bewertung.videozaehler,
+                    untersuchdat_schacht_bewertung.timecode,
+                    untersuchdat_schacht_bewertung.vertikale_lage,
+                    untersuchdat_schacht_bewertung.kuerzel,
+                    untersuchdat_schacht_bewertung.charakt1,
+                    untersuchdat_schacht_bewertung.charakt2,
+                    untersuchdat_schacht_bewertung.bereich,
+                    untersuchdat_schacht_bewertung.quantnr1,
+                    untersuchdat_schacht_bewertung.quantnr2,
+                    untersuchdat_schacht_bewertung.streckenschaden,
+                    untersuchdat_schacht_bewertung.streckenschaden_lfdnr,
+                    untersuchdat_schacht_bewertung.pos_von,
+                    untersuchdat_schacht_bewertung.pos_bis,
+                    untersuchdat_schacht_bewertung.bw_bs,
+                    untersuchdat_schacht_bewertung.Schadensklasse_D,
+                    untersuchdat_schacht_bewertung.Schadensklasse_S,
+                    untersuchdat_schacht_bewertung.Schadensklasse_B,
+                    untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_D,
+                    untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_S,
+                    untersuchdat_schacht_bewertung.vorlaufige_Schadenszahl_B,
+                    untersuchdat_schacht_bewertung.Schadenslaenge,
+                    untersuchdat_schacht_bewertung.foto_dateiname,
+                    untersuchdat_schacht_bewertung.createdat,
 
                     schaechte_untersucht_bewertung.schnam,
                     schaechte_untersucht_bewertung.untersuchtag,
@@ -3715,8 +3459,8 @@ class SanierungsbedarfszahlFunkt:
                     schaechte_untersucht_bewertung.Lage_an_Bauteilverbindung,
                     schaechte_untersucht_bewertung.Objektklasse,
                     schaechte_untersucht_bewertung.createdat
-                FROM Untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
-                 WHERE schaechte_untersucht_bewertung.schnam = Untersuchdat_schacht_bewertung.untersuchsch AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? AND substr(Untersuchdat_schacht_bewertung.createdat, 0, 17) = ? 
+                FROM untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung
+                 WHERE schaechte_untersucht_bewertung.schnam = untersuchdat_schacht_bewertung.untersuchsch AND substr(schaechte_untersucht_bewertung.createdat, 0, 17) = ? AND substr(untersuchdat_schacht_bewertung.createdat, 0, 17) = ? 
             """
 
         if excel_format == 'Alle Daten in ein Excel Tabellenblatt':
@@ -3757,7 +3501,7 @@ class SanierungsbedarfszahlFunkt:
             for table_name in dft['untersuchsch']:
                 sheet_name = table_name
 
-                SQL = "select *  FROM Untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung WHERE schaechte_untersucht_bewertung.schnam = '" + sheet_name + "' AND Untersuchdat_schacht_bewertung.untersuchsch ='" + sheet_name +"' AND substr(Untersuchdat_schacht_bewertung.createdat, 0, 17)='"+date +"' AND substr(schaechte_untersucht_bewertung.createdat, 0, 17)='"+date+"'"
+                SQL = "select *  FROM untersuchdat_schacht_bewertung, schaechte_untersucht_bewertung WHERE schaechte_untersucht_bewertung.schnam = '" + sheet_name + "' AND untersuchdat_schacht_bewertung.untersuchsch ='" + sheet_name +"' AND substr(untersuchdat_schacht_bewertung.createdat, 0, 17)='"+date +"' AND substr(schaechte_untersucht_bewertung.createdat, 0, 17)='"+date+"'"
 
                 dft = pd.read_sql(SQL, db)
 

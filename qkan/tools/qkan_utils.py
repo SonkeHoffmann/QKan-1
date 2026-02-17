@@ -173,7 +173,7 @@ def list_qkan_layers(qgs_template: str = None) -> Dict[str, List]:
                 layer_source = layer.attrib["source"]
                 dbname, table, geom, sql = get_qkanlayer_attributes(layer_source)
                 qkan_layers[layer_name] = [table, geom, sql, group_name]
-    logger.debug("qkan_layers: \n{}".format(qkan_layers))
+    # logger.debug("qkan_layers: \n{}".format(qkan_layers))
     return qkan_layers
 
 

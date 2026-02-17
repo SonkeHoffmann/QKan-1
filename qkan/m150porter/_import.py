@@ -2622,14 +2622,6 @@ class ImportTask(Schadenstexte):
                     logger.error_data("Fehler beim Einfügen")
                     raise QkanDbError
 
-        # if QKan.config.xml.import_switchHA:
-        #     if not self.db_qkan.sqlyml(
-        #             sqlnam='m150_im_ha_umkehren',
-        #             stmt_category='m150_im_ha_umkehren',
-        #     ):
-        #         logger.error_data("Fehler bei Korrektur der Anschlussrichtung Hausanschlussleitungen")
-        #         raise QkanDbError
-
         self.db_qkan.commit()
 
     def _anschluss_untersucht(self) -> None:

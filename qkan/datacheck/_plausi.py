@@ -19,7 +19,7 @@ class PlausiTask:
         # todo: nachfolgende Abfragen zu untersuchdat sollten hier nicht dauerhaft bleiben
 
         # update damit die Charakterisierungsfehler funktionieren
-        sql = f"""Update Untersuchdat_haltung
+        sql = f"""Update untersuchdat_haltung
                             Set charakt1 = ''
                             where charakt1 = 'not found'
                             """
@@ -27,7 +27,7 @@ class PlausiTask:
             logger.error('Plausibilitätsabfragen konnten nicht abgefragt werden.')
             return False
 
-        sql = f"""Update Untersuchdat_haltung
+        sql = f"""Update untersuchdat_haltung
                                     Set charakt2 = ''
                                     where charakt2 = 'not found'
                                     """
@@ -35,7 +35,7 @@ class PlausiTask:
             logger.error('Plausibilitätsabfragen konnten nicht abgefragt werden.')
             return False
 
-        sql = f"""Update Untersuchdat_schacht
+        sql = f"""Update untersuchdat_schacht
                                     Set charakt1 = ''
                                     where charakt1 = 'not found'
                                     """
@@ -43,7 +43,7 @@ class PlausiTask:
             logger.error('Plausibilitätsabfragen konnten nicht abgefragt werden.')
             return False
 
-        sql = f"""Update Untersuchdat_schacht
+        sql = f"""Update untersuchdat_schacht
                                             Set charakt2 = ''
                                             where charakt2 = 'not found'
                                             """
@@ -51,7 +51,7 @@ class PlausiTask:
             logger.error('Plausibilitätsabfragen konnten nicht abgefragt werden.')
             return False
 
-        sql = f"""Update Untersuchdat_schacht
+        sql = f"""Update untersuchdat_schacht
                                                     Set bereich = ''
                                                     where bereich = 'not found'
                                                     """

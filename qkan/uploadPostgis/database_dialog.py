@@ -744,6 +744,7 @@ GBD WEBSUITE SPEZIFISCH:
             import getpass
             host = "localhost"
             port = 5432
+            database = 'test'
             username = getpass.getuser()
             password = ""
             ssl_mode = "prefer"
@@ -752,6 +753,7 @@ GBD WEBSUITE SPEZIFISCH:
             base_key = f"PostgreSQL/connections/{self.connection_name}"
             host = settings.value(f"{base_key}/host", "")
             port = int(settings.value(f"{base_key}/port", 5432))
+            self.target_database = settings.value(f"{base_key}/database", "")
             username = settings.value(f"{base_key}/username", "")
             password = settings.value(f"{base_key}/password", "")
             ssl_mode = settings.value(f"{base_key}/sslmode", "prefer")
@@ -785,48 +787,50 @@ GBD WEBSUITE SPEZIFISCH:
                 logger.warning(f"DNS-Auflösung fehlgeschlagen für {host}: {dns_error}")
                 # Verwende Original-Hostname
             
-            # Schritt 1: Verbindung zu postgres-Datenbank um erste verfügbare DB zu finden
-            conn_string = (
-                f"host='{resolved_host}' "
-                f"port={port} "
-                f"dbname='postgres' "
-                f"user='{username}' "
-                f"password='{password}' "
-                f"sslmode='{ssl_mode}' "
-                f"connect_timeout=10"
-            )
+            # # Schritt 1: Verbindung zu postgres-Datenbank um erste verfügbare DB zu finden
+            # conn_string = (
+            #     f"host='{resolved_host}' "
+            #     f"port={port} "
+            #     f"dbname='{database}' "
+            #     f"user='{username}' "
+            #     f"password='{password}' "
+            #     f"sslmode='{ssl_mode}' "
+            #     f"connect_timeout=10"
+            # )
+            #
+            # logger.info(f"Verbinde zu: {username}@{resolved_host}:{port}/postgres")
+            #
+            # conn = psycopg2.connect(conn_string)
+            # cursor = conn.cursor()
             
-            logger.info(f"Verbinde zu: {username}@{resolved_host}:{port}/postgres")
-            
-            conn = psycopg2.connect(conn_string)
-            cursor = conn.cursor()
-            
-            # Server-Version für Debug
-            cursor.execute("SELECT version()")
-            server_version = cursor.fetchone()[0]
-            logger.info(f"Verbunden mit: {server_version[:50]}...")
-            
-            # Erste verfügbare Benutzer-Datenbank finden
-            cursor.execute("""
-                SELECT datname 
-                FROM pg_database 
-                WHERE datistemplate = false 
-                AND datname NOT IN ('postgres', 'template0', 'template1')
-                ORDER BY datname
-                LIMIT 1
-            """)
-            
-            db_result = cursor.fetchone()
-            cursor.close()
-            conn.close()
-            
-            if not db_result:
-                self.listWidget_schemas.addItem("(Keine Benutzer-Datenbanken gefunden)")
-                logger.info(f"Keine Benutzer-Datenbanken auf {host} gefunden")
-                return
+            # # Server-Version für Debug
+            # cursor.execute("SELECT version()")
+            # server_version = cursor.fetchone()[0]
+            # logger.info(f"Verbunden mit: {server_version[:50]}...")
+            #
+            # # Erste verfügbare Benutzer-Datenbank finden
+            # parameters = {'database': }
+            # cursor.execute("""
+            #     SELECT datname
+            #     FROM pg_database
+            #     WHERE datistemplate = false
+            #     AND datname NOT IN ('postgres', 'template0', 'template1')
+            #     AND datname = ':database'
+            #     ORDER BY datname
+            #     LIMIT 1
+            # """, )
+            #
+            # db_result = cursor.fetchone()
+            # cursor.close()
+            # conn.close()
+            #
+            # if not db_result:
+            #     self.listWidget_schemas.addItem("(Keine Benutzer-Datenbanken gefunden)")
+            #     logger.info(f"Keine Benutzer-Datenbanken auf {host} gefunden")
+            #     return
             
             # Zieldatenbank setzen
-            self.target_database = db_result[0]
+            # self.target_database = db_result[0]
             logger.info(f"Verwende Datenbank: {self.target_database}")
             
             # Server-Info Label aktualisieren mit Datenbank

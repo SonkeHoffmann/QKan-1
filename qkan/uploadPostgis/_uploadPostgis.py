@@ -641,7 +641,7 @@ class UploadPostgisTask:
             
             # Liste der zu überspringenden Geometrie-Spaltennamen (case-insensitive)
             # ALLE Geometrie-Spalten müssen übersprungen werden (primäre UND sekundäre)!
-            skip_columns = set(['geom', 'geop', 'geometry', 'geobject', 'shape', 'the_geom'])
+            skip_columns = {'geom', 'geop', 'glink', 'gbuf', 'Geometry'}
             if geom_infos:
                 for gi in geom_infos:
                     skip_columns.add(gi['column'].lower())

@@ -91,9 +91,6 @@ class M150Porter(QKanPlugin):
             QKan.config.check_export.anschlussleitungen = (
                 self.export_dlg.cb_export_anschlussleitungen.isChecked()
             )
-            QKan.config.check_export.anschlussschaechte = (
-                self.export_dlg.cb_export_anschlussschaechte.isChecked()
-            )
             QKan.config.check_export.pumpen = (
                 self.export_dlg.cb_export_pumpen.isChecked()
             )
@@ -153,12 +150,6 @@ class M150Porter(QKanPlugin):
             QKan.config.xml.import_stamm = self.import_dlg.cb_impStamm.isChecked()
             QKan.config.xml.import_zustand = self.import_dlg.cb_zustand.isChecked()
             QKan.config.xml.import_haus = self.import_dlg.cb_impAnschluesse.isChecked()
-            # Note: cb_switchAnschluesse doesn't exist in the UI file, use default value
-            QKan.config.xml.import_switchHA = (
-                self.import_dlg.cb_switchAnschluesse.isChecked()
-                if hasattr(self.import_dlg, 'cb_switchAnschluesse')
-                else True
-            )
 
             QKan.config.save()
 

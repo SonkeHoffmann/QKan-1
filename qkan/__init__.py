@@ -237,7 +237,6 @@ class QKan:
             zustand = self.menu.addMenu("Zustandsbewertung")
             substanz = self.menu.addMenu("Substanzbewertung")
             flood2D = self.menu.addMenu("Überflutung")
-            # postgis = self.menu.addMenu("PostgisUpload")
             info = self.menu.addMenu("Info")
 
             safe_add_action(allgemein, "Optionen")
@@ -293,8 +292,7 @@ class QKan:
 
             safe_add_action(sync, "Vergleich mit einem anderen QKan-Projekt")
             safe_add_action(sync, "Synchronisation mit einem anderen QKan-Projekt")
-
-            # safe_add_action(postgis, "Upload to PostGIS")
+            safe_add_action(sync, "Upload nach PostGIS WebSuite")
 
             safe_add_action(flood2D, "Überflutungsanimation")
 

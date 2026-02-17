@@ -34,6 +34,7 @@ class UploadPostgis(QKanPlugin):
         QKan.instance.add_action(
             icon_uploadPostgis,
             text=self.tr("Upload nach PostGIS WebSuite"),
+            toolbar='QKan-Datenaustausch',
             callback=self.openform_uploadPostgis,
             parent=self.iface.mainWindow(),
         )

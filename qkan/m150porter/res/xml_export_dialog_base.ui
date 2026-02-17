@@ -546,22 +546,7 @@ Entwässerungsart zulassen</string>
              </font>
             </property>
             <property name="text">
-             <string>Anschlussleitungen</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QCheckBox" name="cb_export_anschlussschaechte">
-            <property name="font">
-             <font>
-              <family>Tahoma</family>
-              <pointsize>10</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Anschlussschächte</string>
+             <string>Hausanschlüsse</string>
             </property>
            </widget>
           </item>

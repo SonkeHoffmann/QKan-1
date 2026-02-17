@@ -287,7 +287,7 @@ class UploadPostgisDialog(_Dialog, IMPORT_CLASS):  # type: ignore
             
             # Verbindungsstring mit aufgelöster IP oder Hostname aufbauen
             conn_string = f"host='{resolved_host}' port={port} dbname='{database}' user='{username}' password='{password}' sslmode='{ssl_mode}' connect_timeout=10"
-            
+            logger.debug(f'{conn_string=}')
             # Verbindung testen
             conn = psycopg2.connect(conn_string)
             conn.autocommit = True  # Verhindert Transaktionsprobleme

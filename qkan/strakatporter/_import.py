@@ -40,7 +40,7 @@ class Bericht_STRAKAT(ClassObject):
     geloescht: int = 0
     schadensklasse: int = 0
     untersuchungsrichtung: int = 0
-    bandnr: str = ""
+    bandnr: int = 0
     videozaehler: int = 0
     foto_dateiname: str = ""
     film_dateiname: str = ""
@@ -275,6 +275,10 @@ class ImportTask(Schadenstexte):
                         flaechenfactor_v, flaechenfactor_g, umfangsfactor_v, umfangsfactor_g,
                         hydr__radius_v, hydr__radius_g
                     ) = unpack('ffffffffffffff', b[116:172])
+                    if not isinstance(rohrhoehe___g, float):
+                        rohrhoehe___g = rohrbreite_g
+                    if not isinstance(rohrhoehe___v, float):
+                        rohrhoehe___v = rohrbreite_v
 
                     (
                         deckel_oben_v, deckel_oben_g, deckel_unten_v, deckel_unten_g,
@@ -1019,7 +1023,7 @@ class ImportTask(Schadenstexte):
                 geloescht INTEGER,
                 schadensklasse INTEGER,
                 untersuchungsrichtung INTEGER,
-                bandnr TEXT,
+                bandnr INTEGER,
                 videozaehler INTEGER,
                 foto_dateiname TEXT,
                 film_dateiname TEXT,
@@ -1093,10 +1097,14 @@ class ImportTask(Schadenstexte):
                     geloescht = unpack('b', b[296:297])[0]
                     schadensklasse = unpack('B', b[295:296])[0]
                     untersuchungsrichtung = unpack('B', b[297:298])[0]
-                    bandnr = b[301:b[301:320].find(b'\x00') + 301].decode('ansi').strip()
+                    bandnr_ = b[301:b[301:320].find(b'\x00') + 301].decode('ansi').strip()
+                    try:
+                        bandnr = int(bandnr_)
+                    except:
+                        bandnr = 0
                     videozaehler = unpack('I', b[320:324])[0]
                     try:
-                        foto_dateiname = f'{int(bandnr):0>3d}{int(videozaehler):0>5d}'
+                        foto_dateiname = f'{bandnr:0>3d}{int(videozaehler):0>5d}'
                     except BaseException as err:
                         logger.debug(f'Datenfehler: {bandnr=}, {videozaehler=}')
                         foto_dateiname = '00000000'
