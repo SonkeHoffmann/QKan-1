@@ -525,15 +525,6 @@ GBD WEBSUITE SPEZIFISCH:
                 return
             target_schema = self.listWidget_schemas.currentItem().text()
         
-        # Zieldatenbank prüfen
-        if not self.target_database:
-            QMessageBox.warning(
-                self,
-                "Validierungsfehler",
-                "Keine Zieldatenbank verfügbar. Bitte prüfen Sie die Verbindung."
-            )
-            return
-        
         # Warnung bei Überschreiben
         if self.cb_overwrite_existing.isChecked():
             reply = QMessageBox.question(
@@ -647,7 +638,6 @@ GBD WEBSUITE SPEZIFISCH:
             overwrite=overwrite,
             progress_bar=self.progressBar_upload,
             progress_callback=self.update_progress_status,
-            add_layers_to_qgis=True
         )
         
         # Zweite Progress Bar für Datensätze an Task übergeben
@@ -744,16 +734,22 @@ GBD WEBSUITE SPEZIFISCH:
             import getpass
             host = "localhost"
             port = 5432
-            database = 'test'
+            database = 'postgres'
             username = getpass.getuser()
             password = ""
             ssl_mode = "prefer"
+            self.target_database = database
             logger.info(f"Localhost-Verbindung: {username}@{host}:{port}")
         else:
             base_key = f"PostgreSQL/connections/{self.connection_name}"
             host = settings.value(f"{base_key}/host", "")
             port = int(settings.value(f"{base_key}/port", 5432))
             self.target_database = settings.value(f"{base_key}/database", "")
+            # Fallback: wenn keine Datenbank konfiguriert, postgres-Systemdatenbank verwenden
+            if not self.target_database:
+                self.target_database = "postgres"
+                logger.info("Keine Datenbank in Verbindungseinstellungen - verwende 'postgres' als Fallback")
+            database = self.target_database
             username = settings.value(f"{base_key}/username", "")
             password = settings.value(f"{base_key}/password", "")
             ssl_mode = settings.value(f"{base_key}/sslmode", "prefer")
