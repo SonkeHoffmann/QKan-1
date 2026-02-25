@@ -10,6 +10,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QWidget,
     QDialogButtonBox,
+    QLabel,
 )
 from qgis.core import QgsCoordinateReferenceSystem
 from qgis.gui import QgsProjectionSelectionWidget
@@ -55,9 +56,11 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
     pb_ordnerbild: QPushButton
     tf_ordnerbild: QLineEdit
+    lf_rootFotos: QLabel
 
     pb_ordnervideo: QPushButton
     tf_ordnervideo: QLineEdit
+    lf_rootVideos: QLabel
 
     tf_maxdist: QLineEdit
 
@@ -93,8 +96,10 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         # Init fields
         self.tf_database.setText(QKan.config.database.qkan)
         self.tf_import.setText(QKan.config.strakat.import_dir)
-        self.tf_ordnerbild.setText(QKan.config.xml.ordner_bild)
-        self.tf_ordnervideo.setText(QKan.config.xml.ordner_video)
+        self.tf_ordnerbild.setText(QKan.config.fotoPathCurrent)
+        self.tf_ordnervideo.setText(QKan.config.videoPathCurrent)
+        self.lf_rootFotos.setText(f'Hauptpfad: {QKan.config.fotopath}')
+        self.lf_rootVideos.setText(f'Hauptpfad: {QKan.config.videopath}')
         # noinspection PyCallByClass,PyArgumentList
         self.pw_epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
         self.tf_project.setText(QKan.config.project.file)

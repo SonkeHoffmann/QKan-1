@@ -144,8 +144,8 @@ class M150Porter(QKanPlugin):
             QKan.config.database.qkan = self.import_dlg.tf_database.text()
             QKan.config.project.file = self.import_dlg.tf_project.text()
             QKan.config.xml.data_choice = self.import_dlg.comboBox_2.currentText()
-            QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text()
-            QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text()
+            QKan.config.fotoPathCurrent = self.import_dlg.tf_ordnerbild.text()
+            QKan.config.videoPathCurrent = self.import_dlg.tf_ordnervideo.text()
 
             QKan.config.xml.import_stamm = self.import_dlg.cb_impStamm.isChecked()
             QKan.config.xml.import_zustand = self.import_dlg.cb_zustand.isChecked()
@@ -210,8 +210,8 @@ class M150Porter(QKanPlugin):
                 db_qkan,
                 QKan.config.xml.import_file,
                 QKan.config.xml.data_choice,
-                QKan.config.xml.ordner_bild,
-                QKan.config.xml.ordner_video
+                QKan.config.fotoPathCurrent,
+                QKan.config.videoPathCurrent
             )
             knotentypen_uncomplete = imp.run()
             del imp

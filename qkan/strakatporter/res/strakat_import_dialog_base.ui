@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>681</width>
-    <height>490</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>490</height>
+    <height>550</height>
    </size>
   </property>
   <property name="font">
@@ -55,7 +55,7 @@
         <x>0</x>
         <y>0</y>
         <width>679</width>
-        <height>450</height>
+        <height>510</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -511,6 +511,147 @@ der Schachtnamen</string>
          </widget>
         </widget>
        </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="gb_db_he">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+           <pointsize>8</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string comment="Pfade der Import- und Exportdatenbank"/>
+         </property>
+         <property name="title">
+          <string>Datenquelle</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen</string>
+            </property>
+            <property name="accessibleName">
+             <string>Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen</string>
+            </property>
+            <property name="accessibleDescription">
+             <string>Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen</string>
+            </property>
+            <property name="text">
+             <string>STRAKAT-Verzeichnis auswählen:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLineEdit" name="tf_import">
+              <property name="font">
+               <font>
+                <family>Tahoma</family>
+                <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pb_import">
+              <property name="font">
+               <font>
+                <family>Tahoma</family>
+                <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;STRAKAT-Datei &amp;quot;kanal.rwtopen&amp;quot; auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Projektionssystem:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QgsProjectionSelectionWidget" name="pw_epsg">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen</string>
+            </property>
+            <property name="whatsThis">
+             <string>Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen</string>
+            </property>
+            <property name="accessibleName">
+             <string>Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="3" column="0" rowspan="2">
         <widget class="QGroupBox" name="groupBox_5">
          <property name="font">
@@ -585,6 +726,34 @@ der Schachtnamen</string>
            </layout>
           </item>
           <item>
+           <widget class="QLabel" name="lf_rootFotos">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &amp;quot;Optionen&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &quot;Optionen&quot;</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(128, 128, 128);</string>
+            </property>
+            <property name="text">
+             <string>Hauptpfad: </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -646,6 +815,34 @@ der Schachtnamen</string>
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="lf_rootVideos">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &amp;quot;Optionen&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &quot;Optionen&quot;</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(128, 128, 128);</string>
+            </property>
+            <property name="text">
+             <string>Hauptpfad: </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -811,147 +1008,6 @@ der Schachtnamen</string>
          </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="gb_db_he">
-         <property name="font">
-          <font>
-           <family>Tahoma</family>
-           <pointsize>8</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string comment="Pfade der Import- und Exportdatenbank"/>
-         </property>
-         <property name="title">
-          <string>Datenquelle</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="font">
-             <font>
-              <family>Tahoma</family>
-              <pointsize>10</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="statusTip">
-             <string>Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen</string>
-            </property>
-            <property name="accessibleName">
-             <string>Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen</string>
-            </property>
-            <property name="accessibleDescription">
-             <string>Pfad zur Haltungstabelle. Die weiteren STRAKAT-Tabellen müssen im gleichen Verzeichnis liegen</string>
-            </property>
-            <property name="text">
-             <string>STRAKAT-Verzeichnis auswählen:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLineEdit" name="tf_import">
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>10</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pb_import">
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>10</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;STRAKAT-Datei &amp;quot;kanal.rwtopen&amp;quot; auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>...</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_5">
-            <property name="font">
-             <font>
-              <family>Tahoma</family>
-              <pointsize>10</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Projektionssystem:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QgsProjectionSelectionWidget" name="pw_epsg">
-            <property name="font">
-             <font>
-              <family>Tahoma</family>
-              <pointsize>8</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="statusTip">
-             <string>Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen</string>
-            </property>
-            <property name="whatsThis">
-             <string>Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen</string>
-            </property>
-            <property name="accessibleName">
-             <string>Projektionssystem der STRAKAT-Tabellen auswählen. Gilt auch für QKan-Tabellen</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -981,8 +1037,6 @@ der Schachtnamen</string>
     </widget>
    </item>
   </layout>
-  <zorder>scrollArea</zorder>
-  <zorder>button_box</zorder>
  </widget>
  <customwidgets>
   <customwidget>

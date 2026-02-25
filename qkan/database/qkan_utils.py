@@ -1,7 +1,6 @@
 from qkan.openqkanproject import initQKanProject
-import warnings
-from ..utils import get_logger, QkanUserError
-from qgis.core import QgsMessageLog
+from ..utils import get_logger
+from qgis.core import QgsMessageLog, Qgis
 from qgis.utils import iface
 
 logger = get_logger("QKan.database.qkan_utils")

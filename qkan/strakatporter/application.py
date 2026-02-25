@@ -59,8 +59,8 @@ class StrakatPorter(QKanPlugin):
             else:
                 QKan.config.strakat.import_dir = strakat_import_dir
 
-            QKan.config.xml.ordner_bild = self.import_dlg.tf_ordnerbild.text().replace('/', '\\')
-            QKan.config.xml.ordner_video = self.import_dlg.tf_ordnervideo.text().replace('/', '\\')
+            QKan.config.fotoPathCurrent = self.import_dlg.tf_ordnerbild.text().replace('/', '\\')
+            QKan.config.videoPathCurrent = self.import_dlg.tf_ordnervideo.text().replace('/', '\\')
 
             QKan.config.check_import.haltungen = self.import_dlg.cb_haltungen.isChecked()
             QKan.config.check_import.schaechte = self.import_dlg.cb_schaechte.isChecked()

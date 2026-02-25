@@ -165,7 +165,7 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
 
 ('Geoobjekte', 'Speicher ohne graphisches Punktobjekt', 'Fehler', 9,
     'SELECT pk AS objid, printf(''Speicher "%s" hat kein graphisches Punktobjekt'', schnam) AS bemerkung
-    FROM schaechte WHERE geop IS NULL AND (schachttyp = ''Speicher''',
+    FROM schaechte WHERE geop IS NULL AND schachttyp = ''Speicher''',
  'Speicher', 'pk'),
 
 ('Geoobjekte', 'Kein Flächenobjekt', 'Fehler', 9,
@@ -174,7 +174,7 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
  'Einzelflächen', 'pk'),
 
 ('Geoobjekte', 'Kein Flächenobjekt', 'Fehler', 9,
-    'SELECT pk AS objid, printf(''Haltungsfläche "%s" hat kein Flächenobjekt'', tgnam) AS bemerkung
+    'SELECT pk AS objid, printf(''Haltungsfläche "%s" hat kein Flächenobjekt'', flnam) AS bemerkung
     FROM tezg WHERE geom IS NULL',
  'Haltungsflächen', 'pk'),
 
@@ -273,94 +273,6 @@ SELECT pn.gruppe, pn.warnbez, pn.warntyp, pn.warnlevel, pn.sql, pn.layername, pn
     'SELECT pk AS objid,
     printf(''Haltungsnamen "%s" mehrfach vergeben'', haltnam) AS bemerkung
     FROM haltungen GROUP BY haltnam HAVING count() > 1', 
- 'Haltungen', 'pk'),
-
-('Kreuzende Haltungen (3D, braucht sehr lang!)', 'Kreuzende Haltungen', 'Warnung', 6, 
-    'WITH elems AS (
-    SELECT
-      ha.pk AS pk,
-      ha.haltnam AS haltnam,
-      ha.schoben AS schoben,
-      ha.schunten AS schunten,
-      ha.geom AS geom, 
-      COALESCE(ha.sohleoben, so.sohlhoehe)  + COALESCE(ha.hoehe, ha.breite)*0.5 AS zoben, 
-      COALESCE(ha.sohleunten, su.sohlhoehe) + COALESCE(ha.hoehe, ha.breite)*0.5 AS zunten,
-      COALESCE(ha.hoehe, ha.breite) AS durchm, 
-      CASE WHEN COALESCE(ha.hoehe, 0) = 0 THEN ha.breite ELSE ha.hoehe END AS hoehe
-    FROM haltungen AS ha 
-    INNER JOIN schaechte AS so 
-    ON ha.schoben = so.schnam
-    INNER JOIN schaechte AS su 
-    ON ha.schunten = su.schnam
-    WHERE (haltungstyp = ''Haltung'' OR haltungstyp IS NULL))
-SELECT
-         pk AS objid, 
-         printf(''Theoretischer Abstand zu Haltung "%s" beträgt d = %.2f m'', haltna2, COALESCE(abstkreuz, d3)) as bemerkung
-    FROM (
-    SELECT 
-      pk, haltna1, haltna2, hoehob, hoehun, 
-      abs((p3x-p1x)*ex+(p3y-p1y)*ey+(p3z-p1z)*ez)/SQRT(ex*ex+ey*ey+ez*ez) AS abstkreuz, 
-      abs(L13/SQRT(L12))         AS abstpar,
-      ((sx-p1x)*(p2x-p1x)+(sy-p1y)*(p2y-p1y))*((sx-p2x)*(p2x-p1x)+(sy-p2y)*(p2y-p1y)) AS d1, 
-      ((sx-p3x)*(p4x-p3x)+(sy-p3y)*(p4y-p3y))*((sx-p4x)*(p4x-p3x)+(sy-p4y)*(p4y-p3y)) AS d2, 
-      MAX(0, L12, L13, L14)-MIN(0, L12, L13, L14)-ABS(L12)-ABS(L34)                   AS d3
-    FROM (
-      SELECT 
-        pk, haltna1, haltna2, hoehob, hoehun, 
-        p1x, p1y, p1z, p2x, p2y, p2z, p3x, p3y, p3z, p4x, p4y, p4z, ex, ey, ez,
-        CASE WHEN abs(det) > 0.000001 * bet THEN
-          p1x+(p2x-p1x)*((p3x-p1x)*(p3y-p4y)-(p3y-p1y)*(p3x-p4x))/det ELSE NULL END     AS sx,
-        CASE WHEN abs(det) > 0.000001 * bet THEN
-          p1y+(p2y-p1y)*((p3x-p1x)*(p3y-p4y)-(p3y-p1y)*(p3x-p4x))/det ELSE NULL END     AS sy,
-        ((p2x-p1x)*(p2x-p1x)+(p2y-p1y)*(p2y-p1y))                                       AS L12,
-        ((p3x-p1x)*(p2x-p1x)+(p3y-p1y)*(p2y-p1y))                                       AS L13,
-        ((p4x-p1x)*(p2x-p1x)+(p4y-p1y)*(p2y-p1y))                                       AS L14,
-        ((p4x-p3x)*(p2x-p1x)+(p4y-p3y)*(p2y-p1y))                                       AS L34
-      FROM (
-        SELECT 
-          pk, haltna1, haltna2, hoehob, hoehun, 
-          p1x, p1y, p1z, p2x, p2y, p2z, p3x, p3y, p3z, p4x, p4y, p4z, 
-          (p2y-p1y)*(p4z-p3z)-(p2z-p1z)*(p4y-p3y) AS ex, 
-          (p2z-p1z)*(p4x-p3x)-(p2x-p1x)*(p4z-p3z) AS ey,
-          (p2x-p1x)*(p4y-p3y)-(p2y-p1y)*(p4x-p3x) AS ez,
-          ((p2x-p1x)*(p3y-p4y)-(p2y-p1y)*(p3x-p4x)) AS det,
-          ((p2x-p1x)*(p3x-p4x)+(p2y-p1y)*(p3y-p4y)) AS bet
-        FROM (
-          SELECT
-            ho.pk                 AS pk,
-            ho.haltnam            AS haltna1, 
-            hu.haltnam            AS haltna2, 
-            ho.hoehe              AS hoehob, 
-            hu.hoehe              AS hoehun, 
-            x(PointN(ho.geom,1))  AS p1x, 
-            y(PointN(ho.geom,1))  AS p1y, 
-            ho.zoben              AS p1z, 
-            x(PointN(ho.geom,-1)) AS p2x, 
-            y(PointN(ho.geom,-1)) AS p2y, 
-            ho.zunten             AS p2z, 
-            x(PointN(hu.geom,1))  AS p3x, 
-            y(PointN(hu.geom,1))  AS p3y, 
-            hu.zoben              AS p3z, 
-            x(PointN(hu.geom,-1)) AS p4x, 
-            y(PointN(hu.geom,-1)) AS p4y, 
-            hu.zunten             AS p4z
-          FROM elems AS ho 
-          INNER JOIN elems AS hu
-          ON Distance(ho.geom, hu.geom) < 0.5 + (ho.durchm + hu.durchm) / 2.0
-          WHERE
-            ho.haltnam <> hu.haltnam AND 
-            ho.schoben not in (hu.schoben, hu.schunten) AND 
-            ho.schunten not in (hu.schoben, hu.schunten) AND 
-            ho.zoben + ho.zunten >= hu.zoben + hu.zunten
-          )
-        )
-      )
-    WHERE
-    CASE WHEN d1 IS NOT NULL AND d1 <= 0 AND d2 <= 0
-        THEN abstkreuz <= (hoehob + hoehun) / 2.0 + 0.5
-    WHEN d1 IS NULL AND d3 <= 0
-        THEN abstpar <= (hoehob + hoehun) / 2.0 + 0.5
-    ELSE FALSE END)',
  'Haltungen', 'pk'),
 
 ('Zustandsklassen', 'Der Schadenskode hat mehr als 3 Zeichen', 'Fehler', 9,

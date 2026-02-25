@@ -1,23 +1,15 @@
 from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
 from qkan.utils import get_logger
 from qgis.utils import iface
-from qgis.core import *
 
 from qgis.core import *
-from qgis.gui import QgsMessageBar
-import os
-from qgis.PyQt.QtCore import QStandardPaths
 import json
 import site
 from pathlib import Path
-from qgis.core import QgsApplication
-import sys
 
 from qkan.database.dbfunc import DBConnection
 
 from qkan.config import Config
-
-#form_class, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'res/qkan_schadensliste.ui'))
 
 logger = get_logger("QKan.tools.zeige_schaeden")
 

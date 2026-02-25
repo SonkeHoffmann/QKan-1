@@ -2,11 +2,8 @@ import sys, os
 import xml.etree.ElementTree as ElementTree
 from typing import Dict, Iterator, Tuple, Union
 
-from lxml import etree
-
 from qgis.PyQt.QtCore import QByteArray
-from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsCircle, QgsMultiPolygon
-from qgis.utils import iface
+from qgis.core import Qgis, QgsGeometry, QgsPoint, QgsPointXY, QgsCircle
 from qkan import QKan, enums
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
@@ -314,7 +311,8 @@ class ImportTask(Schadenstexte):
         # Set Namespace
         # tree = etree.parse(xml_file)
         # x = tree.xpath('namespace-uri(.)')
-        self.NS = {"": "http://www.ofd-hannover.la/Identifikation"}
+        t = self.xml.getroot()
+        self.NS = {"": t.tag[1:].split('}')[0]}
 
         #TODO: prüfen ob Namespace doch eingelesen werden muss, wenn ja aber mit ElementTree arbeiten
 

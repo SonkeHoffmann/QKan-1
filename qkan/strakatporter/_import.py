@@ -2,6 +2,7 @@ import os
 import re
 from struct import unpack
 from typing import Iterator
+from pathlib import Path
 
 from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.core import Qgis, QgsGeometry, QgsPoint
@@ -138,8 +139,15 @@ class ImportTask(Schadenstexte):
 
         self.iface = QKan.instance.iface
 
-        self.ordner_bild = QKan.config.xml.ordner_bild
-        self.ordner_video = QKan.config.xml.ordner_video
+        pathfull = Path(QKan.config.fotoPathCurrent)
+        if QKan.config.fotopath != '':
+            pathroot = Path(QKan.config.fotopath)
+            self.ordner_bild = pathfull.relative_to(pathroot)
+
+        pathfull = Path(QKan.config.videoPathCurrent)
+        if QKan.config.videopath != '':
+            pathroot = Path(QKan.config.videopath)
+            self.ordner_video = pathfull.relative_to(pathroot)
 
         # Create progress bar
         self.progress_bar = QProgressBar(self.iface.messageBar())
