@@ -452,11 +452,14 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
 
     def select_database(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontConfirmOverwrite  # keine Überschreib-Rückfrage
         filename, _ = QFileDialog.getSaveFileName(
             self,
             self.tr("Zu erstellende SQLite-Datei"),
             self.default_dir,
-            "*.sqlite",
+            filter="*.sqlite",
+            options=options,
         )
         if filename:
             self.tf_database.setText(filename)
