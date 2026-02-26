@@ -42,19 +42,21 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Bezeichnung</string>
+     <string>Name</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_14">
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>310</y>
+      <y>265</y>
       <width>81</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -81,7 +83,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>330</y>
+      <y>290</y>
       <width>251</width>
       <height>81</height>
      </rect>
@@ -90,16 +92,16 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für zusätzliche Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
+      <y>190</y>
       <width>551</width>
-      <height>91</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
@@ -111,13 +113,13 @@
      </font>
     </property>
     <property name="title">
-     <string>Parameter für unbefestigte Flächenanteile</string>
+     <string/>
     </property>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>10</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -144,9 +146,9 @@
      <property name="geometry">
       <rect>
        <x>129</x>
-       <y>30</y>
+       <y>9</y>
        <width>61</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -168,9 +170,9 @@
      <property name="geometry">
       <rect>
        <x>360</x>
-       <y>30</y>
+       <y>9</y>
        <width>171</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -195,7 +197,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>30</y>
+       <y>10</y>
        <width>111</width>
        <height>21</height>
       </rect>
@@ -216,9 +218,9 @@
      <property name="geometry">
       <rect>
        <x>129</x>
-       <y>60</y>
+       <y>39</y>
        <width>61</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -230,10 +232,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gefälle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gefälle in Prozent&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Gefälle</string>
+      <string>Gefälle in Prozent</string>
      </property>
      <property name="text">
       <string/>
@@ -243,7 +245,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -265,7 +267,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>140</y>
+      <y>120</y>
       <width>551</width>
       <height>61</height>
      </rect>
@@ -279,7 +281,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Flächendaten, falls keine Flächenobjekte erfasst wurden</string>
+     <string>Angaben, wenn keine Einzelflächen definiert sind</string>
     </property>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
@@ -320,10 +322,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Befestigungsgrad (%)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Befestigungsgrad (%)</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -392,10 +394,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schwerpunktlaufzeit (Sek.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Schwerpunktlaufzeit (Sek.)</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -427,7 +429,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>310</y>
+      <y>270</y>
       <width>281</width>
       <height>101</height>
      </rect>
@@ -511,10 +513,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu einem benutzerdefinierten Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -527,7 +529,7 @@
       <x>10</x>
       <y>40</y>
       <width>551</width>
-      <height>91</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
@@ -537,15 +539,15 @@
      </font>
     </property>
     <property name="title">
-     <string>Flächendaten</string>
+     <string/>
     </property>
     <widget class="QLabel" name="label_23">
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>60</y>
+       <y>9</y>
        <width>80</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -562,9 +564,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>40</y>
        <width>100</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -581,9 +583,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>9</y>
        <width>80</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -600,9 +602,9 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>60</y>
+       <y>9</y>
        <width>171</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -612,10 +614,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name der Haltung, der die Fläche zugeordnet ist&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltung, welche die Fläche anbindet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Name der Haltung, der die Fläche zugeordnet ist</string>
+      <string>Haltung, welche die Fläche anbindet#</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -625,9 +627,9 @@
      <property name="geometry">
       <rect>
        <x>360</x>
-       <y>60</y>
+       <y>9</y>
        <width>171</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -650,9 +652,9 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>30</y>
+       <y>40</y>
        <width>201</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -662,10 +664,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Regenschreiber&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Regenschreiber</string>
+      <string/>
      </property>
     </widget>
    </widget>

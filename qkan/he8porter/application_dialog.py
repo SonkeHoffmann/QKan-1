@@ -21,6 +21,10 @@ from qkan.utils import get_logger, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.he8.application_dialog")
 
+EXPORT_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "res", "he8_export_dialog_base.ui")
+)
+
 
 class _Dialog(QDialog):
     def __init__(
@@ -34,11 +38,6 @@ class _Dialog(QDialog):
         self.setupUi(self)
         self.default_dir = default_dir
         self.tr = tr
-
-
-EXPORT_CLASS, _ = uic.loadUiType(
-    os.path.join(os.path.dirname(__file__), "res", "he8_export_dialog_base.ui")
-)
 
 
 class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
@@ -71,8 +70,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_aussengebiete: QCheckBox
     cb_einzugsgebiete: QCheckBox
 
-    rb_flaechen: QRadioButton
-    rb_tezg_hf: QRadioButton
+    cb_flaechen: QCheckBox
+    cb_tezg_hf: QCheckBox
     cb_tezg: QCheckBox
 
     rb_update: QRadioButton
@@ -118,8 +117,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.cb_qregler.setChecked(QKan.config.check_export.qregler)
         self.cb_hregler.setChecked(QKan.config.check_export.hregler)
         self.cb_grundseitenauslaesse.setChecked(QKan.config.check_export.grundseitenauslaesse)
-        self.rb_flaechen.setChecked(QKan.config.check_export.flaechen)
-        self.rb_tezg_hf.setChecked(QKan.config.check_export.tezg_hf)
+        self.cb_flaechen.setChecked(QKan.config.check_export.flaechen)
+        self.cb_tezg_hf.setChecked(QKan.config.check_export.tezg_hf)
         self.cb_rohrprofile.setChecked(QKan.config.check_export.rohrprofile)
         self.cb_abflussparameter.setChecked(QKan.config.check_export.abflussparameter)
         self.cb_bodenklassen.setChecked(QKan.config.check_export.bodenklassen)
@@ -226,7 +225,11 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
             for layer in layerobjects:
                 layer.selectionChanged.connect(self.count)
 
-        self.count()
+        try:
+            self.count()
+        except:
+            logger.error_code('prepareDialog: Fehler beim Aufruf von count')
+            return False
 
         return True
 

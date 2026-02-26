@@ -40,14 +40,16 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>101</width>
-      <height>16</height>
+      <width>111</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -58,9 +60,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>460</y>
+      <y>375</y>
       <width>81</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -71,7 +73,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>430</y>
+      <y>350</y>
       <width>121</width>
       <height>21</height>
      </rect>
@@ -83,9 +85,9 @@
    <widget class="QLineEdit" name="untersuchsch">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>20</y>
-      <width>161</width>
+      <width>171</width>
       <height>20</height>
      </rect>
     </property>
@@ -100,9 +102,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>480</y>
+      <y>400</y>
       <width>581</width>
-      <height>61</height>
+      <height>71</height>
      </rect>
     </property>
    </widget>
@@ -110,9 +112,9 @@
     <property name="geometry">
      <rect>
       <x>161</x>
-      <y>430</y>
+      <y>352</y>
       <width>131</width>
-      <height>23</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="currentSection">
@@ -128,7 +130,7 @@
       <x>10</x>
       <y>50</y>
       <width>640</width>
-      <height>371</height>
+      <height>291</height>
      </rect>
     </property>
     <property name="font">
@@ -138,7 +140,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Untersuchungsdaten</string>
+     <string>Inspektionsdaten</string>
     </property>
     <widget class="QLineEdit" name="untersuchrichtung">
      <property name="geometry">
@@ -567,88 +569,6 @@
      </property>
      <property name="text">
       <string>Station</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_32">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>330</y>
-       <width>151</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Speicherort Video</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="film_dateiname">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>330</y>
-       <width>501</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Speicherort des Videos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Speicherort des Videos</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="foto_dateiname">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>300</y>
-       <width>501</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Speicherort des Fotos&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Speicherort des Fotos</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_31">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>300</y>
-       <width>151</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Speicherort Foto</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_19">

@@ -225,7 +225,7 @@ def layersadapt(
         layerobjects = project.mapLayersByName(refLayerName)
         for layer in layerobjects:
             layerId = layer.id()
-            logger.debug("layerId: {}".format(layerId))
+            # logger.debug("layerId: {}".format(layerId))
             layerIdList[refLayerId] = layerId
             # if len(layerobjects) > 1:
             #     warnung(
@@ -239,7 +239,7 @@ def layersadapt(
         #     logger.info(
         #         "k_layersadapt: QKan-Layer nicht in Projekt: {}".format(refLayerName)
         #     )
-    logger.debug("Refliste Layer-Ids: \n{}".format(layerIdList))
+    # logger.debug("Refliste Layer-Ids: \n{}".format(layerIdList))
 
     selectedLayerNames = []
     # Liste der zu bearbeitenden Layer
@@ -259,8 +259,8 @@ def layersadapt(
             anpassen_auswahl,
         )
 
-    logger.debug("k_layersadapt (2), selectedLayerNames: %s", selectedLayerNames)
-    logger.debug(f"k_layersadapt (5), qkanLayers: {qkanLayers}")
+    # logger.debug("k_layersadapt (2), selectedLayerNames: %s", selectedLayerNames)
+    # logger.debug(f"k_layersadapt (5), qkanLayers: {qkanLayers}")
 
     layerNotQkanMeldung = False  # Am Schluss erscheint ggfs. eine Meldung, dass Nicht-QKan-Layer gefunden wurden.
 
@@ -276,7 +276,7 @@ def layersadapt(
             )
             continue
 
-        logger.debug(f"k_layersadapt (3), layername: {layername}")
+        # logger.debug(f"k_layersadapt (3), layername: {layername}")
 
         layerobjects = project.mapLayersByName(layername)
         if len(layerobjects) == 0:
@@ -374,11 +374,11 @@ def layersadapt(
                     editFormConfig = layer.editFormConfig()
                     editFormConfig.setUiForm(os.path.join(formsDir, form))
                     layer.setEditFormConfig(editFormConfig)
-                    logger.debug(
-                        f"k_layersadapt - formpath: {formpath}\n"
-                        f"form: {form}\n"
-                        f"formsDir: {formsDir}\n"
-                    )
+                    # logger.debug(
+                    #     f"k_layersadapt - formpath: {formpath}\n"
+                    #     f"form: {form}\n"
+                    #     f"formsDir: {formsDir}\n"
+                    # )
 
     if layerNotInProjektMeldung:
         meldung(

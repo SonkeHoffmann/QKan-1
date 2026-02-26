@@ -1,0 +1,151 @@
+strakat_kanal_attrs: "
+PRAGMA table_list('t_strakatkanal');"
+
+strakat_create_t_strakatkanal: "
+CREATE TABLE IF NOT EXISTS {tabnam} (
+    pk INTEGER PRIMARY KEY,
+    nummer INTEGER,
+    rw_gerinne_o REAL,
+    hw_gerinne_o REAL,
+    rw_gerinne_u REAL,
+    hw_gerinne_u REAL,
+    rw_rohranfang REAL,
+    hw_rohranfang REAL,
+    rw_rohrende REAL,
+    hw_rohrende REAL,
+    zuflussnummer1 INTEGER,
+    zuflussnummer2 INTEGER,
+    zuflussnummer3 INTEGER,
+    zuflussnummer4 INTEGER,
+    zuflussnummer5 INTEGER,
+    zuflussnummer6 INTEGER,
+    zuflussnummer7 INTEGER,
+    zuflussnummer8 INTEGER,
+    abflussnummer1 INTEGER,
+    abflussnummer2 INTEGER,
+    abflussnummer3 INTEGER,
+    abflussnummer4 INTEGER,
+    abflussnummer5 INTEGER,
+    schacht_oben TEXT,
+    schacht_unten TEXT,
+    haltungsname TEXT,
+    rohrbreite_v REAL,
+    rohrhoehe___v REAL,
+    flaechenfactor_v REAL,
+    deckel_oben_v REAL,
+    deckel_unten_v REAL,
+    sohle_oben___v REAL,
+    sohle_unten__v REAL,
+    s_sohle_oben_v REAL,           /* Position in Datei kanal.rwtopen unbekannt */
+    sohle_zufluss1 REAL,
+    sohle_zufluss2 REAL,
+    sohle_zufluss3 REAL,
+    sohle_zufluss4 REAL,
+    sohle_zufluss5 REAL,
+    sohle_zufluss6 REAL,
+    sohle_zufluss7 REAL,
+    sohle_zufluss8 REAL,
+    kanalart INTEGER,
+    profilart_v INTEGER,
+    material_v INTEGER,
+    e_gebiet INTEGER,
+    strassennummer INTEGER,
+    schachtnummer INTEGER,
+    schachtart INTEGER,
+    berichtsnummer INTEGER,
+    laenge REAL,
+    schachtmaterial INTEGER,
+    oberflaeche INTEGER,
+    baujahr INTEGER,
+    wasserschutz INTEGER,
+    eigentum INTEGER,
+    naechste_halt INTEGER,
+    rueckadresse INTEGER,
+    mark INTEGER DEFAULT 0,
+    strakatid TEXT);"
+
+strakat_addgeometrycolumn_geom: "
+SELECT AddGeometryColumn(?, 'geom', ?, 'LINESTRING', 2);"
+
+strakat_addgeometrycolumn_geop: "
+SELECT AddGeometryColumn(?, 'geop', ?, 'POINT', 2);"
+
+strakat_createspatialindex_geom: "
+SELECT CreateSpatialIndex(?, 'geom');"
+
+strakat_createspatialindex_geop: "
+SELECT CreateSpatialIndex(?, 'geop');"
+
+strakat_kanaltabelle: "
+INSERT INTO t_strakatkanal (
+    nummer, 
+    rw_gerinne_o, hw_gerinne_o, rw_gerinne_u, hw_gerinne_u,
+    rw_rohranfang, hw_rohranfang, rw_rohrende, hw_rohrende,
+    zuflussnummer1, zuflussnummer2, zuflussnummer3, zuflussnummer4,
+    zuflussnummer5, zuflussnummer6, zuflussnummer7, zuflussnummer8,
+    abflussnummer1, abflussnummer2, abflussnummer3, abflussnummer4, abflussnummer5,
+    schacht_oben, schacht_unten, haltungsname,
+    rohrbreite_v, rohrhoehe___v, flaechenfactor_v,
+    deckel_oben_v, deckel_unten_v, sohle_oben___v, sohle_unten__v, s_sohle_oben_v,
+    sohle_zufluss1, sohle_zufluss2, sohle_zufluss3, sohle_zufluss4,
+    sohle_zufluss5, sohle_zufluss6, sohle_zufluss7, sohle_zufluss8,
+    kanalart, profilart_v, material_v,
+    e_gebiet, strassennummer,
+    schachtnummer, schachtart, berichtsnummer,
+    laenge, schachtmaterial, oberflaeche,
+    baujahr, wasserschutz, eigentum,
+    naechste_halt, rueckadresse, strakatid
+)
+VALUES (
+    :nummer, 
+    :rw_gerinne_o, :hw_gerinne_o, :rw_gerinne_u, :hw_gerinne_u,
+    :rw_rohranfang, :hw_rohranfang, :rw_rohrende, :hw_rohrende,
+    :zuflussnummer1, :zuflussnummer2, :zuflussnummer3, :zuflussnummer4,
+    :zuflussnummer5, :zuflussnummer6, :zuflussnummer7, :zuflussnummer8,
+    :abflussnummer1, :abflussnummer2, :abflussnummer3, :abflussnummer4, :abflussnummer5,
+    :schacht_oben, :schacht_unten, :haltungsname,
+    :rohrbreite_v, :rohrhoehe___v, :flaechenfactor_v,
+    :deckel_oben_v, :deckel_unten_v, :sohle_oben___v, :sohle_unten__v, :s_sohle_oben_v,
+    :sohle_zufluss1, :sohle_zufluss2, :sohle_zufluss3, :sohle_zufluss4,
+    :sohle_zufluss5, :sohle_zufluss6, :sohle_zufluss7, :sohle_zufluss8,
+    :kanalart, :profilart_v, :material_v,
+    :e_gebiet, :strassennummer,
+    :schachtnummer, :schachtart, :berichtsnummer,
+    :laenge, :schachtmaterial, :oberflaeche,
+    :baujahr, :wasserschutz, :eigentum,
+    :naechste_halt, :rueckadresse, :strakatid);"
+
+strakat_update_geom: "
+UPDATE t_strakatkanal
+SET geom = MakeLine(
+    Makepoint(iif(:coordsFromRohr, rw_rohranfang, rw_gerinne_o), 
+              iif(:coordsFromRohr, hw_rohranfang, hw_gerinne_o),
+              :epsg),
+    Makepoint(iif(:coordsFromRohr, rw_rohrende, rw_gerinne_u), 
+              iif(:coordsFromRohr, hw_rohrende, hw_gerinne_u),
+              :epsg)
+)
+WHERE iif(:coordsFromRohr, rw_rohranfang, rw_gerinne_o) > 1
+  AND iif(:coordsFromRohr, hw_rohranfang, hw_gerinne_o) > 1
+  AND iif(:coordsFromRohr, rw_rohrende, rw_gerinne_u) > 1
+  AND iif(:coordsFromRohr, hw_rohrende, hw_gerinne_u) > 1;"
+
+strakat_update_geop: "
+UPDATE t_strakatkanal
+SET geop = Makepoint(rw_gerinne_o, hw_gerinne_o, :epsg)
+WHERE rw_gerinne_o > 1   AND hw_gerinne_o > 1;"
+
+strakat_delete_schnr0: "
+DELETE FROM t_strakatkanal WHERE schachtnummer = 0;"
+
+# Kopie von t_strakatkanal, um inkonsistente Schachtbezeichnungen nachvollziehbar zu machen
+strakat_copy2ori: "
+INSERT INTO t_strakatk_ori SELECT * FROM t_strakatkanal;"
+
+# Bereinigung inkonsistenter Schachtbezeichnungen
+
+# 1. Übertragen des schacht_oben auf Kanäle ohne schachtoben oder mit einem schachtoben,
+#    der nicht mit anderen Schachtoben übereinstimmt.
+strakat_prep1: "
+UPDATE t_strakatkanal SET schacht_oben = 'SN_' || substr(printf('0000%d', pk), -5)
+WHERE schacht_oben = '' OR schacht_oben = '0';"

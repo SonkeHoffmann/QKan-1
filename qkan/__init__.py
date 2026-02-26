@@ -76,10 +76,10 @@ class QKan:
     instance: "QKan"
     config: Config
     template_dir: str
-    forms: str
+    forms: list[str]
 
-    dbVersion = "3.4.8"  # "3.4.6" Version der QKan-Datenbank
-    qgsVersion = "3.4.8"  # "3.4.7" Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
+    dbVersion = "3.4.8"  # Version der QKan-Datenbank
+    qgsVersion = "3.4.8"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
 
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
     sqls: dict = {}                     # SQL-Statements for all loaded modules
@@ -153,8 +153,20 @@ class QKan:
 
         # mnuSub1 = self.menu.addMenu('Sub-menu')
 
-        self.toolbar = self.iface.addToolBar("QKan")
-        self.toolbar.setObjectName("QKan")
+        #self.toolbar = self.iface.addToolBar("QKan")
+        #self.toolbar.setObjectName("QKan")
+
+        self.toolbar = self.iface.addToolBar("QKan-Allgemein")
+        self.toolbar.setObjectName("QKan-Allgemein")
+
+        self.toolbar_2 = self.iface.addToolBar("QKan-Datenaustausch")
+        self.toolbar_2.setObjectName("QKan-Datenaustausch")
+
+        self.toolbar_3 = self.iface.addToolBar("QKan-Flächenbearbeitung")
+        self.toolbar_3.setObjectName("QKan-Flächenbearbeitung")
+
+        self.toolbar_4 = self.iface.addToolBar("QKan-Befahrungsdaten")
+        self.toolbar_4.setObjectName("QKan-Befahrungsdaten")
 
         # Add QKan SVG path
         qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")
@@ -280,6 +292,7 @@ class QKan:
 
             safe_add_action(sync, "Vergleich mit einem anderen QKan-Projekt")
             safe_add_action(sync, "Synchronisation mit einem anderen QKan-Projekt")
+            safe_add_action(sync, "Upload nach PostGIS WebSuite")
 
             safe_add_action(flood2D, "Überflutungsanimation")
 
@@ -313,6 +326,15 @@ class QKan:
         if self.toolbar is not None:
             del self.toolbar
 
+        if self.toolbar_2 is not None:
+            del self.toolbar_2
+
+        if self.toolbar_3 is not None:
+            del self.toolbar_3
+
+        if self.toolbar_4 is not None:
+            del self.toolbar_4
+
         # Remove menu
         self.iface.mainWindow().menuBar().removeAction(self.menu_action)
 
@@ -339,6 +361,7 @@ class QKan:
         self,
         icon_path: str,
         text: str,
+        toolbar: str,
         callback: Callable,
         enabled_flag: bool = True,
         checkable: bool = False,
@@ -354,6 +377,7 @@ class QKan:
                                 path (e.g. ':/plugins/foo/bar.png') or a normal
                                 file system path.
         :param text:            Text that should be shown in menu items for this action.
+        :param toolbar:         Toolbar menu item
         :param callback:        Function to be called when the action is triggered.
         :param enabled_flag:    A flag indicating if the action should be enabled
                                 by default. Defaults to True.
@@ -386,7 +410,17 @@ class QKan:
             action.setWhatsThis(whats_this)
 
         if add_to_toolbar:
-            self.toolbar.addAction(action)
+            if toolbar == 'QKan-Allgemein':
+                self.toolbar.addAction(action)
+
+            elif toolbar == 'QKan-Datenaustausch':
+                self.toolbar_2.addAction(action)
+
+            elif toolbar == 'QKan-Flächenbearbeitung':
+                self.toolbar_3.addAction(action)
+
+            elif toolbar == 'QKan-Befahrungsdaten':
+                self.toolbar_4.addAction(action)
 
         if add_to_menu and self.menu:
             self.menu.addAction(action)

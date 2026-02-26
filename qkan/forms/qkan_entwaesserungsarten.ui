@@ -40,7 +40,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>121</width>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
@@ -51,7 +51,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Bezeichnung</string>
+     <string>Name Entwässerungsart</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -60,9 +60,9 @@
    <widget class="QLineEdit" name="bezeichnung">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>180</x>
       <y>10</y>
-      <width>201</width>
+      <width>151</width>
       <height>20</height>
      </rect>
     </property>
@@ -80,7 +80,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>260</y>
+      <y>235</y>
       <width>100</width>
       <height>21</height>
      </rect>
@@ -96,25 +96,25 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>280</y>
+      <y>260</y>
       <width>331</width>
       <height>71</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für eigene Kommentare.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für eigene Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für eigene Kommentare.</string>
+     <string>Platz für eigene Kommentare</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>70</y>
       <width>331</width>
-      <height>211</height>
+      <height>161</height>
      </rect>
     </property>
     <property name="font">
@@ -124,33 +124,8 @@
      </font>
     </property>
     <property name="title">
-     <string>Daten</string>
+     <string/>
     </property>
-    <widget class="QLineEdit" name="kuerzel">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>30</y>
-       <width>151</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>optional: Kürzel</string>
-     </property>
-     <property name="statusTip">
-      <string>optional: Kürzel</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="he_nr">
      <property name="enabled">
       <bool>true</bool>
@@ -158,9 +133,9 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>60</y>
+       <y>9</y>
        <width>71</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -192,7 +167,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>10</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -210,33 +185,11 @@
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>30</y>
-       <width>121</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Kürzel</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>90</y>
+       <y>40</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -261,9 +214,9 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>90</y>
+       <y>39</y>
        <width>71</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -273,10 +226,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. des Entwässerungssystems entspr. Kanal++&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. für Entwässerungsart gemäß:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Nr. des Entwässerungssystems entspr. Kanal++</string>
+      <string>Nr. für Entwässerungsart gemäß:</string>
      </property>
      <property name="layoutDirection">
       <enum>Qt::RightToLeft</enum>
@@ -298,9 +251,9 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>120</y>
+       <y>69</y>
        <width>71</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -310,10 +263,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. des Entwässerungssystems entspr. Kanal++&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. für Entwässerungsart gemäß:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Nr. des Entwässerungssystems entspr. Kanal++</string>
+      <string>Nr. für Entwässerungsart gemäß:</string>
      </property>
      <property name="layoutDirection">
       <enum>Qt::RightToLeft</enum>
@@ -332,7 +285,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>70</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -354,7 +307,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>180</y>
+       <y>130</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -379,9 +332,9 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>180</y>
+       <y>129</y>
        <width>71</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -391,10 +344,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. des Entwässerungssystems entspr. Kanal++&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. für Entwässerungsart gemäß:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Nr. des Entwässerungssystems entspr. Kanal++</string>
+      <string>Nr. für Entwässerungsart gemäß:</string>
      </property>
      <property name="layoutDirection">
       <enum>Qt::RightToLeft</enum>
@@ -413,7 +366,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>150</y>
+       <y>100</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -435,12 +388,65 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>150</y>
+       <y>99</y>
        <width>71</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nr. für Entwässerungsart gemäß:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="statusTip">
+      <string>Nr. für Entwässerungsart gemäß:</string>
+     </property>
     </widget>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>40</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Kürzel</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="kuerzel">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>40</y>
+      <width>151</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>optional: Kürzel</string>
+    </property>
+    <property name="statusTip">
+     <string>optional: Kürzel</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

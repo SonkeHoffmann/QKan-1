@@ -50,12 +50,28 @@ class AdjustTask:
             userchoices = [
                 QKan.config.sync.check_schaechte,
                 QKan.config.sync.check_haltungen,
+                QKan.config.sync.check_haschaechte,
                 QKan.config.sync.check_haleitungen,
+                QKan.config.sync.check_flaechen,
+                QKan.config.sync.check_tezg,
+                QKan.config.sync.check_linkfl,
+                QKan.config.sync.check_schaechte_insp,
+                QKan.config.sync.check_haltungen_insp,
+                QKan.config.sync.check_haleitungen_insp,
+                QKan.config.sync.check_showAttrTables,
             ]
             tables = [
                 'schaechte',
                 'haltungen',
-                'anschlussleitungen'
+                'anschlussschaechte',
+                'anschlussleitungen',
+                'flaechen',
+                'tezg',
+                'linkfl',
+                'schaechte_untersucht',
+                'haltungen_untersucht',
+                'anschlussleitungen_untersucht',
+                'refdata',
             ]
 
             try:

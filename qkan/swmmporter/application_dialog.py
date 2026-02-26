@@ -83,7 +83,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.button_box.helpRequested.connect(self.click_help)
 
         # Aktionen zu lw_teilgebiete: QListWidget
-        self.cb_teilgebiete.stateChanged.connect(self.click_selection)
+        self.cb_selectedTgbs.stateChanged.connect(self.click_selection)
         #self.lw_teilgebiete.itemClicked.connect(self.count_selection)      # ist schon in click_lw_teilgebiete enthalten
         self.lw_teilgebiete.itemClicked.connect(self.click_lw_teilgebiete)
 
@@ -98,7 +98,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         self.group = QButtonGroup(self)
         self.group.setExclusive(True)  # Nur eine darf aktiv sein
         self.group.addButton(self.cb_flaechen)
-        self.group.addButton(self.cb_haltungsflaechen)
+        #self.group.addButton(self.cb_haltungsflaechen)
 
     def select_template(self) -> None:
         # noinspection PyArgumentList,PyCallByClass

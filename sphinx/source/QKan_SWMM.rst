@@ -63,8 +63,6 @@ Ergebnis Import aus SWMM
 Mit der Funktion |Tool_import_swmm| :guilabel:`Ergebnis Import aus SWMM` können Ergebnisdaten aus einer SWMM-Datei in ein QKan-Projekt geladen werden.
 
 .. image:: ./QKan_Bilder/Formulare/import_swmm_erg.png
-.. |Tool_import_swmm| image:: ./QKan_Bilder/Tool_import_swmm_erg.png
-                             :width: 1.25 em
 
 Datenquelle
 +++++++++++

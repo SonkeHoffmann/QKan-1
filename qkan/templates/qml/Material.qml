@@ -1,28 +1,34 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis hasScaleBasedVisibilityFlag="0" minScale="1e+08" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|GeometryOptions|Legend|Notes" version="3.28.13-Firenze" maxScale="0" readOnly="0">
+<qgis hasScaleBasedVisibilityFlag="0" readOnly="0" maxScale="0" minScale="0" version="3.28.13-Firenze" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|Actions|MapTips|AttributeTable|Rendering|CustomProperties|GeometryOptions|Temporal|Legend|Notes">
   <flags>
     <Identifiable>1</Identifiable>
     <Removable>1</Removable>
     <Searchable>1</Searchable>
     <Private>0</Private>
   </flags>
+  <temporal durationField="" accumulate="0" enabled="0" durationUnit="min" startExpression="" fixedDuration="0" mode="0" limitMode="0" endExpression="" startField="" endField="">
+    <fixedRange>
+      <start></start>
+      <end></end>
+    </fixedRange>
+  </temporal>
   <customproperties>
     <Option type="Map">
-      <Option value="copy" name="QFieldSync/action" type="QString"/>
-      <Option value="{}" name="QFieldSync/attachment_naming" type="QString"/>
-      <Option value="" name="QFieldSync/attribute_editing_locked_expression" type="QString"/>
-      <Option value="offline" name="QFieldSync/cloud_action" type="QString"/>
-      <Option value="" name="QFieldSync/feature_addition_locked_expression" type="QString"/>
-      <Option value="" name="QFieldSync/feature_deletion_locked_expression" type="QString"/>
-      <Option value="" name="QFieldSync/geometry_editing_locked_expression" type="QString"/>
-      <Option value="{}" name="QFieldSync/photo_naming" type="QString"/>
-      <Option value="{}" name="QFieldSync/relationship_maximum_visible" type="QString"/>
-      <Option value="30" name="QFieldSync/tracking_distance_requirement_minimum_meters" type="int"/>
-      <Option value="1" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" type="int"/>
-      <Option value="0" name="QFieldSync/tracking_measurement_type" type="int"/>
-      <Option value="30" name="QFieldSync/tracking_time_requirement_interval_seconds" type="int"/>
-      <Option value="0" name="QFieldSync/value_map_button_interface_threshold" type="int"/>
-      <Option value="0" name="embeddedWidgets/count" type="int"/>
+      <Option type="QString" name="QFieldSync/action" value="copy"/>
+      <Option type="QString" name="QFieldSync/attachment_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/attribute_editing_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/cloud_action" value="offline"/>
+      <Option type="QString" name="QFieldSync/feature_addition_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/feature_deletion_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/geometry_editing_locked_expression" value=""/>
+      <Option type="QString" name="QFieldSync/photo_naming" value="{}"/>
+      <Option type="QString" name="QFieldSync/relationship_maximum_visible" value="{}"/>
+      <Option type="int" name="QFieldSync/tracking_distance_requirement_minimum_meters" value="30"/>
+      <Option type="int" name="QFieldSync/tracking_erroneous_distance_safeguard_maximum_meters" value="1"/>
+      <Option type="int" name="QFieldSync/tracking_measurement_type" value="0"/>
+      <Option type="int" name="QFieldSync/tracking_time_requirement_interval_seconds" value="30"/>
+      <Option type="int" name="QFieldSync/value_map_button_interface_threshold" value="0"/>
+      <Option type="int" name="embeddedWidgets/count" value="0"/>
       <Option name="variableNames"/>
       <Option name="variableValues"/>
     </Option>
@@ -31,7 +37,7 @@
     <activeChecks/>
     <checkConfiguration/>
   </geometryOptions>
-  <legend showLabelLegend="0" type="default-vector"/>
+  <legend type="default-vector" showLabelLegend="0"/>
   <fieldConfiguration>
     <field name="pk" configurationFlags="None">
       <editWidget type="TextEdit">
@@ -44,8 +50,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -54,8 +60,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -64,8 +70,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -74,8 +80,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -84,8 +90,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -94,8 +100,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -120,37 +126,37 @@
     <default applyOnUpdate="0" expression="" field="kommentar"/>
   </defaults>
   <constraints>
-    <constraint notnull_strength="1" exp_strength="0" field="pk" constraints="3" unique_strength="1"/>
-    <constraint notnull_strength="0" exp_strength="0" field="bezeichnung" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="kuerzel" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="isybau" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="m150" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="m145" constraints="0" unique_strength="0"/>
-    <constraint notnull_strength="0" exp_strength="0" field="kommentar" constraints="0" unique_strength="0"/>
+    <constraint exp_strength="0" unique_strength="1" constraints="3" notnull_strength="1" field="pk"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="bezeichnung"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="kuerzel"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="isybau"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="m150"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="m145"/>
+    <constraint exp_strength="0" unique_strength="0" constraints="0" notnull_strength="0" field="kommentar"/>
   </constraints>
   <constraintExpressions>
-    <constraint field="pk" desc="" exp=""/>
-    <constraint field="bezeichnung" desc="" exp=""/>
-    <constraint field="kuerzel" desc="" exp=""/>
-    <constraint field="isybau" desc="" exp=""/>
-    <constraint field="m150" desc="" exp=""/>
-    <constraint field="m145" desc="" exp=""/>
-    <constraint field="kommentar" desc="" exp=""/>
+    <constraint exp="" desc="" field="pk"/>
+    <constraint exp="" desc="" field="bezeichnung"/>
+    <constraint exp="" desc="" field="kuerzel"/>
+    <constraint exp="" desc="" field="isybau"/>
+    <constraint exp="" desc="" field="m150"/>
+    <constraint exp="" desc="" field="m145"/>
+    <constraint exp="" desc="" field="kommentar"/>
   </constraintExpressions>
   <expressionfields/>
   <attributeactions>
-    <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
+    <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
   </attributeactions>
-  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+  <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
-      <column name="pk" hidden="0" width="-1" type="field"/>
-      <column name="bezeichnung" hidden="0" width="-1" type="field"/>
-      <column name="kuerzel" hidden="0" width="-1" type="field"/>
-      <column name="isybau" hidden="0" width="-1" type="field"/>
-      <column name="m150" hidden="0" width="-1" type="field"/>
-      <column name="m145" hidden="0" width="-1" type="field"/>
-      <column name="kommentar" hidden="0" width="-1" type="field"/>
-      <column hidden="1" width="-1" type="actions"/>
+      <column width="-1" type="field" name="pk" hidden="0"/>
+      <column width="-1" type="field" name="bezeichnung" hidden="0"/>
+      <column width="-1" type="field" name="kuerzel" hidden="0"/>
+      <column width="-1" type="field" name="isybau" hidden="0"/>
+      <column width="-1" type="field" name="m150" hidden="0"/>
+      <column width="-1" type="field" name="m145" hidden="0"/>
+      <column width="-1" type="field" name="kommentar" hidden="0"/>
+      <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
@@ -158,7 +164,6 @@
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
-  <editform tolerant="1">C:/Users/hoettges/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/qkan/forms/qkan_material.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -180,22 +185,22 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field name="bezeichnung" editable="1"/>
-    <field name="isybau" editable="1"/>
-    <field name="kommentar" editable="1"/>
-    <field name="kuerzel" editable="1"/>
-    <field name="m145" editable="1"/>
-    <field name="m150" editable="1"/>
-    <field name="pk" editable="1"/>
+    <field editable="1" name="bezeichnung"/>
+    <field editable="1" name="isybau"/>
+    <field editable="1" name="kommentar"/>
+    <field editable="1" name="kuerzel"/>
+    <field editable="1" name="m145"/>
+    <field editable="1" name="m150"/>
+    <field editable="1" name="pk"/>
   </editable>
   <labelOnTop>
-    <field name="bezeichnung" labelOnTop="0"/>
-    <field name="isybau" labelOnTop="0"/>
-    <field name="kommentar" labelOnTop="0"/>
-    <field name="kuerzel" labelOnTop="0"/>
-    <field name="m145" labelOnTop="0"/>
-    <field name="m150" labelOnTop="0"/>
-    <field name="pk" labelOnTop="0"/>
+    <field labelOnTop="0" name="bezeichnung"/>
+    <field labelOnTop="0" name="isybau"/>
+    <field labelOnTop="0" name="kommentar"/>
+    <field labelOnTop="0" name="kuerzel"/>
+    <field labelOnTop="0" name="m145"/>
+    <field labelOnTop="0" name="m150"/>
+    <field labelOnTop="0" name="pk"/>
   </labelOnTop>
   <reuseLastValue>
     <field name="bezeichnung" reuseLastValue="0"/>

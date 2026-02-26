@@ -7,17 +7,34 @@
     <x>0</x>
     <y>0</y>
     <width>587</width>
-    <height>597</height>
+    <height>588</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>250</width>
+    <height>150</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>775</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Sanierungsbedarfszahl</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
@@ -27,9 +44,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-303</y>
-        <width>553</width>
-        <height>855</height>
+        <y>-187</y>
+        <width>568</width>
+        <height>735</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -47,14 +64,19 @@
            <height>80</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8.25pt;&quot;&gt;Um dieses Plugin zu nutzen müssen vorher in der Datenbank alle benötigten Angaben in den Datenbanktabellen vorhanden sein. &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8.25pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8.25pt;&quot;&gt;Um die Funktion nach Excel exportieren zu nutzen muss in das Modul Xlsxwriter in Python installaliert sein. (https://pypi.org/project/XlsxWriter/#description)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Tahoma'; font-size:7.875pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;Um dieses Plugin zu nutzen müssen vorher in der Datenbank alle benötigten Angaben in den Datenbanktabellen vorhanden sein. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;Um die Funktion nach Excel exportieren zu nutzen muss in das Modul Xlsxwriter in Python installaliert sein. (https://pypi.org/project/XlsxWriter/#description)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -78,12 +100,18 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
-          <widget class="QgsProjectionSelectionWidget" name="epsg"/>
+          <widget class="QgsProjectionSelectionWidget" name="epsg">
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0">
          <item>
           <widget class="QLabel" name="label">
            <property name="minimumSize">
@@ -98,26 +126,18 @@ p, li { white-space: pre-wrap; }
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
+           </property>
            <property name="text">
             <string>Datenbank</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="db">
-           <property name="minimumSize">
-            <size>
-             <width>380</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>300</width>
-             <height>21</height>
-            </size>
-           </property>
-          </widget>
+          <widget class="QLineEdit" name="db"/>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton">
@@ -156,6 +176,11 @@ p, li { white-space: pre-wrap; }
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
+           </property>
            <property name="text">
             <string>Erstellungsdatum</string>
            </property>
@@ -165,17 +190,24 @@ p, li { white-space: pre-wrap; }
           <widget class="QComboBox" name="date">
            <property name="minimumSize">
             <size>
-             <width>400</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>410</width>
-             <height>21</height>
+             <width>200</width>
+             <height>0</height>
             </size>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -188,6 +220,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_3">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Haltung</string>
          </property>
@@ -195,6 +232,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Sanierungsbedarfszahl nach DWA-M 149</string>
          </property>
@@ -202,6 +244,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_2">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Systemzahl nach ISYBAU</string>
          </property>
@@ -216,6 +263,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_5">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Schächte</string>
          </property>
@@ -223,6 +275,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_4">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Sanierungsbedarfszahl nach DWA-M 149</string>
          </property>
@@ -230,6 +287,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_6">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Systemzahl nach ISYBAU</string>
          </property>
@@ -244,6 +306,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_14">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Leitungen</string>
          </property>
@@ -251,6 +318,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_12">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Sanierungsbedarfszahl nach DWA-M 149</string>
          </property>
@@ -258,6 +330,11 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_13">
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
+         </property>
          <property name="text">
           <string>Systemzahl nach ISYBAU</string>
          </property>
@@ -271,12 +348,9 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
          <item>
           <widget class="QCheckBox" name="checkBox_7">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="minimumSize">
             <size>
              <width>170</width>
@@ -288,6 +362,11 @@ p, li { white-space: pre-wrap; }
              <width>170</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
            </property>
            <property name="text">
             <string>Atlas Layer für Pläne erstellen</string>
@@ -296,9 +375,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QLabel" name="label_5">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="minimumSize">
             <size>
              <width>60</width>
@@ -311,16 +387,21 @@ p, li { white-space: pre-wrap; }
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
+           </property>
            <property name="text">
-            <string>Planformat</string>
+            <string>Planformat:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QComboBox" name="comboBox_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="minimumSize">
             <size>
              <width>50</width>
@@ -332,6 +413,11 @@ p, li { white-space: pre-wrap; }
              <width>50</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
            </property>
            <item>
             <property name="text">
@@ -357,9 +443,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QLabel" name="label_4">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="minimumSize">
             <size>
              <width>50</width>
@@ -372,16 +455,21 @@ p, li { white-space: pre-wrap; }
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
+           </property>
            <property name="text">
-            <string>Maßstab</string>
+            <string>Maßstab:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="spinBox">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="minimumSize">
             <size>
              <width>50</width>
@@ -393,6 +481,11 @@ p, li { white-space: pre-wrap; }
              <width>50</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
            </property>
            <property name="minimum">
             <number>500</number>
@@ -405,14 +498,29 @@ p, li { white-space: pre-wrap; }
            </property>
           </widget>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QLabel" name="label_6">
-           <property name="enabled">
-            <bool>false</bool>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
            </property>
            <property name="text">
             <string>Atlas Layer</string>
@@ -421,9 +529,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QLineEdit" name="atlas">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string/>
            </property>
@@ -431,9 +536,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_3">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string>...</string>
            </property>
@@ -443,8 +545,10 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_8">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
          </property>
          <property name="text">
           <string>Pläne automatisert erstellen</string>
@@ -455,8 +559,10 @@ p, li { white-space: pre-wrap; }
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QLabel" name="label_3">
-           <property name="enabled">
-            <bool>false</bool>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
            </property>
            <property name="text">
             <string>Speicherort für die Pläne</string>
@@ -465,9 +571,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QLineEdit" name="speicher">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string/>
            </property>
@@ -475,9 +578,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string>...</string>
            </property>
@@ -494,8 +594,10 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_4">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
          </property>
          <item>
           <property name="text">
@@ -511,8 +613,10 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_9">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
          </property>
          <property name="text">
           <string>Haltungsdaten nach Excel exportieren</string>
@@ -521,8 +625,10 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_10">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
          </property>
          <property name="text">
           <string>Schachtdaten nach Excel exportieren</string>
@@ -531,8 +637,10 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_11">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
          </property>
          <property name="text">
           <string>Leitungsdaten nach Excel exportieren</string>
@@ -541,8 +649,10 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_3">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="font">
+          <font>
+           <family>Tahoma</family>
+          </font>
          </property>
          <item>
           <property name="text">
@@ -560,8 +670,10 @@ p, li { white-space: pre-wrap; }
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QLabel" name="label_7">
-           <property name="enabled">
-            <bool>false</bool>
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+            </font>
            </property>
            <property name="text">
             <string>Speicherort für die Excel-Dateien</string>
@@ -570,9 +682,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QLineEdit" name="speicher2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string/>
            </property>
@@ -580,9 +689,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_4">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string>...</string>
            </property>
@@ -590,27 +696,28 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QDialogButtonBox" name="button_box">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="standardButtons">
-          <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
-         </property>
-         <property name="centerButtons">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

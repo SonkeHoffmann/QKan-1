@@ -117,7 +117,7 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
     label_3: QLabel
     lf_anzahl_haltungen: QLabel
     lf_anzahl_flaechen: QLabel
-    lf_warning: QLabel
+    #lf_warning: QLabel
     cb_selHalActive: QCheckBox
     cb_selTgbActive: QCheckBox
 
@@ -273,21 +273,21 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
                 )
                 return
 
-            # # Anzahl betroffene Flächen abfragen
-            # if len(liste_teilgebiete) == 0:
-            #     auswahl = ""                        # keine Einschränkung auf Teilgebiete
-            # else:
-            #     auswahl = " and flaechen.teilgebiet in ('{}')".format(
-            #         "', '".join(liste_teilgebiete)
-            #     )
-            #
-            # sql = f"SELECT count(*) AS anz FROM flaechen WHERE aufteilen{auswahl}"
-            # if not db_qkan.sql(sql, mute_logger=True):
-            #     return
-            # anz_flaechen = db_qkan.fetchone()
-            # logger.debug(f'{__name__}.count_selection (177): {anz_flaechen[0]=}')
-            #
-            # Zu berücksichtigende Haltungen zählen
+            # Anzahl betroffene Flächen abfragen
+            if len(liste_teilgebiete) == 0:
+                auswahl = ""                        # keine Einschränkung auf Teilgebiete
+            else:
+                auswahl = " and flaechen.teilgebiet in ('{}')".format(
+                    "', '".join(liste_teilgebiete)
+                )
+
+            sql = f"SELECT count(*) AS anz FROM flaechen WHERE aufteilen{auswahl}"
+            if not db_qkan.sql(sql, mute_logger=True):
+                return
+            anz_flaechen = db_qkan.fetchone()
+            logger.debug(f'{__name__}.count_selection (177): {anz_flaechen[0]=}')
+
+            #Zu berücksichtigende Haltungen zählen
             if len(liste_hal_entw) == 0:
                 auswahl = ""
             else:
@@ -305,23 +305,23 @@ class VoronoiDialog(_Dialog, VORONOI_CLASS):  # type: ignore
                 return
             anz_haltungen = db_qkan.fetchone()
             logger.debug(f'{__name__}.count_selection (177): {anz_haltungen[0]=}')
-        # if not (anz_flaechen is None):
-        #     self.lf_anzahl_flaechen.setText(str(anz_flaechen[0]))
-        #     if anz_flaechen[0]==0:
-        #         self.lf_warning.setText(
-        #             "Warnung: Es wurde keine aufzuteilenden Flächen gefunden!"
-        #         )
-        #         self.lf_warning.setToolTip(
-        #             "<html><head/><body><p>Die Voronoiflächen werden nur für Haltungsflächen erzeugt, "
-        #             "die aufzuteilende Flächen enthalten. </p></body></html>")
-        #     else:
-        #         self.lf_warning.setText("")
-        #         self.lf_warning.setToolTip("")
-        # else:
-        #     self.lf_anzahl_flaechen.clear()
-        #     self.lf_warning.setText(
-        #         "Warnung: Es wurde keine aufzuteilenden Flächen gefunden!"
-        #     )
+        if not (anz_flaechen is None):
+            self.lf_anzahl_flaechen.setText(str(anz_flaechen[0]))
+            # if anz_flaechen[0]==0:
+            #     self.lf_warning.setText(
+            #         "Warnung: Es wurde keine aufzuteilenden Flächen gefunden!"
+            #     )
+            #     self.lf_warning.setToolTip(
+            #         "<html><head/><body><p>Die Voronoiflächen werden nur für Haltungsflächen erzeugt, "
+            #         "die aufzuteilende Flächen enthalten. </p></body></html>")
+            # else:
+            #     self.lf_warning.setText("")
+            #     self.lf_warning.setToolTip("")
+        else:
+            self.lf_anzahl_flaechen.clear()
+            # self.lf_warning.setText(
+            #     "Warnung: Es wurde keine aufzuteilenden Flächen gefunden!"
+            # )
         # self.lf_warning.setToolTip(
         #     "<html><head/><body><p>Die Voronoiflächen werden nur für Haltungsflächen erzeugt, "
         #     "die aufzuteilende Flächen enthalten. </p></body></html>")

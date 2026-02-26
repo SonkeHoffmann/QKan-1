@@ -56,13 +56,6 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     le_new_schema_name: QLineEdit
     cb_overwrite_existing: QCheckBox
     
-    # QGIS-Projekt Upload (Optional)
-    cb_upload_project: QCheckBox
-    le_project_file: QLineEdit
-    pb_select_project: QPushButton
-    le_project_name: QLineEdit
-    label_project_name: QLabel
-    
     # Control buttons
     pb_help: QPushButton
     pb_cancel: QPushButton
@@ -87,9 +80,6 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
     # Aktive Datenbank (wird automatisch ermittelt)
     target_database: str
     
-    # Projekt-Upload
-    project_file_path: Optional[str]
-
     def __init__(
         self,
         connection_name: str,
@@ -103,7 +93,6 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.selected_files = []
         self.connection_available = False
         self.target_database = ""  # Wird beim Laden der Schemata gesetzt
-        self.project_file_path = None  # Pfad zur QGIS-Projektdatei
         
         # Get actual host from settings for display
         settings = QSettings()
@@ -135,11 +124,6 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.pb_upload.clicked.connect(self.start_upload)
         # SQL-Dump: self.pb_export_sql.clicked.connect(self.export_to_sql_dump)
         
-        # Connect QGIS project upload signals
-        self.cb_upload_project.toggled.connect(self.toggle_project_upload)
-        self.pb_select_project.clicked.connect(self.select_project_file)
-        self.le_project_file.textChanged.connect(self.on_project_file_changed)
-        
         # Load available schemas
         self.load_schemas()
         
@@ -154,79 +138,6 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
         self.progressBar_records.setFormat("%v / %m Datensätze")
         self.label_progress_tables.setText("Tabellen:")
         self.label_progress_records.setText("Datensätze:")
-
-    def toggle_project_upload(self, checked: bool):
-        """QGIS-Projekt-Upload Option umschalten"""
-        self.le_project_file.setEnabled(checked)
-        self.pb_select_project.setEnabled(checked)
-        self.le_project_name.setEnabled(checked)
-        self.label_project_name.setEnabled(checked)
-        
-        if checked:
-            # Versuche aktuelles Projekt zu ermitteln
-            from qgis.core import QgsProject
-            current_project = QgsProject.instance()
-            
-            if current_project and current_project.fileName():
-                # Aktuelles Projekt ist vorhanden
-                self.le_project_file.setText(f"[Aktuelles Projekt: {os.path.basename(current_project.fileName())}]")
-                self.le_project_file.setStyleSheet("color: green;")
-                self.project_file_path = None  # None bedeutet "aktuelles Projekt verwenden"
-                
-                # Projektname aus Datei ableiten
-                if not self.le_project_name.text():
-                    project_base_name = os.path.splitext(os.path.basename(current_project.fileName()))[0]
-                    self.le_project_name.setText(project_base_name)
-            else:
-                self.le_project_file.setPlaceholderText("Kein Projekt geöffnet - bitte Datei auswählen")
-                self.le_project_file.setStyleSheet("")
-        else:
-            self.le_project_file.setStyleSheet("")
-            self.project_file_path = None
-        
-        # Button-State aktualisieren, da Projekt als Quelle gilt
-        self.update_upload_button_state()
-
-    def select_project_file(self):
-        """QGIS-Projektdatei auswählen"""
-        file_dialog = QFileDialog()
-        file_dialog.setWindowTitle("QGIS-Projektdatei auswählen")
-        file_dialog.setFileMode(QFileDialog.ExistingFile)
-        file_dialog.setNameFilter("QGIS-Projekte (*.qgs *.qgz);;Alle Dateien (*.*)")
-
-        if self.default_dir and os.path.exists(self.default_dir):
-            file_dialog.setDirectory(self.default_dir)
-        
-        if file_dialog.exec_() == QFileDialog.Accepted:
-            selected_file = file_dialog.selectedFiles()[0]
-            if selected_file:
-                self.project_file_path = selected_file
-                self.le_project_file.setText(selected_file)
-                self.le_project_file.setStyleSheet("color: blue;")
-                
-                # Projektname aus Datei ableiten falls leer
-                if not self.le_project_name.text():
-                    project_base_name = os.path.splitext(os.path.basename(selected_file))[0]
-                    self.le_project_name.setText(project_base_name)
-                
-                logger.info(f"QGIS-Projektdatei ausgewählt: {selected_file}")
-
-    def on_project_file_changed(self, text: str):
-        """Reagiert auf Änderung der Projektdatei"""
-        # Wenn Projekt-Upload aktiv ist, aber keine Datei und kein aktuelles Projekt
-        if self.cb_upload_project.isChecked():
-            from qgis.core import QgsProject
-            current_project = QgsProject.instance()
-            
-            has_project = (bool(text and text != "") or 
-                          (current_project and current_project.fileName()))
-            
-            if not has_project:
-                self.le_project_file.setStyleSheet("color: red;")
-            elif text.startswith("[Aktuelles Projekt"):
-                self.le_project_file.setStyleSheet("color: green;")
-            else:
-                self.le_project_file.setStyleSheet("color: blue;")
 
     def select_database_files(self):
         """Mehrere QKan-SQLite-Datenbank-Dateien auswählen"""
@@ -278,8 +189,7 @@ class UploadPostgisDatabaseDialog(_DatabaseDialog, DATABASE_DIALOG_CLASS):  # ty
 
     def update_upload_button_state(self):
         """Upload-Button aktivieren/deaktivieren je nach Eingaben"""
-        # Mindestens eine Quelle muss vorhanden sein: SQLite-Dateien ODER QGIS-Projekt
-        has_source = len(self.selected_files) > 0 or self.cb_upload_project.isChecked()
+        has_source = len(self.selected_files) > 0
         has_target = (self.listWidget_schemas.currentItem() is not None or 
                       self.cb_create_new_schema.isChecked())
         
@@ -384,13 +294,6 @@ QUELLDATENBANKEN AUSWÄHLEN:
 • Unterstützte Formate: .sqlite, .sqlite3, .db, .gpkg
 • Mehrere Dateien können gleichzeitig ausgewählt werden
 • Mit "Entfernen" können Sie Dateien aus der Liste löschen
-• OPTIONAL: Sie können auch NUR ein QGIS-Projekt hochladen (siehe unten)
-
-QGIS-PROJEKT HOCHLADEN (Optional):
-• Aktivieren Sie "QGIS-Projekt hochladen"
-• Verwenden Sie das aktuell geöffnete Projekt ODER wählen Sie eine .qgs/.qgz Datei
-• Kann zusammen mit Datenbanken ODER alleine hochgeladen werden
-• Nur eine Projektdatei wird pro Schema gespeichert (alte wird überschrieben)
 
 ZIEL-SCHEMA AUSWÄHLEN:
 • Die Zieldatenbank wird automatisch ermittelt (erste verfügbare)
@@ -400,7 +303,7 @@ ZIEL-SCHEMA AUSWÄHLEN:
 
 OPTION 1: DIREKTER UPLOAD (wenn PostgreSQL-Port erreichbar)
 • Schema aus der Liste wählen ODER neues Schema erstellen
-• Wählen Sie SQLite-Datenbanken UND/ODER QGIS-Projekt
+• Wählen Sie die gewünschten SQLite-Datenbanken
 • Klicken Sie "Upload starten"
 
 OPTIONEN:
@@ -408,18 +311,15 @@ OPTIONEN:
   vor dem Import (ACHTUNG: Datenverlust!)
 
 UPLOAD-PROZESS (Direkter Upload):
-1. SQLite-Datenbank analysieren (falls ausgewählt)
+1. SQLite-Datenbank analysieren
 2. PostGIS-Tabellen im gewählten Schema erstellen
 3. Geometrien konvertieren und übertragen
 4. Spatial-Indizes erstellen
-5. QGIS-Projekt hochladen (falls aktiviert)
-6. Layer zu QGIS hinzufügen (optional)
 
 HINWEISE:
 • PostGIS-Erweiterung wird automatisch aktiviert falls nötig
 • Geometrien werden mit korrektem SRID übertragen
 • Der Upload kann je nach Datenmenge einige Minuten dauern
-• Sie können NUR ein Projekt, NUR Datenbanken oder BEIDES hochladen
 
 GBD WEBSUITE SPEZIFISCH:
 • Bei Verbindungsproblemen: Prüfen Sie Firewall/SSH-Tunnel
@@ -434,59 +334,30 @@ GBD WEBSUITE SPEZIFISCH:
 
     def start_upload(self):
         """Upload-Prozess für mehrere Dateien starten"""
-        # Validierung: Mindestens SQLite-Dateien ODER QGIS-Projekt muss ausgewählt sein
-        has_database_files = len(self.selected_files) > 0
-        has_project = self.cb_upload_project.isChecked()
-        
-        if not has_database_files and not has_project:
+        if not self.selected_files:
             QMessageBox.warning(
                 self,
                 "Validierungsfehler",
-                "Bitte wählen Sie mindestens eine QKan SQLite-Quelldatenbank aus\nODER aktivieren Sie den QGIS-Projekt-Upload."
+                "Bitte wählen Sie mindestens eine QKan SQLite-Quelldatenbank aus."
             )
             return
         
-        # Prüfe ob alle Dateien existieren (falls welche ausgewählt wurden)
-        if has_database_files:
-            missing_files = [f for f in self.selected_files if not os.path.exists(f)]
-            if missing_files:
-                QMessageBox.warning(
-                    self,
-                    "Validierungsfehler",
-                    f"Folgende Dateien existieren nicht:\n" + "\n".join(missing_files)
-                )
-                return
+        # Prüfe ob alle Dateien existieren
+        missing_files = [f for f in self.selected_files if not os.path.exists(f)]
+        if missing_files:
+            QMessageBox.warning(
+                self,
+                "Validierungsfehler",
+                f"Folgende Dateien existieren nicht:\n" + "\n".join(missing_files)
+            )
+            return
         
-        # SQL-Dump: Fallback auf SQL-Dump Export deaktiviert
-        # if not self.connection_available and has_database_files:
-        #     reply = QMessageBox.question(
-        #         self,
-        #         "Keine Datenbankverbindung",
-        #         "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
-        #         "Möchten Sie stattdessen einen SQL-Dump exportieren?\n"
-        #         "Dieser kann dann manuell auf dem Server importiert werden.",
-        #         QMessageBox.Yes | QMessageBox.No,
-        #         QMessageBox.Yes
-        #     )
-        #
-        #     if reply == QMessageBox.Yes:
-        #         self.export_to_sql_dump()
-        #     return
-        if not self.connection_available and has_database_files:
+        if not self.connection_available:
             QMessageBox.critical(
                 self,
                 "Keine Datenbankverbindung",
                 "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
                 "Bitte prüfen Sie die Verbindungseinstellungen."
-            )
-            return
-        elif not self.connection_available:
-            # Nur Projekt-Upload, aber keine Verbindung
-            QMessageBox.critical(
-                self,
-                "Keine Datenbankverbindung",
-                "Es konnte keine Verbindung zum PostgreSQL-Server hergestellt werden.\n\n"
-                "Für den Projekt-Upload ist eine aktive Verbindung erforderlich."
             )
             return
         
@@ -525,15 +396,6 @@ GBD WEBSUITE SPEZIFISCH:
                 return
             target_schema = self.listWidget_schemas.currentItem().text()
         
-        # Zieldatenbank prüfen
-        if not self.target_database:
-            QMessageBox.warning(
-                self,
-                "Validierungsfehler",
-                "Keine Zieldatenbank verfügbar. Bitte prüfen Sie die Verbindung."
-            )
-            return
-        
         # Warnung bei Überschreiben
         if self.cb_overwrite_existing.isChecked():
             reply = QMessageBox.question(
@@ -557,27 +419,25 @@ GBD WEBSUITE SPEZIFISCH:
             self.pb_upload.setEnabled(False)
             self.pb_cancel.setEnabled(False)
             
-            # Nur SQLite-Dateien hochladen wenn welche vorhanden sind
-            if has_database_files:
-                for file_index, source_file in enumerate(self.selected_files):
-                    try:
-                        # Fortschrittsanzeige für mehrere Dateien
-                        if total_files > 1:
-                            self.label_progress_tables.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
-                            QApplication.processEvents()
-                        
-                        logger.info(f"Starte Upload von: {source_file}")
-                        self.perform_upload(
-                            connection_name=self.connection_name,
-                            target_database=self.target_database,
-                            target_schema=target_schema,
-                            source_file=source_file,
-                            overwrite=self.cb_overwrite_existing.isChecked()
-                        )
-                        successful_uploads += 1
-                    except Exception as e:
-                        failed_uploads.append((os.path.basename(source_file), str(e)))
-                        logger.error(f"Upload fehlgeschlagen für {source_file}: {str(e)}")
+            for file_index, source_file in enumerate(self.selected_files):
+                try:
+                    # Fortschrittsanzeige für mehrere Dateien
+                    if total_files > 1:
+                        self.label_progress_tables.setText(f"Datei {file_index + 1}/{total_files}: {os.path.basename(source_file)}")
+                        QApplication.processEvents()
+                    
+                    logger.info(f"Starte Upload von: {source_file}")
+                    self.perform_upload(
+                        connection_name=self.connection_name,
+                        target_database=self.target_database,
+                        target_schema=target_schema,
+                        source_file=source_file,
+                        overwrite=self.cb_overwrite_existing.isChecked()
+                    )
+                    successful_uploads += 1
+                except Exception as e:
+                    failed_uploads.append((os.path.basename(source_file), str(e)))
+                    logger.error(f"Upload fehlgeschlagen für {source_file}: {str(e)}")
             
             # UI wieder aktivieren
             self.pb_upload.setEnabled(True)
@@ -593,27 +453,8 @@ GBD WEBSUITE SPEZIFISCH:
                     f"Fehlgeschlagene Uploads:\n{error_details}"
                 )
             # Bei Erfolg: Kein Dialog, nur Logging
-            elif has_database_files:
+            else:
                 logger.info(f"Upload erfolgreich: {successful_uploads} Datenbank(en) nach '{self.target_database}.{target_schema}' hochgeladen")
-            
-            # QGIS-Projekt hochladen (optional, wenn aktiviert)
-            # Erlaubt jetzt auch Projekt-Upload OHNE vorherige Daten-Uploads
-            if self.cb_upload_project.isChecked():
-                try:
-                    self.upload_qgis_project(target_schema)
-                    if not has_database_files:
-                        # Nur Projekt wurde hochgeladen
-                        logger.info(f"Projekt-Upload erfolgreich nach '{self.target_database}.{target_schema}'")
-                except Exception as proj_error:
-                    error_message = f"Projekt-Upload fehlgeschlagen:\n\n{str(proj_error)}"
-                    if has_database_files and successful_uploads > 0:
-                        error_message = f"Die Daten wurden erfolgreich hochgeladen, aber der Projekt-Upload ist fehlgeschlagen:\n\n{str(proj_error)}"
-                    QMessageBox.warning(
-                        self,
-                        "Projekt-Upload fehlgeschlagen",
-                        error_message
-                    )
-                    logger.error(f"QGIS-Projekt-Upload fehlgeschlagen: {str(proj_error)}")
             
             self.accept()
             
@@ -647,7 +488,6 @@ GBD WEBSUITE SPEZIFISCH:
             overwrite=overwrite,
             progress_bar=self.progressBar_upload,
             progress_callback=self.update_progress_status,
-            add_layers_to_qgis=True
         )
         
         # Zweite Progress Bar für Datensätze an Task übergeben
@@ -744,14 +584,22 @@ GBD WEBSUITE SPEZIFISCH:
             import getpass
             host = "localhost"
             port = 5432
+            database = 'postgres'
             username = getpass.getuser()
             password = ""
             ssl_mode = "prefer"
+            self.target_database = database
             logger.info(f"Localhost-Verbindung: {username}@{host}:{port}")
         else:
             base_key = f"PostgreSQL/connections/{self.connection_name}"
             host = settings.value(f"{base_key}/host", "")
             port = int(settings.value(f"{base_key}/port", 5432))
+            self.target_database = settings.value(f"{base_key}/database", "")
+            # Fallback: wenn keine Datenbank konfiguriert, postgres-Systemdatenbank verwenden
+            if not self.target_database:
+                self.target_database = "postgres"
+                logger.info("Keine Datenbank in Verbindungseinstellungen - verwende 'postgres' als Fallback")
+            database = self.target_database
             username = settings.value(f"{base_key}/username", "")
             password = settings.value(f"{base_key}/password", "")
             ssl_mode = settings.value(f"{base_key}/sslmode", "prefer")
@@ -785,48 +633,50 @@ GBD WEBSUITE SPEZIFISCH:
                 logger.warning(f"DNS-Auflösung fehlgeschlagen für {host}: {dns_error}")
                 # Verwende Original-Hostname
             
-            # Schritt 1: Verbindung zu postgres-Datenbank um erste verfügbare DB zu finden
-            conn_string = (
-                f"host='{resolved_host}' "
-                f"port={port} "
-                f"dbname='postgres' "
-                f"user='{username}' "
-                f"password='{password}' "
-                f"sslmode='{ssl_mode}' "
-                f"connect_timeout=10"
-            )
+            # # Schritt 1: Verbindung zu postgres-Datenbank um erste verfügbare DB zu finden
+            # conn_string = (
+            #     f"host='{resolved_host}' "
+            #     f"port={port} "
+            #     f"dbname='{database}' "
+            #     f"user='{username}' "
+            #     f"password='{password}' "
+            #     f"sslmode='{ssl_mode}' "
+            #     f"connect_timeout=10"
+            # )
+            #
+            # logger.info(f"Verbinde zu: {username}@{resolved_host}:{port}/postgres")
+            #
+            # conn = psycopg2.connect(conn_string)
+            # cursor = conn.cursor()
             
-            logger.info(f"Verbinde zu: {username}@{resolved_host}:{port}/postgres")
-            
-            conn = psycopg2.connect(conn_string)
-            cursor = conn.cursor()
-            
-            # Server-Version für Debug
-            cursor.execute("SELECT version()")
-            server_version = cursor.fetchone()[0]
-            logger.info(f"Verbunden mit: {server_version[:50]}...")
-            
-            # Erste verfügbare Benutzer-Datenbank finden
-            cursor.execute("""
-                SELECT datname 
-                FROM pg_database 
-                WHERE datistemplate = false 
-                AND datname NOT IN ('postgres', 'template0', 'template1')
-                ORDER BY datname
-                LIMIT 1
-            """)
-            
-            db_result = cursor.fetchone()
-            cursor.close()
-            conn.close()
-            
-            if not db_result:
-                self.listWidget_schemas.addItem("(Keine Benutzer-Datenbanken gefunden)")
-                logger.info(f"Keine Benutzer-Datenbanken auf {host} gefunden")
-                return
+            # # Server-Version für Debug
+            # cursor.execute("SELECT version()")
+            # server_version = cursor.fetchone()[0]
+            # logger.info(f"Verbunden mit: {server_version[:50]}...")
+            #
+            # # Erste verfügbare Benutzer-Datenbank finden
+            # parameters = {'database': }
+            # cursor.execute("""
+            #     SELECT datname
+            #     FROM pg_database
+            #     WHERE datistemplate = false
+            #     AND datname NOT IN ('postgres', 'template0', 'template1')
+            #     AND datname = ':database'
+            #     ORDER BY datname
+            #     LIMIT 1
+            # """, )
+            #
+            # db_result = cursor.fetchone()
+            # cursor.close()
+            # conn.close()
+            #
+            # if not db_result:
+            #     self.listWidget_schemas.addItem("(Keine Benutzer-Datenbanken gefunden)")
+            #     logger.info(f"Keine Benutzer-Datenbanken auf {host} gefunden")
+            #     return
             
             # Zieldatenbank setzen
-            self.target_database = db_result[0]
+            # self.target_database = db_result[0]
             logger.info(f"Verwende Datenbank: {self.target_database}")
             
             # Server-Info Label aktualisieren mit Datenbank
@@ -902,116 +752,4 @@ GBD WEBSUITE SPEZIFISCH:
     #             f"{current_text} - Kein direkter Zugriff möglich"
     #         )
 
-    def upload_qgis_project(self, schema: str):
-        """Lädt das QGIS-Projekt in die PostgreSQL-Datenbank hoch."""
-        from qgis.core import QgsProject
-        import psycopg2
-        import gzip
-        import json
-        from datetime import datetime
-        
-        logger.info("Starte QGIS-Projekt-Upload...")
-        
-        # Projektname ermitteln mit websuite_ Präfix
-        project_name = self.le_project_name.text().strip()
-        if not project_name:
-            project_name = f"qkan_project_{schema}"
-        
-        # Füge websuite_ Präfix hinzu falls nicht vorhanden
-        if not project_name.startswith('websuite_'):
-            project_name = f"websuite_{project_name}"
-        
-        # Projekt-XML ermitteln
-        project_xml = None
-        
-        if self.project_file_path:
-            # Von Datei laden
-            logger.info(f"Lade Projekt aus Datei: {self.project_file_path}")
-            
-            if self.project_file_path.endswith('.qgz'):
-                import zipfile, tempfile
-                with zipfile.ZipFile(self.project_file_path, 'r') as zip_ref:
-                    qgs_files = [f for f in zip_ref.namelist() if f.endswith('.qgs')]
-                    if not qgs_files:
-                        raise Exception("Keine .qgs-Datei in .qgz gefunden")
-                    
-                    with tempfile.TemporaryDirectory() as temp_dir:
-                        zip_ref.extract(qgs_files[0], temp_dir)
-                        with open(os.path.join(temp_dir, qgs_files[0]), 'r', encoding='utf-8') as f:
-                            project_xml = f.read()
-            else:
-                with open(self.project_file_path, 'r', encoding='utf-8') as f:
-                    project_xml = f.read()
-        else:
-            # Aktuelles Projekt verwenden
-            current_project = QgsProject.instance()
-            if not current_project or not current_project.fileName():
-                raise Exception("Kein QGIS-Projekt geöffnet")
-            project_xml = current_project.write()
-            if not project_xml:
-                raise Exception("Projekt konnte nicht als XML exportiert werden")
-        
-        if not project_xml:
-            raise Exception("Kein Projekt-XML verfügbar")
-        
-        # XML zu Bytes konvertieren und mit gzip komprimieren
-        project_bytes = project_xml.encode('utf-8')
-        compressed_content = gzip.compress(project_bytes)
-        
-        # Verbindung herstellen
-        settings = QSettings()
-        if self.connection_name.lower() == "localhost":
-            import getpass
-            host, port, username, password = "localhost", 5432, getpass.getuser(), ""
-        else:
-            base_key = f"PostgreSQL/connections/{self.connection_name}"
-            host = settings.value(f"{base_key}/host", "localhost")
-            port = int(settings.value(f"{base_key}/port", 5432))
-            username = settings.value(f"{base_key}/username", "postgres")
-            password = settings.value(f"{base_key}/password", "")
-        
-        # Aktuellen Benutzernamen ermitteln
-        current_user = settings.value(f"PostgreSQL/connections/{self.connection_name}/username", username)
-        
-        conn = psycopg2.connect(
-            f"host='{host}' port={port} dbname='{self.target_database}' "
-            f"user='{username}' password='{password}' connect_timeout=10"
-        )
-        conn.autocommit = True
-        cursor = conn.cursor()
-        
-        try:
-            # Tabelle erstellen - content als BYTEA statt TEXT
-            cursor.execute(f"""
-                CREATE TABLE IF NOT EXISTS {schema}.qgis_projects (
-                    name VARCHAR(255) PRIMARY KEY,
-                    metadata JSONB,
-                    content BYTEA NOT NULL
-                )
-            """)
-            
-            # Tabelle vorher leeren, sodass immer nur eine Projektdatei im Schema liegt
-            cursor.execute(f"""
-                DELETE FROM {schema}.qgis_projects
-            """)
-            logger.info(f"qgis_projects Tabelle in Schema '{schema}' geleert")
-            
-            # Metadaten im gewünschten Format
-            metadata_json = json.dumps({
-                'last_modified_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
-                'last_modified_user': current_user
-            })
-            
-            # Projekt speichern mit komprimiertem Content (jetzt als INSERT ohne ON CONFLICT)
-            cursor.execute(f"""
-                INSERT INTO {schema}.qgis_projects (name, content, metadata)
-                VALUES (%s, %s, %s::jsonb)
-            """, (project_name, psycopg2.Binary(compressed_content), metadata_json))
-            
-            #logger.info(f"✓ QGIS-Projekt '{project_name}' hochgeladen")
-            #logger.info(f"  Original: {len(project_bytes)/1024:.1f} KB")
-            #logger.info(f"  Komprimiert: {len(compressed_content)/1024:.1f} KB")
-            #logger.info(f"  Zum Laden in QGIS: Projekt → Öffnen von → PostgreSQL")
-        finally:
-            cursor.close()
-            conn.close()
+

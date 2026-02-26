@@ -25,12 +25,9 @@ class He8Porter(QKanPlugin):
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
 
-        default_dir = get_default_dir()
-        self.log.debug(f"He8Porter: default_dir: {default_dir}")
-
-        self.export_dlg = ExportDialog(default_dir, tr=self.tr)
-        self.import_dlg = ImportDialog(default_dir, tr=self.tr)
-        self.results_dlg = ResultsDialog(default_dir, tr=self.tr)
+        self.export_dlg = ExportDialog(self.default_dir, tr=self.tr)
+        self.import_dlg = ImportDialog(self.default_dir, tr=self.tr)
+        self.results_dlg = ResultsDialog(self.default_dir, tr=self.tr)
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
@@ -38,6 +35,7 @@ class He8Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_export,
             text=self.tr("Export nach Hystem-Extran 8"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_export,
             parent=self.iface.mainWindow(),
         )
@@ -45,6 +43,7 @@ class He8Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus Hystem-Extran 8"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )
@@ -52,6 +51,7 @@ class He8Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_results,
             text=self.tr("Ergebnisse aus Hystem-Extran 8"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_results,
             parent=self.iface.mainWindow(),
         )
@@ -99,7 +99,7 @@ class He8Porter(QKanPlugin):
             QKan.config.check_export.qregler = self.export_dlg.cb_qregler.isChecked()
             QKan.config.check_export.hregler = self.export_dlg.cb_hregler.isChecked()
             QKan.config.check_export.grundseitenauslaesse = self.export_dlg.cb_grundseitenauslaesse.isChecked()
-            QKan.config.check_export.flaechen = self.export_dlg.rb_flaechen.isChecked()
+            QKan.config.check_export.flaechen = self.export_dlg.cb_flaechen.isChecked()
             QKan.config.check_export.rohrprofile = (
                 self.export_dlg.cb_rohrprofile.isChecked()
             )
@@ -119,7 +119,7 @@ class He8Porter(QKanPlugin):
                 self.export_dlg.cb_einzugsgebiete.isChecked()
             )
             QKan.config.check_export.tezg = self.export_dlg.cb_tezg.isChecked()
-            QKan.config.check_export.tezg_hf = self.export_dlg.rb_tezg_hf.isChecked()
+            QKan.config.check_export.tezg_hf = self.export_dlg.cb_tezg_hf.isChecked()
 
             QKan.config.check_export.append = True # self.export_dlg.rb_append.isChecked()
             # QKan.config.check_export.update = self.export_dlg.rb_update.isChecked()

@@ -31,7 +31,7 @@
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>40</width>
+      <width>51</width>
       <height>20</height>
      </rect>
     </property>
@@ -39,6 +39,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -79,10 +81,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -126,10 +128,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;aktueller Status (z.B. vorhanden, in Planung etc.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;aktueller Status (z.B. vorhanden, in Planung, etc.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>aktueller Status (z.B. vorhanden, in Planung etc.)</string>
+      <string>aktueller Status (z.B. vorhanden, in Planung, etc.)</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -215,15 +217,15 @@
      </font>
     </property>
     <property name="title">
-     <string>Anfangsschacht</string>
+     <string/>
     </property>
     <widget class="QComboBox" name="schoben">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>30</y>
+       <y>9</y>
        <width>170</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -246,9 +248,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>9</y>
        <width>90</width>
-       <height>20</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="font">
@@ -265,9 +267,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>101</width>
-       <height>21</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -277,34 +279,16 @@
       </font>
      </property>
      <property name="text">
-      <string>abw. Sohlhöhe</string>
+      <string>Sohlhöhe
+Haltungsanfang</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_18">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>60</y>
-       <width>21</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>m</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="sohleoben">
-     <property name="geometry">
-      <rect>
-       <x>130</x>
-       <y>60</y>
-       <width>141</width>
+       <x>250</x>
+       <y>51</y>
+       <width>61</width>
        <height>20</height>
       </rect>
      </property>
@@ -314,11 +298,30 @@
        <pointsize>10</pointsize>
       </font>
      </property>
+     <property name="text">
+      <string>m ü. NHN</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="sohleoben">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>49</y>
+       <width>111</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;von Schachtsohle abweichende Sohlhöhe&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>von Schachtsohle abweichende Sohlhöhe</string>
+      <string/>
      </property>
     </widget>
    </widget>
@@ -360,7 +363,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;Platz für eigene Kommentare.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für eigene Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="haltnam">
@@ -401,15 +404,15 @@
      </font>
     </property>
     <property name="title">
-     <string>Endschacht</string>
+     <string/>
     </property>
     <widget class="QComboBox" name="schunten">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>30</y>
+       <y>9</y>
        <width>170</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -432,9 +435,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>9</y>
        <width>100</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -451,9 +454,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>91</width>
-       <height>21</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -463,16 +466,17 @@
       </font>
      </property>
      <property name="text">
-      <string>abw. Sohlhöhe</string>
+      <string>Sohlhöhe
+Haltungsende</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="sohleunten">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>60</y>
-       <width>141</width>
-       <height>20</height>
+       <y>49</y>
+       <width>111</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -482,18 +486,18 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;von Schachtsohle abweichende Sohlhöhe&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>von Schachtsohle abweichende Sohlhöhe</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_19">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>60</y>
-       <width>21</width>
+       <x>250</x>
+       <y>50</y>
+       <width>61</width>
        <height>21</height>
       </rect>
      </property>
@@ -504,7 +508,7 @@
       </font>
      </property>
      <property name="text">
-      <string>m</string>
+      <string>m ü. NHN</string>
      </property>
     </widget>
    </widget>
@@ -599,7 +603,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Profiltyp</string>
+      <string>Profil</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_52">
@@ -634,7 +638,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Material&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Material</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLineEdit" name="ks">
@@ -757,7 +761,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profil der Haltung gem. HE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Profil der Haltung gem. HE</string>
+      <string/>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -861,7 +865,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aussendurchmesser&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Aussendurchmesser</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_14">
@@ -918,7 +922,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baujahr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Baujahr</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -1020,7 +1024,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eigentümer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Eigentümer</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_66">
@@ -1055,7 +1059,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Straßenname&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Straßenname</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_65">

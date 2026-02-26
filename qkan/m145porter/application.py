@@ -30,6 +30,7 @@ class M145Porter(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Import aus DWA-145-XML"),
+            toolbar='QKan-Datenaustausch',
             callback=self.run_import,
             parent=self.iface.mainWindow(),
         )

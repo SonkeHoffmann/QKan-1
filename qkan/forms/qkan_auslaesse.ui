@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>670</width>
-    <height>480</height>
+    <width>770</width>
+    <height>528</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -34,7 +34,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>46</width>
+      <width>51</width>
       <height>16</height>
      </rect>
     </property>
@@ -42,6 +42,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -89,10 +91,10 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für zusätzliche Kommentare.</string>
+     <string>Platz für zusätzliche Kommentare</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="schnam">
@@ -214,10 +216,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
+      <string>Zuordnung zu definiertem Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -242,10 +244,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;aktueller Status (z.B. vorhanden, in Planung etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;aktueller Status (z.B. vorhanden, in Planung, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>aktueller Status (z.B. vorhanden, in Planung etc.)</string>
+      <string>aktueller Status (z.B. vorhanden, in Planung, etc.)</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -305,10 +307,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Besondere Lage im Kanalnetz z.B. Anfangsschacht&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Besondere Lage im Kanalnetz (z.B. Anfangsschacht)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Besondere Lage im Kanalnetz z.B. Anfangsschacht</string>
+      <string>Besondere Lage im Kanalnetz (z.B. Anfangsschacht)</string>
      </property>
     </widget>
     <widget class="QComboBox" name="auslasstyp">
@@ -327,10 +329,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auslasstyp gem. HYSTEM-EXTRAN (z.B.: Frei, Normal, Konstant etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auslasstyp (z.B. frei, normal, konstant, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Auslasstyp gem. HYSTEM-EXTRAN (z.B.: Frei, Normal, Konstant etc.)</string>
+      <string>Auslasstyp (z.B. frei, normal, konstant, etc.)</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -474,7 +476,7 @@
       <rect>
        <x>260</x>
        <y>60</y>
-       <width>51</width>
+       <width>61</width>
        <height>21</height>
       </rect>
      </property>
@@ -485,7 +487,7 @@
       </font>
      </property>
      <property name="text">
-      <string>m NHN</string>
+      <string>m ü. NHN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_21">
@@ -493,7 +495,7 @@
       <rect>
        <x>260</x>
        <y>30</y>
-       <width>51</width>
+       <width>61</width>
        <height>21</height>
       </rect>
      </property>
@@ -504,7 +506,7 @@
       </font>
      </property>
      <property name="text">
-      <string>m NHN</string>
+      <string>m ü. NHN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_22">
@@ -580,10 +582,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Höhe der Sohle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Höhe der Sohle</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLineEdit" name="deckelhoehe">
@@ -602,10 +604,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Höhe des Kanaldeckels (i.d.R gleich Geländehöhe) &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;i.d.R. Geländehöhe&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Höhe des Kanaldeckels (i.d.R gleich Geländehöhe) </string>
+      <string>i.d.R. Geländehöhe</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="x">
@@ -674,10 +676,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Straßenname&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Straßenname</string>
+      <string/>
      </property>
     </widget>
     <widget class="QComboBox" name="entwart">
@@ -734,10 +736,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Standard-Durchmesser nach DIN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Standard-Durchmesser nach DIN</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_24">
@@ -804,10 +806,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baujahr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Baujahr</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_25">
@@ -858,10 +860,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eigentürmer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Eigentürmer</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_8">
@@ -893,10 +895,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wenn Druckdeckel vorhanden sind auswählen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string/>
      </property>
      <property name="statusTip">
-      <string>Wenn Druckdeckel vorhanden sind auswählen.</string>
+      <string/>
      </property>
      <property name="text">
       <string/>
@@ -909,7 +911,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>670</width>
+     <width>770</width>
      <height>22</height>
     </rect>
    </property>

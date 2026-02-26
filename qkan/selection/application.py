@@ -27,6 +27,7 @@ class Selection(QKanPlugin):
         QKan.instance.add_action(
             icon_import,
             text=self.tr("Auswahl erweitern / Netzverfolgung"),
+            toolbar='QKan-Allgemein',
             callback=self.run,
             parent=self.iface.mainWindow(),
         )

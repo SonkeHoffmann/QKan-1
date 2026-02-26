@@ -148,7 +148,7 @@ def find_route(qkan_db: DBConnection, schachtauswahl):
 
     # Gewichtungen auf der Strecke von 'kvon' nach 'knach' für alle paarweisen
     # Kombinationen aus 'schachtauswahl'
-    logger.info(knotennetz)
+    logger.debug(knotennetz)
     gewicht: Dict[str, Dict[str, float]] = {
         kvon: {
             knach: knotennetz[kvon].weight.get(knach, 0)

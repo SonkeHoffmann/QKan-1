@@ -1,0 +1,75 @@
+# Muster duerfen nur Kleinbuchstaben enthalten
+# Patterns mit - und in Anführungszeichen (")
+
+import_knotentypen:
+  Anschlussschacht:
+  - "anschlus*"
+  - "anschlu\xDF*"
+  - "anschlue*"
+  - "anschl\xFC*"
+  - "hausanschl*"
+  Schacht:
+  - "schacht"
+  Symbol:
+  - "symbol"
+  - "sonst*"
+  - "allgem*"
+
+import_entwaesserungsarten:
+  "Rinnen/Gräben":
+  - "gewäss*"
+  - "gew\xE4ss*"
+  - "rinne*"
+  - "bach*"
+  - "bäch*"
+  - "b\xE4ch*"
+  Mischwasser:
+  - "mischw*"
+  Regenwasser:
+  - "regenw*"
+  - "niederschl*"
+  - "drain*"
+  Schmutzwasser:
+  - "schmutzw*"
+  stillgelegt:
+  - "außer*"
+  - "stillg*"
+  - "verdäm*"
+  - "verd\xE4m*"
+  - "rückge*"
+  - "r\xFCckge*"
+  sonstige:
+  - "fikt*"
+  - "sonst*"
+  - "ander*"
+  - "unbek*"
+
+# mindestens ein Datensatz für das dict
+import_profile:
+  "Kreis":
+  - "krei*"
+
+# mindestens ein Datensatz für das dict
+import_simulationsstatus:
+  "in Betrieb":
+  - "vorhan*"
+  - "aktiv"
+
+# mindestens ein Datensatz für das dict
+import_material:
+  Beton:
+  - "Beton"
+
+# mindestens ein Datensatz für das dict
+import_bauwerksarten:
+  Heber:
+  - "Heber"
+
+import_haltungsarten:
+  Haltung:
+  - "haltung"
+  - "kanal"
+  - "entlastungsleitung"
+  - "sonstige"
+  Hausanschlussleitung:
+  - "*anschlussleitung"

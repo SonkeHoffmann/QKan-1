@@ -79,7 +79,7 @@ def qgsadapt(
         db_qkan.sqlyml('qgsadapt_zoom', "k_qgsadapt (1)")
     except BaseException as err:
         fehlermeldung("SQL-Fehler", repr(err))
-        fehlermeldung("Fehler in qgsadapt", "\nFehler in sql_zoom: \n" + sql + "\n\n")
+        fehlermeldung("Fehler in qgsadapt", "\nFehler in sql_zoom, sqlnam = 'qgsadapt_zoom'")
         return False
 
     try:

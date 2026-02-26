@@ -30,7 +30,12 @@ class TestPlausi(QgisTest):
         database_qkan = str(BASE_WORK / "juelich.sqlite")
         QKan.config.project.file = str(BASE_WORK / "plan_3.22_sp.qgs")
 
-        db_qkan = DBConnection(database_qkan, qkan_db_update=True)              # inkl. automatischem DB-Update
+        db_qkan = DBConnection(
+            database_qkan,
+            qkan_db_update=True,
+            writeDbBackup=False,
+            writeQgsBackup=False
+        )              # inkl. automatischem DB-Update
         QKan.config.plausi.themen = ["HYSTEM-EXTRAN"]
         QKan.config.plausi.keepdata = False
         QKan.config.plausi.limitdata = True

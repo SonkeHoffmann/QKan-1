@@ -78,7 +78,7 @@ class QgisPanelLogger(StreamHandler):
                 "QKan",
                 msg,
                 level=_translate_level(record.levelno),
-                duration = 0
+                duration = 10
             )
 
 class QKanLogger(logging.Logger):

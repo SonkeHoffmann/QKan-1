@@ -42,6 +42,8 @@
      <font>
       <family>Tahoma</family>
       <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -52,9 +54,9 @@
     <property name="geometry">
      <rect>
       <x>29</x>
-      <y>310</y>
+      <y>275</y>
       <width>81</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -65,7 +67,7 @@
     <property name="geometry">
      <rect>
       <x>479</x>
-      <y>310</y>
+      <y>280</y>
       <width>111</width>
       <height>21</height>
      </rect>
@@ -77,7 +79,7 @@
    <widget class="QLineEdit" name="untersuchsch">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>20</y>
       <width>161</width>
       <height>20</height>
@@ -88,9 +90,9 @@
     <property name="geometry">
      <rect>
       <x>19</x>
-      <y>330</y>
+      <y>300</y>
       <width>431</width>
-      <height>51</height>
+      <height>61</height>
      </rect>
     </property>
    </widget>
@@ -98,9 +100,9 @@
     <property name="geometry">
      <rect>
       <x>470</x>
-      <y>330</y>
+      <y>302</y>
       <width>131</width>
-      <height>23</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="currentSection">
@@ -116,7 +118,7 @@
       <x>10</x>
       <y>50</y>
       <width>291</width>
-      <height>161</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="font">
@@ -126,13 +128,13 @@
      </font>
     </property>
     <property name="title">
-     <string>Haltungsdaten</string>
+     <string/>
     </property>
     <widget class="QLabel" name="label_60">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>100</y>
        <width>151</width>
        <height>21</height>
       </rect>
@@ -151,7 +153,7 @@
      <property name="geometry">
       <rect>
        <x>141</x>
-       <y>120</y>
+       <y>100</y>
        <width>111</width>
        <height>21</height>
       </rect>
@@ -168,14 +170,17 @@
      <property name="statusTip">
       <string>Baujahr der Haltung</string>
      </property>
+     <property name="maximum">
+      <number>9999</number>
+     </property>
     </widget>
     <widget class="QLineEdit" name="x">
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>30</y>
+       <y>9</y>
        <width>101</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -192,7 +197,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>40</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -211,9 +216,9 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>60</y>
+       <y>39</y>
        <width>101</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -230,7 +235,7 @@
      <property name="geometry">
       <rect>
        <x>251</x>
-       <y>30</y>
+       <y>10</y>
        <width>41</width>
        <height>21</height>
       </rect>
@@ -249,7 +254,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>90</y>
+       <y>70</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -268,7 +273,7 @@
      <property name="geometry">
       <rect>
        <x>251</x>
-       <y>90</y>
+       <y>70</y>
        <width>41</width>
        <height>21</height>
       </rect>
@@ -287,7 +292,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>10</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -306,9 +311,9 @@
      <property name="geometry">
       <rect>
        <x>140</x>
-       <y>90</y>
+       <y>69</y>
        <width>101</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -322,7 +327,7 @@
      <property name="geometry">
       <rect>
        <x>251</x>
-       <y>60</y>
+       <y>40</y>
        <width>41</width>
        <height>21</height>
       </rect>
@@ -342,7 +347,7 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>60</y>
+      <y>40</y>
       <width>291</width>
       <height>231</height>
      </rect>
@@ -354,7 +359,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Untersuchungsdaten</string>
+     <string>Inspektionsdaten</string>
     </property>
     <widget class="QLabel" name="label_61">
      <property name="geometry">
@@ -391,10 +396,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Datum des Untersuchungstages&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Datum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Datum des Untersuchungstages</string>
+      <string>Datum</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_62">
@@ -473,10 +478,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;kurzer Kommentar zum Wetter am Untersuchungstag&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wetter am Untersuchungstag&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>kurzer Kommentar zum Wetter am Untersuchungstag</string>
+      <string>Wetter am Untersuchungstag</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_64">
@@ -514,10 +519,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name des verwndeten Bewertungsmodells (z.B. DWA-M 149-3)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bezeichnung des verwendeten Bewertungsmodells (z.B. DWA-M 149-3)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Name des verwndeten Bewertungsmodells (z.B. DWA-M 149-3)</string>
+      <string>Bezeichnung des verwendeten Bewertungsmodells (z.B. DWA-M 149-3)</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_65">
@@ -555,10 +560,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Datum des Tages, an dem die Bewertung durchgeführt wird&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Datum des Tages, an dem die Bewertung durchgeführt wurde&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Datum des Tages, an dem die Bewertung durchgeführt wird</string>
+      <string>Datum des Tages, an dem die Bewertung durchgeführt wurde</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_38">

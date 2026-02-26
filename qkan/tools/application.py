@@ -8,6 +8,7 @@ from typing import Optional, cast
 from qgis.PyQt.QtWidgets import QListWidgetItem
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
+from qgis.utils import iface
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
@@ -23,6 +24,7 @@ from . import resources  # noqa: F401
 from .dialogs.dbAdapt import DbAdaptDialog
 from .dialogs.empty_db import EmptyDBDialog
 from .dialogs.filepath import QgsFileDialog
+from .dialogs.bericht import QgsBerichtDialog
 from .dialogs.befahrung import QgsBefahrungDialog
 from .dialogs.help import QgsHelpDialog
 from .dialogs.layersadapt import LayersAdaptDialog
@@ -30,12 +32,15 @@ from .dialogs.qgsadapt import QgsAdaptDialog
 from .dialogs.qkanoptions import QKanOptionsDialog
 from .dialogs.read_data import ReadData
 from .dialogs.runoffparams import RunoffParamsDialog
+from .dialogs.zoom_clipboard import QgsZoomDialog
 from .k_filepath import setfilepath
+from .k_bericht import bericht
 from .k_layersadapt import layersadapt
 from .k_qgsadapt import qgsadapt
 from .k_runoffparams import setRunoffparams
 from .k_befahrung import setbefahrung
 
+from qkan.tools.k_schadenstexte import Schadenstexte
 from ..utils import get_logger, QkanError, QkanDbError
 
 logger = get_logger("QKan.tools.application")
@@ -56,6 +61,8 @@ class QKanTools(QKanPlugin):
         self.dlghp = QgsHelpDialog(self)
         self.dlgfp = QgsFileDialog(self)
         self.dlgbf = QgsBefahrungDialog(self)
+        self.dlgzc = QgsZoomDialog(self)
+        self.dlgb = QgsBerichtDialog(self)
         self.iface = iface
 
     # noinspection PyPep8Naming
@@ -66,6 +73,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_qgsadapt_path,
             text=self.tr("QKan-Projektdatei übertragen"),
+            toolbar='QKan-Allgemein',
             callback=self.run_qgsadapt,
             parent=self.iface.mainWindow(),
         )
@@ -74,6 +82,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_layersadapt_path,
             text=self.tr("QKan-Projekt aktualisieren"),
+            toolbar='QKan-Allgemein',
             callback=self.run_layersadapt,
             parent=self.iface.mainWindow(),
         )
@@ -82,6 +91,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_qkanoptions_path,
             text=self.tr("Optionen"),
+            toolbar='QKan-Allgemein',
             callback=self.run_qkanoptions,
             parent=self.iface.mainWindow(),
         )
@@ -90,6 +100,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_runoffparams_path,
             text=self.tr("Oberflächenabflussparameter eintragen"),
+            toolbar='QKan-Flächenbearbeitung',
             callback=self.run_runoffparams,
             parent=self.iface.mainWindow(),
         )
@@ -99,6 +110,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_emptyDB_path,
             text=self.tr("Neue QKan-Datenbank erstellen"),
+            toolbar='QKan-Allgemein',
             callback=self.dlged.run,
             parent=self.iface.mainWindow(),
         )
@@ -107,6 +119,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_readCheck_path,
             text=self.tr("Tabellendaten aus Clipboard: Zuordnung anzeigen"),
+            toolbar='QKan-Allgemein',
             callback=self.dlgrc.run,
             parent=self.iface.mainWindow(),
         )
@@ -115,6 +128,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_readData_path,
             text=self.tr("Tabellendaten aus Clipboard einfügen"),
+            toolbar='QKan-Allgemein',
             callback=self.dlgrd.run,
             parent=self.iface.mainWindow(),
         )
@@ -123,6 +137,7 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_dbAdapt_path,
             text=self.tr("QKan-Datenbank aktualisieren"),
+            toolbar='QKan-Allgemein',
             callback=self.run_dbAdapt,
             parent=self.iface.mainWindow(),
         )
@@ -131,7 +146,17 @@ class QKanTools(QKanPlugin):
         QKan.instance.add_action(
             icon_file_path,
             text=self.tr("Dateipfade suchen"),
+            toolbar='QKan-Allgemein',
             callback=self.run_filepath,
+            parent=self.iface.mainWindow(),
+        )
+
+        icon_file_path = ":/plugins/qkan/tools/res/icon_zoom_clipboard.png"
+        QKan.instance.add_action(
+            icon_file_path,
+            text=self.tr("Zur Auswahl zoomen"),
+            toolbar='QKan-Allgemein',
+            callback=self.run_zoom_clipboard,
             parent=self.iface.mainWindow(),
         )
 
@@ -143,10 +168,20 @@ class QKanTools(QKanPlugin):
         #     parent=self.iface.mainWindow(),
         # )
 
+        icon_bericht = ":/plugins/qkan/tools/res/icon_bericht.png"
+        QKan.instance.add_action(
+            icon_bericht,
+            text=self.tr("Haltungsbericht"),
+            toolbar='QKan-Allgemein',
+            callback=self.run_bericht,
+            parent=self.iface.mainWindow(),
+        )
+
         icon_help_path = ":/plugins/qkan/tools/res/icon_help.png"
         QKan.instance.add_action(
             icon_help_path,
             text=self.tr("Über QKan"),
+            toolbar='QKan-Allgemein',
             callback=self.run_help,
             parent=self.iface.mainWindow(),
         )
@@ -267,7 +302,7 @@ class QKanTools(QKanPlugin):
             # Abschluss: Projektdatei neu laden
 
             project.clear()
-            project.read(currentProject)  # read the new project file
+            project.read(project_file)  # read the new project file
 
             self.iface.mainWindow().statusBar().clearMessage()
             self.iface.messageBar().pushMessage(
@@ -371,8 +406,8 @@ class QKanTools(QKanPlugin):
             # Inhalte aus Formular lesen --------------------------------------------------------------
 
             QKan.config.fangradius = float(self.dlgop.tf_fangradius.text())
-            QKan.config.zustand.abstand_zustandstexte = float(self.dlgop.tf_abstand_zustandstexte.text())
-            QKan.config.zustand.abstand_zustandsbloecke = float(self.dlgop.tf_abstand_zustandsbloecke.text())
+            QKan.config.zustand.abstand_zustandstexte = float(self.dlgop.tf_abstand_zustandstexte.text().replace(",", "."))
+            QKan.config.zustand.abstand_zustandsbloecke = float(self.dlgop.tf_abstand_zustandsbloecke.text().replace(",", "."))
             QKan.config.zustand.abstand_knoten_anf = float(self.dlgop.tf_abstand_knoten_anf.text())
             QKan.config.zustand.abstand_knoten_1 = float(self.dlgop.tf_abstand_knoten_1.text())
             QKan.config.zustand.abstand_knoten_2 = float(self.dlgop.tf_abstand_knoten_2.text())
@@ -407,6 +442,11 @@ class QKanTools(QKanPlugin):
 
                 db_qkan.loadmodule('tools')
 
+                if self.dlgop.cb_textposition_akt.isChecked():
+                    Schadenstexte.setschadenstexte_haltungen(db_qkan)
+                    Schadenstexte.setschadenstexte_schaechte(db_qkan)
+                    Schadenstexte.setschadenstexte_anschlussleitungen(db_qkan)
+
                 # Trigger Referenztabellen
                 triggerlist = [
                     'profile', 'entwart', 'simstatus', 'material', 'abflussparameter']
@@ -436,6 +476,7 @@ class QKanTools(QKanPlugin):
                 ):
                     self.log.error_data(f'Trigger für Schachtfang bei neuer Haltunge konnte nicht geändert werden')
                     raise QkanDbError
+
 
                 # Trigger Fang auf Schacht bei Bearbeitung einer Haltung, scheint nicht zu funktionieren ...
                 # sqllis = ['tools_drop_trig_mod_hal_nul', 'tools_drop_trig_mod_hal_all']
@@ -705,7 +746,7 @@ class QKanTools(QKanPlugin):
             # Falls die Datenbank nicht aktuell ist (self.dbIsUptodate = False), werden alle Elemente im Formular
             # deaktiviert. Nur der Checkbutton zur Aktualisierung der Datenbank bleibt aktiv und es erscheint
             # eine Information.
-            self.db_is_uptodate = db_qkan.isCurrentDbVersion
+            self.db_is_uptodate = db_qkan.connected
 
         if not self.db_is_uptodate:
             logger.error("Versionskontrolle: Die QKan-Datenbank ist nicht aktuell")
@@ -1018,8 +1059,97 @@ class QKanTools(QKanPlugin):
                     ausw_leitung,
                 )
 
-    def run_befahrung(self) -> None:
+    def run_bericht(self) -> None:
 
+        #self.dlgfp.lineEdit.setText(QKan.config.xml.ordner_video)
+
+        # show the dialog
+        self.dlgb.show()
+
+        # Run the dialog event loop
+        result = self.dlgb.exec()
+
+        path = self.dlgb.save_path.text()
+        if self.dlgb.select_auswahl.isChecked():
+            auswahl = True
+        else:
+            auswahl = False
+
+        art = self.dlgb.bewertungsart.currentText()
+
+        # See if OK was pressed
+        if result:
+
+            QKan.config.save()
+
+            with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+                if not db_qkan.connected:
+                    self.log.error(
+                        "Fehler im XML-Export\n"
+                        f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                    )
+                    raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
+
+                # Run
+
+                bericht(
+                    db_qkan,
+                    path,
+                    auswahl, art
+                )
+
+    def run_zoom_clipboard(self) -> None:
+
+        # show the dialog
+        self.dlgzc.show()
+        self.dlgzc.button = False
+
+        # Run the dialog event loop
+        result = self.dlgzc.exec()
+
+        def zoom_clip2():
+            with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+                if not db_qkan.connected:
+                    self.log.error(
+                        "Fehler im XML-Export\n"
+                        f"QKan-Datenbank {QKan.config.database.qkan} wurde nicht gefunden!\nAbbruch!",
+                    )
+                    raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
+
+                clip = self.dlgzc.text
+
+                layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
+                if layer is not None and clip is not None:
+                    value = str(clip)
+                    field = "Bezeichnung"
+                    layer.removeSelection()
+
+                    if value != '':
+
+                        expr = f'"{field}" = \'{value}\''
+                        layer.selectByExpression(expr)
+                        iface.mapCanvas().zoomToSelected(layer)
+
+                        sel = layer.selectedFeatureIds()
+
+                        if not sel:
+                            layer = QgsProject.instance().mapLayersByName('Schächte')[0]
+                            layer.removeSelection()
+                            value = str(clip)
+                            field = "Schachtname"
+
+                            expr = f'"{field}" = \'{value}\''
+                            layer.selectByExpression(expr)
+                            iface.mapCanvas().zoomToSelected(layer)
+                            # 42780133
+
+        if self.dlgzc.button:
+            self.dlgzc.clip.dataChanged.connect(zoom_clip2)
+        else:
+            pass
+
+
+    def run_befahrung(self) -> None:
 
         # show the dialog
         self.dlgfp.show()

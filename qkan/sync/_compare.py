@@ -68,12 +68,28 @@ class CompareTask:
             userchoices = [
                 QKan.config.sync.check_schaechte,
                 QKan.config.sync.check_haltungen,
+                QKan.config.sync.check_haschaechte,
                 QKan.config.sync.check_haleitungen,
+                QKan.config.sync.check_flaechen,
+                QKan.config.sync.check_tezg,
+                QKan.config.sync.check_linkfl,
+                QKan.config.sync.check_schaechte_insp,
+                QKan.config.sync.check_haltungen_insp,
+                QKan.config.sync.check_haleitungen_insp,
+                QKan.config.sync.check_showAttrTables,
             ]
             tables = [
                 'schaechte',
                 'haltungen',
-                'anschlussleitungen'
+                'anschlussschaechte',
+                'anschlussleitungen',
+                'flaechen',
+                'tezg',
+                'linkfl',
+                'schaechte_untersucht',
+                'haltungen_untersucht',
+                'anschlussleitungen_untersucht',
+                'refdata',
             ]
             layernames = [
                 [
@@ -87,15 +103,75 @@ class CompareTask:
                     enums.LAYERBEZ.HALTUNGEN.value,
                 ],
                 [
-                    enums.LAYERBEZ.SYNC_ANSCHLUSSLEITUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_ANSCHLUSSLEITUNGEN_EXT.value,
-                    enums.LAYERBEZ.ANSCHLUSSLEITUNGEN.value,
+                    enums.LAYERBEZ.SYNC_HA_SCHAECHTE_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_HA_SCHAECHTE_EXT.value,
+                    enums.LAYERBEZ.HA_SCHAECHTE.value,
                 ],
+                [
+                    enums.LAYERBEZ.SYNC_HA_LEITUNGEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_HA_LEITUNGEN_EXT.value,
+                    enums.LAYERBEZ.HA_LEITUNGEN.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_FLAECHEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_FLAECHEN_EXT.value,
+                    enums.LAYERBEZ.EINZELFLAECHEN.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_TEZG_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_TEZG_EXT.value,
+                    enums.LAYERBEZ.TEILGEBIETE.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_ANBINDUNG_FLAECHEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_ANBINDUNG_FLAECHEN_EXT.value,
+                    enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_ZUSTAND_SCHAECHTE_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_ZUSTAND_SCHAECHTE_EXT.value,
+                    enums.LAYERBEZ.ZUSTAND_SCHAECHTE_GESAMT.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_EXT.value,
+                    enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_ZUSTAND_HALTUNGEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_ZUSTAND_HALTUNGEN_EXT.value,
+                    enums.LAYERBEZ.ZUSTAND_HALTUNGEN_GESAMT.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_SCHAEDEN_HALTUNGEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_SCHAEDEN_HALTUNGEN_EXT.value,
+                    enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_ZUSTAND_HA_LEITUNGEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_ZUSTAND_HA_LEITUNGEN_EXT.value,
+                    enums.LAYERBEZ.ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+                ],
+                [
+                    enums.LAYERBEZ.SYNC_SCHAEDEN_HA_LEITUNGEN_COMPARE.value,
+                    enums.LAYERBEZ.SYNC_SCHAEDEN_HA_LEITUNGEN_EXT.value,
+                    enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN.value,
+                ]
             ]
             groups = [
                     enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
                     enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
-                    enums.LAYERBEZ.SYNC_GROUP_ANSCHLUSSLEITUNGEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_HA_SCHAECHTE.value,
+                    enums.LAYERBEZ.SYNC_GROUP_HA_LEITUNGEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_FLAECHEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_TEZG.value,
+                    enums.LAYERBEZ.SYNC_GROUP_ANBINDUNG_FLAECHEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_SCHAECHTE.value,
+                    enums.LAYERBEZ.SYNC_GROUP_SCHAEDEN_SCHAECHTE.value,
+                    enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_HALTUNGEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_SCHAEDEN_HALTUNGEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_HA_LEITUNGEN.value,
+                    enums.LAYERBEZ.SYNC_GROUP_SCHAEDEN_HA_LEITUNGEN.value,
             ]
 
             for table, userchoice in zip(tables, userchoices):
@@ -108,6 +184,9 @@ class CompareTask:
                         f'sync_{table}_local',
                         f'sync_{table}_dif',
                     ]
+                    if table == 'refdata':
+                        del sqlnames[1]
+
                     for sqlnam in sqlnames:
                         db_qkan.sqlyml(
                             sqlnam,
@@ -128,23 +207,26 @@ class CompareTask:
 
                 # Synchronisationstabelle
                 loadLayer(
-                    layer_sync,
-                    f'sync_{table}',
-                    'geom',
-                    f'{layer_sync}.qml',
-                    f'sync_{table}.ui',
-                    grouppath,
+                    layerbez=   layer_sync,
+                    table=      f'sync_{table}',
+                    geom_column='geom',
+                    qmlfile=    f'{layer_sync}.qml',
+                    filter=     '',
+                    uifile=     f'sync_{table}.ui',
+                    group=      grouppath,
                 )
 
                 # Externe Tabelle
                 loadLayer(
-                    layer_ext,
-                    table,
-                    'geom',
-                    f'{layer_loc}.qml',
-                    f'qkan_{table}.ui',
-                    grouppath,
-                    qkan_db=QKan.config.sync.ext,
+                    layerbez=   layer_ext,
+                    table=      table,
+                    geom_column='geom',
+                    qmlfile=    f'{layer_loc}.qml',
+                    filter=     '',
+                    uifile=     f'qkan_{table}.ui',
+                    group=      grouppath,
+                    gpos=       0,
+                    qkan_db=    QKan.config.sync.ext,
                 )
 
         # Attributtabellen anzeigen

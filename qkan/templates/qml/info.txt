@@ -2,4 +2,10 @@ Hinweis für QKan-Programmierer:
 
 Für jeden Layer muss eine *.qml-Datei exisitieren, deren Name dem Layernamen entspricht ("/" wird dabei durch "_" ersetzt). 
 
-jh, 19.5.2025
+Zur Bearbeitung ist folgendes Vorgehen sinnvoll:
+ - Erzeugen eines neuen leeren Projektes
+ - Bearbeiten der Layerstile
+ - Speichern dieses Projektes als Projektvorlagedatei qkan/templates/projekt.qgs
+ - Speichern der einzelnen Layerstile als qml-Dateien auf dem Verzeichnis qkan/templates/qml
+
+jh, 09:34 17.01.2026

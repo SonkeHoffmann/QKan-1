@@ -3,6 +3,8 @@ import os
 import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 from xml.etree.ElementTree import ElementTree
+import yaml
+from fnmatch import fnmatch
 
 from qgis.PyQt.QtCore import QStandardPaths
 from qgis.PyQt.QtWidgets import QListWidget
@@ -171,7 +173,7 @@ def list_qkan_layers(qgs_template: str = None) -> Dict[str, List]:
                 layer_source = layer.attrib["source"]
                 dbname, table, geom, sql = get_qkanlayer_attributes(layer_source)
                 qkan_layers[layer_name] = [table, geom, sql, group_name]
-    logger.debug("qkan_layers: \n{}".format(qkan_layers))
+    # logger.debug("qkan_layers: \n{}".format(qkan_layers))
     return qkan_layers
 
 
@@ -647,7 +649,8 @@ def loadLayer(
         table,
         geom_column,
         qmlfile,
-        uifile,
+        filter = '',
+        uifile = None,
         group: Union[List, str] = 'QKan',
         gpos=0,
         qkan_db: str = None
@@ -687,12 +690,12 @@ def loadLayer(
         enums.LAYERBEZ.SYNC_GROUP_SYNCHRONISATION.value,
         enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
         enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
-        enums.LAYERBEZ.SYNC_GROUP_ANSCHLUSSLEITUNGEN.value,
+        enums.LAYERBEZ.SYNC_GROUP_HA_LEITUNGEN.value,
     ]
 
     dlayers = project.mapLayersByName(layerbez)
     for dlayer in dlayers:
-        project.removeMapLayer(project.mapLayersByName(dlayer))
+        project.removeMapLayer(dlayer)
 
     uri = QgsDataSourceUri()
     if qkan_db is None:
@@ -701,7 +704,7 @@ def loadLayer(
         uri.setDatabase(qkan_db)
     logger.debug(f'{uri=}')
     schema = ''
-    uri.setDataSource(schema, table, geom_column)
+    uri.setDataSource(schema, table, geom_column, filter)
     layer = QgsVectorLayer(uri.uri(), layerbez, 'spatialite')
 
     templatepath = os.path.join(pluginDirectory("qkan"), "templates")
@@ -716,9 +719,11 @@ def loadLayer(
         return False
 
     # Adapt path to forms directory
-    editFormConfig = layer.editFormConfig()
-    editFormConfig.setUiForm(os.path.join(formsDir, uifile))
-    layer.setEditFormConfig(editFormConfig)
+    if uifile is not None:
+        editFormConfig = layer.editFormConfig()
+        editFormConfig.setUiForm(os.path.join(formsDir, uifile))
+        layer.setEditFormConfig(editFormConfig)
+
     project.addMapLayer(layer, False)
 
     layersRoot = project.layerTreeRoot()
@@ -806,3 +811,24 @@ def zoomAll():
 
     canvas.setExtent(layer.extent())
     canvas.refresh()
+
+
+class Patterns():
+    """Management of pattern lists in yaml-Files"""
+
+    def __init__(self, filepath):
+        with open(filepath) as fr:
+            self.patterns = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+
+    def write(self, filepath):
+        """writes patterns"""
+        with open(filepath, 'w') as fw:
+            yaml.dump(self.patterns, fw)
+
+    def find(self, m150key):
+        """Zugeorndeten QKan-Wert finden"""
+        for qkan_name in self.patterns:
+            for patt in self.patterns[qkan_name]:
+                if fnmatch(m150key.strip().lower(), patt):
+                    return qkan_name
+        return None
