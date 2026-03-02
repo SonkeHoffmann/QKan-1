@@ -998,7 +998,7 @@ class QKanTools(QKanPlugin):
 
     def run_help(self) -> None:
 
-        self.dlghp.textBrowser_2.setText(str(QKan.qgsVersion))
+        self.dlghp.textBrowser_2.setText(f'{QKan.qgsVersion}.{QKan.build}')
 
         # show the dialog
         self.dlghp.show()

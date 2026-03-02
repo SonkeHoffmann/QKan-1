@@ -80,6 +80,7 @@ class QKan:
 
     dbVersion = "3.4.8"  # Version der QKan-Datenbank
     qgsVersion = "3.4.8"  # Version des Projektes und der Projektdatei. Kann höher als die der QKan-Datenbank sein
+    build = "0002"
 
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
     sqls: dict = {}                     # SQL-Statements for all loaded modules
