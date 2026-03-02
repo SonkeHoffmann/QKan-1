@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>692</width>
-    <height>488</height>
+    <height>496</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>150</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -32,7 +38,7 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
@@ -45,7 +51,7 @@
         <x>0</x>
         <y>0</y>
         <width>690</width>
-        <height>457</height>
+        <height>456</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">

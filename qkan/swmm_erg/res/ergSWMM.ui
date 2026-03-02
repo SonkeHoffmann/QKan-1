@@ -12,7 +12,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
    </size>
   </property>
@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+    <normaloff>../qkan_260212_0909/qkan/QKan.png</normaloff>../qkan_260212_0909/qkan/QKan.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="leftMargin">
@@ -174,8 +174,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>scrollArea</zorder>
-  <zorder>button_box</zorder>
  </widget>
  <resources/>
  <connections>

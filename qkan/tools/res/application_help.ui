@@ -7,13 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>574</width>
-    <height>702</height>
+    <height>685</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>490</width>
     <height>260</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>700</height>
    </size>
   </property>
   <property name="font">
@@ -44,8 +50,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>533</width>
-        <height>650</height>
+        <width>554</width>
+        <height>628</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -90,6 +96,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>500</width>
+           <height>250</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>500</width>
@@ -121,7 +133,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>300</height>
+           <height>250</height>
           </size>
          </property>
          <property name="html">

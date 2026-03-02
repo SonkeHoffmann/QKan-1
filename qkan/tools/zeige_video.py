@@ -12,18 +12,17 @@ import site
 from pathlib import Path
 from qgis.core import QgsApplication
 import sys
+from qkan import QKan
 
 from qkan.database.dbfunc import DBConnection
+from qkan.tools.videoplayer import Videoplayer
+from qkan.tools.qkan_utils import get_database_QKan
 
-from qkan.config import Config
-
-#form_class, _ = loadUiType(os.path.join(os.path.dirname(__file__), 'res/qkan_schadensliste.ui'))
-
-logger = get_logger("QKan.tools.zeige_schaeden")
+logger = get_logger("QKan.tools.zeige_video")
 
 class ShowVideo(QDialog):
     """Zeigt Haltungsschäden an"""
-    def __init__(self, name: str, untersuchtag, video_offset, time_code: str):
+    def __init__(self, name: str, untersuchtag, video_offset, time_code):
         super(ShowVideo, self).__init__()
 
         self.name = name
@@ -33,51 +32,52 @@ class ShowVideo(QDialog):
         else:
             self.video_offset = float(video_offset)
 
-        self.time_code = time_code
+        if time_code in ['', None, 'NULL']:
+            self.time_code = 0
+        else:
+            self.time_code = float(time_code)
 
         self.show()
 
     def show(self):
         """Aktualisiert die Schadensliste"""
         self.showschaedencolumns = 100
-        self.showlist()
+        #self.showlist()
 
-        cfile = Path(site.getuserbase()) / "qkan" / "qkan.json"
-
-        with open(cfile, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        ordner = data["videopath"]
-
-
-        with DBConnection(dbname=Config.database.qkan) as db_qkan:
+        ordner = QKan.config.videopath
+        get_database_QKan()
+        with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
 
             try:
-                from qkan.tools.videoplayer import Videoplayer
-
-                # video=ordner+'/'+'[%film_dateiname%]'
                 name = self.name
                 datum = self.untersuchtag
                 sql = f"""select datei from videos where name= '{name}' and untersuchtag = '{datum}'"""
 
                 db_qkan.sql(sql)
-                file = db_qkan.fetchone()[0]
+                data = db_qkan.fetchone()
+                if data is None:
+                    iface.messageBar().pushMessage(
+                        f'Kein Video für Haltung {name} und Datum {datum} gefunden',
+                        level=Qgis.Warning, duration=5)
+                else:
+                    datei = data[0]
+                    datei = datei.lstrip("\\/")
 
-                from qkan.tools.videoplayer import Videoplayer
-                if self.video_offset == 0:
-                    iface.messageBar().pushMessage("Error", "Video offset = 0.00 s, bitte in der Attributtabelle prüfen!",
-                                                   level=Qgis.Critical)
-                y = QgsProject.instance().readPath("./")
-
-                video = ordner+ '/' +file
-                # video='[%ordner_video%]'+'/'+'[%film_dateiname%]'
+                video = os.path.normpath(os.path.join(ordner, datei))
+                video = video.lower()
+                time_h = 0
                 timecode = self.time_code
-                time_h = int(timecode / 1000000) if timecode > 1000000 else 0
+                if timecode == 0:
+                    window = Videoplayer(video=video, time=0)
+                else:
+                    time_h = int(timecode / 1000000) if timecode > 1000000 else 0
                 time_m = (int(timecode / 10000) if timecode > 10000 else 0) - (time_h * 100)
                 time_s = (int(timecode / 100) if timecode > 100 else 0) - (time_h * 10000) - (time_m * 100)
 
-                time = float(time_h / 3600 + time_m / 60 + time_s + self.video_offset)
+                video_offset = self.video_offset
+                time = float(time_h / 3600 + time_m / 60 + time_s + video_offset)
                 window = Videoplayer(video=video, time=time)
+
                 window.show()
                 window.open_file()
                 window.exec_()

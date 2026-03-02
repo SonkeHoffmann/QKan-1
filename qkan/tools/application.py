@@ -9,6 +9,7 @@ from qgis.PyQt.QtWidgets import QListWidgetItem
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import iface
+from PyQt5.QtGui import QPixmap
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
@@ -416,8 +417,11 @@ class QKanTools(QKanPlugin):
             QKan.config.mindestflaeche = float(self.dlgop.tf_mindestflaeche.text())
             QKan.config.logeditor = self.dlgop.tf_logeditor.text().strip()
 
-            QKan.config.fotopath = self.dlgop.tf_fotopath.text().strip()
-            QKan.config.videopath = self.dlgop.tf_videopath.text().strip()
+            QKan.config.fotopath = self.dlgop.tf_fotopath.text()
+            QKan.config.videopath = self.dlgop.tf_videopath.text()
+
+            print(self.dlgop.tf_videopath.text())
+            print(type(self.dlgop.tf_videopath.text()))
 
             if self.dlgop.rb_spatialite.isChecked():
                 QKan.config.database.type = enums.QKanDBChoice.SPATIALITE
@@ -999,6 +1003,11 @@ class QKanTools(QKanPlugin):
     def run_help(self) -> None:
 
         self.dlghp.textBrowser_2.setText(str(QKan.qgsVersion))
+        plugin_dir = os.path.dirname(__file__)
+        bild_pfad = os.path.join(plugin_dir, "Qkan_Logo.png")
+
+        self.dlghp.label_2.setScaledContents(True)
+        self.dlghp.label_2.setPixmap(QPixmap(bild_pfad))
 
         # show the dialog
         self.dlghp.show()

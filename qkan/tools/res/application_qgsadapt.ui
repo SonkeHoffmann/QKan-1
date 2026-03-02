@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>473</width>
-    <height>335</height>
+    <height>353</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>335</height>
+    <height>370</height>
    </size>
   </property>
   <property name="font">
@@ -51,7 +51,7 @@
         <x>0</x>
         <y>0</y>
         <width>471</width>
-        <height>295</height>
+        <height>313</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -341,8 +341,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>scrollArea</zorder>
-  <zorder>button_box</zorder>
  </widget>
  <resources/>
  <connections>

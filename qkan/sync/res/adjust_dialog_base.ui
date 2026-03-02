@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>471</width>
-    <height>300</height>
+    <height>381</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>300</height>
+    <height>400</height>
    </size>
   </property>
   <property name="font">
@@ -32,7 +32,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+    <normaloff>../qkan_260212_0909/qkan/QKan.png</normaloff>../qkan_260212_0909/qkan/QKan.png</iconset>
   </property>
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synchronisation von QKan-Projekten: 1. Vergleich für gewählte Tabellen und Teilgebeite&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -63,8 +63,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>452</width>
-        <height>266</height>
+        <width>469</width>
+        <height>335</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">

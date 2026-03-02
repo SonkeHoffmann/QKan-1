@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
-    <height>343</height>
+    <width>527</width>
+    <height>372</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>343</height>
+    <height>390</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -45,8 +45,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>518</width>
-        <height>303</height>
+        <width>525</width>
+        <height>332</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -120,8 +120,8 @@
                <font>
                 <family>Tahoma</family>
                 <pointsize>10</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
@@ -241,8 +241,8 @@
                <font>
                 <family>Tahoma</family>
                 <pointsize>10</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
@@ -328,8 +328,8 @@
                <font>
                 <family>Tahoma</family>
                 <pointsize>10</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
@@ -374,8 +374,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>scrollArea</zorder>
-  <zorder>button_box</zorder>
  </widget>
  <customwidgets>
   <customwidget>

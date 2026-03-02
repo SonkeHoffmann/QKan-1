@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>767</height>
+    <width>550</width>
+    <height>794</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>767</height>
+    <height>815</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -54,8 +54,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>529</width>
-        <height>727</height>
+        <width>548</width>
+        <height>754</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -498,7 +498,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>120</height>
+           <height>130</height>
           </size>
          </property>
          <property name="maximumSize">

@@ -12,14 +12,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>290</height>
+    <height>310</height>
    </size>
   </property>
   <property name="font">
@@ -32,7 +32,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+    <normaloff>../qkan_260212_0909/qkan/QKan.png</normaloff>../qkan_260212_0909/qkan/QKan.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <property name="leftMargin">
@@ -186,7 +186,10 @@
            <item>
             <widget class="QPushButton" name="select_ordner_dgm">
              <property name="toolTip">
-              <string>Die DGM Datei sollte das geasmte Einzugsgebiet umfassen.</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Die DGM Datei sollte das gesamte Einzugsgebiet umfassen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="statusTip">
+              <string>Die DGM Datei sollte das gesamte Einzugsgebiet umfassen.</string>
              </property>
              <property name="text">
               <string>...</string>
