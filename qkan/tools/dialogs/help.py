@@ -12,6 +12,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QWidget,
     QTextBrowser,
+    QLabel,
 )
 
 from qkan import QKan
@@ -31,6 +32,7 @@ class QgsHelpDialog(QKanDialog, FORM_CLASS_help):  # type: ignore
     pushButton_2: QPushButton
     textBrowser: QTextBrowser
     textBrowser_2: QTextBrowser
+    label_2 : QLabel
 
     def __init__(self, plugin: "QKanTools", parent: Optional[QWidget] = None):
         super().__init__(plugin, parent)

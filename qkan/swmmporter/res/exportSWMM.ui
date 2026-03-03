@@ -6,14 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>989</width>
-    <height>779</height>
+    <width>678</width>
+    <height>503</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>520</height>
    </size>
   </property>
   <property name="font">
@@ -47,8 +53,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>987</width>
-        <height>731</height>
+        <width>676</width>
+        <height>463</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -270,10 +276,10 @@
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hinzufügen noch nicht vorhandene Datensätze&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hinzufügen noch nicht vorhandener Datensätze&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="statusTip">
-           <string>Hinzufügen noch nicht vorhandene Datensätze</string>
+           <string>Hinzufügen noch nicht vorhandener Datensätze</string>
           </property>
           <property name="text">
            <string>hinzufügen</string>
@@ -412,6 +418,12 @@ berücksichtigen:</string>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
               <widget class="QLabel" name="lf_anzahl_schaechte">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Tahoma</family>
@@ -452,6 +464,12 @@ berücksichtigen:</string>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
               <widget class="QLabel" name="lf_anzahl_haltungen">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Tahoma</family>
@@ -492,6 +510,12 @@ berücksichtigen:</string>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLabel" name="lf_anzahl_flaechen">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Tahoma</family>
@@ -535,6 +559,12 @@ berücksichtigen:</string>
              </property>
              <item>
               <widget class="QLabel" name="lf_anzahl_flaechen_2">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Tahoma</family>
@@ -565,7 +595,8 @@ berücksichtigen:</string>
                 </font>
                </property>
                <property name="text">
-                <string>Haltungsflächen</string>
+                <string>Haltungs-
+flächen</string>
                </property>
               </widget>
              </item>

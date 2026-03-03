@@ -30,7 +30,7 @@ class _Dialog(QDialog):
     ):
         # noinspection PyArgumentList
         super().__init__(parent)
-        self.setupUi(self)
+        #self.setupUi(self)
         self.default_dir = str(default_dir)
         logger.debug(
             f"swmm.application_dialog._Dialog.__init__:"

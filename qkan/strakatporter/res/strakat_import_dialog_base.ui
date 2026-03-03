@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>681</width>
-    <height>550</height>
+    <height>496</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>550</height>
+    <height>520</height>
    </size>
   </property>
   <property name="font">
@@ -32,7 +32,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+    <normaloff>../qkan_260212_0909/qkan/QKan.png</normaloff>../qkan_260212_0909/qkan/QKan.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <property name="leftMargin">
@@ -55,7 +55,7 @@
         <x>0</x>
         <y>0</y>
         <width>679</width>
-        <height>510</height>
+        <height>456</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">

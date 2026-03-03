@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>615</width>
-    <height>501</height>
+    <height>568</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>501</height>
+    <height>590</height>
    </size>
   </property>
   <property name="font">
@@ -55,9 +55,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-84</y>
-        <width>596</width>
-        <height>542</height>
+        <y>0</y>
+        <width>613</width>
+        <height>528</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -851,7 +851,7 @@
          <property name="font">
           <font>
            <family>Tahoma</family>
-           <pointsize>10</pointsize>
+           <pointsize>8</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>

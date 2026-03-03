@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>514</width>
-    <height>626</height>
+    <width>465</width>
+    <height>557</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,10 +16,10 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="minimumSize">
+  <property name="maximumSize">
    <size>
-    <width>490</width>
-    <height>570</height>
+    <width>16777215</width>
+    <height>580</height>
    </size>
   </property>
   <property name="font">
@@ -32,10 +32,22 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../QKan.png</normaloff>../../QKan.png</iconset>
+    <normaloff>../qkan_260212_0909/qkan/QKan.png</normaloff>../qkan_260212_0909/qkan/QKan.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>9</number>
+   </property>
+   <item row="0" column="0">
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
       <bool>true</bool>
@@ -45,11 +57,11 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>490</width>
-        <height>602</height>
+        <width>463</width>
+        <height>517</height>
        </rect>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
@@ -62,10 +74,16 @@
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <widget class="QGroupBox" name="groupBox_5">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>58</height>
+              </size>
+             </property>
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -73,40 +91,42 @@
              <property name="title">
               <string>Projektionssystem</string>
              </property>
-             <widget class="QLabel" name="label_5">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>40</y>
-                <width>121</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Projektionssystem:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-             <widget class="QgsProjectionSelectionWidget" name="qsw_epsg">
-              <property name="geometry">
-               <rect>
-                <x>150</x>
-                <y>40</y>
-                <width>271</width>
-                <height>27</height>
-               </rect>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="font">
+                   <font>
+                    <family>Tahoma</family>
+                    <pointsize>9</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Projektionssystem:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QgsProjectionSelectionWidget" name="qsw_epsg">
+                  <property name="font">
+                   <font>
+                    <family>Tahoma</family>
+                    <pointsize>8</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -114,7 +134,7 @@
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -122,63 +142,53 @@
              <property name="title">
               <string>Datenbanktyp</string>
              </property>
-             <widget class="QRadioButton" name="rb_spatialite">
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>30</y>
-                <width>191</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>QKan-Datenbank: SpatiaLite-Datei</string>
-              </property>
-              <property name="statusTip">
-               <string>QKan-Datenbank: SpatiaLite-Datei</string>
-              </property>
-              <property name="text">
-               <string>SpatiaLite (*.sqlite)</string>
-              </property>
-             </widget>
-             <widget class="QRadioButton" name="rb_postgis">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>50</y>
-                <width>311</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QKan-Datenbank: PostgreSQL/PostGIS-Datenbankserver&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>QKan-Datenbank: PostgreSQL/PostGIS-Datenbankserver</string>
-              </property>
-              <property name="text">
-               <string>PostGIS (PostgreSQL-Datenbankserver)</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <widget class="QRadioButton" name="rb_spatialite">
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>9</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>QKan-Datenbank: SpatiaLite-Datei</string>
+                </property>
+                <property name="statusTip">
+                 <string>QKan-Datenbank: SpatiaLite-Datei</string>
+                </property>
+                <property name="text">
+                 <string>SpatiaLite (*.sqlite)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rb_postgis">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>9</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QKan-Datenbank: PostgreSQL/PostGIS-Datenbankserver&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="statusTip">
+                 <string>QKan-Datenbank: PostgreSQL/PostGIS-Datenbankserver</string>
+                </property>
+                <property name="text">
+                 <string>PostGIS (PostgreSQL-Datenbankserver)</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -186,7 +196,7 @@
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -194,111 +204,97 @@
              <property name="title">
               <string>System-Dateien</string>
              </property>
-             <widget class="QPushButton" name="pb_openLogfile">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>40</y>
-                <width>161</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Öffnen der Log-Datei. Enthält viele teilweise interne Informationen über den Verlauf aller aufgerufenen QKan-Plugins, insbesondere Fehlermeldungen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Log-Datei anzeigen...</string>
-              </property>
-              <property name="text">
-               <string>Log-Datei öffnen</string>
-              </property>
-             </widget>
-             <widget class="QLineEdit" name="tf_logeditor">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>90</y>
-                <width>361</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>10</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optional: Pfad zum Editor, mit dem die Log-Datei geöffnet werden soll. Wenn dieses Feld leer ist, wird der Standardeditor gewählt. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>EPSG-Nummer des Projektionssystems der Quelldaten</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_8">
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>70</y>
-                <width>311</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Optional: Editor zum Anzeigen der Log-Datei</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pb_selectLogeditor">
-              <property name="geometry">
-               <rect>
-                <x>390</x>
-                <y>90</y>
-                <width>31</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem aus QGIS-Liste auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Projektionssystem aus QGIS-Liste auswählen</string>
-              </property>
-              <property name="text">
-               <string>...</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pb_openOptionsfile">
-              <property name="geometry">
-               <rect>
-                <x>200</x>
-                <y>40</y>
-                <width>181</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Öffnen der Optionen-Datei (*.json). Enthält alle Grundeinstellungen und viele Verzeichnispfade aus den Formularen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Optionen-Datei anzeigen...</string>
-              </property>
-              <property name="text">
-               <string>Optionen-Datei öffnen</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QPushButton" name="pb_openLogfile">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Öffnen der Log-Datei. Enthält viele teilweise interne Informationen über den Verlauf aller aufgerufenen QKan-Plugins, insbesondere Fehlermeldungen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="statusTip">
+                   <string>Log-Datei anzeigen...</string>
+                  </property>
+                  <property name="text">
+                   <string>Log-Datei öffnen</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pb_openOptionsfile">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Öffnen der Optionen-Datei (*.json). Enthält alle Grundeinstellungen und viele Verzeichnispfade aus den Formularen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="statusTip">
+                   <string>Optionen-Datei anzeigen...</string>
+                  </property>
+                  <property name="text">
+                   <string>Optionen-Datei öffnen</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_8">
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>9</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Optional - Editor zum Anzeigen der Log-Datei:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QLineEdit" name="tf_logeditor">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>23</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Tahoma</family>
+                    <pointsize>10</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optional: Pfad zum Editor, mit dem die Log-Datei geöffnet werden soll. Wenn dieses Feld leer ist, wird der Standardeditor gewählt. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="statusTip">
+                   <string>EPSG-Nummer des Projektionssystems der Quelldaten</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pb_selectLogeditor">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem aus QGIS-Liste auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="statusTip">
+                   <string>Projektionssystem aus QGIS-Liste auswählen</string>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -306,7 +302,7 @@
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -314,118 +310,104 @@
              <property name="title">
               <string>Hauptverzeichnisse Kanalbefahrungen</string>
              </property>
-             <widget class="QLineEdit" name="tf_fotopath">
-              <property name="geometry">
-               <rect>
-                <x>110</x>
-                <y>40</y>
-                <width>281</width>
-                <height>21</height>
-               </rect>
-              </property>
-             </widget>
-             <widget class="QLineEdit" name="tf_videopath">
-              <property name="geometry">
-               <rect>
-                <x>110</x>
-                <y>71</y>
-                <width>281</width>
-                <height>21</height>
-               </rect>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pb_selectfotopath">
-              <property name="geometry">
-               <rect>
-                <x>396</x>
-                <y>40</y>
-                <width>31</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem aus QGIS-Liste auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Projektionssystem aus QGIS-Liste auswählen</string>
-              </property>
-              <property name="text">
-               <string>...</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="pb_selectvideopath">
-              <property name="geometry">
-               <rect>
-                <x>396</x>
-                <y>70</y>
-                <width>31</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem aus QGIS-Liste auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Projektionssystem aus QGIS-Liste auswählen</string>
-              </property>
-              <property name="text">
-               <string>...</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_2">
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>40</y>
-                <width>80</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Foto-Pfad</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_4">
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>70</y>
-                <width>80</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Video-Pfad</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>80</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Tahoma</family>
+                    <pointsize>9</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Foto-Pfad:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="tf_fotopath">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>23</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pb_selectfotopath">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem aus QGIS-Liste auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="statusTip">
+                   <string>Projektionssystem aus QGIS-Liste auswählen</string>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="minimumSize">
+                   <size>
+                    <width>80</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Tahoma</family>
+                    <pointsize>9</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Video-Pfad:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="tf_videopath">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>23</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pb_selectvideopath">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Projektionssystem aus QGIS-Liste auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="statusTip">
+                   <string>Projektionssystem aus QGIS-Liste auswählen</string>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -440,7 +422,7 @@
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -541,7 +523,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
-                <pointsize>9</pointsize>
+                <pointsize>8</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -625,7 +607,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
-                <pointsize>9</pointsize>
+                <pointsize>8</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -696,7 +678,7 @@
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -740,7 +722,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
-                <pointsize>9</pointsize>
+                <pointsize>8</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -905,7 +887,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
-                <pointsize>9</pointsize>
+                <pointsize>8</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -945,7 +927,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
-                <pointsize>9</pointsize>
+                <pointsize>8</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1343,7 +1325,7 @@
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -1387,7 +1369,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
-                <pointsize>9</pointsize>
+                <pointsize>8</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -1447,7 +1429,7 @@ Haltungen pro Strang:</string>
              <property name="font">
               <font>
                <family>Tahoma</family>
-               <pointsize>10</pointsize>
+               <pointsize>8</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -1597,53 +1579,53 @@ weitergeben</string>
          </widget>
         </widget>
        </item>
-       <item>
-        <widget class="QDialogButtonBox" name="button_box">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="sizeIncrement">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="baseSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Tahoma</family>
-           <pointsize>10</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optionen speichern&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="statusTip">
-          <string>Optionen speichern</string>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="standardButtons">
-          <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
-         </property>
-         <property name="centerButtons">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="sizeIncrement">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>8</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optionen speichern&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="statusTip">
+      <string>Optionen speichern</string>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

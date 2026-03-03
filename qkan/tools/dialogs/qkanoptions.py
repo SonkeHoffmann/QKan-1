@@ -248,8 +248,6 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         )
         if ordner:
             self.tf_fotopath.setText(ordner)
-            #self.default_dir = os.path.dirname(ordner)
-            QKan.config.fotopath = ordner
 
 
     def videopath(self):
@@ -260,8 +258,6 @@ class QKanOptionsDialog(QKanDialog, FORM_CLASS_qkanoptions):  # type: ignore
         )
         if ordner:
             self.tf_videopath.setText(ordner)
-            #self.default_dir = os.path.dirname(ordner)
-            QKan.config.videopath = ordner
 
 
     def click_help(self) -> None:
