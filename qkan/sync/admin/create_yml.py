@@ -1,3 +1,6 @@
+# Im QGIS-Python-Fenster ausführen: 
+# exec(open('C:/FHAC/hoettges/Kanalprogramme/QKan/qkan/sync/admin/create_yml.py').read())
+
 import textwrap
 import sqlite3
 import os, sys

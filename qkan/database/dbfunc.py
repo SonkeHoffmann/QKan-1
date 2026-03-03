@@ -300,79 +300,16 @@ class DBConnection:
                 # Erstellen der QKan-Datenbanktabellen inkl. Trigger und Views
 
                 # Tabellen mit Geometrieobjekten
-                tablisgeom = [
-                    "notizen",
-                    "haltungen",
-                    "haltungen_untersucht",
-                    "untersuchdat_haltung",
-                    "anschlussleitungen",
-                    "anschlussleitungen_untersucht",
-                    "anschlussschaechte",
-                    "untersuchdat_anschlussleitung",
-                    "schaechte",
-                    "untersuchdat_schacht",
-                    "einzugsgebiete",
-                    "teilgebiete",
-                    "flaechen",
-                    "linkfl",
-                    "linksw",
-                    "tezg",
-                    "einleit",
-                    "aussengebiete",
-                    "symbole",
-                ]
-
-                tablisgeop = [
-                    "schaechte",
-                    "schaechte_untersucht",
-                ]
-
-                tablisgbuf = [
-                    "linkfl",
-                    "linksw",
-                ]
-
-                tablisglink = [
-                    "linkfl",
-                    "linksw",
-                    "linkageb",
-                ]
-
-                tablisgeometry = [
-                    "flaechen_he8",
-                ]
+                tablisgeom = QKan.tablesgeom
+                tablisgeop = QKan.tablesgeop
+                tablisgbuf = QKan.tablesgbuf
+                tablisglink = QKan.tablesglink
+                tablisgeometry = QKan.tablesgeometry
 
                 # Referenztabellen
-                tablisattr = [
-                    "simulationsstatus",
-                    "material",
-                    "auslasstypen",
-                    "abflussparameter",
-                    "flaechentypen",
-                    "bodenklassen",
-                    "abflusstypen",
-                    "knotentypen",
-                    "schachttypen",
-                    "eigentum",
-                    "symbolkatalog",
-                    "dynahal",
-                    "gruppen",
-                    "profile",
-                    "entwaesserungsarten",
-                    "haltungstypen",
-                    "untersuchrichtung",
-                    "wetter",
-                    "bewertungsart",
-                    "pumpentypen",
-                    "pruefsql",
-                    "pruefliste",
-                    "reflist_zustand",
-                    "info",
-                    "refdata",
-                    "fotos",
-                    "videos",
-                ]
+                tablisattr = QKan.tablesattr
 
+                # Erzeugen aller QKan-Tabellen
                 tablis = set(tablisgeom) | \
                          set(tablisgeop) | \
                          set(tablisgbuf) | \
@@ -1510,15 +1447,7 @@ class DBConnection:
 
         # - attrPk:string enthält den Namen des Primärschlüssels
 
-        geo_types = [
-            None,
-            "POINT",
-            "LINESTRING",
-            "POLYGON",
-            "MULTIPOINT",
-            "MULTILINESTRING",
-            "MULTIPOLYGON",
-        ]
+        geo_types = QKan.geotypes
 
         # 1. bestehende Tabelle
         # Benutzerdefinierte Felder müssen übernommen werden

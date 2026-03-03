@@ -48,6 +48,88 @@ PLUGIN_LIST = [
     "info.application.Infos",
 ]
 
+TABLES_GEOM = [
+    "notizen",
+    "haltungen",
+    "haltungen_untersucht",
+    "untersuchdat_haltung",
+    "anschlussleitungen",
+    "anschlussleitungen_untersucht",
+    "anschlussschaechte",
+    "untersuchdat_anschlussleitung",
+    "schaechte",
+    "untersuchdat_schacht",
+    "einzugsgebiete",
+    "teilgebiete",
+    "flaechen",
+    "linkfl",
+    "linksw",
+    "tezg",
+    "einleit",
+    "aussengebiete",
+    "symbole",
+]
+
+TABLES_GEOP = [
+    "schaechte",
+    "schaechte_untersucht",
+]
+
+TABLES_GBUF = [
+    "linkfl",
+    "linksw",
+]
+
+TABLES_GLINK = [
+    "linkfl",
+    "linksw",
+    "linkageb",
+]
+
+TABLES_GEOMETRY = [
+    "flaechen_he8",
+]
+
+TABLES_ATTR = [
+    "simulationsstatus",
+    "material",
+    "auslasstypen",
+    "abflussparameter",
+    "flaechentypen",
+    "bodenklassen",
+    "abflusstypen",
+    "knotentypen",
+    "schachttypen",
+    "eigentum",
+    "symbolkatalog",
+    "dynahal",
+    "gruppen",
+    "profile",
+    "entwaesserungsarten",
+    "haltungstypen",
+    "untersuchrichtung",
+    "wetter",
+    "bewertungsart",
+    "pumpentypen",
+    "pruefsql",
+    "pruefliste",
+    "reflist_zustand",
+    "info",
+    "refdata",
+    "fotos",
+    "videos",
+]
+
+GEO_TYPES = [
+    None,
+    "POINT",
+    "LINESTRING",
+    "POLYGON",
+    "MULTIPOINT",
+    "MULTILINESTRING",
+    "MULTIPOLYGON",
+]
+
 
 # noinspection PyPep8Naming
 def classFactory(iface: QgisInterface) -> "QKan":  # pylint: disable=invalid-name
@@ -115,6 +197,20 @@ class QKan:
         ]
         # self.logger.debug(f"forms_dir: {forms_dir}")
         # self.logger.debug(f"Formularliste: \n{QKan.forms}")
+
+        # QKan-Tabellen
+
+        # Tabellen mit Geometrieobjekten
+        QKan.tablesgeom = TABLES_GEOM
+        QKan.tablesgeop = TABLES_GEOP
+        QKan.tablesgbuf = TABLES_GBUF
+        QKan.tablesglink = TABLES_GLINK
+        QKan.tablesgeometry = TABLES_GEOMETRY
+
+        # Referenztabellen
+        QKan.tablesattr = TABLES_ATTR
+        # Alle in QKan vorkommenden Geometriedatentypen:
+        QKan.geotypes = GEO_TYPES
 
         # Plugins
         self.instances: List[_ExternalQKanPlugin] = []
