@@ -6,6 +6,9 @@ import os
 from typing import Optional, cast
 
 from qgis.PyQt.QtWidgets import QListWidgetItem
+from qgis.PyQt.QtWidgets import (
+    QApplication,
+)
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgisInterface
 from qgis.utils import iface
@@ -153,13 +156,16 @@ class QKanTools(QKanPlugin):
         )
 
         icon_file_path = ":/plugins/qkan/tools/res/icon_zoom_clipboard.png"
-        QKan.instance.add_action(
+        self.action = QKan.instance.add_action(
             icon_file_path,
             text=self.tr("Zur Auswahl zoomen"),
             toolbar='QKan-Allgemein',
             callback=self.run_zoom_clipboard,
             parent=self.iface.mainWindow(),
         )
+        self.action.setCheckable(True)
+        self.action.toggled.connect(self.run_zoom_clipboard)
+
 
         # icon_befahrung = ":/plugins/qkan/tools/res/icon_befahrung.png"
         # QKan.instance.add_action(
@@ -1107,16 +1113,17 @@ class QKanTools(QKanPlugin):
                     auswahl, art
                 )
 
-    def run_zoom_clipboard(self) -> None:
+    def run_zoom_clipboard(self):
+        self.clip = QApplication.clipboard()
+        text = self.clip.text()
+        self.text = text
 
-        # show the dialog
-        self.dlgzc.show()
-        self.dlgzc.button = False
-
-        # Run the dialog event loop
-        result = self.dlgzc.exec()
+        def on_change():
+            text = self.clip.text()
+            self.text = text
 
         def zoom_clip2():
+            get_database_QKan()
             with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
                 if not db_qkan.connected:
                     self.log.error(
@@ -1125,7 +1132,7 @@ class QKanTools(QKanPlugin):
                     )
                     raise Exception(f"{self.__class__.__name__}: {QKan.config.database.qkan} wurde nicht gefunden!")
 
-                clip = self.dlgzc.text
+                clip = self.text
 
                 layer = QgsProject.instance().mapLayersByName('Haltungen')[0]
                 if layer is not None and clip is not None:
@@ -1152,10 +1159,11 @@ class QKanTools(QKanPlugin):
                             iface.mapCanvas().zoomToSelected(layer)
                             # 42780133
 
-        if self.dlgzc.button:
+        if self.action.isChecked():
+            self.clip.dataChanged.connect(on_change)
             self.dlgzc.clip.dataChanged.connect(zoom_clip2)
         else:
-            pass
+             self.clip.dataChanged.disconnect()
 
 
     def run_befahrung(self) -> None:
