@@ -18,6 +18,7 @@ from qgis.core import (
     QgsFeature,
     QgsRectangle,
     QgsGeometry,
+    QgsWkbTypes,
 )
 from PyQt5.QtCore import QVariant
 from qgis.PyQt.QtXml import QDomDocument
@@ -156,9 +157,8 @@ def bericht(
 
     if auswahl:
 
-        haltungen_layer_name = "Haltungen"
-
-        haltungen_layer = QgsProject.instance().mapLayersByName(haltungen_layer_name)[0]
+        haltungen_layer = QgsProject.instance().mapLayersByName("Haltungen")[0]
+        geom_type = QgsWkbTypes.displayString(haltungen_layer.wkbType())
 
         sql = f"""
                 SELECT pk from sel_haltungen
@@ -167,20 +167,27 @@ def bericht(
 
         selected_ids =  [row[0] for row in db_qkan.fetchall()]
 
+
         fields = haltungen_layer.fields()
-        temp_layer = QgsVectorLayer(f"{haltungen_layer.geometryType()}?crs={haltungen_layer.crs().authid()}",
+        temp_layer = QgsVectorLayer(f"{geom_type}?crs={haltungen_layer.crs().authid()}",
                                     "vl_atlas_temp", "memory")
         pr = temp_layer.dataProvider()
         pr.addAttributes(fields)
         temp_layer.updateFields()
 
+        features = []
+
         for feat in haltungen_layer.getFeatures():
             if feat["pk"] in selected_ids:
-                new_feat = QgsFeature(fields)
-                new_feat.setGeometry(feat.geometry())
-                for f in fields:
-                    new_feat[f.name()] = feat[f.name()]
-                pr.addFeature(new_feat)
+                # new_feat = QgsFeature(fields)
+                # new_feat.setGeometry(feat.geometry())
+                # for f in fields:
+                #     new_feat[f.name()] = feat[f.name()]
+                # pr.addFeature(new_feat)
+                features.append(feat)
+
+        print(features)
+        pr.addFeatures(features)
 
         QgsProject.instance().addMapLayer(temp_layer, addToLegend=False)
 
@@ -207,17 +214,16 @@ def bericht(
 
         atlas.beginRender()
         for i in range(temp_layer.featureCount()):
-            print(i)
             atlas.next()
-            idx = atlas.currentFeatureNumber()
-            feature = (temp_layer.getFeature(idx))
+            #idx = atlas.currentFeatureNumber()
+            #feature = (temp_layer.getFeature(idx))
+            feature = features[atlas.currentFeatureNumber()]
 
             pdf_path = rf"{base_folder}\{feature['haltnam']}.pdf"
             exporter.exportToPdf(pdf_path, settings)
         atlas.endRender()
 
         haltungen_layer.setSubsetString("")
-        #coverage_layer.setSubsetString("")
 
     else:
         haltungen = QgsProject.instance().mapLayersByName("Haltungen")[0]
@@ -228,21 +234,6 @@ def bericht(
         for i in range(len(features)):
             atlas.next()  # Atlas auf die nächste Seite setzen
             feature = features[atlas.currentFeatureNumber()]
-
-            # bbox = create_buffered_geometry(i)
-            #
-            # # 1️⃣ Coverage Layer: nur aktuelles Feature
-            # #coverage_layer.setSubsetString(f'"id" = {feature.id()}')
-            #
-            # # 2️⃣ Alle anderen Layer: Filter auf gepufferten Bereich
-            # for lyr in QgsProject.instance().mapLayers().values():
-            #     if lyr == coverage_layer or not hasattr(lyr, 'setSubsetString'):
-            #         continue
-            #     x_min, x_max, y_min, y_max = bbox.xMinimum(), bbox.xMaximum(), bbox.yMinimum(), bbox.yMaximum()
-            #     lyr.setSubsetString(
-            #         f"xmin($geometry) <= {x_max} AND xmax($geometry) >= {x_min} "
-            #         f"AND ymin($geometry) <= {y_max} AND ymax($geometry) >= {y_min}"
-            #     )
 
             pdf_path = rf"{base_folder}\{feature['haltnam']}.pdf"
             exporter.exportToPdf(pdf_path, settings)

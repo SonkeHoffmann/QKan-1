@@ -42,6 +42,7 @@ class QgsZoomDialog(QKanDBDialog, FORM_CLASS_zoom):  # type: ignore
         self.toolButton.toggled.connect(self.toggle_action)
 
         self.button_box.helpRequested.connect(self.click_help)
+        self.text = None
 
     def on_change(self):
         text = self.clip.text()
@@ -51,6 +52,7 @@ class QgsZoomDialog(QKanDBDialog, FORM_CLASS_zoom):  # type: ignore
         if checked:
             self.button = True
             self.clip.dataChanged.connect(self.on_change)
+            return self.text
 
         else:
             self.button = False

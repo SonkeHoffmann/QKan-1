@@ -1,25 +1,33 @@
-from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
+from qgis.PyQt.QtCore import QStandardPaths
 from qkan.utils import get_logger
 from qgis.utils import iface
+from qgis.core import Qgis
+from qgis.core import QgsApplication
 
 import os
-
-from qgis.core import Qgis
 from qkan import QKan
-
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.videoplayer import Videoplayer
 from qkan.tools.qkan_utils import get_database_QKan
+import json
+import site
+from pathlib import Path
+import sys
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 logger = get_logger("QKan.tools.zeige_video")
 
 class ShowVideo(QDialog):
     """Zeigt Haltungsschäden an"""
-    def __init__(self, name: str, untersuchtag, video_offset, time_code):
+    def __init__(self, name: str, untersuchtag, video_offset, time_code, art, bild_ordner):
         super(ShowVideo, self).__init__()
 
         self.name = name
         self.untersuchtag = untersuchtag
+        self.art = art
+        self.bild_ordner = bild_ordner
         if video_offset in ['', None, 'NULL']:
             self.video_offset = 0
         else:
@@ -30,7 +38,7 @@ class ShowVideo(QDialog):
         else:
             self.time_code = float(time_code)
 
-        self.show()
+        #self.show()
 
     def show(self):
         """Aktualisiert die Schadensliste"""
@@ -44,7 +52,7 @@ class ShowVideo(QDialog):
             try:
                 name = self.name
                 datum = self.untersuchtag
-                sql = f"""select datei from videos where name= '{name}' and untersuchtag = '{datum}'"""
+                sql = f"""select datei from videos where name= '{name}' and untersuchtag = '{datum}' and objekt = '{self.art}'"""
 
                 db_qkan.sql(sql)
                 data = db_qkan.fetchone()
@@ -79,3 +87,49 @@ class ShowVideo(QDialog):
                 raise Exception(
                     "The QKan main plugin has to be installed for this to work."
                 )
+
+    def show_panoramo(self):
+
+        ordner = QKan.config.videopath
+
+        get_database_QKan()
+        with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
+
+            name = self.name
+            datum = self.untersuchtag
+            sql = f"""select datei from videos where name= '{name}' and untersuchtag = '{datum}' and objekt = '{self.art}'"""
+
+            db_qkan.sql(sql)
+            data = db_qkan.fetchone()
+            if data is None:
+                iface.messageBar().pushMessage(
+                    f'Kein Video für Haltung {name} und Datum {datum} gefunden',
+                    level=Qgis.Warning, duration=5)
+            else:
+                datei = data[0]
+                datei = datei.lstrip("\\/")
+            video = os.path.normpath(os.path.join(ordner, datei))
+            video = video.lower()
+            system = sys.platform
+
+            if system == "Windows":
+                os.startfile(video)  # Windows öffnet die Datei mit Standardprogramm
+            elif system == "Darwin":  # macOS
+                os.system(f"open '{video}'")
+            else:  # Linux
+                os.system(f"xdg-open '{video}'")
+
+    def show_bild(self):
+        ordner = QKan.config.fotopath
+
+        # Bild laden
+        bild = self.bild_ordner
+        if bild != '':
+            bild_path = os.path.normpath(os.path.join(ordner, bild))
+            bild_path = bild_path.lower()
+            bild_path = mpimg.imread(bild_path)
+
+            # Bild anzeigen
+            plt.imshow(bild_path)
+            plt.axis("off")
+            plt.show()
