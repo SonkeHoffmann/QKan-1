@@ -1,13 +1,10 @@
-from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
+from qgis.PyQt.QtWidgets import QDialog
 from qkan.utils import get_logger
 from qgis.utils import iface
 
-from qgis.core import *
-import json
-import site
-from pathlib import Path
-from qgis.core import QgsApplication
-import sys
+import os
+
+from qgis.core import Qgis
 from qkan import QKan
 
 from qkan.database.dbfunc import DBConnection

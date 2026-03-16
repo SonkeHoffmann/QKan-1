@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>504</width>
-    <height>714</height>
+    <height>766</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -61,7 +61,7 @@
         <x>0</x>
         <y>0</y>
         <width>502</width>
-        <height>676</height>
+        <height>728</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -360,8 +360,14 @@
           </property>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_8">
+            <property name="spacing">
+             <number>6</number>
+            </property>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="spacing">
+               <number>2</number>
+              </property>
               <item>
                <widget class="QLabel" name="label">
                 <property name="minimumSize">
@@ -492,10 +498,34 @@
             </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>8</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Flächendaten</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QCheckBox" name="cb_flaechen">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -519,7 +549,7 @@
               <item>
                <widget class="QCheckBox" name="cb_tezg">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -543,7 +573,7 @@
               <item>
                <widget class="QCheckBox" name="cb_linkfl">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -568,10 +598,13 @@
             </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="spacing">
+               <number>2</number>
+              </property>
               <item>
                <widget class="QLabel" name="label_2">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -589,7 +622,7 @@
               <item>
                <widget class="QCheckBox" name="cb_schaechte_insp">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -613,7 +646,7 @@
               <item>
                <widget class="QCheckBox" name="cb_haltungen_insp">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -637,7 +670,7 @@
               <item>
                <widget class="QCheckBox" name="cb_haleitungen_insp">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -663,12 +696,12 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <property name="spacing">
-               <number>6</number>
+               <number>2</number>
               </property>
               <item>
                <widget class="QLabel" name="label_3">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -686,7 +719,7 @@
               <item>
                <widget class="QCheckBox" name="cb_haleitungen_insp_2">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -771,6 +804,19 @@ Teilgebiete beschränken:</string>
           <string>Vergleichstabellen automatisch öffnen</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

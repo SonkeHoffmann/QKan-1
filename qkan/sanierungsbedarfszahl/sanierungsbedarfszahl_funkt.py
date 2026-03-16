@@ -909,7 +909,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
             uifile='haltungen_untersucht_bewertung_dwa.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HALTUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -918,7 +918,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
             uifile='untersuchdat_haltung_bewertung_dwa.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HALTUNGEN_GROUP.value],
         )
 
 
@@ -1340,7 +1340,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
             uifile='anschlussleitungen_untersucht_bewertung_dwa.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HA_LEITUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -1349,7 +1349,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltungen_bewertung.qml'),
             uifile='untersuchdat_anschlussleitung_bewertung.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HA_LEITUNGEN_GROUP.value],
         )
 
     def sanierungszahl_dwa_schacht(self):
@@ -1672,7 +1672,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
             uifile='schaechte_untersucht_bewertung_dwa.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_SCHAECHTE_GROUP.value],
         )
 
         loadLayer(
@@ -1681,7 +1681,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geop',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml'),
             uifile='untersuchdat_schacht_bewertung_dwa.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_SCHAECHTE_GROUP.value],
         )
 
     def systemzahl_isy_haltung(self):
@@ -2074,7 +2074,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml'),
             uifile='haltungen_untersucht_bewertung_isy.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HALTUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -2083,7 +2083,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_isy.qml'),
             uifile='untersuchdat_haltung_bewertung_isy.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HALTUNGEN_GROUP.value],
         )
 
     def systemzahl_isy_leitung(self):
@@ -2468,7 +2468,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml'),
             uifile='anschlussleitungen_untersucht_bewertung_isy.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HA_LEITUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -2477,7 +2477,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_isy.qml'),
             uifile='untersuchdat_anschlussleitung_bewertung_isy.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_HA_LEITUNGEN_GROUP.value],
         )
 
     def systemzahl_isy_schacht(self):
@@ -2796,7 +2796,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml'),
             uifile='schaechte_untersucht_bewertung_isy.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_SCHAECHTE_GROUP.value],
         )
 
         loadLayer(
@@ -2805,7 +2805,7 @@ class SanierungsbedarfszahlFunkt:
             geom_column='geop',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_isy.qml'),
             uifile='untersuchdat_schacht_bewertung_isy.ui',
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.SANIERUNGSBEDARF_GROUP.value, enums.LAYERBEZ.SBZ_SCHAECHTE_GROUP.value],
         )
 
     def atlas(self):

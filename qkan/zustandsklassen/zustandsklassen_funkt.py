@@ -1345,7 +1345,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_haltung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
     def bewertungstexte_leitung(self):
@@ -2510,8 +2510,8 @@ class Zustandsklassen_funkt:
             layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HA_LEITUNGEN.value,
             table='untersuchdat_anschlussleitung_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_dwa.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
 
@@ -3628,7 +3628,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_schacht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
 
@@ -3911,7 +3911,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_haltung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -3919,7 +3919,7 @@ class Zustandsklassen_funkt:
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
     def bewertung_dwa_neu_leitung(self):
@@ -4128,16 +4128,16 @@ class Zustandsklassen_funkt:
             layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HA_LEITUNGEN.value,
             table='untersuchdat_anschlussleitung_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_dwa.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
         loadLayer(
             layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
     def bewertung_dwa_neu_schaechte(self):
@@ -4322,7 +4322,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_schacht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
         loadLayer(
@@ -4330,7 +4330,7 @@ class Zustandsklassen_funkt:
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
     def bewertung_dwa_haltung(self):
@@ -7375,7 +7375,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_haltung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -7383,7 +7383,7 @@ class Zustandsklassen_funkt:
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
 
@@ -10343,16 +10343,16 @@ class Zustandsklassen_funkt:
             layerbez=enums.LAYERBEZ.ZK_EINZELSCHAEDEN_HA_LEITUNGEN.value,
             table='untersuchdat_anschlussleitung_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_dwa.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
         loadLayer(
             layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
 
@@ -13819,7 +13819,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_schacht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
         logger.debug(f'Ende_Bewertung_Schaechte.liste: {datetime.now()}')
@@ -13829,7 +13829,7 @@ class Zustandsklassen_funkt:
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
 
@@ -16390,7 +16390,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_haltung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_isy.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
         sql = """CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht"""
@@ -16458,7 +16458,7 @@ class Zustandsklassen_funkt:
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
     def bewertung_isy_leitung(self):
@@ -18936,7 +18936,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_anschlussleitung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_isy.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
         sql = """CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht"""
@@ -19003,8 +19003,8 @@ class Zustandsklassen_funkt:
             layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
     def bewertung_isy_schacht(self):
@@ -22111,7 +22111,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_schacht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_isy.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
         sql = """CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht"""
@@ -22173,7 +22173,7 @@ class Zustandsklassen_funkt:
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
     def einzelfallbetrachtung_haltung(self):
@@ -24628,7 +24628,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_haltung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_haltung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
         loadLayer(
@@ -24636,7 +24636,7 @@ class Zustandsklassen_funkt:
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HALTUNGEN_GROUP.value],
         )
 
     def einzelfallbetrachtung_leitung(self):
@@ -26993,15 +26993,15 @@ class Zustandsklassen_funkt:
             table='untersuchdat_anschlussleitung_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_anschlussleitung_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
         loadLayer(
             layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
-            qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml'),
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_HA_LEITUNGEN_GROUP.value],
         )
 
     def einzelfallbetrachtung_schacht(self):
@@ -29997,7 +29997,7 @@ class Zustandsklassen_funkt:
             table='untersuchdat_schacht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'untersuchdat_schacht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
         loadLayer(
@@ -30005,7 +30005,7 @@ class Zustandsklassen_funkt:
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
-            group=['QKan', 'Zustandsbewertung', 'ZK_Haltungen'],
+            group=['QKan', enums.LAYERBEZ.ZUSTANDSBEWERTUNG_GROUP.value, enums.LAYERBEZ.ZK_SCHAECHTE_GROUP.value],
         )
 
     def tab_dwa_haltung(self):
