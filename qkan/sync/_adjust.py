@@ -47,38 +47,46 @@ class AdjustTask:
             )
 
             # Synchronisation aller gewählten Tabellen
+            # Medien müssen in allen nachfolgenden Fällen berücksichtigt werden:
+            check_medien = any(
+                [
+                    QKan.config.sync.check_schaechte_insp,
+                    QKan.config.sync.check_haltungen_insp,
+                    QKan.config.sync.check_haleitungen_insp
+                ]
+            )
+
             userchoices = [
-                QKan.config.sync.check_schaechte,
-                QKan.config.sync.check_haltungen,
-                QKan.config.sync.check_haschaechte,
-                QKan.config.sync.check_haleitungen,
-                QKan.config.sync.check_flaechen,
-                QKan.config.sync.check_tezg,
-                QKan.config.sync.check_linkfl,
-                QKan.config.sync.check_schaechte_insp,
-                QKan.config.sync.check_haltungen_insp,
-                QKan.config.sync.check_haleitungen_insp,
-                QKan.config.sync.check_showAttrTables,
-            ]
-            tables = [
-                'schaechte',
-                'haltungen',
-                'anschlussschaechte',
-                'anschlussleitungen',
-                'flaechen',
-                'tezg',
-                'linkfl',
-                'schaechte_untersucht',
-                'haltungen_untersucht',
-                'anschlussleitungen_untersucht',
-                'refdata',
+                ['schaechte', QKan.config.sync.check_schaechte],
+                ['haltungen', QKan.config.sync.check_haltungen],
+                ['anschlussschaechte', QKan.config.sync.check_haschaechte],
+                ['anschlussleitungen', QKan.config.sync.check_haleitungen],
+                ['flaechen', QKan.config.sync.check_flaechen],
+                ['einleit', QKan.config.sync.check_einleitdirekt],          # gleicher Schalter check_einleitdirekt
+                ['aussengebiete', QKan.config.sync.check_einleitdirekt],    # gleicher Schalter check_einleitdirekt
+                ['tezg', QKan.config.sync.check_tezg],
+                ['linkfl', QKan.config.sync.check_linkfl],
+                ['linksw', QKan.config.sync.check_linksw],                  # gleicher Schalter check_linksw
+                ['linkageb', QKan.config.sync.check_linksw],                # gleicher Schalter check_linksw
+                ['schaechte_untersucht', QKan.config.sync.check_schaechte_insp],
+                ['untersuchdat_schacht', QKan.config.sync.check_schaechte_insp],
+                ['haltungen_untersucht', QKan.config.sync.check_haltungen_insp],
+                ['untersuchdat_haltung', QKan.config.sync.check_haltungen_insp],
+                ['anschlussleitungen_untersucht', QKan.config.sync.check_haleitungen_insp],
+                ['untersuchdat_anschlussleitung', QKan.config.sync.check_haleitungen_insp],
+                ['notizen', QKan.config.sync.check_notizen],
+                ['symbole', QKan.config.sync.check_symbole],
+                ['plausi', QKan.config.sync.check_plausi],
+                ['videos', check_medien],                                   # gleicher Schalter check_medien, s.o.
+                ['fotos', check_medien],                                    # gleicher Schalter check_medien, s.o.
+                ['refdata', QKan.config.sync.ckeck_refdata],
             ]
 
             try:
                 with open(QKan.config.sync.protfile, 'w') as protfile:
                     dat = dtim.now().strftime('%A, %d/%m/%y %H:%M:%S')
                     protfile.write(f'Protokoll der Synchronisation am {dat}')
-                    for table, userchoice in zip(tables, userchoices):
+                    for table, userchoice in userchoices:
                         if userchoice:
                             # Protokoll schreiben
                             sqlnam = f'sync_{table}_prot'
@@ -94,7 +102,7 @@ class AdjustTask:
                 logger.warning(f'Protokolldatei {QKan.config.sync.protfile=} konnte nicht geschrieben werden')
                 return False
 
-            for table, userchoice in zip(tables, userchoices):
+            for table, userchoice in userchoices:
                 if userchoice:
 
                     sqlnames = [

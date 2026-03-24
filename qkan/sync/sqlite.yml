@@ -116,16 +116,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.anschlussleitungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.leitnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.anschlussleitungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.leitnam
     HAVING count() = 1
 ) AS be
@@ -156,16 +152,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.anschlussleitungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.leitnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.anschlussleitungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.leitnam
     HAVING count() = 1
 ) AS ex
@@ -222,16 +214,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.anschlussleitungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.leitnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.anschlussleitungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.leitnam
     HAVING count() = 1
 ) AS ex
@@ -728,16 +716,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.anschlussschaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.anschlussschaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS be
@@ -764,16 +748,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.anschlussschaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.anschlussschaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS ex
@@ -818,16 +798,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.anschlussschaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.anschlussschaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS ex
@@ -939,6 +915,562 @@ sync_anschlussschaechte_prot: "
 SELECT * FROM sync_anschlussschaechte WHERE status;"
 
 
+# Aussengebiete
+sync_create_aussengebiete: "
+CREATE TABLE IF NOT EXISTS sync_aussengebiete (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    gebnam TEXT,
+    schnam TEXT,
+    hoeheob REAL,
+    hoeheun REAL,
+    fliessweg REAL,
+    basisabfluss REAL,
+    cn REAL,
+    regenschreiber TEXT,
+    teilgebiet TEXT,
+    kommentar TEXT);"
+
+sync_create_aussengebiete_geom: "
+SELECT AddGeometryColumn('sync_aussengebiete', 'geom', :epsg, 'MULTIPOLYGON', 2);"
+
+sync_reset_aussengebiete: "
+DELETE FROM sync_aussengebiete;"
+
+# Aussengebiete, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_aussengebiete_ext: "
+INSERT INTO sync_aussengebiete (
+    pk_best, pk_ext, gebnam, objekt, aktion, status,
+    schnam, hoeheob, hoeheun, fliessweg, basisabfluss, cn, regenschreiber,
+    teilgebiet, kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.gebnam,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.schnam, ex.hoeheob, ex.hoeheun, ex.fliessweg, ex.basisabfluss, ex.cn,
+    ex.regenschreiber, ex.teilgebiet, ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.aussengebiete AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.aussengebiete AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS be
+ON be.gebnam = ex.gebnam
+WHERE be.pk IS NULL;"
+
+# Aussengebiete, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_aussengebiete_local: "
+INSERT INTO sync_aussengebiete (
+    pk_best, pk_ext, gebnam, objekt, aktion, status,
+    schnam, hoeheob, hoeheun, fliessweg, basisabfluss, cn, regenschreiber,
+    teilgebiet, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.gebnam,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.schnam, be.hoeheob, be.hoeheun, be.fliessweg, be.basisabfluss, be.cn,
+    be.regenschreiber, be.teilgebiet, be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.aussengebiete AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.aussengebiete AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS ex
+ON be.gebnam = ex.gebnam
+WHERE ex.pk IS NULL;"
+
+
+# Aussengebiete mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_aussengebiete_dif: "
+INSERT INTO sync_aussengebiete (
+    pk_best, pk_ext, gebnam, objekt, aktion, status,
+    schnam, hoeheob, hoeheun, fliessweg, basisabfluss, cn, regenschreiber,
+    teilgebiet, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.gebnam,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
+    iif(coalesce(abs(be.hoeheob - ex.hoeheob), 0) > 0.001, printf('%.3f -> %.3f', be.hoeheob, ex.hoeheob), NULL) AS hoeheob,
+    iif(coalesce(abs(be.hoeheun - ex.hoeheun), 0) > 0.001, printf('%.3f -> %.3f', be.hoeheun, ex.hoeheun), NULL) AS hoeheun,
+    iif(coalesce(abs(be.fliessweg - ex.fliessweg), 0) > 0.001, printf('%.3f -> %.3f', be.fliessweg, ex.fliessweg), NULL) AS fliessweg,
+    iif(coalesce(abs(be.basisabfluss - ex.basisabfluss), 0) > 0.001, printf('%.3f -> %.3f', be.basisabfluss, ex.basisabfluss), NULL) AS basisabfluss,
+    iif(coalesce(abs(be.cn - ex.cn), 0) > 0.001, printf('%.3f -> %.3f', be.cn, ex.cn), NULL) AS cn,
+    iif(be.regenschreiber <> ex.regenschreiber, printf('%s -> %s', be.regenschreiber, ex.regenschreiber), NULL) AS regenschreiber,
+    iif(be.teilgebiet <> ex.teilgebiet, printf('%s -> %s', be.teilgebiet, ex.teilgebiet), NULL) AS teilgebiet,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.aussengebiete AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.aussengebiete AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS ex
+ON ex.gebnam = be.gebnam
+WHERE
+    be.schnam <> ex.schnam OR
+    coalesce(abs(be.hoeheob - ex.hoeheob), 0) > 0.001 OR
+    coalesce(abs(be.hoeheun - ex.hoeheun), 0) > 0.001 OR
+    coalesce(abs(be.fliessweg - ex.fliessweg), 0) > 0.001 OR
+    coalesce(abs(be.basisabfluss - ex.basisabfluss), 0) > 0.001 OR
+    coalesce(abs(be.cn - ex.cn), 0) > 0.001 OR
+    be.regenschreiber <> ex.regenschreiber OR
+    be.teilgebiet <> ex.teilgebiet OR
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Aussengebiete hinzufügen
+sync_aussengebiete_add: "
+INSERT INTO main.aussengebiete (
+    gebnam, schnam, hoeheob, hoeheun, fliessweg, basisabfluss, cn, regenschreiber,
+    teilgebiet, kommentar,
+    geom)
+SELECT
+    ex.gebnam, ex.schnam, ex.hoeheob, ex.hoeheun, ex.fliessweg, ex.basisabfluss, ex.cn,
+    ex.regenschreiber, ex.teilgebiet, ex.kommentar,
+    ex.geom AS geom
+FROM ext.aussengebiete AS ex
+JOIN sync_aussengebiete AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Aussengebiete löschen
+sync_aussengebiete_del: "
+DELETE FROM main.aussengebiete
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_aussengebiete
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Aussengebiete ändern
+sync_aussengebiete_mod: "
+UPDATE main.aussengebiete
+SET
+    schnam = mo.schnam,
+    hoeheob = mo.hoeheob,
+    hoeheun = mo.hoeheun,
+    fliessweg = mo.fliessweg,
+    basisabfluss = mo.basisabfluss,
+    cn = mo.cn,
+    regenschreiber = mo.regenschreiber,
+    teilgebiet = mo.teilgebiet,
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.schnam IS NOT NULL AND sy.schnam <> '', ex.schnam, be.schnam) AS schnam,
+        iif(sy.hoeheob IS NOT NULL, ex.hoeheob, be.hoeheob) AS hoeheob,
+        iif(sy.hoeheun IS NOT NULL, ex.hoeheun, be.hoeheun) AS hoeheun,
+        iif(sy.fliessweg IS NOT NULL, ex.fliessweg, be.fliessweg) AS fliessweg,
+        iif(sy.basisabfluss IS NOT NULL, ex.basisabfluss, be.basisabfluss) AS basisabfluss,
+        iif(sy.cn IS NOT NULL, ex.cn, be.cn) AS cn,
+        iif(sy.regenschreiber IS NOT NULL AND sy.regenschreiber <> '', ex.regenschreiber, be.regenschreiber) AS regenschreiber,
+        iif(sy.teilgebiet IS NOT NULL AND sy.teilgebiet <> '', ex.teilgebiet, be.teilgebiet) AS teilgebiet,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_aussengebiete AS sy
+    JOIN main.aussengebiete AS be ON be.pk = sy.pk_best
+    JOIN ext.aussengebiete AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.aussengebiete.pk = mo.pk_best;"
+
+# Aussengebiete auflisten
+sync_aussengebiete_prot: "
+SELECT * FROM sync_aussengebiete WHERE status;"
+
+
+# Einleit
+sync_create_einleit: "
+CREATE TABLE IF NOT EXISTS sync_einleit (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    elnam TEXT,
+    haltnam TEXT,
+    schnam TEXT,
+    teilgebiet TEXT,
+    zufluss REAL,
+    ew REAL,
+    einzugsgebiet TEXT,
+    kommentar TEXT);"
+
+sync_create_einleit_geom: "
+SELECT AddGeometryColumn('sync_einleit', 'geom', :epsg, 'POINT', 2);"
+
+sync_reset_einleit: "
+DELETE FROM sync_einleit;"
+
+# Einleit, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_einleit_ext: "
+INSERT INTO sync_einleit (
+    pk_best, pk_ext, elnam, objekt, aktion, status,
+    haltnam, schnam, teilgebiet, zufluss, ew, einzugsgebiet, kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.elnam,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.haltnam, ex.schnam, ex.teilgebiet, ex.zufluss, ex.ew,
+    ex.einzugsgebiet, ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.einleit AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.einleit AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS be
+ON be.elnam = ex.elnam
+WHERE be.pk IS NULL;"
+
+# Einleit, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_einleit_local: "
+INSERT INTO sync_einleit (
+    pk_best, pk_ext, elnam, objekt, aktion, status,
+    haltnam, schnam, teilgebiet, zufluss, ew, einzugsgebiet, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.elnam,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.haltnam, be.schnam, be.teilgebiet, be.zufluss, be.ew,
+    be.einzugsgebiet, be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.einleit AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.einleit AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS ex
+ON be.elnam = ex.elnam
+WHERE ex.pk IS NULL;"
+
+
+# Einleit mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_einleit_dif: "
+INSERT INTO sync_einleit (
+    pk_best, pk_ext, elnam, objekt, aktion, status,
+    haltnam, schnam, teilgebiet, zufluss, ew, einzugsgebiet, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.elnam,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
+    iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
+    iif(be.teilgebiet <> ex.teilgebiet, printf('%s -> %s', be.teilgebiet, ex.teilgebiet), NULL) AS teilgebiet,
+    iif(coalesce(abs(be.zufluss - ex.zufluss), 0) > 0.001, printf('%.3f -> %.3f', be.zufluss, ex.zufluss), NULL) AS zufluss,
+    iif(coalesce(abs(be.ew - ex.ew), 0) > 0.001, printf('%.3f -> %.3f', be.ew, ex.ew), NULL) AS ew,
+    iif(be.einzugsgebiet <> ex.einzugsgebiet, printf('%s -> %s', be.einzugsgebiet, ex.einzugsgebiet), NULL) AS einzugsgebiet,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.einleit AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.einleit AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS ex
+ON ex.elnam = be.elnam
+WHERE
+    be.haltnam <> ex.haltnam OR
+    be.schnam <> ex.schnam OR
+    be.teilgebiet <> ex.teilgebiet OR
+    coalesce(abs(be.zufluss - ex.zufluss), 0) > 0.001 OR
+    coalesce(abs(be.ew - ex.ew), 0) > 0.001 OR
+    be.einzugsgebiet <> ex.einzugsgebiet OR
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Einleit hinzufügen
+sync_einleit_add: "
+INSERT INTO main.einleit (
+    elnam, haltnam, schnam, teilgebiet, zufluss, ew, einzugsgebiet, kommentar,
+    geom)
+SELECT
+    ex.elnam, ex.haltnam, ex.schnam, ex.teilgebiet, ex.zufluss, ex.ew,
+    ex.einzugsgebiet, ex.kommentar,
+    ex.geom AS geom
+FROM ext.einleit AS ex
+JOIN sync_einleit AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Einleit löschen
+sync_einleit_del: "
+DELETE FROM main.einleit
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_einleit
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Einleit ändern
+sync_einleit_mod: "
+UPDATE main.einleit
+SET
+    haltnam = mo.haltnam,
+    schnam = mo.schnam,
+    teilgebiet = mo.teilgebiet,
+    zufluss = mo.zufluss,
+    ew = mo.ew,
+    einzugsgebiet = mo.einzugsgebiet,
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.haltnam IS NOT NULL AND sy.haltnam <> '', ex.haltnam, be.haltnam) AS haltnam,
+        iif(sy.schnam IS NOT NULL AND sy.schnam <> '', ex.schnam, be.schnam) AS schnam,
+        iif(sy.teilgebiet IS NOT NULL AND sy.teilgebiet <> '', ex.teilgebiet, be.teilgebiet) AS teilgebiet,
+        iif(sy.zufluss IS NOT NULL, ex.zufluss, be.zufluss) AS zufluss,
+        iif(sy.ew IS NOT NULL, ex.ew, be.ew) AS ew,
+        iif(sy.einzugsgebiet IS NOT NULL AND sy.einzugsgebiet <> '', ex.einzugsgebiet, be.einzugsgebiet) AS einzugsgebiet,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_einleit AS sy
+    JOIN main.einleit AS be ON be.pk = sy.pk_best
+    JOIN ext.einleit AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.einleit.pk = mo.pk_best;"
+
+# Einleit auflisten
+sync_einleit_prot: "
+SELECT * FROM sync_einleit WHERE status;"
+
+
+# Einzugsgebiete
+sync_create_einzugsgebiete: "
+CREATE TABLE IF NOT EXISTS sync_einzugsgebiete (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    tgnam TEXT,
+    ewdichte REAL,
+    wverbrauch REAL,
+    stdmittel REAL,
+    fremdwas REAL,
+    kommentar TEXT);"
+
+sync_create_einzugsgebiete_geom: "
+SELECT AddGeometryColumn('sync_einzugsgebiete', 'geom', :epsg, 'MULTIPOLYGON', 2);"
+
+sync_reset_einzugsgebiete: "
+DELETE FROM sync_einzugsgebiete;"
+
+# Einzugsgebiete, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_einzugsgebiete_ext: "
+INSERT INTO sync_einzugsgebiete (
+    pk_best, pk_ext, tgnam, objekt, aktion, status,
+    ewdichte, wverbrauch, stdmittel, fremdwas, kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.tgnam,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.ewdichte, ex.wverbrauch, ex.stdmittel, ex.fremdwas, ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.einzugsgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.einzugsgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS be
+ON be.tgnam = ex.tgnam
+WHERE be.pk IS NULL;"
+
+# Einzugsgebiete, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_einzugsgebiete_local: "
+INSERT INTO sync_einzugsgebiete (
+    pk_best, pk_ext, tgnam, objekt, aktion, status,
+    ewdichte, wverbrauch, stdmittel, fremdwas, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.tgnam,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.ewdichte, be.wverbrauch, be.stdmittel, be.fremdwas, be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.einzugsgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.einzugsgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS ex
+ON be.tgnam = ex.tgnam
+WHERE ex.pk IS NULL;"
+
+
+# Einzugsgebiete mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_einzugsgebiete_dif: "
+INSERT INTO sync_einzugsgebiete (
+    pk_best, pk_ext, tgnam, objekt, aktion, status,
+    ewdichte, wverbrauch, stdmittel, fremdwas, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.tgnam,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(coalesce(abs(be.ewdichte - ex.ewdichte), 0) > 0.001, printf('%.3f -> %.3f', be.ewdichte, ex.ewdichte), NULL) AS ewdichte,
+    iif(coalesce(abs(be.wverbrauch - ex.wverbrauch), 0) > 0.001, printf('%.3f -> %.3f', be.wverbrauch, ex.wverbrauch), NULL) AS wverbrauch,
+    iif(coalesce(abs(be.stdmittel - ex.stdmittel), 0) > 0.001, printf('%.3f -> %.3f', be.stdmittel, ex.stdmittel), NULL) AS stdmittel,
+    iif(coalesce(abs(be.fremdwas - ex.fremdwas), 0) > 0.001, printf('%.3f -> %.3f', be.fremdwas, ex.fremdwas), NULL) AS fremdwas,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.einzugsgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.einzugsgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS ex
+ON ex.tgnam = be.tgnam
+WHERE
+    coalesce(abs(be.ewdichte - ex.ewdichte), 0) > 0.001 OR
+    coalesce(abs(be.wverbrauch - ex.wverbrauch), 0) > 0.001 OR
+    coalesce(abs(be.stdmittel - ex.stdmittel), 0) > 0.001 OR
+    coalesce(abs(be.fremdwas - ex.fremdwas), 0) > 0.001 OR
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Einzugsgebiete hinzufügen
+sync_einzugsgebiete_add: "
+INSERT INTO main.einzugsgebiete (
+    tgnam, ewdichte, wverbrauch, stdmittel, fremdwas, kommentar,
+    geom)
+SELECT
+    ex.tgnam, ex.ewdichte, ex.wverbrauch, ex.stdmittel, ex.fremdwas, ex.kommentar,
+    ex.geom AS geom
+FROM ext.einzugsgebiete AS ex
+JOIN sync_einzugsgebiete AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Einzugsgebiete löschen
+sync_einzugsgebiete_del: "
+DELETE FROM main.einzugsgebiete
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_einzugsgebiete
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Einzugsgebiete ändern
+sync_einzugsgebiete_mod: "
+UPDATE main.einzugsgebiete
+SET
+    ewdichte = mo.ewdichte,
+    wverbrauch = mo.wverbrauch,
+    stdmittel = mo.stdmittel,
+    fremdwas = mo.fremdwas,
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.ewdichte IS NOT NULL, ex.ewdichte, be.ewdichte) AS ewdichte,
+        iif(sy.wverbrauch IS NOT NULL, ex.wverbrauch, be.wverbrauch) AS wverbrauch,
+        iif(sy.stdmittel IS NOT NULL, ex.stdmittel, be.stdmittel) AS stdmittel,
+        iif(sy.fremdwas IS NOT NULL, ex.fremdwas, be.fremdwas) AS fremdwas,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_einzugsgebiete AS sy
+    JOIN main.einzugsgebiete AS be ON be.pk = sy.pk_best
+    JOIN ext.einzugsgebiete AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.einzugsgebiete.pk = mo.pk_best;"
+
+# Einzugsgebiete auflisten
+sync_einzugsgebiete_prot: "
+SELECT * FROM sync_einzugsgebiete WHERE status;"
+
+
 # Flaechen
 sync_create_flaechen: "
 CREATE TABLE IF NOT EXISTS sync_flaechen (
@@ -982,16 +1514,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.flaechen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.flaechen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
@@ -1015,16 +1543,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.flaechen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.flaechen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
@@ -1059,16 +1583,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.flaechen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.flaechen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
@@ -1150,6 +1670,151 @@ sync_flaechen_prot: "
 SELECT * FROM sync_flaechen WHERE status;"
 
 
+# Fotos
+sync_create_fotos: "
+CREATE TABLE IF NOT EXISTS sync_fotos (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    name TEXT,
+    untersuchtag TEXT,
+    objekt TEXT,
+    datei TEXT);"
+
+
+sync_reset_fotos: "
+DELETE FROM sync_fotos;"
+
+# Fotos, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_fotos_ext: "
+INSERT INTO sync_fotos (
+    pk_best, pk_ext, name, aktion, status,
+    untersuchtag, objekt, datei)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.name,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.untersuchtag, ex.objekt, ex.datei
+FROM (
+    SELECT * 
+    FROM ext.fotos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.fotos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS be
+ON be.name = ex.name
+WHERE be.pk IS NULL;"
+
+# Fotos, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_fotos_local: "
+INSERT INTO sync_fotos (
+    pk_best, pk_ext, name, aktion, status,
+    untersuchtag, objekt, datei)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.name,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.untersuchtag, be.objekt, be.datei
+FROM (
+    SELECT *
+    FROM main.fotos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.fotos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS ex
+ON be.name = ex.name
+WHERE ex.pk IS NULL;"
+
+
+# Fotos mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_fotos_dif: "
+INSERT INTO sync_fotos (
+    pk_best, pk_ext, name, aktion, status,
+    untersuchtag, objekt, datei)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.name,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
+    iif(be.objekt <> ex.objekt, printf('%s -> %s', be.objekt, ex.objekt), NULL) AS objekt,
+    iif(be.datei <> ex.datei, printf('%s -> %s', be.datei, ex.datei), NULL) AS datei
+FROM (
+    SELECT *
+    FROM main.fotos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.fotos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS ex
+ON ex.name = be.name
+WHERE
+    be.untersuchtag <> ex.untersuchtag OR
+    be.objekt <> ex.objekt OR
+    be.datei <> ex.datei;"
+
+# Fotos hinzufügen
+sync_fotos_add: "
+INSERT INTO main.fotos (
+    name, untersuchtag, objekt, datei)
+SELECT
+    ex.name, ex.untersuchtag, ex.objekt, ex.datei
+FROM ext.fotos AS ex
+JOIN sync_fotos AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Fotos löschen
+sync_fotos_del: "
+DELETE FROM main.fotos
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_fotos
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Fotos ändern
+sync_fotos_mod: "
+UPDATE main.fotos
+SET
+    untersuchtag = mo.untersuchtag,
+    objekt = mo.objekt,
+    datei = mo.datei
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.untersuchtag IS NOT NULL AND sy.untersuchtag <> '', ex.untersuchtag, be.untersuchtag) AS untersuchtag,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.objekt, be.objekt) AS objekt,
+        iif(sy.datei IS NOT NULL AND sy.datei <> '', ex.datei, be.datei) AS datei
+    FROM sync_fotos AS sy
+    JOIN main.fotos AS be ON be.pk = sy.pk_best
+    JOIN ext.fotos AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.fotos.pk = mo.pk_best;"
+
+# Fotos auflisten
+sync_fotos_prot: "
+SELECT * FROM sync_fotos WHERE status;"
+
+
 # Haltungen
 sync_create_haltungen: "
 CREATE TABLE IF NOT EXISTS sync_haltungen (
@@ -1218,16 +1883,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.haltungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.haltnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.haltungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.haltnam
     HAVING count() = 1
 ) AS be
@@ -1258,16 +1919,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.haltungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.haltnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.haltungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.haltnam
     HAVING count() = 1
 ) AS ex
@@ -1323,16 +1980,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.haltungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.haltnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.haltungen AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.haltnam
     HAVING count() = 1
 ) AS ex
@@ -1771,6 +2424,158 @@ sync_haltungen_untersucht_prot: "
 SELECT * FROM sync_haltungen_untersucht WHERE status;"
 
 
+# Linkageb
+sync_create_linkageb: "
+CREATE TABLE IF NOT EXISTS sync_linkageb (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    gebnam TEXT,
+    schnam TEXT);"
+
+sync_create_linkageb_geom: "
+SELECT AddGeometryColumn('sync_linkageb', 'glink', :epsg, 'LINESTRING', 2);"
+
+sync_reset_linkageb: "
+DELETE FROM sync_linkageb;"
+
+# Linkageb, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_linkageb_ext: "
+INSERT INTO sync_linkageb (
+    pk_best, pk_ext, gebnam, objekt, aktion, status,
+    schnam,
+    glink)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.gebnam,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.schnam,
+    ex.glink AS glink
+FROM (
+    SELECT * 
+    FROM ext.linkageb AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.linkageb AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS be
+ON be.gebnam = ex.gebnam
+WHERE be.pk IS NULL;"
+
+# Linkageb, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_linkageb_local: "
+INSERT INTO sync_linkageb (
+    pk_best, pk_ext, gebnam, objekt, aktion, status,
+    schnam,
+    glink)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.gebnam,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.schnam,
+    be.glink AS glink
+FROM (
+    SELECT *
+    FROM main.linkageb AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.linkageb AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS ex
+ON be.gebnam = ex.gebnam
+WHERE ex.pk IS NULL;"
+
+
+# Linkageb mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_linkageb_dif: "
+INSERT INTO sync_linkageb (
+    pk_best, pk_ext, gebnam, objekt, aktion, status,
+    schnam,
+    glink)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.gebnam,
+    iif(be.glink <> ex.glink, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
+    be.glink AS glink
+FROM (
+    SELECT *
+    FROM main.linkageb AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.linkageb AS t
+    GROUP BY t.gebnam
+    HAVING count() = 1
+) AS ex
+ON ex.gebnam = be.gebnam
+WHERE
+    be.schnam <> ex.schnam OR
+    be.glink <> ex.glink;"
+
+# Linkageb hinzufügen
+sync_linkageb_add: "
+INSERT INTO main.linkageb (
+    gebnam, schnam,
+    glink)
+SELECT
+    ex.gebnam, ex.schnam,
+    ex.glink AS glink
+FROM ext.linkageb AS ex
+JOIN sync_linkageb AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Linkageb löschen
+sync_linkageb_del: "
+DELETE FROM main.linkageb
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_linkageb
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Linkageb ändern
+sync_linkageb_mod: "
+UPDATE main.linkageb
+SET
+    schnam = mo.schnam,
+    glink = mo.glink
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.schnam IS NOT NULL AND sy.schnam <> '', ex.schnam, be.schnam) AS schnam,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.glink, be.glink) AS glink
+    FROM sync_linkageb AS sy
+    JOIN main.linkageb AS be ON be.pk = sy.pk_best
+    JOIN ext.linkageb AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.linkageb.pk = mo.pk_best;"
+
+# Linkageb auflisten
+sync_linkageb_prot: "
+SELECT * FROM sync_linkageb WHERE status;"
+
+
 # Linkfl
 sync_create_linkfl: "
 CREATE TABLE IF NOT EXISTS sync_linkfl (
@@ -1815,16 +2620,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.linkfl AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.linkfl AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
@@ -1849,16 +2650,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.linkfl AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.linkfl AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
@@ -1893,16 +2690,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.linkfl AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.linkfl AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
@@ -1983,6 +2776,476 @@ WHERE main.linkfl.pk = mo.pk_best;"
 # Linkfl auflisten
 sync_linkfl_prot: "
 SELECT * FROM sync_linkfl WHERE status;"
+
+
+# Linksw
+sync_create_linksw: "
+CREATE TABLE IF NOT EXISTS sync_linksw (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    elnam TEXT,
+    haltnam TEXT,
+    schnam TEXT,
+    teilgebiet TEXT);"
+
+sync_create_linksw_geom: "
+SELECT AddGeometryColumn('sync_linksw', 'glink', :epsg, 'LINESTRING', 2);"
+
+sync_reset_linksw: "
+DELETE FROM sync_linksw;"
+
+# Linksw, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_linksw_ext: "
+INSERT INTO sync_linksw (
+    pk_best, pk_ext, elnam, objekt, aktion, status,
+    haltnam, schnam, teilgebiet,
+    glink)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.elnam,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.haltnam, ex.schnam, ex.teilgebiet,
+    ex.glink AS glink
+FROM (
+    SELECT * 
+    FROM ext.linksw AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.linksw AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS be
+ON be.elnam = ex.elnam
+WHERE be.pk IS NULL;"
+
+# Linksw, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_linksw_local: "
+INSERT INTO sync_linksw (
+    pk_best, pk_ext, elnam, objekt, aktion, status,
+    haltnam, schnam, teilgebiet,
+    glink)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.elnam,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.haltnam, be.schnam, be.teilgebiet,
+    be.glink AS glink
+FROM (
+    SELECT *
+    FROM main.linksw AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.linksw AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS ex
+ON be.elnam = ex.elnam
+WHERE ex.pk IS NULL;"
+
+
+# Linksw mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_linksw_dif: "
+INSERT INTO sync_linksw (
+    pk_best, pk_ext, elnam, objekt, aktion, status,
+    haltnam, schnam, teilgebiet,
+    glink)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.elnam,
+    iif(be.glink <> ex.glink, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
+    iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
+    iif(be.teilgebiet <> ex.teilgebiet, printf('%s -> %s', be.teilgebiet, ex.teilgebiet), NULL) AS teilgebiet,
+    be.glink AS glink
+FROM (
+    SELECT *
+    FROM main.linksw AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.linksw AS t
+    GROUP BY t.elnam
+    HAVING count() = 1
+) AS ex
+ON ex.elnam = be.elnam
+WHERE
+    be.haltnam <> ex.haltnam OR
+    be.schnam <> ex.schnam OR
+    be.teilgebiet <> ex.teilgebiet OR
+    be.glink <> ex.glink;"
+
+# Linksw hinzufügen
+sync_linksw_add: "
+INSERT INTO main.linksw (
+    elnam, haltnam, schnam, teilgebiet,
+    glink)
+SELECT
+    ex.elnam, ex.haltnam, ex.schnam, ex.teilgebiet,
+    ex.glink AS glink
+FROM ext.linksw AS ex
+JOIN sync_linksw AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Linksw löschen
+sync_linksw_del: "
+DELETE FROM main.linksw
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_linksw
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Linksw ändern
+sync_linksw_mod: "
+UPDATE main.linksw
+SET
+    haltnam = mo.haltnam,
+    schnam = mo.schnam,
+    teilgebiet = mo.teilgebiet,
+    glink = mo.glink
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.haltnam IS NOT NULL AND sy.haltnam <> '', ex.haltnam, be.haltnam) AS haltnam,
+        iif(sy.schnam IS NOT NULL AND sy.schnam <> '', ex.schnam, be.schnam) AS schnam,
+        iif(sy.teilgebiet IS NOT NULL AND sy.teilgebiet <> '', ex.teilgebiet, be.teilgebiet) AS teilgebiet,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.glink, be.glink) AS glink
+    FROM sync_linksw AS sy
+    JOIN main.linksw AS be ON be.pk = sy.pk_best
+    JOIN ext.linksw AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.linksw.pk = mo.pk_best;"
+
+# Linksw auflisten
+sync_linksw_prot: "
+SELECT * FROM sync_linksw WHERE status;"
+
+
+# Notizen
+sync_create_notizen: "
+CREATE TABLE IF NOT EXISTS sync_notizen (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    notiz TEXT);"
+
+sync_create_notizen_geom: "
+SELECT AddGeometryColumn('sync_notizen', 'geom', :epsg, 'POINT', 2);"
+
+sync_reset_notizen: "
+DELETE FROM sync_notizen;"
+
+# Notizen, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_notizen_ext: "
+INSERT INTO sync_notizen (
+    pk_best, pk_ext, notiz, objekt, aktion, status,
+    ,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.notiz,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.notizen AS t
+    GROUP BY t.notiz
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.notizen AS t
+    GROUP BY t.notiz
+    HAVING count() = 1
+) AS be
+ON be.notiz = ex.notiz
+WHERE be.pk IS NULL;"
+
+# Notizen, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_notizen_local: "
+INSERT INTO sync_notizen (
+    pk_best, pk_ext, notiz, objekt, aktion, status,
+    ,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.notiz,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.notizen AS t
+    GROUP BY t.notiz
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.notizen AS t
+    GROUP BY t.notiz
+    HAVING count() = 1
+) AS ex
+ON be.notiz = ex.notiz
+WHERE ex.pk IS NULL;"
+
+
+# Notizen mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_notizen_dif: "
+INSERT INTO sync_notizen (
+    pk_best, pk_ext, notiz, objekt, aktion, status,
+    ,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.notiz,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.notizen AS t
+    GROUP BY t.notiz
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.notizen AS t
+    GROUP BY t.notiz
+    HAVING count() = 1
+) AS ex
+ON ex.notiz = be.notiz
+WHERE
+    be.geom <> ex.geom;"
+
+# Notizen hinzufügen
+sync_notizen_add: "
+INSERT INTO main.notizen (
+    notiz, ,
+    geom)
+SELECT
+    ex.notiz, ex.,
+    ex.geom AS geom
+FROM ext.notizen AS ex
+JOIN sync_notizen AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Notizen löschen
+sync_notizen_del: "
+DELETE FROM main.notizen
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_notizen
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Notizen ändern
+sync_notizen_mod: "
+UPDATE main.notizen
+SET
+    ,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_notizen AS sy
+    JOIN main.notizen AS be ON be.pk = sy.pk_best
+    JOIN ext.notizen AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.notizen.pk = mo.pk_best;"
+
+# Notizen auflisten
+sync_notizen_prot: "
+SELECT * FROM sync_notizen WHERE status;"
+
+
+# Pruefsql
+sync_create_pruefsql: "
+CREATE TABLE IF NOT EXISTS sync_pruefsql (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    gruppe TEXT,
+    warntext TEXT,
+    warntyp TEXT,
+    warnlevel INTEGER,
+    sql TEXT,
+    layername TEXT,
+    attrname TEXT);"
+
+
+sync_reset_pruefsql: "
+DELETE FROM sync_pruefsql;"
+
+# Pruefsql, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_pruefsql_ext: "
+INSERT INTO sync_pruefsql (
+    pk_best, pk_ext, gruppe, aktion, status,
+    warntext, warntyp, warnlevel, sql, layername, attrname)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.gruppe,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.warntext, ex.warntyp, ex.warnlevel, ex.sql, ex.layername, ex.attrname
+FROM (
+    SELECT * 
+    FROM ext.pruefsql AS t
+    GROUP BY t.gruppe
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.pruefsql AS t
+    GROUP BY t.gruppe
+    HAVING count() = 1
+) AS be
+ON be.gruppe = ex.gruppe
+WHERE be.pk IS NULL;"
+
+# Pruefsql, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_pruefsql_local: "
+INSERT INTO sync_pruefsql (
+    pk_best, pk_ext, gruppe, aktion, status,
+    warntext, warntyp, warnlevel, sql, layername, attrname)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.gruppe,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.warntext, be.warntyp, be.warnlevel, be.sql, be.layername, be.attrname
+FROM (
+    SELECT *
+    FROM main.pruefsql AS t
+    GROUP BY t.gruppe
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.pruefsql AS t
+    GROUP BY t.gruppe
+    HAVING count() = 1
+) AS ex
+ON be.gruppe = ex.gruppe
+WHERE ex.pk IS NULL;"
+
+
+# Pruefsql mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_pruefsql_dif: "
+INSERT INTO sync_pruefsql (
+    pk_best, pk_ext, gruppe, aktion, status,
+    warntext, warntyp, warnlevel, sql, layername, attrname)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.gruppe,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.warntext <> ex.warntext, printf('%s -> %s', be.warntext, ex.warntext), NULL) AS warntext,
+    iif(be.warntyp <> ex.warntyp, printf('%s -> %s', be.warntyp, ex.warntyp), NULL) AS warntyp,
+    iif(be.warnlevel <> ex.warnlevel, printf('%d -> %d', be.warnlevel, ex.warnlevel), NULL) AS warnlevel,
+    iif(be.sql <> ex.sql, printf('%s -> %s', be.sql, ex.sql), NULL) AS sql,
+    iif(be.layername <> ex.layername, printf('%s -> %s', be.layername, ex.layername), NULL) AS layername,
+    iif(be.attrname <> ex.attrname, printf('%s -> %s', be.attrname, ex.attrname), NULL) AS attrname
+FROM (
+    SELECT *
+    FROM main.pruefsql AS t
+    GROUP BY t.gruppe
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.pruefsql AS t
+    GROUP BY t.gruppe
+    HAVING count() = 1
+) AS ex
+ON ex.gruppe = be.gruppe
+WHERE
+    be.warntext <> ex.warntext OR
+    be.warntyp <> ex.warntyp OR
+    be.warnlevel <> ex.warnlevel OR
+    be.sql <> ex.sql OR
+    be.layername <> ex.layername OR
+    be.attrname <> ex.attrname;"
+
+# Pruefsql hinzufügen
+sync_pruefsql_add: "
+INSERT INTO main.pruefsql (
+    gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)
+SELECT
+    ex.gruppe, ex.warntext, ex.warntyp, ex.warnlevel, ex.sql, ex.layername, ex.attrname
+FROM ext.pruefsql AS ex
+JOIN sync_pruefsql AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Pruefsql löschen
+sync_pruefsql_del: "
+DELETE FROM main.pruefsql
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_pruefsql
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Pruefsql ändern
+sync_pruefsql_mod: "
+UPDATE main.pruefsql
+SET
+    warntext = mo.warntext,
+    warntyp = mo.warntyp,
+    warnlevel = mo.warnlevel,
+    sql = mo.sql,
+    layername = mo.layername,
+    attrname = mo.attrname
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.warntext IS NOT NULL AND sy.warntext <> '', ex.warntext, be.warntext) AS warntext,
+        iif(sy.warntyp IS NOT NULL AND sy.warntyp <> '', ex.warntyp, be.warntyp) AS warntyp,
+        iif(sy.warnlevel IS NOT NULL, ex.warnlevel, be.warnlevel) AS warnlevel,
+        iif(sy.sql IS NOT NULL AND sy.sql <> '', ex.sql, be.sql) AS sql,
+        iif(sy.layername IS NOT NULL AND sy.layername <> '', ex.layername, be.layername) AS layername,
+        iif(sy.attrname IS NOT NULL AND sy.attrname <> '', ex.attrname, be.attrname) AS attrname
+    FROM sync_pruefsql AS sy
+    JOIN main.pruefsql AS be ON be.pk = sy.pk_best
+    JOIN ext.pruefsql AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.pruefsql.pk = mo.pk_best;"
+
+# Pruefsql auflisten
+sync_pruefsql_prot: "
+SELECT * FROM sync_pruefsql WHERE status;"
 
 
 # Refdata
@@ -2195,16 +3458,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.schaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.schaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS be
@@ -2231,16 +3490,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.schaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.schaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS ex
@@ -2286,16 +3541,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.schaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.schaechte AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.schnam
     HAVING count() = 1
 ) AS ex
@@ -2651,6 +3902,325 @@ sync_schaechte_untersucht_prot: "
 SELECT * FROM sync_schaechte_untersucht WHERE status;"
 
 
+# Symbole
+sync_create_symbole: "
+CREATE TABLE IF NOT EXISTS sync_symbole (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    bezeichnung TEXT,
+    art TEXT,
+    link TEXT,
+    gruppe TEXT,
+    kommentar TEXT);"
+
+sync_create_symbole_geom: "
+SELECT AddGeometryColumn('sync_symbole', 'geom', :epsg, 'POINT', 2);"
+
+sync_reset_symbole: "
+DELETE FROM sync_symbole;"
+
+# Symbole, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_symbole_ext: "
+INSERT INTO sync_symbole (
+    pk_best, pk_ext, bezeichnung, objekt, aktion, status,
+    art, link, gruppe, kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.bezeichnung,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.art, ex.link, ex.gruppe, ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.symbole AS t
+    GROUP BY t.bezeichnung
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.symbole AS t
+    GROUP BY t.bezeichnung
+    HAVING count() = 1
+) AS be
+ON be.bezeichnung = ex.bezeichnung
+WHERE be.pk IS NULL;"
+
+# Symbole, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_symbole_local: "
+INSERT INTO sync_symbole (
+    pk_best, pk_ext, bezeichnung, objekt, aktion, status,
+    art, link, gruppe, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.bezeichnung,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.art, be.link, be.gruppe, be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.symbole AS t
+    GROUP BY t.bezeichnung
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.symbole AS t
+    GROUP BY t.bezeichnung
+    HAVING count() = 1
+) AS ex
+ON be.bezeichnung = ex.bezeichnung
+WHERE ex.pk IS NULL;"
+
+
+# Symbole mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_symbole_dif: "
+INSERT INTO sync_symbole (
+    pk_best, pk_ext, bezeichnung, objekt, aktion, status,
+    art, link, gruppe, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.bezeichnung,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.art <> ex.art, printf('%s -> %s', be.art, ex.art), NULL) AS art,
+    iif(be.link <> ex.link, printf('%s -> %s', be.link, ex.link), NULL) AS link,
+    iif(be.gruppe <> ex.gruppe, printf('%s -> %s', be.gruppe, ex.gruppe), NULL) AS gruppe,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.symbole AS t
+    GROUP BY t.bezeichnung
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.symbole AS t
+    GROUP BY t.bezeichnung
+    HAVING count() = 1
+) AS ex
+ON ex.bezeichnung = be.bezeichnung
+WHERE
+    be.art <> ex.art OR
+    be.link <> ex.link OR
+    be.gruppe <> ex.gruppe OR
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Symbole hinzufügen
+sync_symbole_add: "
+INSERT INTO main.symbole (
+    bezeichnung, art, link, gruppe, kommentar,
+    geom)
+SELECT
+    ex.bezeichnung, ex.art, ex.link, ex.gruppe, ex.kommentar,
+    ex.geom AS geom
+FROM ext.symbole AS ex
+JOIN sync_symbole AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Symbole löschen
+sync_symbole_del: "
+DELETE FROM main.symbole
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_symbole
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Symbole ändern
+sync_symbole_mod: "
+UPDATE main.symbole
+SET
+    art = mo.art,
+    link = mo.link,
+    gruppe = mo.gruppe,
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.art IS NOT NULL AND sy.art <> '', ex.art, be.art) AS art,
+        iif(sy.link IS NOT NULL AND sy.link <> '', ex.link, be.link) AS link,
+        iif(sy.gruppe IS NOT NULL AND sy.gruppe <> '', ex.gruppe, be.gruppe) AS gruppe,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_symbole AS sy
+    JOIN main.symbole AS be ON be.pk = sy.pk_best
+    JOIN ext.symbole AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.symbole.pk = mo.pk_best;"
+
+# Symbole auflisten
+sync_symbole_prot: "
+SELECT * FROM sync_symbole WHERE status;"
+
+
+# Teilgebiete
+sync_create_teilgebiete: "
+CREATE TABLE IF NOT EXISTS sync_teilgebiete (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    tgnam TEXT,
+    kommentar TEXT);"
+
+sync_create_teilgebiete_geom: "
+SELECT AddGeometryColumn('sync_teilgebiete', 'geom', :epsg, 'MULTIPOLYGON', 2);"
+
+sync_reset_teilgebiete: "
+DELETE FROM sync_teilgebiete;"
+
+# Teilgebiete, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_teilgebiete_ext: "
+INSERT INTO sync_teilgebiete (
+    pk_best, pk_ext, tgnam, objekt, aktion, status,
+    kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.tgnam,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.teilgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.teilgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS be
+ON be.tgnam = ex.tgnam
+WHERE be.pk IS NULL;"
+
+# Teilgebiete, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_teilgebiete_local: "
+INSERT INTO sync_teilgebiete (
+    pk_best, pk_ext, tgnam, objekt, aktion, status,
+    kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.tgnam,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.teilgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.teilgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS ex
+ON be.tgnam = ex.tgnam
+WHERE ex.pk IS NULL;"
+
+
+# Teilgebiete mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_teilgebiete_dif: "
+INSERT INTO sync_teilgebiete (
+    pk_best, pk_ext, tgnam, objekt, aktion, status,
+    kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.tgnam,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.teilgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.teilgebiete AS t
+    GROUP BY t.tgnam
+    HAVING count() = 1
+) AS ex
+ON ex.tgnam = be.tgnam
+WHERE
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Teilgebiete hinzufügen
+sync_teilgebiete_add: "
+INSERT INTO main.teilgebiete (
+    tgnam, kommentar,
+    geom)
+SELECT
+    ex.tgnam, ex.kommentar,
+    ex.geom AS geom
+FROM ext.teilgebiete AS ex
+JOIN sync_teilgebiete AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Teilgebiete löschen
+sync_teilgebiete_del: "
+DELETE FROM main.teilgebiete
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_teilgebiete
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Teilgebiete ändern
+sync_teilgebiete_mod: "
+UPDATE main.teilgebiete
+SET
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_teilgebiete AS sy
+    JOIN main.teilgebiete AS be ON be.pk = sy.pk_best
+    JOIN ext.teilgebiete AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.teilgebiete.pk = mo.pk_best;"
+
+# Teilgebiete auflisten
+sync_teilgebiete_prot: "
+SELECT * FROM sync_teilgebiete WHERE status;"
+
+
 # Tezg
 sync_create_tezg: "
 CREATE TABLE IF NOT EXISTS sync_tezg (
@@ -2696,16 +4266,12 @@ SELECT
 FROM (
     SELECT * 
     FROM ext.tezg AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
 LEFT JOIN (
     SELECT *
     FROM main.tezg AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
@@ -2730,16 +4296,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.tezg AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
 LEFT JOIN (
     SELECT * 
     FROM ext.tezg AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
@@ -2775,16 +4337,12 @@ SELECT
 FROM (
     SELECT *
     FROM main.tezg AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS be
 JOIN (
     SELECT * 
     FROM ext.tezg AS t
-    WHERE NOT :seltgb
-       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)
     GROUP BY t.flnam
     HAVING count() = 1
 ) AS ex
@@ -2868,3 +4426,864 @@ WHERE main.tezg.pk = mo.pk_best;"
 # Tezg auflisten
 sync_tezg_prot: "
 SELECT * FROM sync_tezg WHERE status;"
+
+
+# Untersuchdat_Anschlussleitung
+sync_create_untersuchdat_anschlussleitung: "
+CREATE TABLE IF NOT EXISTS sync_untersuchdat_anschlussleitung (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    untersuchleit TEXT,
+    schoben TEXT,
+    schunten TEXT,
+    id INTEGER,
+    untersuchtag TEXT,
+    bandnr INTEGER,
+    videozaehler TEXT,
+    inspektionslaenge REAL,
+    station REAL,
+    stationtext REAL,
+    timecode TEXT,
+    video_offset REAL,
+    langtext TEXT,
+    kuerzel TEXT,
+    charakt1 TEXT,
+    charakt2 TEXT,
+    quantnr1 REAL,
+    quantnr2 REAL,
+    streckenschaden TEXT,
+    streckenschaden_lfdnr INTEGER,
+    pos_von INTEGER,
+    pos_bis INTEGER,
+    foto_dateiname TEXT,
+    film_dateiname TEXT,
+    ordner_bild TEXT,
+    ordner_video TEXT,
+    filmtyp INTEGER,
+    video_start INTEGER,
+    video_ende INTEGER,
+    bw_bs TEXT,
+    ZD INTEGER,
+    ZB INTEGER,
+    ZS INTEGER,
+    kommentar TEXT);"
+
+sync_create_untersuchdat_anschlussleitung_geom: "
+SELECT AddGeometryColumn('sync_untersuchdat_anschlussleitung', 'geom', :epsg, 'LINESTRING', 2);"
+
+sync_reset_untersuchdat_anschlussleitung: "
+DELETE FROM sync_untersuchdat_anschlussleitung;"
+
+# Untersuchdat_Anschlussleitung, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_untersuchdat_anschlussleitung_ext: "
+INSERT INTO sync_untersuchdat_anschlussleitung (
+    pk_best, pk_ext, untersuchleit, objekt, aktion, status,
+    schoben, schunten, id, untersuchtag, bandnr, videozaehler,
+    inspektionslaenge, station, stationtext, timecode, video_offset,
+    langtext, kuerzel, charakt1, charakt2, quantnr1, quantnr2,
+    streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.untersuchleit,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.schoben, ex.schunten, ex.id, ex.untersuchtag, ex.bandnr,
+    ex.videozaehler, ex.inspektionslaenge, ex.station, ex.stationtext,
+    ex.timecode, ex.video_offset, ex.langtext, ex.kuerzel, ex.charakt1,
+    ex.charakt2, ex.quantnr1, ex.quantnr2, ex.streckenschaden,
+    ex.streckenschaden_lfdnr, ex.pos_von, ex.pos_bis, ex.foto_dateiname,
+    ex.film_dateiname, ex.ordner_bild, ex.ordner_video, ex.filmtyp,
+    ex.video_start, ex.video_ende, ex.bw_bs, ex.ZD, ex.ZB, ex.ZS,
+    ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.untersuchdat_anschlussleitung AS t
+    GROUP BY t.untersuchleit
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.untersuchdat_anschlussleitung AS t
+    GROUP BY t.untersuchleit
+    HAVING count() = 1
+) AS be
+ON be.untersuchleit = ex.untersuchleit
+WHERE be.pk IS NULL;"
+
+# Untersuchdat_Anschlussleitung, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_untersuchdat_anschlussleitung_local: "
+INSERT INTO sync_untersuchdat_anschlussleitung (
+    pk_best, pk_ext, untersuchleit, objekt, aktion, status,
+    schoben, schunten, id, untersuchtag, bandnr, videozaehler,
+    inspektionslaenge, station, stationtext, timecode, video_offset,
+    langtext, kuerzel, charakt1, charakt2, quantnr1, quantnr2,
+    streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.untersuchleit,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.schoben, be.schunten, be.id, be.untersuchtag, be.bandnr,
+    be.videozaehler, be.inspektionslaenge, be.station, be.stationtext,
+    be.timecode, be.video_offset, be.langtext, be.kuerzel, be.charakt1,
+    be.charakt2, be.quantnr1, be.quantnr2, be.streckenschaden,
+    be.streckenschaden_lfdnr, be.pos_von, be.pos_bis, be.foto_dateiname,
+    be.film_dateiname, be.ordner_bild, be.ordner_video, be.filmtyp,
+    be.video_start, be.video_ende, be.bw_bs, be.ZD, be.ZB, be.ZS,
+    be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.untersuchdat_anschlussleitung AS t
+    GROUP BY t.untersuchleit
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.untersuchdat_anschlussleitung AS t
+    GROUP BY t.untersuchleit
+    HAVING count() = 1
+) AS ex
+ON be.untersuchleit = ex.untersuchleit
+WHERE ex.pk IS NULL;"
+
+
+# Untersuchdat_Anschlussleitung mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_untersuchdat_anschlussleitung_dif: "
+INSERT INTO sync_untersuchdat_anschlussleitung (
+    pk_best, pk_ext, untersuchleit, objekt, aktion, status,
+    schoben, schunten, id, untersuchtag, bandnr, videozaehler,
+    inspektionslaenge, station, stationtext, timecode, video_offset,
+    langtext, kuerzel, charakt1, charakt2, quantnr1, quantnr2,
+    streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.untersuchleit,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
+    iif(be.schunten <> ex.schunten, printf('%s -> %s', be.schunten, ex.schunten), NULL) AS schunten,
+    iif(be.id <> ex.id, printf('%d -> %d', be.id, ex.id), NULL) AS id,
+    iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
+    iif(be.bandnr <> ex.bandnr, printf('%d -> %d', be.bandnr, ex.bandnr), NULL) AS bandnr,
+    iif(be.videozaehler <> ex.videozaehler, printf('%s -> %s', be.videozaehler, ex.videozaehler), NULL) AS videozaehler,
+    iif(coalesce(abs(be.inspektionslaenge - ex.inspektionslaenge), 0) > 0.001, printf('%.3f -> %.3f', be.inspektionslaenge, ex.inspektionslaenge), NULL) AS inspektionslaenge,
+    iif(coalesce(abs(be.station - ex.station), 0) > 0.001, printf('%.3f -> %.3f', be.station, ex.station), NULL) AS station,
+    iif(coalesce(abs(be.stationtext - ex.stationtext), 0) > 0.001, printf('%.3f -> %.3f', be.stationtext, ex.stationtext), NULL) AS stationtext,
+    iif(be.timecode <> ex.timecode, printf('%s -> %s', be.timecode, ex.timecode), NULL) AS timecode,
+    iif(coalesce(abs(be.video_offset - ex.video_offset), 0) > 0.001, printf('%.3f -> %.3f', be.video_offset, ex.video_offset), NULL) AS video_offset,
+    iif(be.langtext <> ex.langtext, printf('%s -> %s', be.langtext, ex.langtext), NULL) AS langtext,
+    iif(be.kuerzel <> ex.kuerzel, printf('%s -> %s', be.kuerzel, ex.kuerzel), NULL) AS kuerzel,
+    iif(be.charakt1 <> ex.charakt1, printf('%s -> %s', be.charakt1, ex.charakt1), NULL) AS charakt1,
+    iif(be.charakt2 <> ex.charakt2, printf('%s -> %s', be.charakt2, ex.charakt2), NULL) AS charakt2,
+    iif(coalesce(abs(be.quantnr1 - ex.quantnr1), 0) > 0.001, printf('%.3f -> %.3f', be.quantnr1, ex.quantnr1), NULL) AS quantnr1,
+    iif(coalesce(abs(be.quantnr2 - ex.quantnr2), 0) > 0.001, printf('%.3f -> %.3f', be.quantnr2, ex.quantnr2), NULL) AS quantnr2,
+    iif(be.streckenschaden <> ex.streckenschaden, printf('%s -> %s', be.streckenschaden, ex.streckenschaden), NULL) AS streckenschaden,
+    iif(be.streckenschaden_lfdnr <> ex.streckenschaden_lfdnr, printf('%d -> %d', be.streckenschaden_lfdnr, ex.streckenschaden_lfdnr), NULL) AS streckenschaden_lfdnr,
+    iif(be.pos_von <> ex.pos_von, printf('%d -> %d', be.pos_von, ex.pos_von), NULL) AS pos_von,
+    iif(be.pos_bis <> ex.pos_bis, printf('%d -> %d', be.pos_bis, ex.pos_bis), NULL) AS pos_bis,
+    iif(be.foto_dateiname <> ex.foto_dateiname, printf('%s -> %s', be.foto_dateiname, ex.foto_dateiname), NULL) AS foto_dateiname,
+    iif(be.film_dateiname <> ex.film_dateiname, printf('%s -> %s', be.film_dateiname, ex.film_dateiname), NULL) AS film_dateiname,
+    iif(be.ordner_bild <> ex.ordner_bild, printf('%s -> %s', be.ordner_bild, ex.ordner_bild), NULL) AS ordner_bild,
+    iif(be.ordner_video <> ex.ordner_video, printf('%s -> %s', be.ordner_video, ex.ordner_video), NULL) AS ordner_video,
+    iif(be.filmtyp <> ex.filmtyp, printf('%d -> %d', be.filmtyp, ex.filmtyp), NULL) AS filmtyp,
+    iif(be.video_start <> ex.video_start, printf('%d -> %d', be.video_start, ex.video_start), NULL) AS video_start,
+    iif(be.video_ende <> ex.video_ende, printf('%d -> %d', be.video_ende, ex.video_ende), NULL) AS video_ende,
+    iif(be.bw_bs <> ex.bw_bs, printf('%s -> %s', be.bw_bs, ex.bw_bs), NULL) AS bw_bs,
+    iif(be.ZD <> ex.ZD, printf('%d -> %d', be.ZD, ex.ZD), NULL) AS ZD,
+    iif(be.ZB <> ex.ZB, printf('%d -> %d', be.ZB, ex.ZB), NULL) AS ZB,
+    iif(be.ZS <> ex.ZS, printf('%d -> %d', be.ZS, ex.ZS), NULL) AS ZS,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.untersuchdat_anschlussleitung AS t
+    GROUP BY t.untersuchleit
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.untersuchdat_anschlussleitung AS t
+    GROUP BY t.untersuchleit
+    HAVING count() = 1
+) AS ex
+ON ex.untersuchleit = be.untersuchleit
+WHERE
+    be.schoben <> ex.schoben OR
+    be.schunten <> ex.schunten OR
+    be.id <> ex.id OR
+    be.untersuchtag <> ex.untersuchtag OR
+    be.bandnr <> ex.bandnr OR
+    be.videozaehler <> ex.videozaehler OR
+    coalesce(abs(be.inspektionslaenge - ex.inspektionslaenge), 0) > 0.001 OR
+    coalesce(abs(be.station - ex.station), 0) > 0.001 OR
+    coalesce(abs(be.stationtext - ex.stationtext), 0) > 0.001 OR
+    be.timecode <> ex.timecode OR
+    coalesce(abs(be.video_offset - ex.video_offset), 0) > 0.001 OR
+    be.langtext <> ex.langtext OR
+    be.kuerzel <> ex.kuerzel OR
+    be.charakt1 <> ex.charakt1 OR
+    be.charakt2 <> ex.charakt2 OR
+    coalesce(abs(be.quantnr1 - ex.quantnr1), 0) > 0.001 OR
+    coalesce(abs(be.quantnr2 - ex.quantnr2), 0) > 0.001 OR
+    be.streckenschaden <> ex.streckenschaden OR
+    be.streckenschaden_lfdnr <> ex.streckenschaden_lfdnr OR
+    be.pos_von <> ex.pos_von OR
+    be.pos_bis <> ex.pos_bis OR
+    be.foto_dateiname <> ex.foto_dateiname OR
+    be.film_dateiname <> ex.film_dateiname OR
+    be.ordner_bild <> ex.ordner_bild OR
+    be.ordner_video <> ex.ordner_video OR
+    be.filmtyp <> ex.filmtyp OR
+    be.video_start <> ex.video_start OR
+    be.video_ende <> ex.video_ende OR
+    be.bw_bs <> ex.bw_bs OR
+    be.ZD <> ex.ZD OR
+    be.ZB <> ex.ZB OR
+    be.ZS <> ex.ZS OR
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Untersuchdat_Anschlussleitung hinzufügen
+sync_untersuchdat_anschlussleitung_add: "
+INSERT INTO main.untersuchdat_anschlussleitung (
+    untersuchleit, schoben, schunten, id, untersuchtag, bandnr, videozaehler,
+    inspektionslaenge, station, stationtext, timecode, video_offset,
+    langtext, kuerzel, charakt1, charakt2, quantnr1, quantnr2,
+    streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT
+    ex.untersuchleit, ex.schoben, ex.schunten, ex.id, ex.untersuchtag, ex.bandnr,
+    ex.videozaehler, ex.inspektionslaenge, ex.station, ex.stationtext,
+    ex.timecode, ex.video_offset, ex.langtext, ex.kuerzel, ex.charakt1,
+    ex.charakt2, ex.quantnr1, ex.quantnr2, ex.streckenschaden,
+    ex.streckenschaden_lfdnr, ex.pos_von, ex.pos_bis, ex.foto_dateiname,
+    ex.film_dateiname, ex.ordner_bild, ex.ordner_video, ex.filmtyp,
+    ex.video_start, ex.video_ende, ex.bw_bs, ex.ZD, ex.ZB, ex.ZS,
+    ex.kommentar,
+    ex.geom AS geom
+FROM ext.untersuchdat_anschlussleitung AS ex
+JOIN sync_untersuchdat_anschlussleitung AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Untersuchdat_Anschlussleitung löschen
+sync_untersuchdat_anschlussleitung_del: "
+DELETE FROM main.untersuchdat_anschlussleitung
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_untersuchdat_anschlussleitung
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Untersuchdat_Anschlussleitung ändern
+sync_untersuchdat_anschlussleitung_mod: "
+UPDATE main.untersuchdat_anschlussleitung
+SET
+    schoben = mo.schoben,
+    schunten = mo.schunten,
+    id = mo.id,
+    untersuchtag = mo.untersuchtag,
+    bandnr = mo.bandnr,
+    videozaehler = mo.videozaehler,
+    inspektionslaenge = mo.inspektionslaenge,
+    station = mo.station,
+    stationtext = mo.stationtext,
+    timecode = mo.timecode,
+    video_offset = mo.video_offset,
+    langtext = mo.langtext,
+    kuerzel = mo.kuerzel,
+    charakt1 = mo.charakt1,
+    charakt2 = mo.charakt2,
+    quantnr1 = mo.quantnr1,
+    quantnr2 = mo.quantnr2,
+    streckenschaden = mo.streckenschaden,
+    streckenschaden_lfdnr = mo.streckenschaden_lfdnr,
+    pos_von = mo.pos_von,
+    pos_bis = mo.pos_bis,
+    foto_dateiname = mo.foto_dateiname,
+    film_dateiname = mo.film_dateiname,
+    ordner_bild = mo.ordner_bild,
+    ordner_video = mo.ordner_video,
+    filmtyp = mo.filmtyp,
+    video_start = mo.video_start,
+    video_ende = mo.video_ende,
+    bw_bs = mo.bw_bs,
+    ZD = mo.ZD,
+    ZB = mo.ZB,
+    ZS = mo.ZS,
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.schoben IS NOT NULL AND sy.schoben <> '', ex.schoben, be.schoben) AS schoben,
+        iif(sy.schunten IS NOT NULL AND sy.schunten <> '', ex.schunten, be.schunten) AS schunten,
+        iif(sy.id IS NOT NULL, ex.id, be.id) AS id,
+        iif(sy.untersuchtag IS NOT NULL AND sy.untersuchtag <> '', ex.untersuchtag, be.untersuchtag) AS untersuchtag,
+        iif(sy.bandnr IS NOT NULL, ex.bandnr, be.bandnr) AS bandnr,
+        iif(sy.videozaehler IS NOT NULL AND sy.videozaehler <> '', ex.videozaehler, be.videozaehler) AS videozaehler,
+        iif(sy.inspektionslaenge IS NOT NULL, ex.inspektionslaenge, be.inspektionslaenge) AS inspektionslaenge,
+        iif(sy.station IS NOT NULL, ex.station, be.station) AS station,
+        iif(sy.stationtext IS NOT NULL, ex.stationtext, be.stationtext) AS stationtext,
+        iif(sy.timecode IS NOT NULL AND sy.timecode <> '', ex.timecode, be.timecode) AS timecode,
+        iif(sy.video_offset IS NOT NULL, ex.video_offset, be.video_offset) AS video_offset,
+        iif(sy.langtext IS NOT NULL AND sy.langtext <> '', ex.langtext, be.langtext) AS langtext,
+        iif(sy.kuerzel IS NOT NULL AND sy.kuerzel <> '', ex.kuerzel, be.kuerzel) AS kuerzel,
+        iif(sy.charakt1 IS NOT NULL AND sy.charakt1 <> '', ex.charakt1, be.charakt1) AS charakt1,
+        iif(sy.charakt2 IS NOT NULL AND sy.charakt2 <> '', ex.charakt2, be.charakt2) AS charakt2,
+        iif(sy.quantnr1 IS NOT NULL, ex.quantnr1, be.quantnr1) AS quantnr1,
+        iif(sy.quantnr2 IS NOT NULL, ex.quantnr2, be.quantnr2) AS quantnr2,
+        iif(sy.streckenschaden IS NOT NULL AND sy.streckenschaden <> '', ex.streckenschaden, be.streckenschaden) AS streckenschaden,
+        iif(sy.streckenschaden_lfdnr IS NOT NULL, ex.streckenschaden_lfdnr, be.streckenschaden_lfdnr) AS streckenschaden_lfdnr,
+        iif(sy.pos_von IS NOT NULL, ex.pos_von, be.pos_von) AS pos_von,
+        iif(sy.pos_bis IS NOT NULL, ex.pos_bis, be.pos_bis) AS pos_bis,
+        iif(sy.foto_dateiname IS NOT NULL AND sy.foto_dateiname <> '', ex.foto_dateiname, be.foto_dateiname) AS foto_dateiname,
+        iif(sy.film_dateiname IS NOT NULL AND sy.film_dateiname <> '', ex.film_dateiname, be.film_dateiname) AS film_dateiname,
+        iif(sy.ordner_bild IS NOT NULL AND sy.ordner_bild <> '', ex.ordner_bild, be.ordner_bild) AS ordner_bild,
+        iif(sy.ordner_video IS NOT NULL AND sy.ordner_video <> '', ex.ordner_video, be.ordner_video) AS ordner_video,
+        iif(sy.filmtyp IS NOT NULL, ex.filmtyp, be.filmtyp) AS filmtyp,
+        iif(sy.video_start IS NOT NULL, ex.video_start, be.video_start) AS video_start,
+        iif(sy.video_ende IS NOT NULL, ex.video_ende, be.video_ende) AS video_ende,
+        iif(sy.bw_bs IS NOT NULL AND sy.bw_bs <> '', ex.bw_bs, be.bw_bs) AS bw_bs,
+        iif(sy.ZD IS NOT NULL, ex.ZD, be.ZD) AS ZD,
+        iif(sy.ZB IS NOT NULL, ex.ZB, be.ZB) AS ZB,
+        iif(sy.ZS IS NOT NULL, ex.ZS, be.ZS) AS ZS,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_untersuchdat_anschlussleitung AS sy
+    JOIN main.untersuchdat_anschlussleitung AS be ON be.pk = sy.pk_best
+    JOIN ext.untersuchdat_anschlussleitung AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.untersuchdat_anschlussleitung.pk = mo.pk_best;"
+
+# Untersuchdat_Anschlussleitung auflisten
+sync_untersuchdat_anschlussleitung_prot: "
+SELECT * FROM sync_untersuchdat_anschlussleitung WHERE status;"
+
+
+# Untersuchdat_Haltung
+sync_create_untersuchdat_haltung: "
+CREATE TABLE IF NOT EXISTS sync_untersuchdat_haltung (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    objekt TEXT,
+    untersuchhal TEXT,
+    schoben TEXT,
+    schunten TEXT,
+    id INTEGER,
+    untersuchtag TEXT,
+    untersuchrichtung TEXT,
+    bandnr INTEGER,
+    videozaehler TEXT,
+    inspektionslaenge REAL,
+    station REAL,
+    stationtext REAL,
+    timecode TEXT,
+    video_offset REAL,
+    langtext TEXT,
+    kuerzel TEXT,
+    charakt1 TEXT,
+    charakt2 TEXT,
+    quantnr1 REAL,
+    quantnr2 REAL,
+    streckenschaden TEXT,
+    streckenschaden_lfdnr INTEGER,
+    pos_von INTEGER,
+    pos_bis INTEGER,
+    foto_dateiname TEXT,
+    film_dateiname TEXT,
+    ordner_bild TEXT,
+    ordner_video TEXT,
+    filmtyp INTEGER,
+    video_start INTEGER,
+    video_ende INTEGER,
+    bw_bs TEXT,
+    ZD INTEGER,
+    ZB INTEGER,
+    ZS INTEGER,
+    kommentar TEXT);"
+
+sync_create_untersuchdat_haltung_geom: "
+SELECT AddGeometryColumn('sync_untersuchdat_haltung', 'geom', :epsg, 'LINESTRING', 2);"
+
+sync_reset_untersuchdat_haltung: "
+DELETE FROM sync_untersuchdat_haltung;"
+
+# Untersuchdat_Haltung, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_untersuchdat_haltung_ext: "
+INSERT INTO sync_untersuchdat_haltung (
+    pk_best, pk_ext, untersuchhal, objekt, aktion, status,
+    schoben, schunten, id, untersuchtag, untersuchrichtung, bandnr,
+    videozaehler, inspektionslaenge, station, stationtext, timecode,
+    video_offset, langtext, kuerzel, charakt1, charakt2, quantnr1,
+    quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.untersuchhal,
+    'Datensatz nicht im Bestand' AS objekt,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.schoben, ex.schunten, ex.id, ex.untersuchtag, ex.untersuchrichtung,
+    ex.bandnr, ex.videozaehler, ex.inspektionslaenge, ex.station,
+    ex.stationtext, ex.timecode, ex.video_offset, ex.langtext, ex.kuerzel,
+    ex.charakt1, ex.charakt2, ex.quantnr1, ex.quantnr2,
+    ex.streckenschaden, ex.streckenschaden_lfdnr, ex.pos_von, ex.pos_bis,
+    ex.foto_dateiname, ex.film_dateiname, ex.ordner_bild, ex.ordner_video,
+    ex.filmtyp, ex.video_start, ex.video_ende, ex.bw_bs, ex.ZD, ex.ZB,
+    ex.ZS, ex.kommentar,
+    ex.geom AS geom
+FROM (
+    SELECT * 
+    FROM ext.untersuchdat_haltung AS t
+    GROUP BY t.untersuchhal
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.untersuchdat_haltung AS t
+    GROUP BY t.untersuchhal
+    HAVING count() = 1
+) AS be
+ON be.untersuchhal = ex.untersuchhal
+WHERE be.pk IS NULL;"
+
+# Untersuchdat_Haltung, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_untersuchdat_haltung_local: "
+INSERT INTO sync_untersuchdat_haltung (
+    pk_best, pk_ext, untersuchhal, objekt, aktion, status,
+    schoben, schunten, id, untersuchtag, untersuchrichtung, bandnr,
+    videozaehler, inspektionslaenge, station, stationtext, timecode,
+    video_offset, langtext, kuerzel, charakt1, charakt2, quantnr1,
+    quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.untersuchhal,
+    'Datensatz extern nicht vorhanden' AS objekt,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.schoben, be.schunten, be.id, be.untersuchtag, be.untersuchrichtung,
+    be.bandnr, be.videozaehler, be.inspektionslaenge, be.station,
+    be.stationtext, be.timecode, be.video_offset, be.langtext, be.kuerzel,
+    be.charakt1, be.charakt2, be.quantnr1, be.quantnr2,
+    be.streckenschaden, be.streckenschaden_lfdnr, be.pos_von, be.pos_bis,
+    be.foto_dateiname, be.film_dateiname, be.ordner_bild, be.ordner_video,
+    be.filmtyp, be.video_start, be.video_ende, be.bw_bs, be.ZD, be.ZB,
+    be.ZS, be.kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.untersuchdat_haltung AS t
+    GROUP BY t.untersuchhal
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.untersuchdat_haltung AS t
+    GROUP BY t.untersuchhal
+    HAVING count() = 1
+) AS ex
+ON be.untersuchhal = ex.untersuchhal
+WHERE ex.pk IS NULL;"
+
+
+# Untersuchdat_Haltung mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_untersuchdat_haltung_dif: "
+INSERT INTO sync_untersuchdat_haltung (
+    pk_best, pk_ext, untersuchhal, objekt, aktion, status,
+    schoben, schunten, id, untersuchtag, untersuchrichtung, bandnr,
+    videozaehler, inspektionslaenge, station, stationtext, timecode,
+    video_offset, langtext, kuerzel, charakt1, charakt2, quantnr1,
+    quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.untersuchhal,
+    iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
+    iif(be.schunten <> ex.schunten, printf('%s -> %s', be.schunten, ex.schunten), NULL) AS schunten,
+    iif(be.id <> ex.id, printf('%d -> %d', be.id, ex.id), NULL) AS id,
+    iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
+    iif(be.untersuchrichtung <> ex.untersuchrichtung, printf('%s -> %s', be.untersuchrichtung, ex.untersuchrichtung), NULL) AS untersuchrichtung,
+    iif(be.bandnr <> ex.bandnr, printf('%d -> %d', be.bandnr, ex.bandnr), NULL) AS bandnr,
+    iif(be.videozaehler <> ex.videozaehler, printf('%s -> %s', be.videozaehler, ex.videozaehler), NULL) AS videozaehler,
+    iif(coalesce(abs(be.inspektionslaenge - ex.inspektionslaenge), 0) > 0.001, printf('%.3f -> %.3f', be.inspektionslaenge, ex.inspektionslaenge), NULL) AS inspektionslaenge,
+    iif(coalesce(abs(be.station - ex.station), 0) > 0.001, printf('%.3f -> %.3f', be.station, ex.station), NULL) AS station,
+    iif(coalesce(abs(be.stationtext - ex.stationtext), 0) > 0.001, printf('%.3f -> %.3f', be.stationtext, ex.stationtext), NULL) AS stationtext,
+    iif(be.timecode <> ex.timecode, printf('%s -> %s', be.timecode, ex.timecode), NULL) AS timecode,
+    iif(coalesce(abs(be.video_offset - ex.video_offset), 0) > 0.001, printf('%.3f -> %.3f', be.video_offset, ex.video_offset), NULL) AS video_offset,
+    iif(be.langtext <> ex.langtext, printf('%s -> %s', be.langtext, ex.langtext), NULL) AS langtext,
+    iif(be.kuerzel <> ex.kuerzel, printf('%s -> %s', be.kuerzel, ex.kuerzel), NULL) AS kuerzel,
+    iif(be.charakt1 <> ex.charakt1, printf('%s -> %s', be.charakt1, ex.charakt1), NULL) AS charakt1,
+    iif(be.charakt2 <> ex.charakt2, printf('%s -> %s', be.charakt2, ex.charakt2), NULL) AS charakt2,
+    iif(coalesce(abs(be.quantnr1 - ex.quantnr1), 0) > 0.001, printf('%.3f -> %.3f', be.quantnr1, ex.quantnr1), NULL) AS quantnr1,
+    iif(coalesce(abs(be.quantnr2 - ex.quantnr2), 0) > 0.001, printf('%.3f -> %.3f', be.quantnr2, ex.quantnr2), NULL) AS quantnr2,
+    iif(be.streckenschaden <> ex.streckenschaden, printf('%s -> %s', be.streckenschaden, ex.streckenschaden), NULL) AS streckenschaden,
+    iif(be.streckenschaden_lfdnr <> ex.streckenschaden_lfdnr, printf('%d -> %d', be.streckenschaden_lfdnr, ex.streckenschaden_lfdnr), NULL) AS streckenschaden_lfdnr,
+    iif(be.pos_von <> ex.pos_von, printf('%d -> %d', be.pos_von, ex.pos_von), NULL) AS pos_von,
+    iif(be.pos_bis <> ex.pos_bis, printf('%d -> %d', be.pos_bis, ex.pos_bis), NULL) AS pos_bis,
+    iif(be.foto_dateiname <> ex.foto_dateiname, printf('%s -> %s', be.foto_dateiname, ex.foto_dateiname), NULL) AS foto_dateiname,
+    iif(be.film_dateiname <> ex.film_dateiname, printf('%s -> %s', be.film_dateiname, ex.film_dateiname), NULL) AS film_dateiname,
+    iif(be.ordner_bild <> ex.ordner_bild, printf('%s -> %s', be.ordner_bild, ex.ordner_bild), NULL) AS ordner_bild,
+    iif(be.ordner_video <> ex.ordner_video, printf('%s -> %s', be.ordner_video, ex.ordner_video), NULL) AS ordner_video,
+    iif(be.filmtyp <> ex.filmtyp, printf('%d -> %d', be.filmtyp, ex.filmtyp), NULL) AS filmtyp,
+    iif(be.video_start <> ex.video_start, printf('%d -> %d', be.video_start, ex.video_start), NULL) AS video_start,
+    iif(be.video_ende <> ex.video_ende, printf('%d -> %d', be.video_ende, ex.video_ende), NULL) AS video_ende,
+    iif(be.bw_bs <> ex.bw_bs, printf('%s -> %s', be.bw_bs, ex.bw_bs), NULL) AS bw_bs,
+    iif(be.ZD <> ex.ZD, printf('%d -> %d', be.ZD, ex.ZD), NULL) AS ZD,
+    iif(be.ZB <> ex.ZB, printf('%d -> %d', be.ZB, ex.ZB), NULL) AS ZB,
+    iif(be.ZS <> ex.ZS, printf('%d -> %d', be.ZS, ex.ZS), NULL) AS ZS,
+    iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
+    be.geom AS geom
+FROM (
+    SELECT *
+    FROM main.untersuchdat_haltung AS t
+    GROUP BY t.untersuchhal
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.untersuchdat_haltung AS t
+    GROUP BY t.untersuchhal
+    HAVING count() = 1
+) AS ex
+ON ex.untersuchhal = be.untersuchhal
+WHERE
+    be.schoben <> ex.schoben OR
+    be.schunten <> ex.schunten OR
+    be.id <> ex.id OR
+    be.untersuchtag <> ex.untersuchtag OR
+    be.untersuchrichtung <> ex.untersuchrichtung OR
+    be.bandnr <> ex.bandnr OR
+    be.videozaehler <> ex.videozaehler OR
+    coalesce(abs(be.inspektionslaenge - ex.inspektionslaenge), 0) > 0.001 OR
+    coalesce(abs(be.station - ex.station), 0) > 0.001 OR
+    coalesce(abs(be.stationtext - ex.stationtext), 0) > 0.001 OR
+    be.timecode <> ex.timecode OR
+    coalesce(abs(be.video_offset - ex.video_offset), 0) > 0.001 OR
+    be.langtext <> ex.langtext OR
+    be.kuerzel <> ex.kuerzel OR
+    be.charakt1 <> ex.charakt1 OR
+    be.charakt2 <> ex.charakt2 OR
+    coalesce(abs(be.quantnr1 - ex.quantnr1), 0) > 0.001 OR
+    coalesce(abs(be.quantnr2 - ex.quantnr2), 0) > 0.001 OR
+    be.streckenschaden <> ex.streckenschaden OR
+    be.streckenschaden_lfdnr <> ex.streckenschaden_lfdnr OR
+    be.pos_von <> ex.pos_von OR
+    be.pos_bis <> ex.pos_bis OR
+    be.foto_dateiname <> ex.foto_dateiname OR
+    be.film_dateiname <> ex.film_dateiname OR
+    be.ordner_bild <> ex.ordner_bild OR
+    be.ordner_video <> ex.ordner_video OR
+    be.filmtyp <> ex.filmtyp OR
+    be.video_start <> ex.video_start OR
+    be.video_ende <> ex.video_ende OR
+    be.bw_bs <> ex.bw_bs OR
+    be.ZD <> ex.ZD OR
+    be.ZB <> ex.ZB OR
+    be.ZS <> ex.ZS OR
+    be.kommentar <> ex.kommentar OR
+    be.geom <> ex.geom;"
+
+# Untersuchdat_Haltung hinzufügen
+sync_untersuchdat_haltung_add: "
+INSERT INTO main.untersuchdat_haltung (
+    untersuchhal, schoben, schunten, id, untersuchtag, untersuchrichtung, bandnr,
+    videozaehler, inspektionslaenge, station, stationtext, timecode,
+    video_offset, langtext, kuerzel, charakt1, charakt2, quantnr1,
+    quantnr2, streckenschaden, streckenschaden_lfdnr, pos_von, pos_bis,
+    foto_dateiname, film_dateiname, ordner_bild, ordner_video, filmtyp,
+    video_start, video_ende, bw_bs, ZD, ZB, ZS, kommentar,
+    geom)
+SELECT
+    ex.untersuchhal, ex.schoben, ex.schunten, ex.id, ex.untersuchtag, ex.untersuchrichtung,
+    ex.bandnr, ex.videozaehler, ex.inspektionslaenge, ex.station,
+    ex.stationtext, ex.timecode, ex.video_offset, ex.langtext, ex.kuerzel,
+    ex.charakt1, ex.charakt2, ex.quantnr1, ex.quantnr2,
+    ex.streckenschaden, ex.streckenschaden_lfdnr, ex.pos_von, ex.pos_bis,
+    ex.foto_dateiname, ex.film_dateiname, ex.ordner_bild, ex.ordner_video,
+    ex.filmtyp, ex.video_start, ex.video_ende, ex.bw_bs, ex.ZD, ex.ZB,
+    ex.ZS, ex.kommentar,
+    ex.geom AS geom
+FROM ext.untersuchdat_haltung AS ex
+JOIN sync_untersuchdat_haltung AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Untersuchdat_Haltung löschen
+sync_untersuchdat_haltung_del: "
+DELETE FROM main.untersuchdat_haltung
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_untersuchdat_haltung
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Untersuchdat_Haltung ändern
+sync_untersuchdat_haltung_mod: "
+UPDATE main.untersuchdat_haltung
+SET
+    schoben = mo.schoben,
+    schunten = mo.schunten,
+    id = mo.id,
+    untersuchtag = mo.untersuchtag,
+    untersuchrichtung = mo.untersuchrichtung,
+    bandnr = mo.bandnr,
+    videozaehler = mo.videozaehler,
+    inspektionslaenge = mo.inspektionslaenge,
+    station = mo.station,
+    stationtext = mo.stationtext,
+    timecode = mo.timecode,
+    video_offset = mo.video_offset,
+    langtext = mo.langtext,
+    kuerzel = mo.kuerzel,
+    charakt1 = mo.charakt1,
+    charakt2 = mo.charakt2,
+    quantnr1 = mo.quantnr1,
+    quantnr2 = mo.quantnr2,
+    streckenschaden = mo.streckenschaden,
+    streckenschaden_lfdnr = mo.streckenschaden_lfdnr,
+    pos_von = mo.pos_von,
+    pos_bis = mo.pos_bis,
+    foto_dateiname = mo.foto_dateiname,
+    film_dateiname = mo.film_dateiname,
+    ordner_bild = mo.ordner_bild,
+    ordner_video = mo.ordner_video,
+    filmtyp = mo.filmtyp,
+    video_start = mo.video_start,
+    video_ende = mo.video_ende,
+    bw_bs = mo.bw_bs,
+    ZD = mo.ZD,
+    ZB = mo.ZB,
+    ZS = mo.ZS,
+    kommentar = mo.kommentar,
+    geom = mo.geom
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.schoben IS NOT NULL AND sy.schoben <> '', ex.schoben, be.schoben) AS schoben,
+        iif(sy.schunten IS NOT NULL AND sy.schunten <> '', ex.schunten, be.schunten) AS schunten,
+        iif(sy.id IS NOT NULL, ex.id, be.id) AS id,
+        iif(sy.untersuchtag IS NOT NULL AND sy.untersuchtag <> '', ex.untersuchtag, be.untersuchtag) AS untersuchtag,
+        iif(sy.untersuchrichtung IS NOT NULL AND sy.untersuchrichtung <> '', ex.untersuchrichtung, be.untersuchrichtung) AS untersuchrichtung,
+        iif(sy.bandnr IS NOT NULL, ex.bandnr, be.bandnr) AS bandnr,
+        iif(sy.videozaehler IS NOT NULL AND sy.videozaehler <> '', ex.videozaehler, be.videozaehler) AS videozaehler,
+        iif(sy.inspektionslaenge IS NOT NULL, ex.inspektionslaenge, be.inspektionslaenge) AS inspektionslaenge,
+        iif(sy.station IS NOT NULL, ex.station, be.station) AS station,
+        iif(sy.stationtext IS NOT NULL, ex.stationtext, be.stationtext) AS stationtext,
+        iif(sy.timecode IS NOT NULL AND sy.timecode <> '', ex.timecode, be.timecode) AS timecode,
+        iif(sy.video_offset IS NOT NULL, ex.video_offset, be.video_offset) AS video_offset,
+        iif(sy.langtext IS NOT NULL AND sy.langtext <> '', ex.langtext, be.langtext) AS langtext,
+        iif(sy.kuerzel IS NOT NULL AND sy.kuerzel <> '', ex.kuerzel, be.kuerzel) AS kuerzel,
+        iif(sy.charakt1 IS NOT NULL AND sy.charakt1 <> '', ex.charakt1, be.charakt1) AS charakt1,
+        iif(sy.charakt2 IS NOT NULL AND sy.charakt2 <> '', ex.charakt2, be.charakt2) AS charakt2,
+        iif(sy.quantnr1 IS NOT NULL, ex.quantnr1, be.quantnr1) AS quantnr1,
+        iif(sy.quantnr2 IS NOT NULL, ex.quantnr2, be.quantnr2) AS quantnr2,
+        iif(sy.streckenschaden IS NOT NULL AND sy.streckenschaden <> '', ex.streckenschaden, be.streckenschaden) AS streckenschaden,
+        iif(sy.streckenschaden_lfdnr IS NOT NULL, ex.streckenschaden_lfdnr, be.streckenschaden_lfdnr) AS streckenschaden_lfdnr,
+        iif(sy.pos_von IS NOT NULL, ex.pos_von, be.pos_von) AS pos_von,
+        iif(sy.pos_bis IS NOT NULL, ex.pos_bis, be.pos_bis) AS pos_bis,
+        iif(sy.foto_dateiname IS NOT NULL AND sy.foto_dateiname <> '', ex.foto_dateiname, be.foto_dateiname) AS foto_dateiname,
+        iif(sy.film_dateiname IS NOT NULL AND sy.film_dateiname <> '', ex.film_dateiname, be.film_dateiname) AS film_dateiname,
+        iif(sy.ordner_bild IS NOT NULL AND sy.ordner_bild <> '', ex.ordner_bild, be.ordner_bild) AS ordner_bild,
+        iif(sy.ordner_video IS NOT NULL AND sy.ordner_video <> '', ex.ordner_video, be.ordner_video) AS ordner_video,
+        iif(sy.filmtyp IS NOT NULL, ex.filmtyp, be.filmtyp) AS filmtyp,
+        iif(sy.video_start IS NOT NULL, ex.video_start, be.video_start) AS video_start,
+        iif(sy.video_ende IS NOT NULL, ex.video_ende, be.video_ende) AS video_ende,
+        iif(sy.bw_bs IS NOT NULL AND sy.bw_bs <> '', ex.bw_bs, be.bw_bs) AS bw_bs,
+        iif(sy.ZD IS NOT NULL, ex.ZD, be.ZD) AS ZD,
+        iif(sy.ZB IS NOT NULL, ex.ZB, be.ZB) AS ZB,
+        iif(sy.ZS IS NOT NULL, ex.ZS, be.ZS) AS ZS,
+        iif(sy.kommentar IS NOT NULL AND sy.kommentar <> '', ex.kommentar, be.kommentar) AS kommentar,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.geom, be.geom) AS geom
+    FROM sync_untersuchdat_haltung AS sy
+    JOIN main.untersuchdat_haltung AS be ON be.pk = sy.pk_best
+    JOIN ext.untersuchdat_haltung AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.untersuchdat_haltung.pk = mo.pk_best;"
+
+# Untersuchdat_Haltung auflisten
+sync_untersuchdat_haltung_prot: "
+SELECT * FROM sync_untersuchdat_haltung WHERE status;"
+
+
+# Videos
+sync_create_videos: "
+CREATE TABLE IF NOT EXISTS sync_videos (
+    pk INTEGER PRIMARY KEY,
+    pk_best INTEGER,
+    pk_ext INTEGER,
+    aktion TEXT,
+    status INTEGER,
+    name TEXT,
+    untersuchtag TEXT,
+    untersuchrichtung TEXT,
+    objekt TEXT,
+    datei TEXT);"
+
+
+sync_reset_videos: "
+DELETE FROM sync_videos;"
+
+# Videos, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_videos_ext: "
+INSERT INTO sync_videos (
+    pk_best, pk_ext, name, aktion, status,
+    untersuchtag, untersuchrichtung, objekt, datei)
+SELECT 
+    NULL AS pk_best, ex.pk AS pk_ext, ex.name,
+    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */
+    ex.untersuchtag, ex.untersuchrichtung, ex.objekt, ex.datei
+FROM (
+    SELECT * 
+    FROM ext.videos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS ex
+LEFT JOIN (
+    SELECT *
+    FROM main.videos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS be
+ON be.name = ex.name
+WHERE be.pk IS NULL;"
+
+# Videos, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+sync_videos_local: "
+INSERT INTO sync_videos (
+    pk_best, pk_ext, name, aktion, status,
+    untersuchtag, untersuchrichtung, objekt, datei)
+SELECT
+    be.pk AS pk_best, NULL AS pk_ext, be.name,
+    'löschen' AS aktion, 0 AS status,      /* löschen */
+    be.untersuchtag, be.untersuchrichtung, be.objekt, be.datei
+FROM (
+    SELECT *
+    FROM main.videos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS be
+LEFT JOIN (
+    SELECT * 
+    FROM ext.videos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS ex
+ON be.name = ex.name
+WHERE ex.pk IS NULL;"
+
+
+# Videos mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+sync_videos_dif: "
+INSERT INTO sync_videos (
+    pk_best, pk_ext, name, aktion, status,
+    untersuchtag, untersuchrichtung, objekt, datei)
+SELECT
+    be.pk AS pk_best,
+    ex.pk AS pk_ext,
+    ex.name,
+    'ändern' AS aktion,
+    1 AS status,
+    iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
+    iif(be.untersuchrichtung <> ex.untersuchrichtung, printf('%s -> %s', be.untersuchrichtung, ex.untersuchrichtung), NULL) AS untersuchrichtung,
+    iif(be.objekt <> ex.objekt, printf('%s -> %s', be.objekt, ex.objekt), NULL) AS objekt,
+    iif(be.datei <> ex.datei, printf('%s -> %s', be.datei, ex.datei), NULL) AS datei
+FROM (
+    SELECT *
+    FROM main.videos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS be
+JOIN (
+    SELECT * 
+    FROM ext.videos AS t
+    GROUP BY t.name
+    HAVING count() = 1
+) AS ex
+ON ex.name = be.name
+WHERE
+    be.untersuchtag <> ex.untersuchtag OR
+    be.untersuchrichtung <> ex.untersuchrichtung OR
+    be.objekt <> ex.objekt OR
+    be.datei <> ex.datei;"
+
+# Videos hinzufügen
+sync_videos_add: "
+INSERT INTO main.videos (
+    name, untersuchtag, untersuchrichtung, objekt, datei)
+SELECT
+    ex.name, ex.untersuchtag, ex.untersuchrichtung, ex.objekt, ex.datei
+FROM ext.videos AS ex
+JOIN sync_videos AS sy ON ex.pk = sy.pk_ext
+WHERE sy.aktion = 'hinzufügen' 
+  AND sy.status;"
+
+# Videos löschen
+sync_videos_del: "
+DELETE FROM main.videos
+WHERE pk IN (
+    SELECT pk_best
+    FROM sync_videos
+    WHERE aktion = 'löschen'
+      AND status
+);"
+
+# Videos ändern
+sync_videos_mod: "
+UPDATE main.videos
+SET
+    untersuchtag = mo.untersuchtag,
+    untersuchrichtung = mo.untersuchrichtung,
+    objekt = mo.objekt,
+    datei = mo.datei
+FROM (
+    SELECT
+        sy.pk_best AS pk_best,
+        iif(sy.untersuchtag IS NOT NULL AND sy.untersuchtag <> '', ex.untersuchtag, be.untersuchtag) AS untersuchtag,
+        iif(sy.untersuchrichtung IS NOT NULL AND sy.untersuchrichtung <> '', ex.untersuchrichtung, be.untersuchrichtung) AS untersuchrichtung,
+        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.objekt, be.objekt) AS objekt,
+        iif(sy.datei IS NOT NULL AND sy.datei <> '', ex.datei, be.datei) AS datei
+    FROM sync_videos AS sy
+    JOIN main.videos AS be ON be.pk = sy.pk_best
+    JOIN ext.videos AS ex ON ex.pk = sy.pk_ext
+    WHERE sy.aktion = 'ändern'
+      AND status
+) AS mo
+WHERE main.videos.pk = mo.pk_best;"
+
+# Videos auflisten
+sync_videos_prot: "
+SELECT * FROM sync_videos WHERE status;"

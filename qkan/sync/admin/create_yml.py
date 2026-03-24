@@ -15,23 +15,21 @@ import tkinter
 # Vorgabe: Es gibt nur 1 Geoobjekt, Index ist ngeo
 
 TABLES_GEOM = [
-    # "notizen",
+    "notizen",
     "haltungen",
     "haltungen_untersucht",
-    # "untersuchdat_haltung",
+    "untersuchdat_haltung",
     "anschlussleitungen",
     "anschlussleitungen_untersucht",
     "anschlussschaechte",
-    # "untersuchdat_anschlussleitung",
-    # "einzugsgebiete",
-    # "teilgebiete",
+    "untersuchdat_anschlussleitung",
+    "einzugsgebiete",
+    "teilgebiete",
     "flaechen",
-    # "linkfl",
-    # "linksw",
     "tezg",
-    # "einleit",
-    # "aussengebiete",
-    # "symbole",
+    "einleit",
+    "aussengebiete",
+    "symbole",
 ]
 
 TABLES_GEOP = [
@@ -41,8 +39,8 @@ TABLES_GEOP = [
 
 TABLES_GLINK = [
     "linkfl",
-    # "linksw",
-    # "linkageb",
+    "linksw",
+    "linkageb",
 ]
 
 TABLES_ATTR = [
@@ -66,13 +64,13 @@ TABLES_ATTR = [
     # "wetter",
     # "bewertungsart",
     # "pumpentypen",
-    # "pruefsql",
+    "pruefsql",
     # "pruefliste",
     # "reflist_zustand",
     # "info",
     "refdata",
-    # "fotos",
-    # "videos",
+    "fotos",
+    "videos",
 ]
 
 def meldung(anztext):
@@ -179,13 +177,6 @@ def writesql(cur, fw, tabnam):
         fw.write(f'sync_create_{tabnam}_geom: "\n')
         fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', '{gobj}', :epsg, '{typ}', 2);"\n''')
 
-    # if nlis - ngeo >= 1:
-        # fw.write(f'sync_create_{tabnam}_geom: "\n')
-        # typ = typlis[ngeo]
-        # if tabnam == 'schaechte':
-            # fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', 'geom', :epsg, 'POINT', 2);"\n''')
-        # else:
-            # fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', 'geom', :epsg, '{typ}', 2);"\n''')
     fw.write( '\n')
     fw.write(f'sync_reset_{tabnam}: "\n')
     fw.write(f'DELETE FROM sync_{tabnam};"\n')
@@ -196,12 +187,6 @@ def writesql(cur, fw, tabnam):
     fw.write(f'sync_{tabnam}_ext: "\n')
     fw.write(f'INSERT INTO sync_{tabnam} (\n')
     fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
-    # if nlis - ngeo == 1:
-        # fw.write(f'    pk_best, pk_ext, {objnam}, objekt, aktion, status,\n')
-    # elif nlis - ngeo > 1:
-        # fw.write(f'    pk_best, pk_ext, {objnam}, grafikobjekt, punktobjekt, aktion, status,\n')
-    # else:
-        # fw.write(f'    pk_best, pk_ext, {objnam}, aktion, status,\n')
     fw.write(f'    {attributes}{geoattr})\nSELECT \n')
     fw.write(f'    NULL AS pk_best, ex.pk AS pk_ext, ex.{objnam},\n')
     if gobj is not None:
@@ -211,18 +196,12 @@ def writesql(cur, fw, tabnam):
     fw.write( 'FROM (\n')
     fw.write( '    SELECT * \n')
     fw.write(f'    FROM ext.{tabnam} AS t\n')
-    if gobj is not None and not '_untersucht' in tabnam:               # todo: 2026-03-15 noch zu bearbeiten
-        fw.write( '    WHERE NOT :seltgb\n')
-        fw.write( '       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)\n')
     fw.write(f'    GROUP BY t.{objnam}\n')
     fw.write( '    HAVING count() = 1\n')
     fw.write( ') AS ex\n')
     fw.write( 'LEFT JOIN (\n')
     fw.write( '    SELECT *\n')
     fw.write(f'    FROM main.{tabnam} AS t\n')
-    if gobj is not None and not '_untersucht' in tabnam:
-        fw.write( '    WHERE NOT :seltgb\n')
-        fw.write( '       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)\n')
     fw.write(f'    GROUP BY t.{objnam}\n')
     fw.write( '    HAVING count() = 1\n')
     fw.write( ') AS be\n')
@@ -234,12 +213,7 @@ def writesql(cur, fw, tabnam):
     fw.write(f'# {tabtitle}, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung\n')
     fw.write(f'sync_{tabnam}_local: "\n')
     fw.write(f'INSERT INTO sync_{tabnam} (\n')
-    # if nlis - ngeo == 1:
     fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
-    # elif nlis - ngeo > 1:
-        # fw.write(f'    pk_best, pk_ext, {objnam}, grafikobjekt, punktobjekt, aktion, status,\n')
-    # else:
-        # fw.write(f'    pk_best, pk_ext, {objnam}, aktion, status,\n')
     fw.write(f'    {attributes}{geoattr})\nSELECT\n')
     fw.write(f'    be.pk AS pk_best, NULL AS pk_ext, be.{objnam},\n')
     if gobj is not None:
@@ -249,18 +223,12 @@ def writesql(cur, fw, tabnam):
     fw.write( 'FROM (\n')
     fw.write( '    SELECT *\n')
     fw.write(f'    FROM main.{tabnam} AS t\n')
-    if gobj is not None and not '_untersucht' in tabnam:
-        fw.write( '    WHERE NOT :seltgb\n')
-        fw.write( '       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)\n')
     fw.write(f'    GROUP BY t.{objnam}\n')
     fw.write( '    HAVING count() = 1\n')
     fw.write( ') AS be\n')
     fw.write( 'LEFT JOIN (\n')
     fw.write( '    SELECT * \n')
     fw.write(f'    FROM ext.{tabnam} AS t\n')
-    if gobj is not None and not '_untersucht' in tabnam:
-        fw.write( '    WHERE NOT :seltgb\n')
-        fw.write( '       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)\n')
     fw.write(f'    GROUP BY t.{objnam}\n')
     fw.write( '    HAVING count() = 1\n')
     fw.write( ') AS ex\n')
@@ -301,18 +269,12 @@ def writesql(cur, fw, tabnam):
     fw.write( 'FROM (\n')
     fw.write( '    SELECT *\n')
     fw.write(f'    FROM main.{tabnam} AS t\n')
-    if gobj is not None and not '_untersucht' in tabnam:
-        fw.write( '    WHERE NOT :seltgb\n')
-        fw.write( '       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)\n')
     fw.write(f'    GROUP BY t.{objnam}\n')
     fw.write( '    HAVING count() = 1\n')
     fw.write( ') AS be\n')
     fw.write( 'JOIN (\n')
     fw.write( '    SELECT * \n')
     fw.write(f'    FROM ext.{tabnam} AS t\n')
-    if gobj is not None and not '_untersucht' in tabnam:
-        fw.write( '    WHERE NOT :seltgb\n')
-        fw.write( '       OR t.teilgebiet IN (SELECT tgnam FROM sel_teilgebiete)\n')
     fw.write(f'    GROUP BY t.{objnam}\n')
     fw.write( '    HAVING count() = 1\n')
     fw.write( ') AS ex\n')
@@ -417,38 +379,6 @@ header = '''# Do not modify! File is automatically generated by ./admin/create_y
 sync_attach_ext: "
 ATTACH DATABASE ? AS ext"
 
-sync_collect_teilgebiete: "
-WITH tgb AS (
-    SELECT teilgebiet FROM flaechen
-    WHERE teilgebiet IS NOT NULL
-    UNION
-    SELECT teilgebiet FROM tezg
-    WHERE teilgebiet IS NOT NULL
-    UNION
-    SELECT teilgebiet FROM haltungen
-    WHERE teilgebiet IS NOT NULL
-    UNION
-    SELECT teilgebiet FROM schaechte
-    WHERE teilgebiet IS NOT NULL
-)
-INSERT INTO teilgebiete (tgnam)
-SELECT teilgebiet FROM tgb
-WHERE teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
-GROUP BY teilgebiet"
-
-sync_list_teilgebiete: "
-SELECT tgnam FROM teilgebiete GROUP BY tgnam"
-
-sync_create_sel_teilgebiete: "
-CREATE TEMP TABLE IF NOT EXISTS sel_teilgebiete (tgnam TEXT PRIMARY KEY)"
-
-sync_sel_teilgebiete_reset: "
-DELETE FROM sel_teilgebiete;"
-
-sync_sel_teilgebiete_add: "
-INSERT INTO sel_teilgebiete VALUES (?);"
-
-
 '''
 
 def main(qkfile):
@@ -460,39 +390,6 @@ def main(qkfile):
     if len(tables) != len(tablis):
         meldung(f'Fehler: Keine Tabelle darf in mehr als einer Liste "TABLES_XXXX" vorkommen!')
         return
-             # [
-        # "schaechte",                        # geop, geom
-        # "haltungen",
-        # "anschlussschaechte",
-        # "anschlussleitungen",
-        # "flaechen",
-        # "linkfl",                           # geom, gbuf, glink
-        # "tezg",
-        # "schaechte_untersucht",             # geop
-        # "haltungen_untersucht",
-        # "anschlussleitungen_untersucht",
-
-        # "notizen",
-        # "untersuchdat_haltung",
-        # "untersuchdat_anschlussleitung",
-        # "untersuchdat_schacht",
-        # "einzugsgebiete",
-        # "teilgebiete",
-        # "linksw",                           # geom, gbuf, glink
-        # "einleit",
-        # "aussengebiete",
-        # "linkageb",                         # glink
-        # "symbole",
-
-        # "refdata",                          # kein Geoobjekt
-
-        # "pruefsql,"                         # kein Geoobjekt
-        # "pruefliste,"                       # kein Geoobjekt
-        # "info,"                             # kein Geoobjekt
-        # "fotos,"                            # kein Geoobjekt
-        # "videos,"                           # kein Geoobjekt
-        # "symbolkatalog,"                    # kein Geoobjekt
-    # ]
     first = True
     with open('sqlite.yml', 'w', encoding = 'utf-8') as fw:
         fw.write(header)

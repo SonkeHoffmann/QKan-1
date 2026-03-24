@@ -391,7 +391,7 @@ class Schadenstexte:
             ORDER BY id, station, us.pk"""
 
         if not db_qkan.sql(
-            sql, "read untersuchdat_schaechte"
+            sql, "read untersuchdat_schacht"
         ):
             raise Exception(f"{__class__.__name__}: Fehler beim Lesen der Stationen (2)")
 

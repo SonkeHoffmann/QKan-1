@@ -1894,6 +1894,7 @@ class DBConnection:
            Falls selected == False: Nur Zählen der Gesamtzahlen"""
 
         n_haltungen, n_schaechte, n_flaechen = 0, 0, 0
+        project = QgsProject.instance()
 
         if selected:
             # Tabellen neu anlegen und, falls schon vorhanden, zurücksetzen
@@ -1911,30 +1912,39 @@ class DBConnection:
                 ):
                     raise Exception(f"{self.__class__.__name__}: errno. 101")
 
-            project = QgsProject.instance()
-            for layer in project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value):
-                for feat in layer.selectedFeatures():
+        for layer in project.mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value):
+            sel = layer.selectedFeatures()
+            n_haltungen = len(sel)
+            if selected:
+                for feat in sel:
                     params = {'pk': feat[0]}
                     if not self.sqlyml('database_insert_sel_haltungen', 'insert selected haltungen', parameters=params):
                         raise Exception(f"{self.__class__.__name__}: errno. 102")
                     logger.debug(f'sel: Haltung hinzugefügt: {params}')
-                    n_haltungen += 1
                 break               # nur 1. gefundener Layer ;)
-            for layer in project.mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value):
-                for feat in layer.selectedFeatures():
+        for layer in project.mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value):
+            sel = layer.selectedFeatures()
+            n_schaechte = len(sel)
+            if selected:
+                for feat in sel:
                     params = {'pk': feat[0]}
                     if not self.sqlyml('database_insert_sel_schaechte', 'insert selected schaechte', parameters=params):
                         raise Exception(f"{self.__class__.__name__}: errno. 103")
                     logger.debug(f'sel: Schacht hinzugefügt: {params}')
                     n_schaechte += 1
                 break               # nur 1. gefundener Layer ;)
-            for layer in project.mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value):
-                for feat in layer.selectedFeatures():
+        for layer in project.mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value):
+            sel = layer.selectedFeatures()
+            n_flaechen = len(sel)
+            if selected:
+                for feat in sel:
                     params = {'pk': feat[0]}
                     if not self.sqlyml('database_insert_sel_flaechen', 'insert selected flaechen', parameters=params):
                         raise Exception(f"{self.__class__.__name__}: errno. 104")
                     logger.debug(f'sel: Fläche hinzugefügt: {params}')
                     n_flaechen += 1
                 break               # nur 1. gefundener Layer ;)
+
+        self.commit()
 
         return n_haltungen, n_schaechte, n_flaechen

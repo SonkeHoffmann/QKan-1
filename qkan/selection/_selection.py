@@ -1,20 +1,16 @@
-from qgis.utils import spatialite_connect
-from qkan import QKan, enums
+from qkan import enums
 from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger, QkanUserError
 
 from qkan.laengsschnitt.dijkstra import Netz, find_route
 from qkan.tools.qkan_utils import get_qkanlayer_attributes
-from typing import Dict, List, Optional
 
 from qgis.core import (
-    Qgis,
     QgsProject,
     QgsVectorLayer,
-    QgsDataSourceUri,
-    QgsFeatureRequest,
 )
-from qgis.utils import iface, spatialite_connect
+from qgis.utils import iface
+from PyQt5.QtWidgets import QAction
 
 
 logger = get_logger("QKan.selection")
@@ -122,81 +118,46 @@ class Select:
 
     def gebiet(self):
         #db anweisung mit der alle haltung inner halb der gewählten teilgebiete ausgewählt werden
-        ids = []
-        pks =[]
-        layer = QgsProject.instance().mapLayersByName('Teilgebiete')[0]
+
+        layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.TEILGEBIETE.value)[0]
         features = layer.selectedFeatures()
-        for f in features:
-            pks.append(f[0])
+        pks = ','.join([str(el[0]) for el in features])
+        # logger.debug(f'pks: {pks}')
 
-        pks = tuple(pks)
-        pks = ','.join([str(x) for x in pks])
+        # Selektionen in allen Layern aufheben:
+        iface.mainWindow().findChild(QAction, 'mActionDeselectAll').trigger()
 
-        #db anweisung um ids zu filtern
-        sql = f"""SELECT pk FROM haltungen WHERE ST_WITHIN(geom ,(SELECT geom from teilgebiete where pk IN (?)))"""
-        data = (pks,)
-
-        self.db_qkan.sql(sql, parameters=data)
+        # Alle Haltungen in gewählten Teilgebieten auswählen
+        sql = f"""SELECT DISTINCT h.pk FROM haltungen AS h JOIN teilgebiete AS t ON ST_WITHIN(h.geom, t.geom) = 1
+                  WHERE t.pk IN ({pks})"""
+        self.db_qkan.sql(sql)
         x = self.db_qkan.fetchall()
-
-        for attr in x:
-            ids.append(attr[0])
-
-        for layer in QgsProject.instance().mapLayers().values():
-            if isinstance(layer, QgsVectorLayer):
-                 layer.removeSelection()
-        layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)[0]
-        if layer is not None:
+        ids = [el[0] for el in x]
+        logger.debug(f'ids: {ids[:10]}')
+        layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.HALTUNGEN.value)
+        for layer in layers:
             layer.selectByIds(ids)
-            iface.mapCanvas().zoomToSelected(layer)
 
-        if self.check_cb['cb_Schaechte']:
-            sql = f"""SELECT pk FROM schaechte WHERE ST_WITHIN(geop ,(SELECT geom from teilgebiete where pk IN (?)))"""
-            data = (pks,)
+        # Alle Schächte in gewählten Teilgebieten auswählen
+        sql = f"""SELECT DISTINCT s.pk FROM schaechte AS s JOIN teilgebiete AS t ON ST_WITHIN(s.geom, t.geom) = 1
+                  WHERE t.pk IN ({pks})"""
+        # sql = f"""SELECT pk FROM schaechte WHERE ST_WITHIN(geop ,(SELECT geom from teilgebiete where pk IN (?)))"""
+        self.db_qkan.sql(sql)
+        x = self.db_qkan.fetchall()
+        ids = [el[0] for el in x]
+        layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)
+        for layer in layers:
+            layer.selectByIds(ids)
 
-            self.db_qkan.sql(sql, parameters=data)
-            x = self.db_qkan.fetchall()
-
-            for attr in x:
-                ids.append(attr[0])
-
-            layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
-            if layer is not None:
-                layer.selectByIds(ids)
-                iface.mapCanvas().zoomToSelected(layer)
-
-        if self.check_cb['cb_Flaechen']:
-            sql = f"""SELECT pk FROM schaechte WHERE ST_WITHIN(geop ,(SELECT geom from teilgebiete where pk IN (?)))"""
-            data = (pks,)
-
-            self.db_qkan.sql(sql, parameters=data)
-            x = self.db_qkan.fetchall()
-
-            for attr in x:
-                ids.append(attr[0])
-
-            layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
-            if layer is not None:
-                layer.selectByIds(ids)
-                iface.mapCanvas().zoomToSelected(layer)
-
-            sql = f"""SELECT pk FROM flaechen WHERE ST_WITHIN(geom ,(SELECT geom from teilgebiete where pk IN (?)))"""
-            data = (pks,)
-
-            self.db_qkan.sql(sql, parameters=data)
-            x = self.db_qkan.fetchall()
-
-            for attr in x:
-                ids.append(attr[0])
-
-            layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
-            if layer is not None:
-                layer.selectByIds(ids)
-                iface.mapCanvas().zoomToSelected(layer)
-
-        self.db_qkan.getSelection(True)
-        self.db_qkan.commit()
-
+        # Alle Flächen in gewählten Teilgebieten auswählen
+        sql = f"""SELECT DISTINCT f.pk FROM flaechen AS f JOIN teilgebiete AS t ON ST_WITHIN(f.geom, t.geom) = 1
+                  WHERE t.pk IN ({pks})"""
+        self.db_qkan.sql(sql)
+        x = self.db_qkan.fetchall()
+        ids = [el[0] for el in x]
+        layers = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)
+        for layer in layers:
+            layer.selectByIds(ids)
 
     def run(self) -> None:
 

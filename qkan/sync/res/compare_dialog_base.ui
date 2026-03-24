@@ -406,7 +406,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schächte inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schächte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -433,7 +433,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -460,7 +460,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussschächte inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussschächte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string>HA-Schächte</string>
@@ -484,7 +484,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussleitungen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hausanschlussleitungen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -536,13 +536,37 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Einzelflächen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Einzelflächen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
                 </property>
                 <property name="text">
                  <string>Einzelflächen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cb_einleitdirekt">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Direkteinleiter und Außenflächen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="statusTip">
+                 <string>aktiviert</string>
+                </property>
+                <property name="text">
+                 <string>Direkteinleiter und Außenflächen</string>
                 </property>
                </widget>
               </item>
@@ -560,7 +584,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -584,13 +608,37 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verknüpfungen zu Einzelflächen und SW-Einleitungen inkl. Geoobjekte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verknüpfungen zu Einzelflächen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
-                 <string>Verknüpfungen zu Einzelflächen und SW-Einleitungen</string>
+                 <string>Verknüpfungen zu Einzelflächen</string>
                 </property>
                 <property name="text">
-                 <string>Anbindungen</string>
+                 <string>Anbindungen Einzelflächen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cb_linksw">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verknüpfungen zu SW-Einleitungen und Außenflächen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="statusTip">
+                 <string>Verknüpfungen zu SW-Einleitungen und Außenflächen</string>
+                </property>
+                <property name="text">
+                 <string>Anbindungen Direkteinleiter und Außenflächen</string>
                 </property>
                </widget>
               </item>
@@ -633,7 +681,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der Schächte vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der Schächte vergleichen (untersuchte Schächte, Einzeluntersuchungen mit Fotos und Videos)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -657,7 +705,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der Haltungen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der Haltungen vergleichen (untersuchte Haltungen, Einzeluntersuchungen mit Fotos und Videos)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -681,7 +729,7 @@
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der HA-Leitungen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inspektionsdaten der HA-Leitungen vergleichen (untersuchte HA-Leitungen, Einzeluntersuchungen mit Fotos und Videos)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>aktiviert</string>
@@ -717,7 +765,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="cb_haleitungen_insp_2">
+               <widget class="QCheckBox" name="cb_refdata">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -737,6 +785,78 @@
                 </property>
                 <property name="text">
                  <string>Referenztabellen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cb_notizen">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Notizen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="statusTip">
+                 <string>aktiviert</string>
+                </property>
+                <property name="text">
+                 <string>Notizen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cb_symbole">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Symbole vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="statusTip">
+                 <string>aktiviert</string>
+                </property>
+                <property name="text">
+                 <string>Symbole</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cb_plausi">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Tahoma</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Plausibilitätsabfragen vergleichen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="statusTip">
+                 <string>aktiviert</string>
+                </property>
+                <property name="text">
+                 <string>Plausibilitätsabfragen</string>
                 </property>
                </widget>
               </item>
@@ -795,7 +915,7 @@ Teilgebiete beschränken:</string>
           </font>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltungsflächen für die Nutzung mit GIPS exportieren. Für Berechnungen mit HYSTEM-EXTRAN werden die Daten nicht verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Alle Vergleichstabellen nach der Ausführung automatisch anzeigen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="statusTip">
           <string>aktiviert</string>

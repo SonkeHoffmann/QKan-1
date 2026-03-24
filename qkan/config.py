@@ -248,11 +248,17 @@ class SyncConfig(ClassObject):
     check_haschaechte: bool = True
     check_haleitungen: bool = True
     check_flaechen: bool = True
+    check_einleitdirekt: bool = True
     check_tezg: bool = True
     check_linkfl: bool = True
+    check_linksw: bool = True
     check_schaechte_insp: bool = True
     check_haltungen_insp: bool = True
     check_haleitungen_insp: bool = True
+    check_notizen: bool = True
+    check_symbole: bool = True
+    check_plausi: bool = True
+    ckeck_refdata: bool = True
     check_showAttrTables: bool = True
     protfile: str = ""
 

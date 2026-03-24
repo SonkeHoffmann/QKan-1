@@ -3915,7 +3915,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN.value,
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
@@ -4133,7 +4133,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml'),
@@ -4326,7 +4326,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE.value,
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
@@ -7379,7 +7379,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN.value,
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
@@ -10348,7 +10348,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml'),
@@ -13825,7 +13825,7 @@ class Zustandsklassen_funkt:
         logger.debug(f'Ende_Bewertung_Schaechte.liste: {datetime.now()}')
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE.value,
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),
@@ -16454,7 +16454,7 @@ class Zustandsklassen_funkt:
             pass
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN.value,
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_isy.qml'),
@@ -19000,7 +19000,7 @@ class Zustandsklassen_funkt:
             pass
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_isy.qml'),
@@ -22169,7 +22169,7 @@ class Zustandsklassen_funkt:
             pass
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE.value,
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_isy.qml'),
@@ -24632,7 +24632,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HALTUNGEN.value,
             table='haltungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'haltungen_untersucht_bewertung_dwa.qml'),
@@ -26997,7 +26997,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_HA_LEITUNGEN.value,
             table='anschlussleitungen_untersucht_bewertung',
             geom_column = 'geom',
             qmlfile=os.path.join(self.qmlDir, 'anschlussleitungen_untersucht_bewertung_dwa.qml'),
@@ -30001,7 +30001,7 @@ class Zustandsklassen_funkt:
         )
 
         loadLayer(
-            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE_GESAMT.value,
+            layerbez=enums.LAYERBEZ.ZK_ZUSTAND_SCHAECHTE.value,
             table='schaechte_untersucht_bewertung',
             geom_column = 'geop',
             qmlfile=os.path.join(self.qmlDir, 'schaechte_untersucht_bewertung_dwa.qml'),

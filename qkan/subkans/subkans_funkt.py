@@ -7707,7 +7707,7 @@ class Subkans_funkt:
         table = 'haltungen_substanz_bewertung'
         geom_column = 'geom'
         uri.setDataSource(schema, table, geom_column)
-        haltungen_substanz_bewertung = enums.LAYERBEZ.SK_ZUSTAND_HALTUNGEN_GESAMT.value
+        haltungen_substanz_bewertung = enums.LAYERBEZ.SK_ZUSTAND_HALTUNGEN.value
         vlayer = QgsVectorLayer(uri.uri(), haltungen_substanz_bewertung, 'spatialite')
         x = QgsProject.instance()
         try:

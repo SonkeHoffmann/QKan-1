@@ -1976,14 +1976,16 @@ class ImportTask(Schadenstexte):
 
     def _haltungen(self) -> None:
         def _iter() -> Iterator[Haltung]:
-            if self.m150_haltung is None:
-                blocks = self.xml.findall(f"HG")
-            else:
-                blocks = self.xml.findall(f"HG[HG313='{self.m150_haltung}']")
+            blocks = self.xml.findall(f"HG")
 
             logger.debug(f"Anzahl Haltungen: {len(blocks)}")
 
             for block in blocks:
+                # Objekte, deren Haltungsart nicht 'Haltung' ist, überspringen
+                if self.m150_haltung is not None:
+                    haltungsart = block.findtext("HG313", None)
+                    if haltungsart is not None and haltungsart != self.m150_haltung:
+                        continue
                 name = block.findtext("HG001")
                 if name is None:
                     name = block.findtext("HG002", None)

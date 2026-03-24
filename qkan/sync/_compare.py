@@ -44,137 +44,249 @@ class CompareTask:
                 parameters=(QKan.config.sync.ext,),
             )
 
-            # Prepare optional filter on teilgebiete
-            db_qkan.sqlyml(
-                'sync_create_sel_teilgebiete',
-                'comp_1',
-            )
-
-            db_qkan.sqlyml(
-                'sync_sel_teilgebiete_reset',
-                'comp_2',
-            )
-
-            # Add selected teilgebiete into temp table
-            if self.tgbs_selected:
-                for tgb in QKan.config.selections.teilgebiete:
-                    db_qkan.sqlyml(
-                        'sync_sel_teilgebiete_add',
-                        'comp_3',
-                        (tgb,),
-                    )
-
             # Vergleich aller gewählten Tabellen
-            userchoices = [
-                QKan.config.sync.check_schaechte,
-                QKan.config.sync.check_haltungen,
-                QKan.config.sync.check_haschaechte,
-                QKan.config.sync.check_haleitungen,
-                QKan.config.sync.check_flaechen,
-                QKan.config.sync.check_tezg,
-                QKan.config.sync.check_linkfl,
-                QKan.config.sync.check_schaechte_insp,
-                QKan.config.sync.check_haltungen_insp,
-                QKan.config.sync.check_haleitungen_insp,
-                QKan.config.sync.check_showAttrTables,
-            ]
-            tables = [
-                'schaechte',
-                'haltungen',
-                'anschlussschaechte',
-                'anschlussleitungen',
-                'flaechen',
-                'tezg',
-                'linkfl',
-                'schaechte_untersucht',
-                'haltungen_untersucht',
-                'anschlussleitungen_untersucht',
-                'refdata',
-            ]
-            layernames = [
+            check_medien = any(
                 [
-                    enums.LAYERBEZ.SYNC_SCHAECHTE_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_SCHAECHTE_EXT.value,
-                    enums.LAYERBEZ.SCHAECHTE.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_HALTUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_HALTUNGEN_EXT.value,
-                    enums.LAYERBEZ.HALTUNGEN.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_HA_SCHAECHTE_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_HA_SCHAECHTE_EXT.value,
-                    enums.LAYERBEZ.HA_SCHAECHTE.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_HA_LEITUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_HA_LEITUNGEN_EXT.value,
-                    enums.LAYERBEZ.HA_LEITUNGEN.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_FLAECHEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_FLAECHEN_EXT.value,
-                    enums.LAYERBEZ.EINZELFLAECHEN.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_TEZG_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_TEZG_EXT.value,
-                    enums.LAYERBEZ.TEILGEBIETE.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_ANBINDUNG_FLAECHEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_ANBINDUNG_FLAECHEN_EXT.value,
-                    enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_ZUSTAND_SCHAECHTE_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_ZUSTAND_SCHAECHTE_EXT.value,
-                    enums.LAYERBEZ.ZUSTAND_SCHAECHTE_GESAMT.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_EXT.value,
-                    enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_ZUSTAND_HALTUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_ZUSTAND_HALTUNGEN_EXT.value,
-                    enums.LAYERBEZ.ZUSTAND_HALTUNGEN_GESAMT.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_SCHAEDEN_HALTUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_SCHAEDEN_HALTUNGEN_EXT.value,
-                    enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_ZUSTAND_HA_LEITUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_ZUSTAND_HA_LEITUNGEN_EXT.value,
-                    enums.LAYERBEZ.ZUSTAND_HA_LEITUNGEN_GESAMT.value,
-                ],
-                [
-                    enums.LAYERBEZ.SYNC_SCHAEDEN_HA_LEITUNGEN_COMPARE.value,
-                    enums.LAYERBEZ.SYNC_SCHAEDEN_HA_LEITUNGEN_EXT.value,
-                    enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN.value,
+                    QKan.config.sync.check_schaechte_insp,
+                    QKan.config.sync.check_haltungen_insp,
+                    QKan.config.sync.check_haleitungen_insp,
                 ]
-            ]
-            groups = [
+            )
+
+            tables = [
+                [
+                    'schaechte',
+                    QKan.config.sync.check_schaechte,
+                    [
+                        enums.LAYERBEZ.SYNC_SCHAECHTE_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_SCHAECHTE_EXT.value,
+                        enums.LAYERBEZ.SCHAECHTE.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
+                ],
+                [
+                    'haltungen',
+                    QKan.config.sync.check_haltungen,
+                    [
+                        enums.LAYERBEZ.SYNC_HALTUNGEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_HALTUNGEN_EXT.value,
+                        enums.LAYERBEZ.HALTUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
+                ],
+                [
+                    'anschlussschaechte',
+                    QKan.config.sync.check_haschaechte,
+                    [
+                        enums.LAYERBEZ.SYNC_HA_SCHAECHTE_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_HA_SCHAECHTE_EXT.value,
+                        enums.LAYERBEZ.HA_SCHAECHTE.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_HA_SCHAECHTE.value,
+                ],
+                [
+                    'anschlussleitungen',
+                    QKan.config.sync.check_haleitungen,
+                    [
+                        enums.LAYERBEZ.SYNC_HA_LEITUNGEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_HA_LEITUNGEN_EXT.value,
+                        enums.LAYERBEZ.HA_LEITUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_HA_LEITUNGEN.value,
+                ],
+                [
+                    'flaechen',
+                    QKan.config.sync.check_flaechen,
+                    [
+                        enums.LAYERBEZ.SYNC_FLAECHEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_FLAECHEN_EXT.value,
+                        enums.LAYERBEZ.EINZELFLAECHEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_FLAECHEN.value,
+                ],
+                [
+                    'einleit',
+                    QKan.config.sync.check_einleitdirekt,               # gleicher Schalter check_einleitdirekt
+                    [
+                        enums.LAYERBEZ.SYNC_EINLEIT_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_EINLEIT_EXT.value,
+                        enums.LAYERBEZ.DIREKTEINLEITUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_TEZG.value,
-                    enums.LAYERBEZ.SYNC_GROUP_ANBINDUNG_FLAECHEN.value,
+                ],
+                [
+                    'aussengebiete',
+                    QKan.config.sync.check_einleitdirekt,               # gleicher Schalter check_einleitdirekt
+                    [
+                        enums.LAYERBEZ.SYNC_AUSSEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_AUSSEN_EXT.value,
+                        enums.LAYERBEZ.AUSSENGEBIETE.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_AUSSEN.value,
+                ],
+                [
+                    'tezg',
+                    QKan.config.sync.check_tezg,
+                    [
+                        enums.LAYERBEZ.SYNC_TEZG_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_TEZG_EXT.value,
+                        enums.LAYERBEZ.TEILGEBIETE.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_TEZG.value,
+                ],
+                [
+                    'linkfl',
+                    QKan.config.sync.check_linkfl,
+                    [
+                        enums.LAYERBEZ.SYNC_ANBINDUNG_FLAECHEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_ANBINDUNG_FLAECHEN_EXT.value,
+                        enums.LAYERBEZ.ANBINDUNG_FLAECHEN.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_FLAECHEN.value,
+                ],
+                [
+                    'linksw',
+                    QKan.config.sync.check_linksw,                      # gleicher Schalter check_linksw
+                    [
+                        enums.LAYERBEZ.SYNC_ANBINDUNG_DIREKT_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_ANBINDUNG_DIREKT_EXT.value,
+                        enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_EINLEIT.value,
+                ],
+                [
+                    'linkageb',
+                    QKan.config.sync.check_linksw,                      # gleicher Schalter check_linksw
+                    [
+                        enums.LAYERBEZ.SYNC_ANBINDUNG_AUSSEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_ANBINDUNG_AUSSEN_EXT.value,
+                        enums.LAYERBEZ.ANBINDUNG_AUSSENGEBIETE.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_ANBINDUNG_AUSSEN.value,
+                ],
+                [
+                    'schaechte_untersucht',
+                    QKan.config.sync.check_schaechte_insp,
+                    [
+                        enums.LAYERBEZ.SYNC_ZUSTAND_SCHAECHTE_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_ZUSTAND_SCHAECHTE_EXT.value,
+                        enums.LAYERBEZ.ZUSTAND_SCHAECHTE.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_SCHAECHTE.value,
+                ],
+                [
+                    'untersuchdat_schaechte',
+                    QKan.config.sync.check_schaechte_insp,
+                    [
+                        enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_EXT.value,
+                        enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_SCHAEDEN_SCHAECHTE.value,
+                ],
+                [
+                    'haltungen_untersucht',
+                    QKan.config.sync.check_haltungen_insp,
+                    [
+                        enums.LAYERBEZ.SYNC_ZUSTAND_HALTUNGEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_ZUSTAND_HALTUNGEN_EXT.value,
+                        enums.LAYERBEZ.ZUSTAND_HALTUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_HALTUNGEN.value,
+                ],
+                [
+                    'untersuchdat_haltung',
+                    QKan.config.sync.check_haltungen_insp,
+                    [
+                        enums.LAYERBEZ.SYNC_SCHAEDEN_HALTUNGEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_SCHAEDEN_HALTUNGEN_EXT.value,
+                        enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_SCHAEDEN_HALTUNGEN.value,
+                ],
+                [
+                    'anschlussleitungen_untersucht',
+                    QKan.config.sync.check_haleitungen_insp,
+                    [
+                        enums.LAYERBEZ.SYNC_ZUSTAND_HA_LEITUNGEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_ZUSTAND_HA_LEITUNGEN_EXT.value,
+                        enums.LAYERBEZ.ZUSTAND_HA_LEITUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_HA_LEITUNGEN.value,
+                ],
+                [
+                    'untersuchdat_anschlussleitung',
+                    QKan.config.sync.check_haleitungen_insp,
+                    [
+                        enums.LAYERBEZ.SYNC_SCHAEDEN_HA_LEITUNGEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_SCHAEDEN_HA_LEITUNGEN_EXT.value,
+                        enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN.value,
+                    ],
                     enums.LAYERBEZ.SYNC_GROUP_SCHAEDEN_HA_LEITUNGEN.value,
+                ],
+                [
+                    'notizen',
+                    QKan.config.sync.check_notizen,
+                    [
+                        enums.LAYERBEZ.SYNC_NOTIZEN_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_NOTIZEN_EXT.value,
+                        enums.LAYERBEZ.NOTIZEN.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_NOTIZEN.value,
+                ],
+                [
+                    'symbole',
+                    QKan.config.sync.check_symbole,
+                    [
+                        enums.LAYERBEZ.SYNC_SYMBOLE_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_SYMBOLE_EXT.value,
+                        enums.LAYERBEZ.SYMBOLE.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_SYMBOLE.value,
+                ],
+                [
+                    'plausi',
+                    QKan.config.sync.check_plausi,
+                    [
+                        enums.LAYERBEZ.SYNC_PLAUSI_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_PLAUSI_EXT.value,
+                        enums.LAYERBEZ.PLAUSISQL.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_PLAUSI.value,
+                ],
+                [
+                    'videos',
+                    check_medien,                                       # gleicher Schalter check_medien, s.o.
+                    [
+                        enums.LAYERBEZ.SYNC_VIDEOS_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_VIDEOS_EXT.value,
+                        enums.LAYERBEZ.VIDEOS.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_VIDEOS.value,
+                ],
+                [
+                    'fotos',
+                    check_medien,                                       # gleicher Schalter check_medien, s.o.
+                    [
+                        enums.LAYERBEZ.SYNC_FOTOS_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_FOTOS_EXT.value,
+                        enums.LAYERBEZ.FOTOS.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_FOTOS.value,
+                ],
+                [
+                    'refdata',
+                    QKan.config.sync.ckeck_refdata,
+                    [
+                        enums.LAYERBEZ.SYNC_REFDATA_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_REFDATA_EXT.value,
+                        enums.LAYERBEZ.REFDATA.value,
+                    ],
+                    enums.LAYERBEZ.SYNC_GROUP_REFDATA.value,
+                ],
             ]
 
-            for table, userchoice in zip(tables, userchoices):
+            for table, userchoice, _, _ in tables:
                 if userchoice:
                     sqlnames = [
                         f'sync_create_{table}',
@@ -196,7 +308,7 @@ class CompareTask:
 
             db_qkan.commit()
 
-        for table, layers, group, userchoice in zip(tables, layernames, groups, userchoices):
+        for table, userchoice, layers, group in tables:
             if userchoice:
                 grouppath = [
                     enums.LAYERBEZ.QKAN_GROUP.value,
@@ -232,7 +344,7 @@ class CompareTask:
         # Attributtabellen anzeigen
         if QKan.config.sync.check_showAttrTables:
             project = QgsProject.instance()
-            for layers, userchoice in zip(layernames, userchoices):
+            for _, userchoice, layers, _ in tables:
                 layercomp = layers[0]
                 layer = project.mapLayersByName(layercomp)[0]
                 iface.showAttributeTable(layer)
