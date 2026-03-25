@@ -287,7 +287,8 @@ class CompareTask:
             ]
 
             for table, userchoice, _, _ in tables:
-                if userchoice:
+                tableexist = db_qkan.attrlist(table)
+                if userchoice and tableexist:
                     sqlnames = [
                         f'sync_create_{table}',
                         f'sync_create_{table}_geom',
@@ -296,14 +297,14 @@ class CompareTask:
                         f'sync_{table}_local',
                         f'sync_{table}_dif',
                     ]
-                    if table == 'refdata':
+                    if table in ('refdata', 'fotos', 'videos', 'pruefsql'):
                         del sqlnames[1]
 
                     for sqlnam in sqlnames:
                         db_qkan.sqlyml(
                             sqlnam,
                             'comp_4',
-                            {'seltgb': self.tgbs_selected, 'epsg': QKan.config.epsg}
+                            {'epsg': QKan.config.epsg}
                         )
 
             db_qkan.commit()
@@ -347,7 +348,9 @@ class CompareTask:
             for _, userchoice, layers, _ in tables:
                 layercomp = layers[0]
                 layer = project.mapLayersByName(layercomp)[0]
-                iface.showAttributeTable(layer)
+                nds = layer.featureCount()
+                if nds > 0:
+                    iface.showAttributeTable(layer)
 
         progress_bar.setValue(100)
         status_message.setText("Vergleich der ausgewählten Tabellen abgeschlossen.")

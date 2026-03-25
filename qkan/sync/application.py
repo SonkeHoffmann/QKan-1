@@ -56,11 +56,6 @@ class Synchronisation(QKanPlugin):
         """Anzeigen des Vergleichs-Formulars. Bei OK Start des Projektvergleichs"""
 
         self.compare_dlg._load_compare_config()
-        try:
-            self.compare_dlg._prepareDialog()
-        except:
-            logger.debug('self.__class__.__name__: openform_compare fehlgeschlagen')
-            return
 
         self.compare_dlg.show()
         if len(layers := get_editable_layers()) > 0:
@@ -83,8 +78,6 @@ class Synchronisation(QKanPlugin):
                 logger.error_user("Anwenderfehler: Es dürfen keine Layer bearbeitbar sein\n"
                                   f"Betroffene Layer: {_}")
                 return
-
-            self.tgbs_selected = self.compare_dlg.cb_teilgebiete.isChecked()
 
             self._run_compare()
 

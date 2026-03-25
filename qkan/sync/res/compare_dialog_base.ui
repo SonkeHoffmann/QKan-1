@@ -60,8 +60,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>502</width>
-        <height>728</height>
+        <width>485</width>
+        <height>750</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -354,7 +354,7 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0">
           <property name="spacing">
            <number>12</number>
           </property>
@@ -861,43 +861,6 @@
                </widget>
               </item>
              </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,1">
-            <item>
-             <widget class="QCheckBox" name="cb_teilgebiete">
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>8</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;alle Datensätze&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>
-Abgleich auf gewählte
-Teilgebiete beschränken:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QListWidget" name="lw_teilgebiete">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auswahl Teilgebiete. Strg + Klick ändert Auswahlstatus, Shift + Klick erweitert Auswahlbereich&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="statusTip">
-               <string>Auswahl Teilgebiete. Strg + Klick ändert Auswahlstatus, Shift + Klick erweitert Auswahlbereich</string>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::ExtendedSelection</enum>
-              </property>
-             </widget>
             </item>
            </layout>
           </item>

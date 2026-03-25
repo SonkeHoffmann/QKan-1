@@ -7,13 +7,11 @@ from qgis.PyQt.QtWidgets import (
     QDialog,
     QFileDialog,
     QLineEdit,
-    QListWidgetItem,
     QPushButton,
     QWidget,
 )
 
 from qkan import QKan
-from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger, QkanError, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.sync.application_dialog")
@@ -56,7 +54,12 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
     cb_schaechte_insp: QCheckBox
     cb_haltungen_insp: QCheckBox
     cb_haleitungen_insp: QCheckBox
-    cb_teilgebiete: QCheckBox
+    cb_linksw: QCheckBox
+    cb_einleitdirekt: QCheckBox
+    cb_refdata: QCheckBox
+    cb_notizen: QCheckBox
+    cb_symbole: QCheckBox
+    cb_plausi: QCheckBox
     cb_showComparetables: QCheckBox
 
     def __init__(
@@ -70,8 +73,6 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
 
         # Attach events
         self.pb_select_extdb.clicked.connect(self.select_qkan_ext)
-        self.cb_teilgebiete.stateChanged.connect(self.click_selection)
-        self.lw_teilgebiete.itemClicked.connect(self.click_lw_teilgebiete)
 
         self.button_box.helpRequested.connect(self.click_help)
 
@@ -128,7 +129,6 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
         self.cb_plausi.setChecked(QKan.config.sync.check_plausi)
         self.cb_refdata.setChecked(QKan.config.sync.ckeck_refdata)
         self.cb_showComparetables.setChecked(QKan.config.sync.check_showAttrTables)
-        self.cb_teilgebiete.setChecked((QKan.config.selections.teilgebiete != []))
 
     def _save_compare_config(self):
         # Read from form and save to config
@@ -154,69 +154,8 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
         QKan.config.sync.check_showAttrTables = self.cb_showComparetables.isChecked()
         # self.cb_selectedTgbs.isChecked()
 
-        teilgebiete = [
-            _.text() for _ in self.lw_teilgebiete.selectedItems()
-        ]
-        QKan.config.selections.teilgebiete = teilgebiete
-
         QKan.config.save()
 
-    def click_selection(self) -> None:
-        """Reagiert auf Checkbox zur Aktivierung der Auswahl"""
-
-        # Checkbox hat den Status nach dem Klick
-        if not self.cb_teilgebiete.isChecked():
-            # Auswahl deaktivieren und Liste zurücksetzen
-            anz = self.lw_teilgebiete.count()
-            for i in range(anz):
-                item = self.lw_teilgebiete.item(i)
-                item.setSelected(False)
-                # self.lw_teilgebiete.setItemSelected(item, False)
-
-    def click_lw_teilgebiete(self) -> None:
-        """Reaktion auf Klick in Tabelle"""
-
-        self.cb_teilgebiete.setChecked(True)
-
-    def _prepareDialog(self) -> bool:
-        """Füllt Auswahllisten im Export-Dialog"""
-
-        # Alle Teilgebiete in Flächen, Schächten und Haltungen, die noch nicht in Tabelle "teilgebiete" enthalten
-        # sind, ergänzen
-        with DBConnection() as db_qkan:
-            db_qkan.loadmodule('sync')
-
-            try:
-                db_qkan.sqlyml('sync_collect_teilgebiete', '_prepareDialog')
-            except:
-                logger.debug(f'Fehler in {self.__class__.__name__}')
-                raise QkanError
-
-            db_qkan.commit()
-
-            # Anlegen der Tabelle zur Auswahl der Teilgebiete
-
-            # Zunächst wird die Liste der beim letzten Mal gewählten Teilgebiete aus config gelesen
-            teilgebiete = QKan.config.selections.teilgebiete
-
-            # Abfragen der Tabelle teilgebiete nach Teilgebieten
-            try:
-                db_qkan.sqlyml('sync_list_teilgebiete', '_prepareDialog')
-            except:
-                return False
-            daten = db_qkan.fetchall()
-            self.lw_teilgebiete.clear()
-
-            for ielem, elem in enumerate(daten):
-                self.lw_teilgebiete.addItem(QListWidgetItem(elem[0]))
-                try:
-                    if elem[0] in teilgebiete:
-                        self.lw_teilgebiete.setCurrentRow(ielem)
-                except BaseException as err:
-                    logger.error_code(f"Fehler in Listenelement teilgebiete: {err}")
-                    raise QkanError
-
-            return True
 
 ADJUST_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "res", "adjust_dialog_base.ui")

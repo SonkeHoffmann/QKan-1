@@ -637,7 +637,7 @@ class DBConnection:
     def sql(self,
             sql: str,
             stmt_category: str = "allgemein",
-            parameters: Union[Tuple, List, dict[str, any]] = (),
+            parameters: Union[Tuple, List, dict[str, Any]] = (),
             many: bool = False,
             mute_logger: bool = False,
             ignore: bool = False,

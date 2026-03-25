@@ -1231,12 +1231,12 @@
   </fieldConfiguration>
   <aliases>
     <alias name="" index="0" field="pk"/>
-    <alias name="" index="1" field="bezeichnung"/>
-    <alias name="" index="2" field="art"/>
-    <alias name="" index="3" field="link"/>
-    <alias name="" index="4" field="gruppe"/>
-    <alias name="" index="5" field="kommentar"/>
-    <alias name="" index="6" field="createdat"/>
+    <alias name="Bezeichnung" index="1" field="bezeichnung"/>
+    <alias name="Art" index="2" field="art"/>
+    <alias name="Link" index="3" field="link"/>
+    <alias name="Gruppe" index="4" field="gruppe"/>
+    <alias name="Kommentar" index="5" field="kommentar"/>
+    <alias name="erstellt" index="6" field="createdat"/>
   </aliases>
   <defaults>
     <default applyOnUpdate="0" expression="" field="pk"/>

@@ -41848,12 +41848,12 @@ def my_form_open(dialog, layer, feature):
       </fieldConfiguration>
       <aliases>
         <alias index="0" field="pk" name=""/>
-        <alias index="1" field="bezeichnung" name=""/>
-        <alias index="2" field="art" name=""/>
-        <alias index="3" field="link" name=""/>
-        <alias index="4" field="gruppe" name=""/>
-        <alias index="5" field="kommentar" name=""/>
-        <alias index="6" field="createdat" name=""/>
+        <alias index="1" field="bezeichnung" name="Bezeichnung"/>
+        <alias index="2" field="art" name="Art"/>
+        <alias index="3" field="link" name="Link"/>
+        <alias index="4" field="gruppe" name="Gruppe"/>
+        <alias index="5" field="kommentar" name="Kommentar"/>
+        <alias index="6" field="createdat" name="erstellt"/>
       </aliases>
       <defaults>
         <default expression="" field="pk" applyOnUpdate="0"/>
