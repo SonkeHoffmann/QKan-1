@@ -3548,7 +3548,6 @@ WHERE ex.pk IS NULL;"
 
 
 # Schaechte mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
-# geom wird zwar im Vergleich berücksichtigt, aber nicht in sync_schaechte gespeichert. Achtung sync_schachte.geom = schaechte.geop!
 sync_schaechte_dif: "
 INSERT INTO sync_schaechte (
     pk_best, pk_ext, schnam, objekt, aktion, status,

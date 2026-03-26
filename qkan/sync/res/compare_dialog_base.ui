@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>766</height>
+    <width>510</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -60,8 +60,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>485</width>
-        <height>750</height>
+        <width>508</width>
+        <height>562</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -354,7 +354,7 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
           <property name="spacing">
            <number>12</number>
           </property>
@@ -644,6 +644,10 @@
               </item>
              </layout>
             </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <property name="spacing">
@@ -742,10 +746,23 @@
              </layout>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
+             <layout class="QVBoxLayout" name="verticalLayout_14">
               <property name="spacing">
                <number>2</number>
               </property>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
               <item>
                <widget class="QLabel" name="label_3">
                 <property name="enabled">
@@ -859,6 +876,19 @@
                  <string>Plausibilitätsabfragen</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>

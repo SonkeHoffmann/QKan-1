@@ -244,8 +244,6 @@ def writesql(cur, fw, tabnam):
 
 # ---------------------------------------------------------------------------------------------------------------------
     fw.write(f'# {tabtitle} mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden\n')
-    if tabnam == 'schaechte':
-        fw.write('# geom wird zwar im Vergleich berücksichtigt, aber nicht in sync_schaechte gespeichert. Achtung sync_schachte.geom = schaechte.geop!\n')
     fw.write(f'sync_{tabnam}_dif: "\n')
     fw.write(f'INSERT INTO sync_{tabnam} (\n')
     fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
