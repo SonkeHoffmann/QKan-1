@@ -2455,7 +2455,7 @@ CREATE TABLE IF NOT EXISTS sync_linkageb (
     schnam TEXT);"
 
 sync_create_linkageb_geom: "
-SELECT AddGeometryColumn('sync_linkageb', 'glink', :epsg, 'LINESTRING', 2);"
+SELECT AddGeometryColumn('sync_linkageb', 'geom', :epsg, 'LINESTRING', 2);"
 
 sync_reset_linkageb: "
 DELETE FROM sync_linkageb;"
@@ -2465,7 +2465,7 @@ sync_linkageb_ext: "
 INSERT INTO sync_linkageb (
     pk_best, pk_ext, gebnam, objekt, aktion, status,
     gebnam, schnam,
-    glink)
+    geom)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.gebnam,
     'Datensatz nicht im Bestand' AS objekt,
@@ -2492,7 +2492,7 @@ sync_linkageb_local: "
 INSERT INTO sync_linkageb (
     pk_best, pk_ext, gebnam, objekt, aktion, status,
     gebnam, schnam,
-    glink)
+    geom)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.gebnam,
     'Datensatz extern nicht vorhanden' AS objekt,
@@ -2520,7 +2520,7 @@ sync_linkageb_dif: "
 INSERT INTO sync_linkageb (
     pk_best, pk_ext, gebnam, objekt, aktion, status,
     gebnam, schnam,
-    glink)
+    geom)
 SELECT
     be.pk AS pk_best,
     ex.pk AS pk_ext,
@@ -2619,7 +2619,7 @@ CREATE TABLE IF NOT EXISTS sync_linkfl (
     fliesszeitflaeche REAL);"
 
 sync_create_linkfl_geom: "
-SELECT AddGeometryColumn('sync_linkfl', 'glink', :epsg, 'LINESTRING', 2);"
+SELECT AddGeometryColumn('sync_linkfl', 'geom', :epsg, 'LINESTRING', 2);"
 
 sync_reset_linkfl: "
 DELETE FROM sync_linkfl;"
@@ -2630,7 +2630,7 @@ INSERT INTO sync_linkfl (
     pk_best, pk_ext, flnam, objekt, aktion, status,
     flnam, haltnam, schnam, tezgnam, teilgebiet, abflusstyp, speicherzahl,
     speicherkonst, fliesszeitkanal, fliesszeitflaeche,
-    glink)
+    geom)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.flnam,
     'Datensatz nicht im Bestand' AS objekt,
@@ -2660,7 +2660,7 @@ INSERT INTO sync_linkfl (
     pk_best, pk_ext, flnam, objekt, aktion, status,
     flnam, haltnam, schnam, tezgnam, teilgebiet, abflusstyp, speicherzahl,
     speicherkonst, fliesszeitkanal, fliesszeitflaeche,
-    glink)
+    geom)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.flnam,
     'Datensatz extern nicht vorhanden' AS objekt,
@@ -2691,7 +2691,7 @@ INSERT INTO sync_linkfl (
     pk_best, pk_ext, flnam, objekt, aktion, status,
     flnam, haltnam, schnam, tezgnam, teilgebiet, abflusstyp, speicherzahl,
     speicherkonst, fliesszeitkanal, fliesszeitflaeche,
-    glink)
+    geom)
 SELECT
     be.pk AS pk_best,
     ex.pk AS pk_ext,
@@ -2819,7 +2819,7 @@ CREATE TABLE IF NOT EXISTS sync_linksw (
     teilgebiet TEXT);"
 
 sync_create_linksw_geom: "
-SELECT AddGeometryColumn('sync_linksw', 'glink', :epsg, 'LINESTRING', 2);"
+SELECT AddGeometryColumn('sync_linksw', 'geom', :epsg, 'LINESTRING', 2);"
 
 sync_reset_linksw: "
 DELETE FROM sync_linksw;"
@@ -2829,7 +2829,7 @@ sync_linksw_ext: "
 INSERT INTO sync_linksw (
     pk_best, pk_ext, elnam, objekt, aktion, status,
     elnam, haltnam, schnam, teilgebiet,
-    glink)
+    geom)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.elnam,
     'Datensatz nicht im Bestand' AS objekt,
@@ -2856,7 +2856,7 @@ sync_linksw_local: "
 INSERT INTO sync_linksw (
     pk_best, pk_ext, elnam, objekt, aktion, status,
     elnam, haltnam, schnam, teilgebiet,
-    glink)
+    geom)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.elnam,
     'Datensatz extern nicht vorhanden' AS objekt,
@@ -2884,7 +2884,7 @@ sync_linksw_dif: "
 INSERT INTO sync_linksw (
     pk_best, pk_ext, elnam, objekt, aktion, status,
     elnam, haltnam, schnam, teilgebiet,
-    glink)
+    geom)
 SELECT
     be.pk AS pk_best,
     ex.pk AS pk_ext,
@@ -3477,7 +3477,7 @@ CREATE TABLE IF NOT EXISTS sync_schaechte (
     kommentar TEXT);"
 
 sync_create_schaechte_geom: "
-SELECT AddGeometryColumn('sync_schaechte', 'geop', :epsg, 'POINT', 2);"
+SELECT AddGeometryColumn('sync_schaechte', 'geom', :epsg, 'POINT', 2);"
 
 sync_reset_schaechte: "
 DELETE FROM sync_schaechte;"
@@ -3489,7 +3489,7 @@ INSERT INTO sync_schaechte (
     schnam, sohlhoehe, deckelhoehe, durchm, druckdicht, ueberstauflaeche,
     entwart, strasse, baujahr, eigentum, teilgebiet, knotentyp,
     auslasstyp, schachttyp, simstatus, material, xsch, ysch, kommentar,
-    geop)
+    geom)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.schnam,
     'Datensatz nicht im Bestand' AS objekt,
@@ -3521,7 +3521,7 @@ INSERT INTO sync_schaechte (
     schnam, sohlhoehe, deckelhoehe, durchm, druckdicht, ueberstauflaeche,
     entwart, strasse, baujahr, eigentum, teilgebiet, knotentyp,
     auslasstyp, schachttyp, simstatus, material, xsch, ysch, kommentar,
-    geop)
+    geom)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.schnam,
     'Datensatz extern nicht vorhanden' AS objekt,
@@ -3554,7 +3554,7 @@ INSERT INTO sync_schaechte (
     schnam, sohlhoehe, deckelhoehe, durchm, druckdicht, ueberstauflaeche,
     entwart, strasse, baujahr, eigentum, teilgebiet, knotentyp,
     auslasstyp, schachttyp, simstatus, material, xsch, ysch, kommentar,
-    geop)
+    geom)
 SELECT
     be.pk AS pk_best,
     ex.pk AS pk_ext,
@@ -3733,7 +3733,7 @@ CREATE TABLE IF NOT EXISTS sync_schaechte_untersucht (
     kommentar TEXT);"
 
 sync_create_schaechte_untersucht_geom: "
-SELECT AddGeometryColumn('sync_schaechte_untersucht', 'geop', :epsg, 'POINT', 2);"
+SELECT AddGeometryColumn('sync_schaechte_untersucht', 'geom', :epsg, 'POINT', 2);"
 
 sync_reset_schaechte_untersucht: "
 DELETE FROM sync_schaechte_untersucht;"
@@ -3745,7 +3745,7 @@ INSERT INTO sync_schaechte_untersucht (
     schnam, durchm, baujahr, bezugspunkt, id, untersuchtag, untersucher,
     wetter, strasse, bewertungsart, bewertungstag, datenart,
     auftragsbezeichnung, max_ZD, max_ZB, max_ZS, kommentar,
-    geop)
+    geom)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.schnam,
     'Datensatz nicht im Bestand' AS objekt,
@@ -3777,7 +3777,7 @@ INSERT INTO sync_schaechte_untersucht (
     schnam, durchm, baujahr, bezugspunkt, id, untersuchtag, untersucher,
     wetter, strasse, bewertungsart, bewertungstag, datenart,
     auftragsbezeichnung, max_ZD, max_ZB, max_ZS, kommentar,
-    geop)
+    geom)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.schnam,
     'Datensatz extern nicht vorhanden' AS objekt,
@@ -3810,7 +3810,7 @@ INSERT INTO sync_schaechte_untersucht (
     schnam, durchm, baujahr, bezugspunkt, id, untersuchtag, untersucher,
     wetter, strasse, bewertungsart, bewertungstag, datenart,
     auftragsbezeichnung, max_ZD, max_ZB, max_ZS, kommentar,
-    geop)
+    geom)
 SELECT
     be.pk AS pk_best,
     ex.pk AS pk_ext,

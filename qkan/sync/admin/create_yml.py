@@ -163,7 +163,7 @@ def writesql(cur, fw, tabnam):
     with open('C:/FHAC\hoettges/Kanalprogramme/QKan/test/work/createyml.log', 'a') as flog:
         flog.write(f'{tabtitle} ({tabnam=})\n{attributes_ex=}\n{attributes_be=}\n\n')
     if gobj is not None:
-        geoattr =   f',\n    {gobj}'
+        geoattr =   f',\n    geom'
         geoattrs =  f',\n    {gobj}'
         geoattrex = f',\n    ex.{gobj} AS {gobj}'
         geoattrbe = f',\n    be.{gobj} AS {gobj}'
@@ -181,7 +181,7 @@ def writesql(cur, fw, tabnam):
             return
         typ = typlis[ngeo]
         fw.write(f'sync_create_{tabnam}_geom: "\n')
-        fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', '{gobj}', :epsg, '{typ}', 2);"\n''')
+        fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', 'geom', :epsg, '{typ}', 2);"\n''')
 
     fw.write( '\n')
     fw.write(f'sync_reset_{tabnam}: "\n')
