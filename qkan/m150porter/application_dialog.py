@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional, List
+from typing import Callable, Optional
 
 from PyQt5.QtWidgets import QRadioButton
 from qgis.core import QgsCoordinateReferenceSystem, QgsProject
@@ -16,7 +16,6 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
     QDialogButtonBox,
 )
-import traceback
 
 from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection

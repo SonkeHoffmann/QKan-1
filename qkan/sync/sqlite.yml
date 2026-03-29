@@ -76,7 +76,7 @@ INSERT INTO sync_anschlussleitungen (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.leitnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.leitnam, ex.schoben, ex.schunten, ex.hoehe, ex.breite, ex.laenge,
     ex.aussendurchmesser, ex.sohleoben, ex.sohleunten, ex.baujahr,
     ex.haltnam, ex.urstation, ex.ursprung, ex.anschlusstyp,
@@ -112,7 +112,7 @@ INSERT INTO sync_anschlussleitungen (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.leitnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.leitnam, be.schoben, be.schunten, be.hoehe, be.breite, be.laenge,
     be.aussendurchmesser, be.sohleoben, be.sohleunten, be.baujahr,
     be.haltnam, be.urstation, be.ursprung, be.anschlusstyp,
@@ -152,7 +152,7 @@ SELECT
     ex.leitnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.leitnam <> ex.leitnam, printf('%s -> %s', be.leitnam, ex.leitnam), NULL) AS leitnam,
     iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
     iif(be.schunten <> ex.schunten, printf('%s -> %s', be.schunten, ex.schunten), NULL) AS schunten,
@@ -394,7 +394,7 @@ INSERT INTO sync_anschlussleitungen_untersucht (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.leitnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.leitnam, ex.bezugspunkt, ex.schoben, ex.schunten, ex.hoehe, ex.breite,
     ex.laenge, ex.baujahr, ex.id, ex.untersuchtag, ex.untersucher,
     ex.untersuchrichtung, ex.wetter, ex.bewertungsart, ex.bewertungstag,
@@ -428,7 +428,7 @@ INSERT INTO sync_anschlussleitungen_untersucht (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.leitnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.leitnam, be.bezugspunkt, be.schoben, be.schunten, be.hoehe, be.breite,
     be.laenge, be.baujahr, be.id, be.untersuchtag, be.untersucher,
     be.untersuchrichtung, be.wetter, be.bewertungsart, be.bewertungstag,
@@ -466,7 +466,7 @@ SELECT
     ex.leitnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.leitnam <> ex.leitnam, printf('%s -> %s', be.leitnam, ex.leitnam), NULL) AS leitnam,
     iif(be.bezugspunkt <> ex.bezugspunkt, printf('%s -> %s', be.bezugspunkt, ex.bezugspunkt), NULL) AS bezugspunkt,
     iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
@@ -686,7 +686,7 @@ INSERT INTO sync_anschlussschaechte (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.schnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.schnam, ex.sohlhoehe, ex.deckelhoehe, ex.durchm, ex.druckdicht,
     ex.entwart, ex.strasse, ex.baujahr, ex.haltnam, ex.urstation,
     ex.ursprung, ex.anschlusstyp, ex.eigentum, ex.teilgebiet,
@@ -718,7 +718,7 @@ INSERT INTO sync_anschlussschaechte (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.schnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.schnam, be.sohlhoehe, be.deckelhoehe, be.durchm, be.druckdicht,
     be.entwart, be.strasse, be.baujahr, be.haltnam, be.urstation,
     be.ursprung, be.anschlusstyp, be.eigentum, be.teilgebiet,
@@ -754,7 +754,7 @@ SELECT
     ex.schnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
     iif(coalesce(abs(be.sohlhoehe - ex.sohlhoehe), 0) > 0.001, printf('%.3f -> %.3f', be.sohlhoehe, ex.sohlhoehe), NULL) AS sohlhoehe,
     iif(coalesce(abs(be.deckelhoehe - ex.deckelhoehe), 0) > 0.001, printf('%.3f -> %.3f', be.deckelhoehe, ex.deckelhoehe), NULL) AS deckelhoehe,
@@ -934,7 +934,7 @@ INSERT INTO sync_aussengebiete (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.gebnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.gebnam, ex.schnam, ex.hoeheob, ex.hoeheun, ex.fliessweg,
     ex.basisabfluss, ex.cn, ex.regenschreiber, ex.teilgebiet, ex.kommentar,
     ex.geom AS geom
@@ -963,7 +963,7 @@ INSERT INTO sync_aussengebiete (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.gebnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.gebnam, be.schnam, be.hoeheob, be.hoeheun, be.fliessweg,
     be.basisabfluss, be.cn, be.regenschreiber, be.teilgebiet, be.kommentar,
     be.geom AS geom
@@ -996,7 +996,7 @@ SELECT
     ex.gebnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.gebnam <> ex.gebnam, printf('%s -> %s', be.gebnam, ex.gebnam), NULL) AS gebnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
     iif(coalesce(abs(be.hoeheob - ex.hoeheob), 0) > 0.001, printf('%.3f -> %.3f', be.hoeheob, ex.hoeheob), NULL) AS hoeheob,
@@ -1135,7 +1135,7 @@ INSERT INTO sync_einleit (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.elnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.elnam, ex.haltnam, ex.schnam, ex.teilgebiet, ex.zufluss, ex.ew,
     ex.einzugsgebiet, ex.kommentar,
     ex.geom AS geom
@@ -1164,7 +1164,7 @@ INSERT INTO sync_einleit (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.elnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.elnam, be.haltnam, be.schnam, be.teilgebiet, be.zufluss, be.ew,
     be.einzugsgebiet, be.kommentar,
     be.geom AS geom
@@ -1197,7 +1197,7 @@ SELECT
     ex.elnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.elnam <> ex.elnam, printf('%s -> %s', be.elnam, ex.elnam), NULL) AS elnam,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
@@ -1325,7 +1325,7 @@ INSERT INTO sync_einzugsgebiete (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.tgnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.tgnam, ex.ewdichte, ex.wverbrauch, ex.stdmittel, ex.fremdwas,
     ex.kommentar,
     ex.geom AS geom
@@ -1353,7 +1353,7 @@ INSERT INTO sync_einzugsgebiete (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.tgnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.tgnam, be.ewdichte, be.wverbrauch, be.stdmittel, be.fremdwas,
     be.kommentar,
     be.geom AS geom
@@ -1385,7 +1385,7 @@ SELECT
     ex.tgnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.tgnam <> ex.tgnam, printf('%s -> %s', be.tgnam, ex.tgnam), NULL) AS tgnam,
     iif(coalesce(abs(be.ewdichte - ex.ewdichte), 0) > 0.001, printf('%.3f -> %.3f', be.ewdichte, ex.ewdichte), NULL) AS ewdichte,
     iif(coalesce(abs(be.wverbrauch - ex.wverbrauch), 0) > 0.001, printf('%.3f -> %.3f', be.wverbrauch, ex.wverbrauch), NULL) AS wverbrauch,
@@ -1509,7 +1509,7 @@ INSERT INTO sync_flaechen (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.flnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.flnam, ex.haltnam, ex.schnam, ex.neigkl, ex.neigung, ex.teilgebiet,
     ex.regenschreiber, ex.abflussparameter, ex.aufteilen, ex.kommentar,
     ex.geom AS geom
@@ -1538,7 +1538,7 @@ INSERT INTO sync_flaechen (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.flnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.flnam, be.haltnam, be.schnam, be.neigkl, be.neigung, be.teilgebiet,
     be.regenschreiber, be.abflussparameter, be.aufteilen, be.kommentar,
     be.geom AS geom
@@ -1571,7 +1571,7 @@ SELECT
     ex.flnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.flnam <> ex.flnam, printf('%s -> %s', be.flnam, ex.flnam), NULL) AS flnam,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
@@ -1700,7 +1700,7 @@ INSERT INTO sync_fotos (
     name, untersuchtag, objekt, datei)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.name,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.name, ex.untersuchtag, ex.objekt, ex.datei
 FROM (
     SELECT * 
@@ -1724,7 +1724,7 @@ INSERT INTO sync_fotos (
     name, untersuchtag, objekt, datei)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.name,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.name, be.untersuchtag, be.objekt, be.datei
 FROM (
     SELECT *
@@ -1752,7 +1752,7 @@ SELECT
     ex.pk AS pk_ext,
     ex.name,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.name <> ex.name, printf('%s -> %s', be.name, ex.name), NULL) AS name,
     iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
     iif(be.objekt <> ex.objekt, printf('%s -> %s', be.objekt, ex.objekt), NULL) AS objekt,
@@ -1882,7 +1882,7 @@ INSERT INTO sync_haltungen (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.haltnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.haltnam, ex.schoben, ex.schunten, ex.hoehe, ex.breite, ex.laenge,
     ex.aussendurchmesser, ex.sohleoben, ex.sohleunten, ex.baujahr,
     ex.eigentum, ex.teilgebiet, ex.strasse, ex.profilnam, ex.entwart,
@@ -1918,7 +1918,7 @@ INSERT INTO sync_haltungen (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.haltnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.haltnam, be.schoben, be.schunten, be.hoehe, be.breite, be.laenge,
     be.aussendurchmesser, be.sohleoben, be.sohleunten, be.baujahr,
     be.eigentum, be.teilgebiet, be.strasse, be.profilnam, be.entwart,
@@ -1958,7 +1958,7 @@ SELECT
     ex.haltnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
     iif(be.schunten <> ex.schunten, printf('%s -> %s', be.schunten, ex.schunten), NULL) AS schunten,
@@ -2196,7 +2196,7 @@ INSERT INTO sync_haltungen_untersucht (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.haltnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.haltnam, ex.bezugspunkt, ex.schoben, ex.schunten, ex.hoehe, ex.breite,
     ex.laenge, ex.baujahr, ex.id, ex.untersuchtag, ex.untersucher,
     ex.untersuchrichtung, ex.wetter, ex.bewertungsart, ex.bewertungstag,
@@ -2230,7 +2230,7 @@ INSERT INTO sync_haltungen_untersucht (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.haltnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.haltnam, be.bezugspunkt, be.schoben, be.schunten, be.hoehe, be.breite,
     be.laenge, be.baujahr, be.id, be.untersuchtag, be.untersucher,
     be.untersuchrichtung, be.wetter, be.bewertungsart, be.bewertungstag,
@@ -2268,7 +2268,7 @@ SELECT
     ex.haltnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.bezugspunkt <> ex.bezugspunkt, printf('%s -> %s', be.bezugspunkt, ex.bezugspunkt), NULL) AS bezugspunkt,
     iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
@@ -2469,7 +2469,7 @@ INSERT INTO sync_linkageb (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.gebnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.gebnam, ex.schnam,
     ex.glink AS glink
 FROM (
@@ -2496,7 +2496,7 @@ INSERT INTO sync_linkageb (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.gebnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.gebnam, be.schnam,
     be.glink AS glink
 FROM (
@@ -2527,7 +2527,7 @@ SELECT
     ex.gebnam,
     iif(be.glink <> ex.glink, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.gebnam <> ex.gebnam, printf('%s -> %s', be.gebnam, ex.gebnam), NULL) AS gebnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
     be.glink AS glink
@@ -2634,7 +2634,7 @@ INSERT INTO sync_linkfl (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.flnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.flnam, ex.haltnam, ex.schnam, ex.tezgnam, ex.teilgebiet,
     ex.abflusstyp, ex.speicherzahl, ex.speicherkonst, ex.fliesszeitkanal,
     ex.fliesszeitflaeche,
@@ -2664,7 +2664,7 @@ INSERT INTO sync_linkfl (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.flnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.flnam, be.haltnam, be.schnam, be.tezgnam, be.teilgebiet,
     be.abflusstyp, be.speicherzahl, be.speicherkonst, be.fliesszeitkanal,
     be.fliesszeitflaeche,
@@ -2698,7 +2698,7 @@ SELECT
     ex.flnam,
     iif(be.glink <> ex.glink, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.flnam <> ex.flnam, printf('%s -> %s', be.flnam, ex.flnam), NULL) AS flnam,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
@@ -2833,7 +2833,7 @@ INSERT INTO sync_linksw (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.elnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.elnam, ex.haltnam, ex.schnam, ex.teilgebiet,
     ex.glink AS glink
 FROM (
@@ -2860,7 +2860,7 @@ INSERT INTO sync_linksw (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.elnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.elnam, be.haltnam, be.schnam, be.teilgebiet,
     be.glink AS glink
 FROM (
@@ -2891,7 +2891,7 @@ SELECT
     ex.elnam,
     iif(be.glink <> ex.glink, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.elnam <> ex.elnam, printf('%s -> %s', be.elnam, ex.elnam), NULL) AS elnam,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
@@ -2996,7 +2996,7 @@ INSERT INTO sync_notizen (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.notiz,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.notiz,
     ex.geom AS geom
 FROM (
@@ -3023,7 +3023,7 @@ INSERT INTO sync_notizen (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.notiz,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.notiz,
     be.geom AS geom
 FROM (
@@ -3054,7 +3054,7 @@ SELECT
     ex.notiz,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.notiz <> ex.notiz, printf('%s -> %s', be.notiz, ex.notiz), NULL) AS notiz,
     be.geom AS geom
 FROM (
@@ -3148,7 +3148,7 @@ INSERT INTO sync_pruefsql (
     gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.gruppe,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.gruppe, ex.warntext, ex.warntyp, ex.warnlevel, ex.sql, ex.layername,
     ex.attrname
 FROM (
@@ -3173,7 +3173,7 @@ INSERT INTO sync_pruefsql (
     gruppe, warntext, warntyp, warnlevel, sql, layername, attrname)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.gruppe,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.gruppe, be.warntext, be.warntyp, be.warnlevel, be.sql, be.layername,
     be.attrname
 FROM (
@@ -3202,7 +3202,7 @@ SELECT
     ex.pk AS pk_ext,
     ex.gruppe,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.gruppe <> ex.gruppe, printf('%s -> %s', be.gruppe, ex.gruppe), NULL) AS gruppe,
     iif(be.warntext <> ex.warntext, printf('%s -> %s', be.warntext, ex.warntext), NULL) AS warntext,
     iif(be.warntyp <> ex.warntyp, printf('%s -> %s', be.warntyp, ex.warntyp), NULL) AS warntyp,
@@ -3314,7 +3314,7 @@ INSERT INTO sync_refdata (
     bezext, bezqkan, kuerzel, subject, modul, kommentar)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.bezext,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.bezext, ex.bezqkan, ex.kuerzel, ex.subject, ex.modul, ex.kommentar
 FROM (
     SELECT * 
@@ -3338,7 +3338,7 @@ INSERT INTO sync_refdata (
     bezext, bezqkan, kuerzel, subject, modul, kommentar)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.bezext,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.bezext, be.bezqkan, be.kuerzel, be.subject, be.modul, be.kommentar
 FROM (
     SELECT *
@@ -3366,7 +3366,7 @@ SELECT
     ex.pk AS pk_ext,
     ex.bezext,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.bezext <> ex.bezext, printf('%s -> %s', be.bezext, ex.bezext), NULL) AS bezext,
     iif(be.bezqkan <> ex.bezqkan, printf('%s -> %s', be.bezqkan, ex.bezqkan), NULL) AS bezqkan,
     iif(be.kuerzel <> ex.kuerzel, printf('%s -> %s', be.kuerzel, ex.kuerzel), NULL) AS kuerzel,
@@ -3493,7 +3493,7 @@ INSERT INTO sync_schaechte (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.schnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.schnam, ex.sohlhoehe, ex.deckelhoehe, ex.durchm, ex.druckdicht,
     ex.ueberstauflaeche, ex.entwart, ex.strasse, ex.baujahr, ex.eigentum,
     ex.teilgebiet, ex.knotentyp, ex.auslasstyp, ex.schachttyp,
@@ -3525,7 +3525,7 @@ INSERT INTO sync_schaechte (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.schnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.schnam, be.sohlhoehe, be.deckelhoehe, be.durchm, be.druckdicht,
     be.ueberstauflaeche, be.entwart, be.strasse, be.baujahr, be.eigentum,
     be.teilgebiet, be.knotentyp, be.auslasstyp, be.schachttyp,
@@ -3561,7 +3561,7 @@ SELECT
     ex.schnam,
     iif(be.geop <> ex.geop, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
     iif(coalesce(abs(be.sohlhoehe - ex.sohlhoehe), 0) > 0.001, printf('%.3f -> %.3f', be.sohlhoehe, ex.sohlhoehe), NULL) AS sohlhoehe,
     iif(coalesce(abs(be.deckelhoehe - ex.deckelhoehe), 0) > 0.001, printf('%.3f -> %.3f', be.deckelhoehe, ex.deckelhoehe), NULL) AS deckelhoehe,
@@ -3749,7 +3749,7 @@ INSERT INTO sync_schaechte_untersucht (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.schnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.schnam, ex.durchm, ex.baujahr, ex.bezugspunkt, ex.id, ex.untersuchtag,
     ex.untersucher, ex.wetter, ex.strasse, ex.bewertungsart,
     ex.bewertungstag, ex.datenart, ex.auftragsbezeichnung, ex.max_ZD,
@@ -3781,7 +3781,7 @@ INSERT INTO sync_schaechte_untersucht (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.schnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.schnam, be.durchm, be.baujahr, be.bezugspunkt, be.id, be.untersuchtag,
     be.untersucher, be.wetter, be.strasse, be.bewertungsart,
     be.bewertungstag, be.datenart, be.auftragsbezeichnung, be.max_ZD,
@@ -3817,7 +3817,7 @@ SELECT
     ex.schnam,
     iif(be.geop <> ex.geop, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
     iif(coalesce(abs(be.durchm - ex.durchm), 0) > 0.001, printf('%.3f -> %.3f', be.durchm, ex.durchm), NULL) AS durchm,
     iif(be.baujahr <> ex.baujahr, printf('%d -> %d', be.baujahr, ex.baujahr), NULL) AS baujahr,
@@ -3983,7 +3983,7 @@ INSERT INTO sync_symbole (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.bezeichnung,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.bezeichnung, ex.art, ex.link, ex.gruppe, ex.kommentar,
     ex.geom AS geom
 FROM (
@@ -4010,7 +4010,7 @@ INSERT INTO sync_symbole (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.bezeichnung,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.bezeichnung, be.art, be.link, be.gruppe, be.kommentar,
     be.geom AS geom
 FROM (
@@ -4041,7 +4041,7 @@ SELECT
     ex.bezeichnung,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.bezeichnung <> ex.bezeichnung, printf('%s -> %s', be.bezeichnung, ex.bezeichnung), NULL) AS bezeichnung,
     iif(be.art <> ex.art, printf('%s -> %s', be.art, ex.art), NULL) AS art,
     iif(be.link <> ex.link, printf('%s -> %s', be.link, ex.link), NULL) AS link,
@@ -4151,7 +4151,7 @@ INSERT INTO sync_teilgebiete (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.tgnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.tgnam, ex.kommentar,
     ex.geom AS geom
 FROM (
@@ -4178,7 +4178,7 @@ INSERT INTO sync_teilgebiete (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.tgnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.tgnam, be.kommentar,
     be.geom AS geom
 FROM (
@@ -4209,7 +4209,7 @@ SELECT
     ex.tgnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.tgnam <> ex.tgnam, printf('%s -> %s', be.tgnam, ex.tgnam), NULL) AS tgnam,
     iif(be.kommentar <> ex.kommentar, printf('%s -> %s', be.kommentar, ex.kommentar), NULL) AS kommentar,
     be.geom AS geom
@@ -4317,7 +4317,7 @@ INSERT INTO sync_tezg (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.flnam,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.flnam, ex.haltnam, ex.schnam, ex.neigkl, ex.neigung, ex.befgrad,
     ex.schwerpunktlaufzeit, ex.regenschreiber, ex.teilgebiet,
     ex.abflussparameter, ex.kommentar,
@@ -4347,7 +4347,7 @@ INSERT INTO sync_tezg (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.flnam,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.flnam, be.haltnam, be.schnam, be.neigkl, be.neigung, be.befgrad,
     be.schwerpunktlaufzeit, be.regenschreiber, be.teilgebiet,
     be.abflussparameter, be.kommentar,
@@ -4381,7 +4381,7 @@ SELECT
     ex.flnam,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.flnam <> ex.flnam, printf('%s -> %s', be.flnam, ex.flnam), NULL) AS flnam,
     iif(be.haltnam <> ex.haltnam, printf('%s -> %s', be.haltnam, ex.haltnam), NULL) AS haltnam,
     iif(be.schnam <> ex.schnam, printf('%s -> %s', be.schnam, ex.schnam), NULL) AS schnam,
@@ -4554,7 +4554,7 @@ INSERT INTO sync_untersuchdat_anschlussleitung (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.untersuchleit,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.untersuchleit, ex.schoben, ex.schunten, ex.id, ex.untersuchtag,
     ex.bandnr, ex.videozaehler, ex.inspektionslaenge, ex.station,
     ex.stationtext, ex.timecode, ex.video_offset, ex.langtext, ex.kuerzel,
@@ -4593,7 +4593,7 @@ INSERT INTO sync_untersuchdat_anschlussleitung (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.untersuchleit,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.untersuchleit, be.schoben, be.schunten, be.id, be.untersuchtag,
     be.bandnr, be.videozaehler, be.inspektionslaenge, be.station,
     be.stationtext, be.timecode, be.video_offset, be.langtext, be.kuerzel,
@@ -4636,7 +4636,7 @@ SELECT
     ex.untersuchleit,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.untersuchleit <> ex.untersuchleit, printf('%s -> %s', be.untersuchleit, ex.untersuchleit), NULL) AS untersuchleit,
     iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
     iif(be.schunten <> ex.schunten, printf('%s -> %s', be.schunten, ex.schunten), NULL) AS schunten,
@@ -4906,7 +4906,7 @@ INSERT INTO sync_untersuchdat_haltung (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.untersuchhal,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.untersuchhal, ex.schoben, ex.schunten, ex.id, ex.untersuchtag,
     ex.bandnr, ex.videozaehler, ex.inspektionslaenge, ex.station,
     ex.stationtext, ex.timecode, ex.video_offset, ex.langtext, ex.kuerzel,
@@ -4945,7 +4945,7 @@ INSERT INTO sync_untersuchdat_haltung (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.untersuchhal,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.untersuchhal, be.schoben, be.schunten, be.id, be.untersuchtag,
     be.bandnr, be.videozaehler, be.inspektionslaenge, be.station,
     be.stationtext, be.timecode, be.video_offset, be.langtext, be.kuerzel,
@@ -4988,7 +4988,7 @@ SELECT
     ex.untersuchhal,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.untersuchhal <> ex.untersuchhal, printf('%s -> %s', be.untersuchhal, ex.untersuchhal), NULL) AS untersuchhal,
     iif(be.schoben <> ex.schoben, printf('%s -> %s', be.schoben, ex.schoben), NULL) AS schoben,
     iif(be.schunten <> ex.schunten, printf('%s -> %s', be.schunten, ex.schunten), NULL) AS schunten,
@@ -5255,7 +5255,7 @@ INSERT INTO sync_untersuchdat_schacht (
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.untersuchsch,
     'Datensatz nicht im Bestand' AS objekt,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.untersuchsch, ex.id, ex.untersuchtag, ex.bandnr, ex.videozaehler,
     ex.timecode, ex.langtext, ex.kuerzel, ex.charakt1, ex.charakt2,
     ex.quantnr1, ex.quantnr2, ex.streckenschaden,
@@ -5293,7 +5293,7 @@ INSERT INTO sync_untersuchdat_schacht (
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.untersuchsch,
     'Datensatz extern nicht vorhanden' AS objekt,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.untersuchsch, be.id, be.untersuchtag, be.bandnr, be.videozaehler,
     be.timecode, be.langtext, be.kuerzel, be.charakt1, be.charakt2,
     be.quantnr1, be.quantnr2, be.streckenschaden,
@@ -5335,7 +5335,7 @@ SELECT
     ex.untersuchsch,
     iif(be.geom <> ex.geom, printf('Geometrie geändert'), NULL) AS objekt,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.untersuchsch <> ex.untersuchsch, printf('%s -> %s', be.untersuchsch, ex.untersuchsch), NULL) AS untersuchsch,
     iif(be.id <> ex.id, printf('%d -> %d', be.id, ex.id), NULL) AS id,
     iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
@@ -5553,7 +5553,7 @@ INSERT INTO sync_videos (
     name, untersuchtag, objekt, datei)
 SELECT 
     NULL AS pk_best, ex.pk AS pk_ext, ex.name,
-    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ 
+    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
     ex.name, ex.untersuchtag, ex.objekt, ex.datei
 FROM (
     SELECT * 
@@ -5577,7 +5577,7 @@ INSERT INTO sync_videos (
     name, untersuchtag, objekt, datei)
 SELECT
     be.pk AS pk_best, NULL AS pk_ext, be.name,
-    'löschen' AS aktion, 0 AS status,      /* löschen */
+    'löschen' AS aktion, :status_del AS status,      /* löschen */
     be.name, be.untersuchtag, be.objekt, be.datei
 FROM (
     SELECT *
@@ -5605,7 +5605,7 @@ SELECT
     ex.pk AS pk_ext,
     ex.name,
     'ändern' AS aktion,
-    1 AS status,
+    :status_mod AS status,
     iif(be.name <> ex.name, printf('%s -> %s', be.name, ex.name), NULL) AS name,
     iif(be.untersuchtag <> ex.untersuchtag, printf('%s -> %s', be.untersuchtag, ex.untersuchtag), NULL) AS untersuchtag,
     iif(be.objekt <> ex.objekt, printf('%s -> %s', be.objekt, ex.objekt), NULL) AS objekt,

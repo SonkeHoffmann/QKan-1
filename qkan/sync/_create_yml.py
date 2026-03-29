@@ -1,0 +1,335 @@
+# SQL name pattern for all tables:
+#   sync_create_{table},
+#   sync_create_{table}_geom,
+#   sync_reset_{table},
+#   sync_{table}_ext,
+#   sync_{table}_local,
+#   sync_{table}_dif,
+#
+#   sync_{table}_add,
+#   sync_{table}_del,
+#   sync_{table}_mod
+
+import textwrap
+from qkan import QKan, enums
+from qkan.database.dbfunc import DBConnection
+from qkan.utils import get_logger, QkanDbError
+
+logger = get_logger("QKan.sync._create_yml")
+
+def writesql(db_qkan: DBConnection):
+    """Erstellt die SQL-Anweisungen für die Synchronisation und speichert sie
+    in QKan.sqls"""
+
+    TABLES_GEOM = enums.SyncTables.TABLES_GEOM.value
+    TABLES_GEOP = enums.SyncTables.TABLES_GEOP.value
+    TABLES_GLINK = enums.SyncTables.TABLES_GLINK.value
+    TABLES_ATTR = enums.SyncTables.TABLES_ATTR.value
+
+    # Initialisierung des Abfragen-Dictionary
+    sqls = {'sync_attach_ext': "ATTACH DATABASE ? AS ext;"}
+
+    tables = TABLES_GEOM + TABLES_GEOP + TABLES_GLINK + TABLES_ATTR
+    tablis = sorted(list(set(tables)))
+    if len(tables) != len(tablis):
+        logger.error_code(f'Fehler: Keine Tabelle darf in mehr als einer Liste "TABLES_XXXX" vorkommen!')
+        raise QkanDbError
+
+    for tabnam in tablis:
+
+        tabtitle = tabnam.title()
+
+        attrlis = []
+        typlis  = []
+        objnam = None
+        igeo = None             # Index des ersten Geoobjekts
+        ngeo   = None           # Index des zu synchronisierenden Geoobjekts in attrlis und typlis. Bei Attributtabellen ist ngeo = None
+        nattr  = 0               # Gesamtlänge der Attributliste inkl. Geoobjekte
+
+        if tabnam in TABLES_GEOM:
+            gobj = 'geom'
+        elif tabnam in TABLES_GEOP:
+            gobj = 'geop'
+        elif tabnam in TABLES_GLINK:
+            gobj = 'glink'
+        elif tabnam in TABLES_ATTR:
+            gobj = None
+        else:
+            logger.error_code('Fehler: {tabnam=} konnte in den Tabellenlisten nicht gefunden werden')
+            raise QkanDbError
+
+        if not db_qkan.sql(f"PRAGMA table_info('{tabnam}')"):
+            logger.error_data('Attribute der Bestandstabelle {tabnam=} konnten nicht abgefragt werden')
+            raise QkanDbError
+        fields_be = db_qkan.fetchall()
+        attrs_be = [row[1] for row in fields_be]
+
+        if not db_qkan.sql(f"PRAGMA table_info('ext.{tabnam}')"):
+            logger.error_data('Attribute der Bestandstabelle {tabnam=} konnten nicht abgefragt werden')
+            raise QkanDbError
+        fields_ex = db_qkan.fetchall()
+        attrs_ex = [row[1] for row in fields_ex]
+
+        attrs_all = set(attrs_be) & set(attrs_ex)
+
+        def testat(x):
+
+
+        for _, attr, typ, notnull, dflt_value, is_pk in filter(lambda x: x[1] in attrs_all, fields_be):
+            if is_pk == 0 and attr != 'createdat':
+                attrlis.append(attr)
+                typlis.append(typ)
+                # if objnam is None:
+                #     objnam = attr
+                if typ[:3] not in ['INT', 'REA', 'TEX']:
+                    if igeo is None:
+                        igeo = nattr
+                nattr += 1
+
+        # Nur zum Nachvollziehen des Programms
+        # with open('tables.txt', 'w') as fil:
+            # for el in attrlis:
+                # fil.write(f'{el}\n')
+            # for el in typlis:
+                # fil.write(f'{el}\n')
+
+        if igeo is None:
+            nlis = nattr        # Anzahl Attribute ohne Geoobjekte
+        else:
+            nlis = igeo         # Anzahl Attribute ohne Geoobjekte
+
+            for i in range(nlis,nattr):
+                if attrlis[i] == gobj:
+                    ngeo = i
+            if ngeo is None:
+                logger.error_code(f'Fehler: Das Geoobjekt konnte in den Listen "TABLES_XXXX" nicht gefunden werden!')
+                raise QkanDbError
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle}\n')
+        fw.write(f'sync_create_{tabnam}: "\n')
+        fw.write(f'CREATE TABLE IF NOT EXISTS sync_{tabnam} (\n')
+        fw.write( '    pk INTEGER PRIMARY KEY,\n')
+        fw.write( '    pk_best INTEGER,\n')
+        fw.write( '    pk_ext INTEGER,\n')
+        fw.write( '    aktion TEXT,\n')
+        fw.write( '    status INTEGER')
+
+        if gobj is not None:
+            fw.write(',\n    objekt TEXT')
+
+        for attr, typ in zip(attrlis[:nlis], typlis[:nlis]):
+            if attr != 'createdat':
+                fw.write(f',\n    {attr} {typ}')
+        fw.write(');"\n\n')
+
+        # Attributlisten ohne und mit prefixen
+        attributes = '\n    '.join(textwrap.wrap(', '.join(attrlis[0:nlis])))
+        attributes_ex = '\n    '.join(textwrap.wrap(', ex.'.join(attrlis[0:nlis])))
+        attributes_be = '\n    '.join(textwrap.wrap(', be.'.join(attrlis[0:nlis])))
+        with open('C:/FHAC\hoettges/Kanalprogramme/QKan/test/work/createyml.log', 'a') as flog:
+            flog.write(f'{tabtitle} ({tabnam=})\n{attributes_ex=}\n{attributes_be=}\n\n')
+        if gobj is not None:
+            geoattr =   f',\n    geom'
+            geoattrs =  f',\n    {gobj}'
+            geoattrex = f',\n    ex.{gobj} AS {gobj}'
+            geoattrbe = f',\n    be.{gobj} AS {gobj}'
+            objattr = 'objekt, '
+        else:
+            geoattr = ''
+            geoattrs =  ''
+            geoattrex = ''
+            geoattrbe = ''
+            objattr = ''
+
+        if gobj is not None:
+            if ngeo is None:
+                print(f'{tabnam}')
+                return
+            typ = typlis[ngeo]
+            fw.write(f'sync_create_{tabnam}_geom: "\n')
+            fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', 'geom', :epsg, '{typ}', 2);"\n''')
+
+        fw.write( '\n')
+        fw.write(f'sync_reset_{tabnam}: "\n')
+        fw.write(f'DELETE FROM sync_{tabnam};"\n')
+        fw.write( '\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle}, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung\n')
+        fw.write(f'sync_{tabnam}_ext: "\n')
+        fw.write(f'INSERT INTO sync_{tabnam} (\n')
+        fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
+        fw.write(f'    {attributes}{geoattr})\nSELECT \n')
+        fw.write(f'    NULL AS pk_best, ex.pk AS pk_ext, ex.{objnam},\n')
+        if gobj is not None:
+            fw.write( "    'Datensatz nicht im Bestand' AS objekt,\n")
+        fw.write( "    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ \n")
+        fw.write(f'    ex.{attributes_ex}{geoattrex}\n')
+        fw.write( 'FROM (\n')
+        fw.write( '    SELECT * \n')
+        fw.write(f'    FROM ext.{tabnam} AS t\n')
+        fw.write(f'    GROUP BY t.{objnam}\n')
+        fw.write( '    HAVING count() = 1\n')
+        fw.write( ') AS ex\n')
+        fw.write( 'LEFT JOIN (\n')
+        fw.write( '    SELECT *\n')
+        fw.write(f'    FROM main.{tabnam} AS t\n')
+        fw.write(f'    GROUP BY t.{objnam}\n')
+        fw.write( '    HAVING count() = 1\n')
+        fw.write( ') AS be\n')
+        fw.write(f'ON be.{objnam} = ex.{objnam}\n')
+        fw.write( 'WHERE be.pk IS NULL;"\n')
+        fw.write( '\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle}, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung\n')
+        fw.write(f'sync_{tabnam}_local: "\n')
+        fw.write(f'INSERT INTO sync_{tabnam} (\n')
+        fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
+        fw.write(f'    {attributes}{geoattr})\nSELECT\n')
+        fw.write(f'    be.pk AS pk_best, NULL AS pk_ext, be.{objnam},\n')
+        if gobj is not None:
+            fw.write( "    'Datensatz extern nicht vorhanden' AS objekt,\n")
+        fw.write( "    'löschen' AS aktion, 0 AS status,      /* löschen */\n")
+        fw.write(f'    be.{attributes_be}{geoattrbe}\n')
+        fw.write( 'FROM (\n')
+        fw.write( '    SELECT *\n')
+        fw.write(f'    FROM main.{tabnam} AS t\n')
+        fw.write(f'    GROUP BY t.{objnam}\n')
+        fw.write( '    HAVING count() = 1\n')
+        fw.write( ') AS be\n')
+        fw.write( 'LEFT JOIN (\n')
+        fw.write( '    SELECT * \n')
+        fw.write(f'    FROM ext.{tabnam} AS t\n')
+        fw.write(f'    GROUP BY t.{objnam}\n')
+        fw.write( '    HAVING count() = 1\n')
+        fw.write( ') AS ex\n')
+        fw.write(f'ON be.{objnam} = ex.{objnam}\n')
+        fw.write( 'WHERE ex.pk IS NULL;"\n')
+        fw.write( '\n\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle} mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden\n')
+        fw.write(f'sync_{tabnam}_dif: "\n')
+        fw.write(f'INSERT INTO sync_{tabnam} (\n')
+        fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
+        fw.write(f'    {attributes}{geoattr})\n')
+        fw.write( 'SELECT\n')
+        fw.write( '    be.pk AS pk_best,\n')
+        fw.write( '    ex.pk AS pk_ext,\n')
+        fw.write(f'    ex.{objnam},\n')
+        if gobj is not None:
+            fw.write(f"    iif(be.{gobj} <> ex.{gobj}, printf('Geometrie geändert'), NULL) AS objekt,\n")
+        fw.write( "    'ändern' AS aktion,\n")
+        fw.write( '    1 AS status')
+        for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
+            if attr == 'createdat':
+                pass
+            elif typ == 'TEXT':
+                fw.write(f",\n    iif(be.{attr} <> ex.{attr}, printf('%s -> %s', be.{attr}, ex.{attr}), NULL) AS {attr}")
+            elif typ[:3] == 'INT':
+                fw.write(f",\n    iif(be.{attr} <> ex.{attr}, printf('%d -> %d', be.{attr}, ex.{attr}), NULL) AS {attr}")
+            elif typ == 'REAL':
+                fw.write(f",\n    iif(coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001, printf('%.3f -> %.3f', be.{attr}, ex.{attr}), NULL) AS {attr}")
+            else:
+                fw.write(f",\n############################ Fehler 1 ############################## {attr=}, {typ=}\n\n")
+        if gobj is not None:
+            fw.write(f",\n    be.{gobj} AS {gobj}")
+        fw.write( '\n')
+        fw.write( 'FROM (\n')
+        fw.write( '    SELECT *\n')
+        fw.write(f'    FROM main.{tabnam} AS t\n')
+        fw.write(f'    GROUP BY t.{objnam}\n')
+        fw.write( '    HAVING count() = 1\n')
+        fw.write( ') AS be\n')
+        fw.write( 'JOIN (\n')
+        fw.write( '    SELECT * \n')
+        fw.write(f'    FROM ext.{tabnam} AS t\n')
+        fw.write(f'    GROUP BY t.{objnam}\n')
+        fw.write( '    HAVING count() = 1\n')
+        fw.write( ') AS ex\n')
+        fw.write(f'ON ex.{objnam} = be.{objnam}\n')
+        fw.write( 'WHERE\n    ')
+        prefix = ''
+        for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
+            if attr == 'createdat':
+                pass
+            elif typ in ['TEXT', 'INT', 'INTEGER']:
+                fw.write(prefix + f"be.{attr} <> ex.{attr}")
+            elif typ == 'REAL':
+                fw.write(prefix + f"coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001")
+            if prefix == '':
+                prefix = ' OR\n    '
+        if gobj is not None:
+            fw.write(prefix + f"be.{gobj} <> ex.{gobj}")
+
+        fw.write( ';"\n\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle} hinzufügen\n')
+        fw.write(f'sync_{tabnam}_add: "\n')
+        fw.write(f'INSERT INTO main.{tabnam} (\n')
+        fw.write(f'    {objnam}, {attributes}{geoattrs})\n')
+        fw.write( 'SELECT\n')
+        fw.write(f'    ex.{objnam}, ex.{attributes_ex}')
+        if gobj is not None:
+            fw.write(f",\n    ex.{gobj} AS {gobj}")
+        fw.write( '\n')
+        fw.write(f'FROM ext.{tabnam} AS ex\n')
+        fw.write(f'JOIN sync_{tabnam} AS sy ON ex.pk = sy.pk_ext\n')
+        fw.write( "WHERE sy.aktion = 'hinzufügen' \n")
+        fw.write( '  AND sy.status;"\n')
+        fw.write( '\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle} löschen\n')
+        fw.write(f'sync_{tabnam}_del: "\n')
+        fw.write(f'DELETE FROM main.{tabnam}\n')
+        fw.write( 'WHERE pk IN (\n')
+        fw.write( '    SELECT pk_best\n')
+        fw.write(f'    FROM sync_{tabnam}\n')
+        fw.write( "    WHERE aktion = 'löschen'\n")
+        fw.write( '      AND status\n);"\n')
+        fw.write( '\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle} ändern\n')
+        fw.write(f'sync_{tabnam}_mod: "\n')
+        fw.write(f'UPDATE main.{tabnam}\n')
+        fw.write( 'SET\n')
+        # if tabnam in TABLES_GLINK:
+            # fw.write('    ' + ',\n    '.join([f'{el} = mo.{el}' for el in attrlis[0:nlis] + attrlis[ngeo+2:ngeo+3]]) + '\n')
+        # else:
+        fw.write('    ' + ',\n    '.join([f'{el} = mo.{el}' for el in attrlis[0:nlis]]))
+        if gobj is None:
+            fw.write('\n')
+        else:
+            fw.write(f',\n    {gobj} = mo.{gobj}\n')
+        fw.write( 'FROM (\n')
+        fw.write( '    SELECT\n')
+        fw.write( '        sy.pk_best AS pk_best')
+        for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
+            if typ == 'TEXT':
+                fw.write(f",\n        iif(sy.{attr} IS NOT NULL AND sy.{attr} <> '', ex.{attr}, be.{attr}) AS {attr}")
+            elif typ in ['REAL', 'INT', 'INTEGER']:
+                fw.write(f",\n        iif(sy.{attr} IS NOT NULL, ex.{attr}, be.{attr}) AS {attr}")
+            else:
+                fw.write(f",\n############################ Fehler 2 ############################## {attr=}, {typ=}\n\n")
+        if gobj is not None:
+            fw.write(f",\n        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.{gobj}, be.{gobj}) AS {gobj}")
+        fw.write( '\n')
+        fw.write(f'    FROM sync_{tabnam} AS sy\n')
+        fw.write(f'    JOIN main.{tabnam} AS be ON be.pk = sy.pk_best\n')
+        fw.write(f'    JOIN ext.{tabnam} AS ex ON ex.pk = sy.pk_ext\n')
+        fw.write( "    WHERE sy.aktion = 'ändern'\n")
+        fw.write( '      AND status\n')
+        fw.write( ') AS mo\n')
+        fw.write(f'WHERE main.{tabnam}.pk = mo.pk_best;"\n')
+        fw.write( '\n')
+
+    # ---------------------------------------------------------------------------------------------------------------------
+        fw.write(f'# {tabtitle} auflisten\n')
+        fw.write(f'sync_{tabnam}_prot: "\n')
+        fw.write(f'SELECT * FROM sync_{tabnam} WHERE status;"\n')
+

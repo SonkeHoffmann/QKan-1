@@ -235,3 +235,66 @@ class MikeVersion(enum.Enum):
     """Programmversion der Ergebnisdateien zu Mike+"""
     v1 = '2023'
     v2 = '2025'
+
+
+class SyncTables(enum.Enum):
+    """Synchronisation: Klassifizierung der Tabellen nach Geo-Objekt"""
+    TABLES_GEOM = [
+        "notizen",
+        "haltungen",
+        "haltungen_untersucht",
+        "untersuchdat_haltung",
+        "anschlussleitungen",
+        "anschlussleitungen_untersucht",
+        "anschlussschaechte",
+        "untersuchdat_anschlussleitung",
+        "untersuchdat_schacht",
+        "einzugsgebiete",
+        "teilgebiete",
+        "flaechen",
+        "tezg",
+        "einleit",
+        "aussengebiete",
+        "symbole",
+    ]
+
+    TABLES_GEOP = [
+        "schaechte",
+        "schaechte_untersucht",
+    ]
+
+    TABLES_GLINK = [
+        "linkfl",
+        "linksw",
+        "linkageb",
+    ]
+
+    TABLES_ATTR = [
+        # "simulationsstatus",
+        # "material",
+        # "auslasstypen",
+        # "abflussparameter",
+        # "flaechentypen",
+        # "bodenklassen",
+        # "abflusstypen",
+        # "knotentypen",
+        # "schachttypen",
+        # "eigentum",
+        # "symbolkatalog",
+        # # "dynahal",
+        # "gruppen",
+        # "profile",
+        # "entwaesserungsarten",
+        # "haltungstypen",
+        # "untersuchrichtung",
+        # "wetter",
+        # "bewertungsart",
+        # "pumpentypen",
+        "pruefsql",
+        # "pruefliste",
+        # "reflist_zustand",
+        # "info",
+        "refdata",
+        "fotos",
+        "videos",
+    ]

@@ -197,7 +197,7 @@ def writesql(cur, fw, tabnam):
     fw.write(f'    NULL AS pk_best, ex.pk AS pk_ext, ex.{objnam},\n')
     if gobj is not None:
         fw.write( "    'Datensatz nicht im Bestand' AS objekt,\n")
-    fw.write( "    'hinzufügen' AS aktion, 1 AS status,      /* hinzufügen */ \n")
+    fw.write( "    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ \n")
     fw.write(f'    ex.{attributes_ex}{geoattrex}\n')
     fw.write( 'FROM (\n')
     fw.write( '    SELECT * \n')
@@ -224,7 +224,7 @@ def writesql(cur, fw, tabnam):
     fw.write(f'    be.pk AS pk_best, NULL AS pk_ext, be.{objnam},\n')
     if gobj is not None:
         fw.write( "    'Datensatz extern nicht vorhanden' AS objekt,\n")
-    fw.write( "    'löschen' AS aktion, 0 AS status,      /* löschen */\n")
+    fw.write( "    'löschen' AS aktion, :status_del AS status,      /* löschen */\n")
     fw.write(f'    be.{attributes_be}{geoattrbe}\n')
     fw.write( 'FROM (\n')
     fw.write( '    SELECT *\n')
@@ -255,7 +255,7 @@ def writesql(cur, fw, tabnam):
     if gobj is not None:
         fw.write(f"    iif(be.{gobj} <> ex.{gobj}, printf('Geometrie geändert'), NULL) AS objekt,\n")
     fw.write( "    'ändern' AS aktion,\n")
-    fw.write( '    1 AS status')
+    fw.write( '    :status_mod AS status')
     for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
         if attr == 'createdat':
             pass

@@ -60,6 +60,13 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
     cb_notizen: QCheckBox
     cb_symbole: QCheckBox
     cb_plausi: QCheckBox
+
+    cb_all: QCheckBox
+
+    cb_add: QCheckBox
+    cb_mod: QCheckBox
+    cb_del: QCheckBox
+
     cb_showComparetables: QCheckBox
 
     def __init__(
@@ -73,8 +80,30 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
 
         # Attach events
         self.pb_select_extdb.clicked.connect(self.select_qkan_ext)
-
         self.button_box.helpRequested.connect(self.click_help)
+        self.cb_all.clicked.connect(self.click_all)
+
+    def click_all(self):
+        """Toggle-Funktion: Alle Tabellen zum Abgleich de-/selektieren"""
+        status = self.cb_all.isChecked()
+
+    # Zusammenstellung für Selektion alle
+        self.cb_schaechte.setChecked(status)
+        self.cb_haltungen.setChecked(status)
+        self.cb_haschaechte.setChecked(status)
+        self.cb_haleitungen.setChecked(status)
+        self.cb_flaechen.setChecked(status)
+        self.cb_tezg.setChecked(status)
+        self.cb_linkfl.setChecked(status)
+        self.cb_schaechte_insp.setChecked(status)
+        self.cb_haltungen_insp.setChecked(status)
+        self.cb_haleitungen_insp.setChecked(status)
+        self.cb_linksw.setChecked(status)
+        self.cb_einleitdirekt.setChecked(status)
+        self.cb_refdata.setChecked(status)
+        self.cb_notizen.setChecked(status)
+        self.cb_symbole.setChecked(status)
+        self.cb_plausi.setChecked(status)
 
     def select_qkan_ext(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
@@ -130,6 +159,10 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
         self.cb_refdata.setChecked(QKan.config.sync.ckeck_refdata)
         self.cb_showComparetables.setChecked(QKan.config.sync.check_showAttrTables)
 
+        self.cb_add.setChecked(QKan.config.sync.check_add)
+        self.cb_mod.setChecked(QKan.config.sync.check_mod)
+        self.cb_del.setChecked(QKan.config.sync.check_del)
+
     def _save_compare_config(self):
         # Read from form and save to config
         QKan.config.database.qkan = self.tf_database.text()
@@ -152,7 +185,10 @@ class CompareDialog(_Dialog, COMPARE_CLASS):  # type: ignore
         QKan.config.sync.check_plausi = self.cb_plausi.isChecked()
         QKan.config.sync.ckeck_refdata = self.cb_refdata.isChecked()
         QKan.config.sync.check_showAttrTables = self.cb_showComparetables.isChecked()
-        # self.cb_selectedTgbs.isChecked()
+
+        QKan.config.sync.check_add = self.cb_add.isChecked()
+        QKan.config.sync.check_mod = self.cb_mod.isChecked()
+        QKan.config.sync.check_del = self.cb_del.isChecked()
 
         QKan.config.save()
 

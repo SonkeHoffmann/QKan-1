@@ -260,6 +260,10 @@ class SyncConfig(ClassObject):
     check_plausi: bool = True
     ckeck_refdata: bool = True
     check_showAttrTables: bool = True
+    check_add: bool = True
+    check_mod: bool = True
+    check_del: bool = False
+
     protfile: str = ""
 
 

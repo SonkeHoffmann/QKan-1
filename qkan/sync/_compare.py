@@ -4,7 +4,7 @@ from qgis.PyQt.QtWidgets import QProgressBar
 from qkan.database.dbfunc import DBConnection
 from qkan import QKan, enums
 
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError
 from qkan.tools.qkan_utils import loadLayer
 
 logger = get_logger("QKan.sync._compare")
@@ -175,7 +175,7 @@ class CompareTask:
                     enums.LAYERBEZ.SYNC_GROUP_ZUSTAND_SCHAECHTE.value,
                 ],
                 [
-                    'untersuchdat_schaechte',
+                    'untersuchdat_schacht',
                     QKan.config.sync.check_schaechte_insp,
                     [
                         enums.LAYERBEZ.SYNC_SCHAEDEN_SCHAECHTE_COMPARE.value,
@@ -245,7 +245,7 @@ class CompareTask:
                     enums.LAYERBEZ.SYNC_GROUP_SYMBOLE.value,
                 ],
                 [
-                    'plausi',
+                    'pruefsql',
                     QKan.config.sync.check_plausi,
                     [
                         enums.LAYERBEZ.SYNC_PLAUSI_COMPARE.value,
@@ -286,30 +286,35 @@ class CompareTask:
                 ],
             ]
 
-            for table, userchoice, _, _ in tables:
-                tableexist = db_qkan.attrlist(table)
+            for tabnam, userchoice, _, _ in tables:
+                tableexist = db_qkan.attrlist(tabnam)
                 if userchoice and tableexist:
                     sqlnames = [
-                        f'sync_create_{table}',
-                        f'sync_create_{table}_geom',
-                        f'sync_reset_{table}',
-                        f'sync_{table}_ext',
-                        f'sync_{table}_local',
-                        f'sync_{table}_dif',
+                        f'sync_create_{tabnam}',
+                        f'sync_create_{tabnam}_geom',
+                        f'sync_reset_{tabnam}',
+                        f'sync_{tabnam}_ext',
+                        f'sync_{tabnam}_local',
+                        f'sync_{tabnam}_dif',
                     ]
-                    if table in ('refdata', 'fotos', 'videos', 'pruefsql'):
+                    if tabnam in ('refdata', 'fotos', 'videos', 'pruefsql'):
                         del sqlnames[1]
 
                     for sqlnam in sqlnames:
                         db_qkan.sqlyml(
                             sqlnam,
-                            'comp_4',
-                            {'epsg': QKan.config.epsg}
+                            stmt_category='comp_4',
+                            parameters={
+                                'epsg': QKan.config.epsg,
+                                'status_add': QKan.config.sync.check_add,
+                                'status_mod': QKan.config.sync.check_mod,
+                                'status_del': QKan.config.sync.check_del,
+                            }
                         )
 
             db_qkan.commit()
 
-        for table, userchoice, layers, group in tables:
+        for tabnam, userchoice, layers, group in tables:
             if userchoice:
                 grouppath = [
                     enums.LAYERBEZ.QKAN_GROUP.value,
@@ -318,25 +323,37 @@ class CompareTask:
                 ]
                 layer_sync, layer_ext, layer_loc = layers
 
+                # Geo-Objekt
+                if tabnam in enums.SyncTables.TABLES_GEOM.value:
+                    gobj = 'geom'
+                elif tabnam in enums.SyncTables.TABLES_GEOP.value:
+                    gobj = 'geop'
+                elif tabnam in enums.SyncTables.TABLES_GLINK.value:
+                    gobj = 'glink'
+                elif tabnam in enums.SyncTables.TABLES_ATTR.value:
+                    gobj = None
+                else:
+                    logger.error_code(f'Fehler: {tabnam=} konnte in den Tabellenlisten nicht gefunden werden')
+                    raise QkanDbError
+
                 # Synchronisationstabelle
                 loadLayer(
                     layerbez=   layer_sync,
-                    table=      f'sync_{table}',
-                    geom_column='geom',
+                    table=      f'sync_{tabnam}',
+                    geom_column=None if gobj is None else 'geom',
                     qmlfile=    f'{layer_sync}.qml',
                     filter=     '',
-                    uifile=     f'sync_{table}.ui',
+                    uifile=     f'sync_{tabnam}.ui',
                     group=      grouppath,
                 )
 
-                # Externe Tabelle
                 loadLayer(
                     layerbez=   layer_ext,
-                    table=      table,
-                    geom_column='geom',
+                    table=      tabnam,
+                    geom_column=gobj,
                     qmlfile=    f'{layer_loc}.qml',
                     filter=     '',
-                    uifile=     f'qkan_{table}.ui',
+                    uifile=     f'qkan_{tabnam}.ui',
                     group=      grouppath,
                     gpos=       0,
                     qkan_db=    QKan.config.sync.ext,

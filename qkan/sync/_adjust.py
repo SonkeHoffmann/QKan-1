@@ -76,7 +76,7 @@ class AdjustTask:
                 ['untersuchdat_anschlussleitung', QKan.config.sync.check_haleitungen_insp],
                 ['notizen', QKan.config.sync.check_notizen],
                 ['symbole', QKan.config.sync.check_symbole],
-                ['plausi', QKan.config.sync.check_plausi],
+                ['pruefsql', QKan.config.sync.check_plausi],
                 ['videos', check_medien],                                   # gleicher Schalter check_medien, s.o.
                 ['fotos', check_medien],                                    # gleicher Schalter check_medien, s.o.
                 ['refdata', QKan.config.sync.ckeck_refdata],
