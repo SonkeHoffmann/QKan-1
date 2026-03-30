@@ -88,8 +88,11 @@ class IsyPorter(QKanPlugin):
                 self.export_dlg.cb_export_wehre.isChecked()
             )
 
-            QKan.config.check_export.zustandsdaten = (
-                self.export_dlg.cb_export_zustandsdaten.isChecked()
+            # QKan.config.check_export.zustandsdaten = (
+            #     self.export_dlg.cb_export_zustandsdaten.isChecked()
+            # )
+            QKan.config.selections.selectedObjects = (
+                self.export_dlg.cb_selectedObjects.isChecked()
             )
 
             QKan.config.save()
@@ -102,7 +105,8 @@ class IsyPorter(QKanPlugin):
         Einspringpunkt für Test
         """
 
-        auswahl_zustand = self.export_dlg.comboBox.currentText()
+        #auswahl_zustand = self.export_dlg.comboBox.currentText()
+        auswahl_zustand = None
 
         with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
             if not db_qkan.connected:
