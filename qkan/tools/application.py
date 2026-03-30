@@ -167,13 +167,14 @@ class QKanTools(QKanPlugin):
         self.action.toggled.connect(self.run_zoom_clipboard)
 
 
-        # icon_befahrung = ":/plugins/qkan/tools/res/icon_befahrung.png"
-        # QKan.instance.add_action(
-        #     icon_befahrung,
-        #     text=self.tr("Inspektionsdaten anpassen"),
-        #     callback=self.run_befahrung,
-        #     parent=self.iface.mainWindow(),
-        # )
+        icon_befahrung = ":/plugins/qkan/tools/res/icon_befahrung.png"
+        QKan.instance.add_action(
+            icon_befahrung,
+            text=self.tr("Inspektionsdaten anpassen"),
+            toolbar='QKan-Allgemein',
+            callback=self.run_befahrung,
+            parent=self.iface.mainWindow(),
+        )
 
         icon_bericht = ":/plugins/qkan/tools/res/icon_bericht.png"
         QKan.instance.add_action(
@@ -1076,7 +1077,6 @@ class QKanTools(QKanPlugin):
 
     def run_bericht(self) -> None:
 
-        #self.dlgfp.lineEdit.setText(QKan.config.xml.ordner_video)
 
         # show the dialog
         self.dlgb.show()
@@ -1169,10 +1169,10 @@ class QKanTools(QKanPlugin):
     def run_befahrung(self) -> None:
 
         # show the dialog
-        self.dlgfp.show()
+        self.dlgbf.show()
 
         # Run the dialog event loop
-        result = self.dlgfp.exec()
+        result = self.dlgbf.exec()
 
         # See if OK was pressed
         if result:

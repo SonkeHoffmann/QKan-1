@@ -141,6 +141,10 @@ class IsyPorter(QKanPlugin):
                 self.import_dlg.checkBox_3.isChecked()
             )
 
+            QKan.config.xml.import_teilbefahrung = (
+                self.import_dlg.cb_teilbefahrung.isChecked()
+            )
+
             QKan.config.save()
 
             QKan.config.xml.import_file = self.import_dlg.tf_import.text()

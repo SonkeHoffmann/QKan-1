@@ -346,6 +346,7 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         self.cb_impStamm.setChecked(getattr(QKan.config.xml, "import_stamm", True))
         self.cb_impAnschluesse.setChecked(getattr(QKan.config.xml, "import_haus", True))
         self.cb_zustand.setChecked(getattr(QKan.config.xml, "import_zustand", True))
+        self.cb_teilbefahrung.setChecked(getattr(QKan.config.xml, "import_teilbefahrung", True))
 
     def select_import(self) -> None:
         # noinspection PyArgumentList,PyCallByClass

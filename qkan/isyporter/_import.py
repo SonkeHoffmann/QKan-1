@@ -10,6 +10,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import fehlermeldung
 from qkan.utils import get_logger
 from qkan.tools.k_schadenstexte import Schadenstexte
+from qkan.tools.k_befahrung import setbefahrung
 
 logger = get_logger("QKan.xml.import")
 
@@ -540,6 +541,9 @@ class ImportTask(Schadenstexte):
             self._schaechte_untersucht_geom()
             self._haltungen_untersucht_geom()
             self._anschluss_untersucht_geom()
+
+        if QKan.config.xml.import_teilbefahrung:
+            setbefahrung(self.db_qkan)
 
 
         return True

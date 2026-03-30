@@ -12,6 +12,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.utils import get_logger, QkanError, QkanDbError
 from qkan.tools.k_xml import _get_float, _get_int
 from qkan.tools.k_schadenstexte import Schadenstexte
+from qkan.tools.k_befahrung import setbefahrung
 
 logger = get_logger("QKan.xml.import")
 
@@ -642,6 +643,10 @@ class ImportTask(Schadenstexte):
             self._haltungen_untersucht()                  #  ;self.progress_bar.setValue(85)
             self._untersuchdat_haltung()                  #  ;self.progress_bar.setValue(95)
         # self.db_qkan._adapt_reftable('entwaesserungsarten')
+
+        if QKan.config.xml.import_teilbefahrung:
+            setbefahrung(self.db_qkan)
+
 
 #        self.progress_bar.setValue(100)
         status_message.setText("Fertig! M150-Import abgeschlossen.")
