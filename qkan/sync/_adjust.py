@@ -38,7 +38,7 @@ class AdjustTask:
         with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
 
             # SQL-Statements für dieses Modul laden
-            db_qkan.loadmodule('sync')
+            # db_qkan.loadmodule('sync')
 
             db_qkan.sqlyml(
                 sqlnam='sync_attach_ext',

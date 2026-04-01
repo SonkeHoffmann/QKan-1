@@ -150,7 +150,12 @@ class DBConnection:
 
             try:
                 with open(sqlfilename) as fr:
-                    QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+                    sql_yml = yaml.load(fr.read(), Loader=yaml.BaseLoader)
+                    logger.debug(f"{module=}: {QKan.sqls.get(module)=}")
+                    if QKan.sqls.get(module) is None:
+                        QKan.sqls[module] = sql_yml
+                    else:
+                        QKan.sqls[module].update(sql_yml)
                 logger.debug(f'{self.__class__.__name__}: SQL-Liste aus Datei {sqlfilename=} geladen')
             except UnicodeDecodeError as err:
                 logger.error_code(f'{self.__class__.__name__}, Fehler {err}: '
@@ -163,7 +168,7 @@ class DBConnection:
                 raise QkanAbortError
 
         # set sqls for active module
-        self.sqls |= QKan.sqls[module]
+        self.sqls.update(QKan.sqls[module])
 
     def _connect(self) -> None:
         """Connects to SQLite3 or PostgreSAL database.
@@ -602,12 +607,13 @@ class DBConnection:
                 logger.error_code(
                     f'{self.__class__.__name__}: '
                     f'SQL {sqlnam} nicht gefunden\n'
+                    f'{stmt_category=}'
                     f'Möglicherweise wurde im Modulcode vergessen db_qkan.loadmodule aufzurufen.\n'
                     f'geladene SQLs:\n{self.sqls}'
                 )
 
         # Die nachfolgende Funktion muss auch bei gleichem Abfragetyp durchgeführt werden, siehe _plausi.py
-        if replacefun:
+        if replacefun is not None:
             self.sqltext = replacefun(self.sql_txt)
             if '{' in self.sqltext:
                 logger.error_code(

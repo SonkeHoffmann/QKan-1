@@ -672,7 +672,7 @@ def loadLayer(
     :type uifile:           String
 
     :group:                 Bezeichnung der Gruppe, in der der Layer eingefügt werden soll
-    :type group:            String
+    :type group:            List, String
 
     :gpos:                  Index der Position innerhalb der Gruppe
     :type gpos:             int

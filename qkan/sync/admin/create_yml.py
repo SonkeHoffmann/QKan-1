@@ -84,11 +84,12 @@ def meldung(anztext):
     bEnde.pack()
     main.mainloop()
 
-def writesql(cur, fw, tabnam):
+def writesql(cur, fw, tabnam, sqls):
     tabtitle = tabnam.title()
 
     attrlis = []
     typlis  = []
+    fieldlis = []
     objnam = None
     igeo = None             # Index des ersten Geoobjekts
     ngeo   = None           # Index des zu synchronisierenden Geoobjekts in attrlis und typlis. Bei Attributtabellen ist ngeo = None
@@ -111,6 +112,7 @@ def writesql(cur, fw, tabnam):
         if is_pk == 0 and attr != 'createdat':
             attrlis.append(attr)
             typlis.append(typ)
+            fieldlis.append([attr, typ])
             if objnam is None:
                 objnam = attr
             if typ[:3] not in ['INT', 'REA', 'TEX']:
@@ -118,13 +120,6 @@ def writesql(cur, fw, tabnam):
                     igeo = nattr
             nattr += 1
     rs.close
-
-    # Nur zum Nachvollziehen des Programms
-    # with open('tables.txt', 'w') as fil:
-        # for el in attrlis:
-            # fil.write(f'{el}\n')
-        # for el in typlis:
-            # fil.write(f'{el}\n')
 
     if igeo is None:
         nlis = nattr        # Anzahl Attribute ohne Geoobjekte
@@ -136,32 +131,12 @@ def writesql(cur, fw, tabnam):
                 ngeo = i
         if ngeo is None:
             meldung(f'Fehler: Das Geoobjekt konnte in den Listen "TABLES_XXXX" nicht gefunden werden!')
-            return
+            raise Exception("Fehler 1")
 
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle}\n')
-    fw.write(f'sync_create_{tabnam}: "\n')
-    fw.write(f'CREATE TABLE IF NOT EXISTS sync_{tabnam} (\n')
-    fw.write( '    pk INTEGER PRIMARY KEY,\n')
-    fw.write( '    pk_best INTEGER,\n')
-    fw.write( '    pk_ext INTEGER,\n')
-    fw.write( '    aktion TEXT,\n')
-    fw.write( '    status INTEGER')
-
-    if gobj is not None:
-        fw.write(',\n    objekt TEXT')
-
-    for attr, typ in zip(attrlis[:nlis], typlis[:nlis]):
-        if attr != 'createdat':
-            fw.write(f',\n    {attr} {typ}')
-    fw.write(');"\n\n')
-
-    # Attributlisten ohne und mit prefixen
-    attributes = '\n    '.join(textwrap.wrap(', '.join(attrlis[0:nlis])))
-    attributes_ex = '\n    '.join(textwrap.wrap(', ex.'.join(attrlis[0:nlis])))
-    attributes_be = '\n    '.join(textwrap.wrap(', be.'.join(attrlis[0:nlis])))
-    with open('C:/FHAC\hoettges/Kanalprogramme/QKan/test/work/createyml.log', 'a') as flog:
-        flog.write(f'{tabtitle} ({tabnam=})\n{attributes_ex=}\n{attributes_be=}\n\n')
+    # Attributlisten ohne und mit prefixen vorbereiten
+    attributes = '\n    '.join(textwrap.wrap(', '.join(attrlis[:nlis])))
+    attributes_ex = '\n    '.join(textwrap.wrap(', ex.'.join(attrlis[:nlis])))
+    attributes_be = '\n    '.join(textwrap.wrap(', be.'.join(attrlis[:nlis])))
     if gobj is not None:
         geoattr =   f',\n    geom'
         geoattrs =  f',\n    {gobj}'
@@ -175,196 +150,183 @@ def writesql(cur, fw, tabnam):
         geoattrbe = ''
         objattr = ''
 
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Synchronisationstabelle erstellen
+    sqls[f'sync_create_{tabnam}'] = f'''        CREATE TABLE IF NOT EXISTS sync_{tabnam} (
+        pk INTEGER PRIMARY KEY,
+        pk_best INTEGER,
+        pk_ext INTEGER,
+        aktion TEXT,
+        status INTEGER''' + \
+    (',\n    ' if gobj is None else ',\n    objekt TEXT,\n    ') + \
+    ',\n    '.join([f'{attr} {typ}' for attr, typ in fieldlis[:nlis] if attr != 'createdat']) + ');'
+
+    # logger.debug(f'sync_create_{tabnam}:\n')
+    # logger.debug(sqls[f'sync_create_{tabnam}'])
+
     if gobj is not None:
         if ngeo is None:
-            print(f'{tabnam}')
-            return
+            meldung(f'Fehler in Tabelle {tabnam}: {gobj=}, aber ngeo = None')
+            raise Exception("Fehler 2")
         typ = typlis[ngeo]
-        fw.write(f'sync_create_{tabnam}_geom: "\n')
-        fw.write(f'''SELECT AddGeometryColumn('sync_{tabnam}', 'geom', :epsg, '{typ}', 2);"\n''')
+        sqls[f'sync_create_{tabnam}_geom'] = \
+        f'''SELECT AddGeometryColumn('sync_{tabnam}', 'geom', :epsg, '{typ}', 2);'''
 
-    fw.write( '\n')
-    fw.write(f'sync_reset_{tabnam}: "\n')
-    fw.write(f'DELETE FROM sync_{tabnam};"\n')
-    fw.write( '\n')
+    sqls[f'sync_reset_{tabnam}'] = f'DELETE FROM sync_{tabnam};'
 
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle}, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung\n')
-    fw.write(f'sync_{tabnam}_ext: "\n')
-    fw.write(f'INSERT INTO sync_{tabnam} (\n')
-    fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
-    fw.write(f'    {attributes}{geoattr})\nSELECT \n')
-    fw.write(f'    NULL AS pk_best, ex.pk AS pk_ext, ex.{objnam},\n')
-    if gobj is not None:
-        fw.write( "    'Datensatz nicht im Bestand' AS objekt,\n")
-    fw.write( "    'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ \n")
-    fw.write(f'    ex.{attributes_ex}{geoattrex}\n')
-    fw.write( 'FROM (\n')
-    fw.write( '    SELECT * \n')
-    fw.write(f'    FROM ext.{tabnam} AS t\n')
-    fw.write(f'    GROUP BY t.{objnam}\n')
-    fw.write( '    HAVING count() = 1\n')
-    fw.write( ') AS ex\n')
-    fw.write( 'LEFT JOIN (\n')
-    fw.write( '    SELECT *\n')
-    fw.write(f'    FROM main.{tabnam} AS t\n')
-    fw.write(f'    GROUP BY t.{objnam}\n')
-    fw.write( '    HAVING count() = 1\n')
-    fw.write( ') AS be\n')
-    fw.write(f'ON be.{objnam} = ex.{objnam}\n')
-    fw.write( 'WHERE be.pk IS NULL;"\n')
-    fw.write( '\n')
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze, die nur in der externen Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+    sqls[f'sync_{tabnam}_ext'] = f'''        INSERT INTO sync_{tabnam} (
+            pk_best, pk_ext, {objnam}, {objattr}aktion, status,
+            {attributes}{geoattr})
+        SELECT 
+            NULL AS pk_best, ex.pk AS pk_ext, ex.{objnam},''' + \
+    ("" if gobj is None else "\n    'Datensatz nicht im Bestand' AS objekt,") + f'''
+            'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
+            ex.{attributes_ex}{geoattrex}
+            FROM (
+                SELECT * 
+              FROM ext.{tabnam} AS t
+              GROUP BY t.{objnam}
+              HAVING count() = 1
+          ) AS ex
+          LEFT JOIN (
+              SELECT *
+              FROM main.{tabnam} AS t
+              GROUP BY t.{objnam}
+              HAVING count() = 1
+          ) AS be
+          ON be.{objnam} = ex.{objnam}
+          WHERE be.pk IS NULL;'''
 
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle}, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung\n')
-    fw.write(f'sync_{tabnam}_local: "\n')
-    fw.write(f'INSERT INTO sync_{tabnam} (\n')
-    fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
-    fw.write(f'    {attributes}{geoattr})\nSELECT\n')
-    fw.write(f'    be.pk AS pk_best, NULL AS pk_ext, be.{objnam},\n')
-    if gobj is not None:
-        fw.write( "    'Datensatz extern nicht vorhanden' AS objekt,\n")
-    fw.write( "    'löschen' AS aktion, :status_del AS status,      /* löschen */\n")
-    fw.write(f'    be.{attributes_be}{geoattrbe}\n')
-    fw.write( 'FROM (\n')
-    fw.write( '    SELECT *\n')
-    fw.write(f'    FROM main.{tabnam} AS t\n')
-    fw.write(f'    GROUP BY t.{objnam}\n')
-    fw.write( '    HAVING count() = 1\n')
-    fw.write( ') AS be\n')
-    fw.write( 'LEFT JOIN (\n')
-    fw.write( '    SELECT * \n')
-    fw.write(f'    FROM ext.{tabnam} AS t\n')
-    fw.write(f'    GROUP BY t.{objnam}\n')
-    fw.write( '    HAVING count() = 1\n')
-    fw.write( ') AS ex\n')
-    fw.write(f'ON be.{objnam} = ex.{objnam}\n')
-    fw.write( 'WHERE ex.pk IS NULL;"\n')
-    fw.write( '\n\n')
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
+    sqls[f'sync_{tabnam}_local'] = f'''            INSERT INTO sync_{tabnam} (
+                pk_best, pk_ext, {objnam}, {objattr}aktion, status,
+                {attributes}{geoattr})\nSELECT
+                be.pk AS pk_best, NULL AS pk_ext, be.{objnam},''' + \
+    ("" if gobj is None else "\n    'Datensatz extern nicht vorhanden' AS objekt,") + f'''
+             'löschen' AS aktion, :status_del AS status,      /* löschen */
+              be.{attributes_be}{geoattrbe}
+        FROM (
+            SELECT *
+            FROM main.{tabnam} AS t
+            GROUP BY t.{objnam}
+            HAVING count() = 1
+        ) AS be
+        LEFT JOIN (
+            SELECT * 
+            FROM ext.{tabnam} AS t
+            GROUP BY t.{objnam}
+            HAVING count() = 1
+        ) AS ex
+        ON be.{objnam} = ex.{objnam}
+        WHERE ex.pk IS NULL;'''
 
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle} mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden\n')
-    fw.write(f'sync_{tabnam}_dif: "\n')
-    fw.write(f'INSERT INTO sync_{tabnam} (\n')
-    fw.write(f'    pk_best, pk_ext, {objnam}, {objattr}aktion, status,\n')
-    fw.write(f'    {attributes}{geoattr})\n')
-    fw.write( 'SELECT\n')
-    fw.write( '    be.pk AS pk_best,\n')
-    fw.write( '    ex.pk AS pk_ext,\n')
-    fw.write(f'    ex.{objnam},\n')
-    if gobj is not None:
-        fw.write(f"    iif(be.{gobj} <> ex.{gobj}, printf('Geometrie geändert'), NULL) AS objekt,\n")
-    fw.write( "    'ändern' AS aktion,\n")
-    fw.write( '    :status_mod AS status')
-    for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze mit gleichem Namen, die sich in mindestens einem Attribut unterscheiden
+    sql = f'''        INSERT INTO sync_{tabnam} (
+            pk_best, pk_ext, {objnam}, {objattr}aktion, status,
+            {attributes}{geoattr})
+        SELECT
+            be.pk AS pk_best,
+            ex.pk AS pk_ext,
+            ex.{objnam},''' + \
+    ("" if gobj is None else f"\n    iif(be.{gobj} <> ex.{gobj}, printf('Geometrie geändert'), NULL) AS objekt,") + f'''
+            'ändern' AS aktion,
+            :status_mod AS status'''
+    for attr, typ in fieldlis[:nlis]:
         if attr == 'createdat':
             pass
         elif typ == 'TEXT':
-            fw.write(f",\n    iif(be.{attr} <> ex.{attr}, printf('%s -> %s', be.{attr}, ex.{attr}), NULL) AS {attr}")
+            sql += f",\n    iif(be.{attr} <> ex.{attr}, printf('%s -> %s', be.{attr}, ex.{attr}), NULL) AS {attr}"
         elif typ[:3] == 'INT':
-            fw.write(f",\n    iif(be.{attr} <> ex.{attr}, printf('%d -> %d', be.{attr}, ex.{attr}), NULL) AS {attr}")
+            sql += f",\n    iif(be.{attr} <> ex.{attr}, printf('%d -> %d', be.{attr}, ex.{attr}), NULL) AS {attr}"
         elif typ == 'REAL':
-            fw.write(f",\n    iif(coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001, printf('%.3f -> %.3f', be.{attr}, ex.{attr}), NULL) AS {attr}")
+            sql += f",\n    iif(coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001, printf('%.3f -> %.3f', be.{attr}, ex.{attr}), NULL) AS {attr}"
         else:
-            fw.write(f",\n############################ Fehler 1 ############################## {attr=}, {typ=}\n\n")
-    if gobj is not None:
-        fw.write(f",\n    be.{gobj} AS {gobj}")
-    fw.write( '\n')
-    fw.write( 'FROM (\n')
-    fw.write( '    SELECT *\n')
-    fw.write(f'    FROM main.{tabnam} AS t\n')
-    fw.write(f'    GROUP BY t.{objnam}\n')
-    fw.write( '    HAVING count() = 1\n')
-    fw.write( ') AS be\n')
-    fw.write( 'JOIN (\n')
-    fw.write( '    SELECT * \n')
-    fw.write(f'    FROM ext.{tabnam} AS t\n')
-    fw.write(f'    GROUP BY t.{objnam}\n')
-    fw.write( '    HAVING count() = 1\n')
-    fw.write( ') AS ex\n')
-    fw.write(f'ON ex.{objnam} = be.{objnam}\n')
-    fw.write( 'WHERE\n    ')
+            meldung(f'Fehler 1: {attr=}, {typ=}')
+            raise Exception("Fehler 3")
+    sql += ("" if gobj is None else f",\n    be.{gobj} AS {gobj}") + f'''
+        FROM (
+            SELECT *
+            FROM main.{tabnam} AS t
+            GROUP BY t.{objnam}
+            HAVING count() = 1
+        ) AS be
+        JOIN (
+            SELECT * 
+            FROM ext.{tabnam} AS t
+            GROUP BY t.{objnam}
+            HAVING count() = 1
+        ) AS ex
+        ON ex.{objnam} = be.{objnam}
+        WHERE
+        '''
     prefix = ''
-    for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
+    for attr, typ in fieldlis[:nlis]:
         if attr == 'createdat':
             pass
         elif typ in ['TEXT', 'INT', 'INTEGER']:
-            fw.write(prefix + f"be.{attr} <> ex.{attr}")
+            sql += prefix + f"be.{attr} <> ex.{attr}"
         elif typ == 'REAL':
-            fw.write(prefix + f"coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001")
+            sql += prefix + f"coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001"
         if prefix == '':
             prefix = ' OR\n    '
-    if gobj is not None:
-        fw.write(prefix + f"be.{gobj} <> ex.{gobj}")
+    sql += (";" if gobj is None else prefix + f"be.{gobj} <> ex.{gobj};")
+    sqls[f'sync_{tabnam}_dif'] = sql
 
-    fw.write( ';"\n\n')
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze hinzufügen
+    sqls[f'sync_{tabnam}_add'] = f'''        INSERT INTO main.{tabnam} (
+            {objnam}, {attributes}{geoattrs})
+        SELECT
+            ex.{objnam}, ex.{attributes_ex}''' + \
+     ("" if gobj is None else f",\n    ex.{gobj} AS {gobj}") + f'''
+        FROM ext.{tabnam} AS ex
+        JOIN sync_{tabnam} AS sy ON ex.pk = sy.pk_ext
+        WHERE sy.aktion = 'hinzufügen'
+          AND sy.status;'''
 
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle} hinzufügen\n')
-    fw.write(f'sync_{tabnam}_add: "\n')
-    fw.write(f'INSERT INTO main.{tabnam} (\n')
-    fw.write(f'    {objnam}, {attributes}{geoattrs})\n')
-    fw.write( 'SELECT\n')
-    fw.write(f'    ex.{objnam}, ex.{attributes_ex}')
-    if gobj is not None:
-        fw.write(f",\n    ex.{gobj} AS {gobj}")
-    fw.write( '\n')
-    fw.write(f'FROM ext.{tabnam} AS ex\n')
-    fw.write(f'JOIN sync_{tabnam} AS sy ON ex.pk = sy.pk_ext\n')
-    fw.write( "WHERE sy.aktion = 'hinzufügen' \n")
-    fw.write( '  AND sy.status;"\n')
-    fw.write( '\n')
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze löschen
+    sqls[f'sync_{tabnam}_del'] = f'''        DELETE FROM main.{tabnam}
+        WHERE pk IN (
+            SELECT pk_best
+            FROM sync_{tabnam}
+            WHERE aktion = 'löschen'
+              AND status);'''
 
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle} löschen\n')
-    fw.write(f'sync_{tabnam}_del: "\n')
-    fw.write(f'DELETE FROM main.{tabnam}\n')
-    fw.write( 'WHERE pk IN (\n')
-    fw.write( '    SELECT pk_best\n')
-    fw.write(f'    FROM sync_{tabnam}\n')
-    fw.write( "    WHERE aktion = 'löschen'\n")
-    fw.write( '      AND status\n);"\n')
-    fw.write( '\n')
-
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle} ändern\n')
-    fw.write(f'sync_{tabnam}_mod: "\n')
-    fw.write(f'UPDATE main.{tabnam}\n')
-    fw.write( 'SET\n')
-    # if tabnam in TABLES_GLINK:
-        # fw.write('    ' + ',\n    '.join([f'{el} = mo.{el}' for el in attrlis[0:nlis] + attrlis[ngeo+2:ngeo+3]]) + '\n')
-    # else:
-    fw.write('    ' + ',\n    '.join([f'{el} = mo.{el}' for el in attrlis[0:nlis]]))
-    if gobj is None:
-        fw.write('\n')
-    else:
-        fw.write(f',\n    {gobj} = mo.{gobj}\n')
-    fw.write( 'FROM (\n')
-    fw.write( '    SELECT\n')
-    fw.write( '        sy.pk_best AS pk_best')
-    for attr, typ in zip(attrlis[0:nlis], typlis[0:nlis]):
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze ändern
+    sql = f'''        UPDATE main.{tabnam}
+        SET\n    ''' + \
+        ',\n    '.join([f'{el} = mo.{el}' for el in attrlis[:nlis]]) + \
+    ('\n' if gobj is None else f',\n    {gobj} = mo.{gobj}\n') + \
+       '''           FROM (
+           SELECT
+               sy.pk_best AS pk_best'''
+    for attr, typ in fieldlis[:nlis]:
         if typ == 'TEXT':
-            fw.write(f",\n        iif(sy.{attr} IS NOT NULL AND sy.{attr} <> '', ex.{attr}, be.{attr}) AS {attr}")
+            sql += f",\n        iif(sy.{attr} IS NOT NULL AND sy.{attr} <> '', ex.{attr}, be.{attr}) AS {attr}"
         elif typ in ['REAL', 'INT', 'INTEGER']:
-            fw.write(f",\n        iif(sy.{attr} IS NOT NULL, ex.{attr}, be.{attr}) AS {attr}")
+            sql += f",\n        iif(sy.{attr} IS NOT NULL, ex.{attr}, be.{attr}) AS {attr}"
         else:
-            fw.write(f",\n############################ Fehler 2 ############################## {attr=}, {typ=}\n\n")
-    if gobj is not None:
-        fw.write(f",\n        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.{gobj}, be.{gobj}) AS {gobj}")
-    fw.write( '\n')
-    fw.write(f'    FROM sync_{tabnam} AS sy\n')
-    fw.write(f'    JOIN main.{tabnam} AS be ON be.pk = sy.pk_best\n')
-    fw.write(f'    JOIN ext.{tabnam} AS ex ON ex.pk = sy.pk_ext\n')
-    fw.write( "    WHERE sy.aktion = 'ändern'\n")
-    fw.write( '      AND status\n')
-    fw.write( ') AS mo\n')
-    fw.write(f'WHERE main.{tabnam}.pk = mo.pk_best;"\n')
-    fw.write( '\n')
-
-# ---------------------------------------------------------------------------------------------------------------------
-    fw.write(f'# {tabtitle} auflisten\n')
-    fw.write(f'sync_{tabnam}_prot: "\n')
-    fw.write(f'SELECT * FROM sync_{tabnam} WHERE status;"\n')
+            meldung(f'Fehler 2: {attr=}, {typ=}')
+            raise Exception("Fehler 4")
+    sql += ("" if gobj is None else f",\n        iif(sy.objekt IS NOT NULL AND sy.objekt <> '', ex.{gobj}, be.{gobj}) AS {gobj}")
+    sql += f'''
+            FROM sync_{tabnam} AS sy
+            JOIN main.{tabnam} AS be ON be.pk = sy.pk_best
+            JOIN ext.{tabnam} AS ex ON ex.pk = sy.pk_ext
+            WHERE sy.aktion = 'ändern'
+              AND status
+        ) AS mo
+        WHERE main.{tabnam}.pk = mo.pk_best;'''
+    sqls[f'sync_{tabnam}_mod'] = sql
+    # ---------------------------------------------------------------------------------------------------------------------
+    # Datensätze auflisten
+    sqls[f'sync_{tabnam}_prot'] = f'SELECT * FROM sync_{tabnam} WHERE status;'
 
 header = '''# Do not modify! File is automatically generated by ./admin/create_yml.py
 
@@ -388,6 +350,8 @@ ATTACH DATABASE ? AS ext;"
 
 '''
 
+sqls = {}
+
 def main(qkfile):
     con = sqlite3.connect(qkfile)
     cur = con.cursor()
@@ -397,16 +361,15 @@ def main(qkfile):
     if len(tables) != len(tablis):
         meldung(f'Fehler: Keine Tabelle darf in mehr als einer Liste "TABLES_XXXX" vorkommen!')
         return
-    first = True
     with open('sqlite.yml', 'w', encoding = 'utf-8') as fw:
         fw.write(header)
         for tabnam in tablis:
-            if not first:
-                fw.write('\n\n')
-            else:
-                first = False
+            writesql(cur, fw, tabnam, sqls)
 
-            writesql(cur, fw, tabnam)
+        # SQLs schreiben
+        for key in sqls.keys():
+            fw.write(f"{key}:\n{sqls[key]}\n\n")
+
 
 _, *flis = sys.argv
 if len(flis) == 1:

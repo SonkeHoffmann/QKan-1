@@ -36,16 +36,29 @@ class CompareTask:
         with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
 
             # SQL-Statements für dieses Modul laden
-            db_qkan.loadmodule('sync')
+            # db_qkan.loadmodule('sync')
 
-            db_qkan.sqlyml(
-                sqlnam='sync_attach_ext',
+            if not db_qkan.sql(
+                sql='ATTACH DATABASE ? AS ext;',
                 stmt_category='compare_dbs',
                 parameters=(QKan.config.sync.ext,),
-            )
+            ):
+                logger.error_data('Datenbank {QKan.config.sync.ext=} konnte nicht angebunden werden')
+                raise QkanDbError
+
+            # Ergänzen der SQL-Abfragen für sync
+            if QKan.config.database.type == enums.QKanDBChoice.SPATIALITE:
+                from ._create_yml import _create_yml_spatialite
+                _create_yml_spatialite(db_qkan)
+            elif QKan.config.database.type == enums.QKanDBChoice.POSTGIS:
+                from ._create_yml import _create_yml_postgis
+                _create_yml_postgis(db_qkan)
+
+            # anz = len(db_qkan.sqls)
+            # logger.debug(f"Anzahl SQLs in 'sync': {anz}")
 
             # Vergleich aller gewählten Tabellen
-            check_medien = any(
+            _check_medien = any(
                 [
                     QKan.config.sync.check_schaechte_insp,
                     QKan.config.sync.check_haltungen_insp,
@@ -53,6 +66,14 @@ class CompareTask:
                 ]
             )
 
+            # Auflistung für Synchronisationslayer:
+            # - Tabellenname in der QKan-Datenbank
+            # - Nutzerauswahl
+            # - Liste von Layerbezeichnungen:
+            #    · Synchronisationslayer
+            #    · externer Layer
+            #    · Originallayer (nur zur Übernahme des Layerstils)
+            # - Gruppenname (wird an Pfad QKan > Synchronisation > angehängt)
             tables = [
                 [
                     'schaechte',
@@ -108,11 +129,11 @@ class CompareTask:
                     'einleit',
                     QKan.config.sync.check_einleitdirekt,               # gleicher Schalter check_einleitdirekt
                     [
-                        enums.LAYERBEZ.SYNC_EINLEIT_COMPARE.value,
-                        enums.LAYERBEZ.SYNC_EINLEIT_EXT.value,
+                        enums.LAYERBEZ.SYNC_DIREKT_COMPARE.value,
+                        enums.LAYERBEZ.SYNC_DIREKT_EXT.value,
                         enums.LAYERBEZ.DIREKTEINLEITUNGEN.value,
                     ],
-                    enums.LAYERBEZ.SYNC_GROUP_TEZG.value,
+                    enums.LAYERBEZ.SYNC_GROUP_DIREKT.value,
                 ],
                 [
                     'aussengebiete',
@@ -152,7 +173,7 @@ class CompareTask:
                         enums.LAYERBEZ.SYNC_ANBINDUNG_DIREKT_EXT.value,
                         enums.LAYERBEZ.ANBINDUNG_DIREKTEINLEITUNGEN.value,
                     ],
-                    enums.LAYERBEZ.SYNC_GROUP_EINLEIT.value,
+                    enums.LAYERBEZ.SYNC_GROUP_DIREKT.value,
                 ],
                 [
                     'linkageb',
@@ -256,7 +277,7 @@ class CompareTask:
                 ],
                 [
                     'videos',
-                    check_medien,                                       # gleicher Schalter check_medien, s.o.
+                    _check_medien,                                       # gleicher Schalter _check_medien, s.o.
                     [
                         enums.LAYERBEZ.SYNC_VIDEOS_COMPARE.value,
                         enums.LAYERBEZ.SYNC_VIDEOS_EXT.value,
@@ -266,7 +287,7 @@ class CompareTask:
                 ],
                 [
                     'fotos',
-                    check_medien,                                       # gleicher Schalter check_medien, s.o.
+                    _check_medien,                                       # gleicher Schalter _check_medien, s.o.
                     [
                         enums.LAYERBEZ.SYNC_FOTOS_COMPARE.value,
                         enums.LAYERBEZ.SYNC_FOTOS_EXT.value,
@@ -286,6 +307,9 @@ class CompareTask:
                 ],
             ]
 
+            # anz = len(db_qkan.sqls)
+            # logger.debug(f"Anzahl SQLs in 'sync': {anz}")
+
             for tabnam, userchoice, _, _ in tables:
                 tableexist = db_qkan.attrlist(tabnam)
                 if userchoice and tableexist:
@@ -297,11 +321,11 @@ class CompareTask:
                         f'sync_{tabnam}_local',
                         f'sync_{tabnam}_dif',
                     ]
-                    if tabnam in ('refdata', 'fotos', 'videos', 'pruefsql'):
+                    if tabnam in enums.SyncTables.TABLES_ATTR.value:
                         del sqlnames[1]
 
                     for sqlnam in sqlnames:
-                        db_qkan.sqlyml(
+                        if not db_qkan.sqlyml(
                             sqlnam,
                             stmt_category='comp_4',
                             parameters={
@@ -310,7 +334,8 @@ class CompareTask:
                                 'status_mod': QKan.config.sync.check_mod,
                                 'status_del': QKan.config.sync.check_del,
                             }
-                        )
+                        ):
+                            logger.error_code(f'SQL-Fehler: {sqlnam=}, {tabnam=}')
 
             db_qkan.commit()
 

@@ -5,4 +5,4 @@ rem die Datenbank mit der Maus über den Link zu schieben
 rem J. Höttges, 08:08 25.03.2026
 
 "C:\Program Files\Python311\pythonw.exe" create_yml.py %1
-move sqlite.yml ..
+rem move sqlite.yml ..
