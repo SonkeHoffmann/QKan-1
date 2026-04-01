@@ -342,6 +342,8 @@ class QKan:
             safe_add_action(allgemein, "QKan-Datenbank aktualisieren")
             safe_add_action(allgemein, "Neue QKan-Datenbank erstellen")
             safe_add_action(allgemein, "Dateipfade suchen")
+            safe_add_action(allgemein, "Inspektionsdaten anpassen")
+            safe_add_action(allgemein, "Haltungsbericht")
 
             safe_add_action(daten, "Plausibilitätsprüfungen")
             safe_add_action(daten, "Tabellendaten aus Clipboard einfügen")

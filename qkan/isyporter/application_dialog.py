@@ -1,7 +1,7 @@
 import os
 from typing import Callable, Optional
 
-from qgis.core import QgsCoordinateReferenceSystem
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgsProjectionSelectionWidget
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
@@ -15,6 +15,9 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qkan import QKan
+from qkan.utils import get_logger, QkanDbError
+from qkan.database.dbfunc import DBConnection
+logger = get_logger("QKan.isybau.application_dialog")
 
 EXPORT_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "res", "xml_export_dialog_base.ui")
@@ -52,6 +55,7 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
     cb_export_anschlussleitungen: QCheckBox
     #cb_export_zustandsdaten: QCheckBox
     comboBox: QComboBox
+    cb_selectedObjects: QCheckBox
 
     def __init__(
         self,
@@ -60,6 +64,8 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         parent: Optional[QWidget] = None,
     ):
         super().__init__(default_dir, tr, parent)
+
+        self.cb_selectedObjects.stateChanged.connect(self.count)
 
         # Attach events
         self.pb_export.clicked.connect(self.select_export)
@@ -93,6 +99,11 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
         # self.cb_export_zustandsdaten.setChecked(
         #     getattr(QKan.config.check_export, "export_zustandsdaten", True)
         # )
+        self.cb_selectedObjects.setChecked(
+            getattr(QKan.config.selections, "selectedObjects", False)
+        )
+
+        self._prepared = False
 
     def select_export(self) -> None:
         # noinspection PyArgumentList,PyCallByClass
@@ -127,6 +138,116 @@ class ExportDialog(_Dialog, EXPORT_CLASS):  # type: ignore
 
         if filename:
             self.tf_database.setText(filename)
+
+    def count(self) -> None:
+        """ Zählt nach Änderung der Auswahlen in den Listen im Formular die Anzahl
+            der betroffenen Flächen und Haltungen
+        """
+        logger.debug('Event: SelectionChanged')
+
+        if QgsProject.instance().fileName() != '':
+            with DBConnection() as db_qkan:
+                db_qkan.loadmodule('m150porter')
+
+                dbname = db_qkan.dbname
+
+                # Datenbankpfad in Dialog übernehmen
+                QKan.config.database.qkan = dbname
+
+                self.tf_database.setText(QKan.config.database.qkan)
+
+                # Checkbox hat den Status nach dem Klick
+                selected = self.cb_selectedObjects.isChecked()
+                if selected:
+                    selection = '_sel'
+                else:
+                    selection = '_all'
+
+                # Checkbox hat den Status nach dem Klick
+                # included = self.cb_includeMissingKeys.isChecked()
+                # if included:
+                #     selection += '_include'
+
+                # Ausgewählte Objekte in temporäre Tabellen übernehmen
+                n_haltungen, n_schaechte, _ = db_qkan.getSelection(selected)        # flaechen not used here
+                logger.debug(f'Selection in Layern: {n_haltungen=}, {n_schaechte=}')
+
+                if not db_qkan.sqlyml('m150_count_haltungen' + selection, f'count selected haltungen ({selection=})'):
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 105")
+                n_haltungen = db_qkan.fetchone()[0]
+                if not db_qkan.sqlyml('m150_count_schaechte' + selection, f'count selected schaechte ({selection=})'):
+                    raise QkanDbError(f"{self.__class__.__name__}: errno. 106")
+                n_schaechte = db_qkan.fetchone()[0]
+
+                self.lf_anzahl_haltungen.setText(f'{n_haltungen}')
+                self.lf_anzahl_schaechte.setText(f'{n_schaechte}')
+
+                if not self._prepared:
+                    self._prepare_refdata(db_qkan)
+                    self._prepared = True
+
+    def _prepare_refdata(self, db_qkan: DBConnection) -> None:
+        """Fügt Refernzdaten aus dem Import für den Export hinzu und ergänzt falls nicht
+        vorhanden Knotenarten
+        """
+        sqls = [
+            'm150_insert_refdatafromimport',
+            'm150_insert_knotenarten',
+            'm150_insert_refdatafromtables',
+        ]
+        for sqlnam in sqls:
+            if not db_qkan.sqlyml(
+                sqlnam
+            ):
+                raise QkanDbError
+
+        # Leere Referenztabellen mit Standardwerten füllen
+        subjects = ['simulationsstatus', 'entwaesserungsarten']
+        for subject in subjects:
+            sqlnam = f'm150_ex_count_{subject}'
+            if not db_qkan.sqlyml(
+                sqlnam
+            ):
+                raise QkanDbError
+
+            if db_qkan.fetchone()[0] == 0:
+                sqlnam = f'm150_ex_insert_{subject}'
+                if not db_qkan.sqlyml(
+                    sqlnam
+                ):
+                    raise QkanDbError
+
+        db_qkan.commit()
+
+    def prepareDialog(self, iface) -> bool:
+        # Initialisierung der Anzeige der Anzahl zu exportierender Objekte
+
+        self.iface = iface
+
+        # Für 3 Layer Selection-Change-Events definieren
+        for layernam in ['Haltungen', 'Schächte', 'Flächen']:
+            layerobjects = QgsProject().instance().mapLayersByName(layernam)
+            for layer in layerobjects:
+                layer.selectionChanged.connect(self.count)
+
+        try:
+            self.count()
+        except:
+            logger.error_code('prepareDialog: Fehler beim Aufruf von count')
+            return False
+
+        return True
+
+    def finishDialog(self) -> bool:
+        # Aufheben der Anzeige der Anzahl zu exportierender Objekte
+
+        # Aufheben der Selections-Change-Events
+        for layernam in ['Haltungen', 'Schächte', 'Flächen']:
+            layerobjects = QgsProject().instance().mapLayersByName(layernam)
+            for layer in layerobjects:
+                layer.selectionChanged.disconnect()
+
+        return True
 
 
 IMPORT_CLASS, _ = uic.loadUiType(

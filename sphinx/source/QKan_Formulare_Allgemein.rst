@@ -11,7 +11,7 @@ Die Einstellungen wirken sich auf das geöffnete QKan-Projekt aus.
 
 Im ersten Reiter können die allgemeinen Programmeinstellungen konfiguriert werden:
 
-.. image:: ./QKan_Bilder/Formulare/optionen1.png
+.. image:: ./QKan_Bilder/Formular/optionen1.png
 .. |Tool_projekt_allgemein| image:: ./QKan_Bilder/Tool_optionen.png
                              :width: 1.25 em
 							 
@@ -31,7 +31,7 @@ Sie enthält detaillierte Informationen zum Programmablauf, Fehlern und Hintergr
 
 Im zweiten Reiter werden die Standardwerte für die grafische Darstellung und Bearbeitung von QKan-Daten in QGIS festgelegt:
 
-.. image:: ./QKan_Bilder/Formulare/optionen2.png
+.. image:: ./QKan_Bilder/Formular/optionen2.png
 
 Fangradius und Mindestflächengröße
 Diese Parameter sind relevant für die automatische Anbindung von Flächen an Haltungen.
@@ -44,11 +44,7 @@ Durch die Änderung der Standardwerte lässt sich eine bessere Lesbarkeit und Ü
 
 Im dritten Reiter Automatische Datenübernahme werden die Trigger verwaltet die bei dem neuanlegen von Haltungen und Schächten genutzt werden können.
 
-.. image:: ./QKan_Bilder/Formulare/optionen3.png
-
-
-.. index:: Projektdatei anpassen
-.. _projektdatei-anpassen:
+.. image:: ./QKan_Bilder/Formular/optionen3.png
 
 
 QKan-Projekt aktualisieren
@@ -100,11 +96,9 @@ Auswertung Knotentypen
 ++++++++++++++++++++++
 
 Mit diesem Punkt werden in der Tabelle Schächte Informationen zum Knotentyp ergänzt und in dem Layer Knotentyp dargestellt.
-
-
+    
+    
 .. index:: Projektdatei übertragen
-.. _projektdatei-ubertragen:
-
 
 Projektdatei auf andere Datenbank übertragen
 --------------------------------------------
@@ -121,8 +115,7 @@ ein anderes Projekt übertragen werden:
 QKan-Datenbank
 ++++++++++++++
 Hier wird die einzubindende QKan-Datenbank gewählt. 
-Um sicherzustellen, dass die Datenbank auf dem aktuellsten Stand ist, kann die Option 
-"QKan Datenbank aktualisieren" gewählt werden.
+Um sicherzustellen, dass die Datenbank auf dem aktuellsten Stand ist, kann die Option "QKan Datenbank aktualisier" gewählt werden.
 
 
 Projektdatei als Vorlage
@@ -141,23 +134,15 @@ Datenbank aktualisieren
 -----------------------
 							 
 Mit der Funktion |Tool_db_aktualisieren| :guilabel:`QKan-Datenbank aktualisieren` kann die QKan Datenbank sowie die 
-Projektdatei auf die aktuelle Version aktualisiert werden. Dabei kann mit der Auswahl unter dem Verzeichnis 
-eine Sicherheitskopie erstellt werden. Diese stellt sicher, dass das orginalprojekt bei einem fehlerhaften 
-Update versuch wieder hergestellt werden kann.
+Projektdatei auf die aktuelle Version aktualisiert werden. Dabei kann mit der auswahl unter dem Verzeichnis 
+eine Sicherheitskopie erstellt werden. Diese stellt sicher, dass das orginal Projekt bei einem fehlerhaften 
+Update versuch nicht verloren ist.
 
 .. image:: ./QKan_Bilder/qkan_layersadapt.png
 .. |Tool_db_aktualisieren| image:: ./QKan_Bilder/Tool_db_aktualisieren.png
                              :width: 1.25 em
-
-Bei der Aktualisierung lässt es sich in einigen Fällen nicht vermeiden, dass die Layer nicht ordnungsgemäß 
-angepasst wurden, insbesondere, wenn das QKan-Projekt gegenüber der ursprünglichen Version stark angepasst 
-wurde. Das gilt insbesondere für das Update auf Version 3.4.8. In diesem Fall ist es empfehlenswert, 
-zunächst das Projekt mit der 
-Funktion :ref:`Projektdatei auf andere Datenbank übertragen <projektdatei-ubertragen>` 
-zu aktualisieren und anschließend aus dem gesicherten Projekt, das dazu parallel geöffnet wird, die 
-zusätzlichen Layer in das neue Projekt zu kopieren. 
-
-
+							 
+							 
 .. index:: Neue Datenbank erstellen
 
 Neue Datenbank erstellen
@@ -212,3 +197,19 @@ Einstellungen
 Der Hauptpfad (Basisverzeichnis für alle relativen Pfade) kann unter QKan → Optionen angepasst werden.
 Dies ist besonders hilfreich, wenn das gesamte Projektverzeichnis oder die Medienordner auf ein anderes Laufwerk 
 oder in eine neue Struktur verschoben wurden.
+
+.. index:: Haltungsberichte
+
+Haltungsberichte
+----------------
+
+Das Tool :guilabel:`Haltungsberichte` dient der automatischen Ausgabe von Haltungsberichten.
+
+.. image:: ./QKan_Bilder/Formulare/haltungsbericht.png
+
+
+Funktionsweise
+++++++++++++++
+
+Das Tool erstellt automatisiert Haltungsbereichte entweder für den gesamten Datenbestand oder für eine vorher gemachte Selection. Die Haltungsbericht werden einzelnd für jede Haltungen
+als PDF-Datei erstellt und im ausgewählten Speicherort gespeichert.

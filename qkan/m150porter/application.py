@@ -267,6 +267,7 @@ class M150Porter(QKanPlugin):
                 layer = project.mapLayersByName(enums.LAYERBEZ.M150_KNOTENARTEN.value,)[0]
                 iface.showAttributeTable(layer)
 
+
         self.log.debug("Closed DB")
 
         return True

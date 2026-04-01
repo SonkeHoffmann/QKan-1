@@ -46,12 +46,11 @@ def SubElementText(parent: Element, name: str, text: Union[str, int]) -> Element
 
 # noinspection SqlNoDataSourceInspection, SqlResolve
 class ExportTask:
-    def __init__(self, db_qkan: DBConnection, export_file: str, vorlage: str, auswahl_zustand:str, selection):
+    def __init__(self, db_qkan: DBConnection, export_file: str, vorlage: str, auswahl_zustand:str):
         self.db_qkan = db_qkan
         self.export_file = export_file
         self.vorlage = vorlage
         self.auswahl_zustand = auswahl_zustand
-        self.selection = selection
 
         # XML base
         self.stamm: Optional[Element] = None
@@ -86,7 +85,7 @@ class ExportTask:
                 laenge,
                 simstatus,
                 kommentar
-            FROM haltungen WHERE haltungstyp = 'Wehr' {self.abfrage_h_where}
+            FROM haltungen WHERE haltungstyp = 'Wehr' {self.abfrage_h_and}
             """
 
             if not self.db_qkan.sql(sql, "db_qkan: export_wehre"):
@@ -156,7 +155,7 @@ class ExportTask:
                 schunten,
                 simstatus,
                 kommentar
-            FROM haltungen WHERE haltungstyp = 'Pumpe' {self.abfrage_h_where}
+            FROM haltungen WHERE haltungstyp = 'Pumpe' {self.abfrage_h_and}
             """
 
             if not self.db_qkan.sql(sql, "db_qkan: export_pumpen"):
@@ -2347,58 +2346,55 @@ class ExportTask:
                 minidom.parseString(tostring(root)).toprettyxml(indent="  ")
             )
 
-        # if self.selection:
-        #     select_s = []
-        #     select_h = []
-        #
-        #     sql = f"""
-        #                         SELECT
-        #                         pk
-        #                         from sel_schaechte
-        #                      """
-        #
-        #     if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
-        #         return
-        #
-        #
-        #     for attr in self.db_qkan.fetchall():
-        #         select_s.append(attr[0])
-        #
-        #     sql = f"""
-        #                                     SELECT
-        #                                     pk
-        #                                     from sel_haltungen
-        #                                  """
-        #
-        #     if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
-        #         return
-        #
-        #     for attr in self.db_qkan.fetchall():
-        #         select_h.append(attr[0])
-        #
-        #     select_s_t = tuple(select_s)
-        #
-        #     select_h_t = tuple(select_h)
-        #
-        #
-        #     self.abfrage_s_and = f"AND schaechte.pk in {select_s_t}"
-        #
-        #     self.abfrage_s_where = f"WHERE schaechte.pk in {select_s_t}"
-        #
-        #     self.abfrage_h_and = f"AND haltungen.pk in {select_h_t}"
-        #
-        #     self.abfrage_h_where = f"WHERE haltungen.pk in {select_h_t}"
-        #
-        # else:
-        #     self.abfrage_s_and = ""
-        #     self.abfrage_s_where = ""
-        #     self.abfrage_h_and = ""
-        #     self.abfrage_h_where = ""
+        if QKan.config.selections.selectedObjects:
+            select_s = []
+            select_h = []
 
-        self.abfrage_s_and = ""
-        self.abfrage_s_where = ""
-        self.abfrage_h_and = ""
-        self.abfrage_h_where = ""
+            sql = f"""
+                                SELECT
+                                pk
+                                from sel_schaechte
+                             """
+
+            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                return
+
+
+            for attr in self.db_qkan.fetchall():
+                select_s.append(attr[0])
+
+            sql = f"""
+                                            SELECT
+                                            pk
+                                            from sel_haltungen
+                                         """
+
+            if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
+                return
+
+            for attr in self.db_qkan.fetchall():
+                select_h.append(attr[0])
+
+            select_s_t = tuple(select_s)
+
+            select_h_t = tuple(select_h)
+
+
+            self.abfrage_s_and = f"AND schaechte.pk in {select_s_t}"
+
+            self.abfrage_s_where = f"WHERE schaechte.pk in {select_s_t}"
+
+            self.abfrage_h_and = f"AND haltungen.pk in {select_h_t}"
+
+            self.abfrage_h_where = f"WHERE haltungen.pk in {select_h_t}"
+
+        else:
+            self.abfrage_s_and = ""
+            self.abfrage_s_where = ""
+            self.abfrage_h_and = ""
+            self.abfrage_h_where = ""
+
+
         # Export
         if QKan.config.check_export.wehre:
             self._export_wehre()

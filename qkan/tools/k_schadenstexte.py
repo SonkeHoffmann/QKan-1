@@ -230,7 +230,6 @@ class Schadenstexte:
                     hu.pk AS pk, hu.haltnam, 
                     row_number() OVER (PARTITION BY hu.haltnam, hu.schoben, hu.schunten ORDER BY hu.untersuchtag DESC) AS row_number
                 FROM haltungen_untersucht AS hu
-                GROUP BY hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag
             ) AS unum
             WHERE haltungen_untersucht.pk = unum.pk
         """
@@ -245,10 +244,10 @@ class Schadenstexte:
         sql = """
             WITH num AS (
                 SELECT
-                    hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag, 
+                    hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag, hu.laenge,
                     row_number() OVER (PARTITION BY hu.haltnam, hu.schoben, hu.schunten ORDER BY hu.untersuchtag DESC) AS row_number
                 FROM haltungen_untersucht AS hu
-                GROUP BY hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag
+                GROUP BY hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag, hu.laenge
             )
             UPDATE untersuchdat_haltung
             SET id = uid.id
@@ -259,7 +258,8 @@ class Schadenstexte:
                 ON	uh.untersuchhal = num.haltnam AND
                     uh.schoben = num.schoben AND
                     uh.schunten = num.schunten AND
-                    uh.untersuchtag = num.untersuchtag
+                    uh.untersuchtag = num.untersuchtag AND
+                    uh.inspektionslaenge = num.laenge
             ) AS uid
             WHERE untersuchdat_haltung.pk = uid.pk
         """
@@ -416,7 +416,6 @@ class Schadenstexte:
                     su.pk AS pk, su.schnam, 
                     row_number() OVER (PARTITION BY su.schnam ORDER BY su.untersuchtag DESC) AS row_number
                 FROM schaechte_untersucht AS su
-                GROUP BY su.schnam, su.untersuchtag
             ) AS unum
             WHERE schaechte_untersucht.pk = unum.pk
         """
@@ -700,7 +699,6 @@ class Schadenstexte:
                     row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten 
                                        ORDER BY hu.untersuchtag DESC) AS row_number
                 FROM anschlussleitungen_untersucht AS hu
-                GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag
             ) AS unum
             WHERE anschlussleitungen_untersucht.pk = unum.pk
         """
@@ -715,11 +713,11 @@ class Schadenstexte:
         sql = """
             WITH num AS (
                 SELECT
-                    hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag, 
+                    hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag, hu.laenge,
                     row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten 
                                        ORDER BY hu.untersuchtag DESC) AS row_number
                 FROM anschlussleitungen_untersucht AS hu
-                GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag
+                GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag, hu.laenge
             )
             UPDATE untersuchdat_anschlussleitung
             SET id = uid.id
@@ -730,7 +728,8 @@ class Schadenstexte:
                 ON	uh.untersuchleit = num.leitnam AND
                     uh.schoben = num.schoben AND
                     uh.schunten = num.schunten AND
-                    uh.untersuchtag = num.untersuchtag
+                    uh.untersuchtag = num.untersuchtag AND
+                    uh.inspektionslaenge = num.laenge
             ) AS uid
             WHERE untersuchdat_anschlussleitung.pk = uid.pk
         """

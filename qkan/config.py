@@ -837,6 +837,7 @@ class XmlConfig(ClassObject):
     import_stamm: bool = True
     import_haus: bool = True
     import_zustand: bool = True
+    import_teilbefahrung: bool = False
 
 
 class ZustandConfig(ClassObject):

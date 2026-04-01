@@ -17,10 +17,11 @@ logger = get_logger("QKan.selection")
 
 
 class Select:
-    def __init__(self, db_qkan: DBConnection, check_cb, auswahl):
+    def __init__(self, db_qkan: DBConnection, auswahl):
         self.db_qkan = db_qkan
-        self.check_cb = check_cb
+        # self.check_cb = check_cb
         self.auswahl = auswahl
+        print(self.auswahl)
 
     #Überall am Ende die Länge des Weges printen
 
@@ -162,10 +163,10 @@ class Select:
     def run(self) -> None:
 
         max_laenge = float('-inf')
-        if self.auswahl == 'Teilgebiet':
+        if self.auswahl == 'Objekte innerhalb Teilgebiet':
             self.gebiet()
 
-        if self.auswahl == 'oberhalb':
+        if self.auswahl == 'Objekte oberhalb':
             layer = iface.activeLayer()
             x = layer.source()
 
@@ -222,42 +223,47 @@ class Select:
                     layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
                     iface.mapCanvas().zoomToSelected(layer)
 
-                if self.check_cb['cb_Schaechte']:
-
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
-
-                    if layer is not None:
-                        auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
-
-                if self.check_cb['cb_Flaechen']:
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
-
-                    if layer is not None:
-                        auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
-
-                    haltungen = ','.join([f'"{str(x)}"' for x in pfad_haltungen])
-                    sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
-
-                    self.db_qkan.sql(sql)
-                    flaechen = []
-                    for i in self.db_qkan.fetchall():
-                        flaechen.append(i[0])
-
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
-                    if layer is not None:
-                        auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
-
-            self.db_qkan.getSelection(True)
-            self.db_qkan.commit()
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
 
 
-        if self.auswahl == 'unterhalb':
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+
+                if layer is not None:
+                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
+
+
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+
+                if layer is not None:
+                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
+
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
+
+                haltungen = ','.join([f'"{str(x)}"' for x in pfad_haltungen])
+                sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
+
+                self.db_qkan.sql(sql)
+                flaechen = []
+                for i in self.db_qkan.fetchall():
+                    flaechen.append(i[0])
+
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
+                if layer is not None:
+                    auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
+
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
+
+
+        if self.auswahl == 'Objekte unterhalb':
             layer = iface.activeLayer()
             x = layer.source()
 
@@ -314,43 +320,42 @@ class Select:
                     layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
                     iface.mapCanvas().zoomToSelected(layer)
 
-                if self.check_cb['cb_Schaechte']:
 
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
 
-                    if layer is not None:
-                        auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
+                if layer is not None:
+                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
 
-                if self.check_cb['cb_Flaechen']:
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+                if layer is not None:
+                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
 
-                    if layer is not None:
-                        auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in schaechte_ges))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
+                haltungen = ','.join([f'"{str(x)}"' for x in pfad_haltungen])
 
-                    haltungen = ','.join([f'"{str(x)}"' for x in pfad_haltungen])
+                sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
 
-                    sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
+                self.db_qkan.sql(sql)
+                flaechen = []
+                for i in self.db_qkan.fetchall():
+                    flaechen.append(i[0])
 
-                    self.db_qkan.sql(sql)
-                    flaechen = []
-                    for i in self.db_qkan.fetchall():
-                        flaechen.append(i[0])
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
+                if layer is not None:
+                    auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
 
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
-                    if layer is not None:
-                        auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
-
-            self.db_qkan.getSelection(True)
-            self.db_qkan.commit()
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
 
 
-        if self.auswahl == 'Fliessweg':
+        if self.auswahl == 'längster Fließweg oberhalb':
             max_haltungen = None
             layer = iface.activeLayer()
             x = layer.source()
@@ -417,39 +422,40 @@ class Select:
                 self.db_qkan.sql(sql)
                 x = self.db_qkan.fetchall()[0][0]
 
-                if self.check_cb['cb_Schaechte']:
 
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
 
-                    if layer is not None:
-                        auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in max_pfad))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
+                if layer is not None:
+                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in max_pfad))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
 
-                if self.check_cb['cb_Flaechen']:
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
 
-                    if layer is not None:
-                        auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in max_pfad))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
+                if layer is not None:
+                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in max_pfad))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
 
-                    haltungen = ','.join([f'"{str(x)}"' for x in max_haltungen])
-                    sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
 
-                    self.db_qkan.sql(sql)
-                    flaechen = []
-                    for i in self.db_qkan.fetchall():
-                        flaechen.append(i[0])
+                haltungen = ','.join([f'"{str(x)}"' for x in max_haltungen])
+                sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
 
-                    layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
-                    if layer is not None:
-                        auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
-                        layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                        iface.mapCanvas().zoomToSelected(layer)
+                self.db_qkan.sql(sql)
+                flaechen = []
+                for i in self.db_qkan.fetchall():
+                    flaechen.append(i[0])
 
-            self.db_qkan.getSelection(True)
-            self.db_qkan.commit()
+                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
+                if layer is not None:
+                    auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
+                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                    iface.mapCanvas().zoomToSelected(layer)
+
+                self.db_qkan.getSelection(True)
+                self.db_qkan.commit()
             logger.info(f'Der Längeste Fließweg beträgt {x} m')
 
 
@@ -651,7 +657,7 @@ class Select:
         #     self.db_qkan.commit()
         #     logger.info(f'Der kürzeste Fließweg beträgt {x} m')
 
-        if self.auswahl == 'kuerzester':
+        if self.auswahl == 'kürzester Weg':
             features = []
             layer = iface.activeLayer()
             x = layer.source()
@@ -717,36 +723,37 @@ class Select:
             self.db_qkan.sql(sql)
             x = self.db_qkan.fetchall()[0][0]
 
-            if self.check_cb['cb_Schaechte']:
 
-                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+            layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
 
-                if layer is not None:
-                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in liste))
-                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                    iface.mapCanvas().zoomToSelected(layer)
+            if layer is not None:
+                auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in liste))
+                layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                iface.mapCanvas().zoomToSelected(layer)
 
-            if self.check_cb['cb_Flaechen']:
-                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
+            layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.SCHAECHTE.value)[0]
 
-                if layer is not None:
-                    auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in liste))
-                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                    iface.mapCanvas().zoomToSelected(layer)
+            if layer is not None:
+                auswahl = '"Schachtname" IN ({})'.format(", ".join(f"\'{w}\'" for w in liste))
+                layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                iface.mapCanvas().zoomToSelected(layer)
 
-                haltungen = ','.join([f'"{str(x)}"' for x in liste2])
-                sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
+            self.db_qkan.getSelection(True)
+            self.db_qkan.commit()
 
-                self.db_qkan.sql(sql)
-                flaechen = []
-                for i in self.db_qkan.fetchall():
-                    flaechen.append(i[0])
+            haltungen = ','.join([f'"{str(x)}"' for x in liste2])
+            sql = f"""Select pk from flaechen where haltnam in ({haltungen})"""
 
-                layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
-                if layer is not None:
-                    auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
-                    layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
-                    iface.mapCanvas().zoomToSelected(layer)
+            self.db_qkan.sql(sql)
+            flaechen = []
+            for i in self.db_qkan.fetchall():
+                flaechen.append(i[0])
+
+            layer = QgsProject.instance().mapLayersByName(enums.LAYERBEZ.EINZELFLAECHEN.value)[0]
+            if layer is not None:
+                auswahl = '"pk" IN ({})'.format(", ".join(f"\'{w}\'" for w in flaechen))
+                layer.selectByExpression(auswahl, QgsVectorLayer.SetSelection)
+                iface.mapCanvas().zoomToSelected(layer)
 
             self.db_qkan.getSelection(True)
             self.db_qkan.commit()

@@ -1,4 +1,7 @@
 from qgis.gui import QgisInterface
+from PyQt5.QtWidgets import QToolBar, QToolButton, QMenu, QAction
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
@@ -20,6 +23,9 @@ class Selection(QKanPlugin):
 
         self.select_dlg = SelectionDialog(default_dir=self.default_dir, tr=self.tr)
 
+        self.toolbar = None
+        self.auswahl = []
+
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
@@ -32,50 +38,107 @@ class Selection(QKanPlugin):
             parent=self.iface.mainWindow(),
         )
 
+        toolbar_name = 'QKan-Allgemein'
+        self.toolbar = self.iface.mainWindow().findChild(QToolBar, toolbar_name)
+
+        action_to_remove = None
+        for action in self.toolbar.actions():
+            if action.text() == "Auswahl erweitern / Netzverfolgung":
+                action_to_remove = action
+                break
+
+        if action_to_remove:
+            self.toolbar.removeAction(action_to_remove)
+
+        dropdown_button = QToolButton()
+        icon = QIcon(icon_import)
+        dropdown_button.setIcon(icon)
+        # dropdown_button.setText("Mein Button")  # Text des Buttons
+        dropdown_button.setToolTip("Auswahl erweitern / Netzverfolgung")  # Tooltip
+        dropdown_button.setPopupMode(QToolButton.InstantPopup)
+        dropdown_button.setMenu(QMenu())
+
+        dropdown_menu = dropdown_button.menu()
+
+        action = QAction("Objekte oberhalb", dropdown_menu)
+        action.triggered.connect(self.oberhalb_clicked)
+        dropdown_menu.addAction(action)
+
+        action1 = QAction("Objekte unterhalb", dropdown_menu)
+        action1.triggered.connect(self.unterhalb_clicked)
+        dropdown_menu.addAction(action1)
+
+        action2 = QAction("längster Fließweg oberhalb", dropdown_menu)
+        action2.triggered.connect(self.laengster_clicked)
+        dropdown_menu.addAction(action2)
+
+        action3 = QAction("kürzester Weg", dropdown_menu)
+        action3.triggered.connect(self.kuerzester_clicked)
+        dropdown_menu.addAction(action3)
+
+        action4 = QAction("Objekte innerhalb Teilgebiet", dropdown_menu)
+        action4.triggered.connect(self.teilgebiet_clicked)
+        dropdown_menu.addAction(action4)
+
+        self.toolbar.addWidget(dropdown_button)
+
+    def oberhalb_clicked(self):
+        self.auswahl = []
+        self.auswahl.append("Objekte oberhalb")
+        self.run()
+
+    def unterhalb_clicked(self):
+        self.auswahl = []
+        self.auswahl.append("Objekte unterhalb")
+        self.run()
+        print('Test')
+
+    def laengster_clicked(self):
+        self.auswahl = []
+        self.auswahl.append("längster Fließweg oberhalb")
+        self.run()
+
+    def kuerzester_clicked(self):
+        self.auswahl = []
+        self.auswahl.append("kürzester Weg")
+        self.run()
+
+    def teilgebiet_clicked(self):
+        self.auswahl = []
+        self.auswahl.append("Objekte innerhalb Teilgebiet")
+        self.run()
+
+
     def unload(self) -> None:
         self.select_dlg.close()
 
 
     def run(self) -> None:
-        # Prüfen, ob ein Projekt geladen ist
+        get_database_QKan()
+        database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
+        if not database_qkan:
+            logger.error_data(
+                "selection.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
+            )
+            raise QkanAbortError
 
-        self.select_dlg.show()
-        if self.select_dlg.exec_():
-            # Read from form and save to config
-
-            get_database_QKan()
-            database_qkan, epsg = QKan.config.database.qkan, QKan.config.epsg
-            if not database_qkan:
-                logger.error_data(
-                    "selection.application: database_QKan konnte nicht aus den Layern ermittelt werden. Abbruch!"
+        with DBConnection(
+                dbname=database_qkan, epsg=epsg
+        ) as db_qkan:
+            if not db_qkan.connected:
+                logger.error_code(
+                    "selection.application: Datenbank konnte nicht geöffnet werden. Abbruch!"
                 )
                 raise QkanAbortError
 
-            with DBConnection(
-                    dbname=database_qkan, epsg=epsg
-            ) as db_qkan:
-                if not db_qkan.connected:
-                    logger.error_code(
-                        "selection.application: Datenbank konnte nicht geöffnet werden. Abbruch!"
-                    )
-                    raise QkanAbortError
-
-                check_cb = {}
-                check_cb['cb_Haltung'] = self.select_dlg.cb_selectHaltungen.isChecked()
-                check_cb['cb_Schaechte'] = self.select_dlg.cb_selectSchaechte.isChecked()
-                check_cb['cb_Flaechen'] = self.select_dlg.cb_selectFlaechen.isChecked()
-
-                auswahl = self.select_dlg.geklickter_button
-
-                imp = Select(
-                    db_qkan,
-                    check_cb, auswahl)
-                try:
-                    imp.run()
-                except QkanUserError as e:
-                    # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
-                    logger.debug(f"Anwenderfehler bei Tool Auswahl erweitern/Netzverfolgung: {e}")
-                except Exception as e:
-                    logger.error_code(f"Fehler bei Tool Auswahl erweitern/Netzverfolgung: {e}")
-                    raise QkanAbortError
+            imp = Select(
+                db_qkan, self.auswahl[0])
+            try:
+                imp.run()
+            except QkanUserError as e:
+                # Anwenderfehler werden im Modul gemeldet, deshalb hier keine Meldung mehr
+                logger.debug(f"Anwenderfehler bei Tool Auswahl erweitern/Netzverfolgung: {e}")
+            except Exception as e:
+                logger.error_code(f"Fehler bei Tool Auswahl erweitern/Netzverfolgung: {e}")
+                raise QkanAbortError
 
