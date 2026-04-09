@@ -839,8 +839,9 @@ class UploadPostgisTask:
 
         Ermittelt die gemeinsamen Spalten zwischen PostgreSQL (aus schema.sql
         erstellt) und SQLite, und überträgt die entsprechenden Daten.
-        Geometrie-Spalten werden über SpatiaLite (AsText) oder hex-Konvertierung
-        korrekt nach PostGIS übertragen.
+        Geometrie-Spalten werden über einen robusten WKB-Workflow übertragen,
+        damit mehrere Geometriespalten (z.B. geom und geop) zuverlässig
+        befüllt werden.
 
         Args:
             table_name: Name der Tabelle (wie in schema.sql definiert)
@@ -919,10 +920,16 @@ class UploadPostgisTask:
 
         for geom_col in geom_sqlite_cols:
             if self.use_spatialite:
-                select_parts.append(f'AsText("{geom_col}")')
+                # Geometrie in SpatiaLite direkt als WKB-Hex lesen.
+                # Das ist robuster als AsText() und funktioniert zuverlässig
+                # auch bei Tabellen mit mehreren Geometriespalten.
+                select_parts.append(
+                    f'CASE WHEN "{geom_col}" IS NULL THEN NULL '
+                    f'ELSE Hex(AsBinary("{geom_col}")) END'
+                )
             else:
-                # SpatiaLite-BLOB direkt als bytes lesen;
-                # Konvertierung zu Standard-WKB erfolgt in _preprocess_value()
+                # Ohne SpatiaLite liegen Geometrien als BLOB vor;
+                # Konvertierung zu Standard-WKB erfolgt in _preprocess_value().
                 select_parts.append(f'"{geom_col}"')
 
         select_sql = (
@@ -937,12 +944,9 @@ class UploadPostgisTask:
         for pg_col, geom_info in zip(geom_pg_cols, geom_infos_ordered):
             srid = geom_info['srid']
             insert_col_parts.append(f'"{pg_col}"')
-            if self.use_spatialite:
-                template_parts.append(f'ST_GeomFromText(%s, {srid})')
-            else:
-                template_parts.append(
-                    f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})"
-                )
+            template_parts.append(
+                f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})"
+            )
 
         insert_cols = ', '.join(insert_col_parts)
         value_template = '(' + ', '.join(template_parts) + ')'
@@ -962,8 +966,10 @@ class UploadPostgisTask:
         batch_size = 2000
         inserted_records = 0
         error_count = 0
-        # Geometrien liegen als Hex-WKB vor wenn SpatiaLite nicht verfügbar
-        use_geom_hex = not self.use_spatialite and bool(geom_pg_cols)
+        # Geometrien werden grundsätzlich als Hex-WKB verarbeitet:
+        # - mit SpatiaLite über Hex(AsBinary(...))
+        # - ohne SpatiaLite über BLOB->WKB-Konvertierung in _preprocess_value()
+        use_geom_hex = bool(geom_pg_cols)
         num_regular = len(regular_pg_cols)
 
         old_autocommit = self.pg_conn.autocommit
@@ -1177,6 +1183,81 @@ class UploadPostgisTask:
                 )
             )
         return tuple(result)
+
+    def _backfill_missing_geom_from_geop(self, table_name: str) -> int:
+        """Befüllt fehlende geom-Werte aus geop, wenn beide Spalten existieren.
+
+        Die Funktion ist bewusst allgemein gehalten und greift für jede
+        Tabelle, in der sowohl `geop` als auch `geom` vorhanden sind.
+        Der Ausdruck für `geom` wird abhängig vom erwarteten Geometrietyp
+        der `geom`-Spalte gewählt.
+
+        Returns:
+            Anzahl der aktualisierten Datensätze.
+        """
+        if self.schema_name is None:
+            return 0
+
+        pg_columns = {c.lower() for c in self._get_postgres_columns(table_name)}
+        if 'geop' not in pg_columns or 'geom' not in pg_columns:
+            return 0
+
+        geom_info = None
+        for gc in self.schema_parser.get_geometry_columns(table_name):
+            if gc['column'].lower() == 'geom':
+                geom_info = gc
+                break
+
+        expected_type = (geom_info.get('type', '') if geom_info else '').upper()
+        has_durchm = 'durchm' in pg_columns
+        radius_expr = (
+            "COALESCE(NULLIF(durchm, 0) / 2.0, 0.5)"
+            if has_durchm else "0.5"
+        )
+
+        # Typabhängige Geometrieableitung aus geop.
+        if 'MULTILINESTRING' in expected_type:
+            geom_expr = (
+                "ST_Multi(ST_Boundary(" 
+                f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')" 
+                "))"
+            )
+        elif 'LINESTRING' in expected_type:
+            geom_expr = (
+                "ST_Boundary(" 
+                f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')" 
+                ")"
+            )
+        elif 'MULTIPOLYGON' in expected_type:
+            geom_expr = (
+                "ST_Multi(" 
+                f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')" 
+                ")"
+            )
+        elif 'POLYGON' in expected_type:
+            geom_expr = f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')"
+        elif 'MULTIPOINT' in expected_type:
+            geom_expr = "ST_Multi(geop)"
+        else:
+            # POINT oder unbekannt: Punkt direkt übernehmen.
+            geom_expr = "geop"
+
+        sql = f"""
+            UPDATE {self.schema_name}.{table_name}
+            SET geom = {geom_expr}
+            WHERE geop IS NOT NULL
+              AND geom IS NULL
+        """
+
+        self.pg_cursor.execute(sql)
+        updated = self.pg_cursor.rowcount if self.pg_cursor.rowcount > 0 else 0
+
+        if updated > 0:
+            logger.info(
+                f"{table_name}.geom aus geop nachberechnet: {updated} Datensätze"
+            )
+
+        return updated
 
     # ---------------------------------------------------------------
     # Finalisierung und QGIS-Integration
@@ -1423,6 +1504,17 @@ class UploadPostgisTask:
                                 )
                             })
                             transferred_records = 0
+
+                        # Allgemeiner Fallback: Wenn eine Tabelle sowohl geop
+                        # als auch geom enthält, wird geom bei Bedarf aus geop
+                        # abgeleitet.
+                        try:
+                            self._backfill_missing_geom_from_geop(table_name)
+                        except Exception as fill_error:
+                            logger.warning(
+                                f"Nachberechnung {table_name}.geom "
+                                f"aus geop fehlgeschlagen: {fill_error}"
+                            )
 
                         # Datensatz-Progress Bar zurücksetzen
                         if self.progress_bar_records:
