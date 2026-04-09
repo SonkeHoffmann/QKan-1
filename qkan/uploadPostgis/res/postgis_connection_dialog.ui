@@ -268,9 +268,9 @@
    <widget class="QComboBox" name="cb_ssl_mode">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>25</y>
-      <width>200</width>
+      <x>130</x>
+      <y>23</y>
+      <width>150</width>
       <height>24</height>
      </rect>
     </property>
@@ -310,8 +310,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>5</y>
-      <width>100</width>
+      <y>25</y>
+      <width>110</width>
       <height>20</height>
      </rect>
     </property>
