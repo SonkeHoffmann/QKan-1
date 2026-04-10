@@ -515,6 +515,7 @@ class ImportTask(Schadenstexte):
         return geom
 
     def run(self) -> bool:
+
         self._reftables()
         self._init_mappers()
         if getattr(QKan.config.xml, "import_stamm", True):

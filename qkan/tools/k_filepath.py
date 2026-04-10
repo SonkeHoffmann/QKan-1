@@ -27,8 +27,8 @@ def setfilepath(
     """Schreibt die Dateipfade in die Datenbank.
     """
 
-    pfad_video = Path(QKan.config.videopath)
-    pfad_foto = Path(QKan.config.fotopath)
+    pfad_video = Path(QKan.config.videoRootPath)
+    pfad_foto = Path(QKan.config.fotoRootPath)
 
     if ausw_haltung == True:
         bild=''

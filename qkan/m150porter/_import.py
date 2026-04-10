@@ -226,10 +226,13 @@ class Pumpe(ClassObject):
 
 # noinspection SqlNoDataSourceInspection, SqlResolve
 class ImportTask(Schadenstexte):
-    def __init__(self, db_qkan: DBConnection, xml_file: str, data_choice: str, ordner_bild: str, ordner_video: str):
+    def __init__(self, db_qkan: DBConnection):
         self.db_qkan = db_qkan
-        self.ordner_bild = ordner_bild
-        self.ordner_video = ordner_video
+
+        xml_file = QKan.config.xml.import_file,
+        data_choice = QKan.config.xml.data_choice,
+        self.ordner_bild = QKan.config.fotoPathCurrent,
+        self.ordner_video = QKan.config.videoPathCurrent
 
         self.data_coice= data_choice
         if data_choice == "ISYBAU Daten":

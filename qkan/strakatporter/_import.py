@@ -140,14 +140,24 @@ class ImportTask(Schadenstexte):
         self.iface = QKan.instance.iface
 
         pathfull = Path(QKan.config.fotoPathCurrent)
-        if QKan.config.fotopath != '':
-            pathroot = Path(QKan.config.fotopath)
-            self.ordner_bild = pathfull.relative_to(pathroot)
+        if QKan.config.fotoRootPath != '':
+            pathroot = Path(QKan.config.fotoRootPath)
+            try:
+                self.ordner_bild = f'{pathfull.relative_to(pathroot)}'
+            except ValueError as err:
+                logger.error_user('Der Wurzelpfad zu den Fotos passt nicht zum ausgewählten Verzeichnis.\n'
+                                  'Bitte in Maske "Optionen" korrigieren')
+                return False
 
         pathfull = Path(QKan.config.videoPathCurrent)
-        if QKan.config.videopath != '':
-            pathroot = Path(QKan.config.videopath)
-            self.ordner_video = pathfull.relative_to(pathroot)
+        if QKan.config.videoRootPath != '':
+            pathroot = Path(QKan.config.videoRootPath)
+            try:
+                self.ordner_video = f'{pathfull.relative_to(pathroot)}'
+            except ValueError as err:
+                logger.error_user('Der Wurzelpfad zu den Videos passt nicht zum ausgewählten Verzeichnis.\n'
+                                  'Bitte in Maske "Optionen" korrigieren')
+                return False
 
         # Create progress bar
         self.progress_bar = QProgressBar(self.iface.messageBar())

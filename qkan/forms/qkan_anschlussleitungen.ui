@@ -526,10 +526,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profil der Haltung gem. HE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profil der Anschlussleitung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Profil der Haltung gem. HE</string>
+      <string>Profil der Anschlussleitung</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -792,25 +792,6 @@
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>120</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Material</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_24">
-     <property name="geometry">
-      <rect>
-       <x>330</x>
        <y>180</y>
        <width>101</width>
        <height>21</height>
@@ -823,26 +804,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Profilauskleidung</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_25">
-     <property name="geometry">
-      <rect>
-       <x>330</x>
-       <y>150</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Tahoma</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Innenmaterial</string>
+      <string>Material</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="aussendurchmesser">
@@ -894,7 +856,7 @@
      <property name="geometry">
       <rect>
        <x>470</x>
-       <y>120</y>
+       <y>180</y>
        <width>151</width>
        <height>20</height>
       </rect>
@@ -964,38 +926,6 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="innenmaterial">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>150</y>
-       <width>151</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Innenmaterial&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Innenmaterial</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="profilauskleidung">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>180</y>
-       <width>151</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profilauskleidung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="statusTip">
-      <string>Profilauskleidung</string>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="baujahr">
      <property name="geometry">
       <rect>
@@ -1010,6 +940,47 @@
      </property>
      <property name="statusTip">
       <string>Baujahr</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="haltnam_2">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>120</y>
+       <width>151</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltung, an die die HA-Leitung angeschlossen ist&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="statusTip">
+      <string>Haltung, an die die HA-Leitung angeschlossen ist</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_52">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>120</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>angeschlossen an</string>
      </property>
     </widget>
    </widget>

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>706</width>
-    <height>528</height>
+    <width>650</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -29,10 +29,10 @@
    <string>Schacht</string>
   </property>
   <property name="toolTip">
-   <string/>
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Besondere Lage im Kanalnetz z.B. Anfangsschacht&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
   <property name="statusTip">
-   <string/>
+   <string>Besondere Lage im Kanalnetz z.B. Anfangsschacht</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label">
@@ -40,7 +40,7 @@
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>101</width>
+      <width>111</width>
       <height>16</height>
      </rect>
     </property>
@@ -59,7 +59,7 @@
    <widget class="QLabel" name="label_14">
     <property name="geometry">
      <rect>
-      <x>331</x>
+      <x>330</x>
       <y>260</y>
       <width>81</width>
       <height>16</height>
@@ -128,10 +128,10 @@
     <widget class="QComboBox" name="teilgebiet">
      <property name="geometry">
       <rect>
-       <x>119</x>
+       <x>120</x>
        <y>30</y>
        <width>151</width>
-       <height>20</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -141,10 +141,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zuordnung zu definiertem Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Zuordnung zu definiertem Teilgebiet</string>
+      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -169,16 +169,16 @@
       <string>Teilgebiet</string>
      </property>
      <property name="buddy">
-      <cstring>simstatus</cstring>
+      <cstring>teilgebiet</cstring>
      </property>
     </widget>
     <widget class="QComboBox" name="simstatus">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>120</y>
+       <y>121</y>
        <width>151</width>
-       <height>22</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -201,9 +201,9 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>150</y>
+       <y>152</y>
        <width>151</width>
-       <height>23</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="font">
@@ -259,6 +259,9 @@
      <property name="text">
       <string>Erstelldatum</string>
      </property>
+     <property name="buddy">
+      <cstring>createdat</cstring>
+     </property>
     </widget>
     <widget class="QLabel" name="label_17">
      <property name="geometry">
@@ -279,16 +282,16 @@
       <string>Knotentyp</string>
      </property>
      <property name="buddy">
-      <cstring>simstatus</cstring>
+      <cstring>knotentyp</cstring>
      </property>
     </widget>
     <widget class="QComboBox" name="knotentyp">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>60</y>
+       <y>61</y>
        <width>151</width>
-       <height>22</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -314,16 +317,16 @@
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auslasstyp gem. HYSTEM-EXTRAN (z.B.: Frei, Normal, Konstant etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Auslasstyp gem. HYSTEM-EXTRAN (z.B.: Frei, Normal, Konstant etc.)</string>
      </property>
      <property name="text">
       <string>Auslasstyp</string>
      </property>
      <property name="buddy">
-      <cstring>simstatus</cstring>
+      <cstring>auslasstyp</cstring>
      </property>
     </widget>
     <widget class="QComboBox" name="auslasstyp">
@@ -332,14 +335,14 @@
        <x>120</x>
        <y>90</y>
        <width>151</width>
-       <height>22</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auslasstyp (z.B. frei, normal, konstant, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auslasstyp gem. HYSTEM-EXTRAN (z.B.: Frei, Normal, Konstant etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Auslasstyp (z.B. frei, normal, konstant, etc.)</string>
+      <string>Auslasstyp gem. HYSTEM-EXTRAN (z.B.: Frei, Normal, Konstant etc.)</string>
      </property>
     </widget>
    </widget>
@@ -427,10 +430,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Höhe der Sohle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Höhe der Sohle</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_11">
@@ -525,10 +528,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;i.d.R. Geländehöhe&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Höhe des Kanaldeckels (meist gleich Geländehöhe)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>i.d.R. Geländehöhe</string>
+      <string>Höhe des Kanaldeckels (meist gleich Geländehöhe)</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="durchm">
@@ -547,10 +550,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Standard-Durchmesser nach DIN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Standard-Durchmesser nach DIN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -689,10 +692,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wenn Druckdeckel vorhanden sind auswählen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Wenn Druckdeckel vorhanden sind auswählen.</string>
      </property>
      <property name="text">
       <string/>
@@ -758,10 +761,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Straßenname&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Straßenname</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -850,10 +853,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baujahr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Baujahr</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="eigentum">
@@ -866,10 +869,10 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eigentürmer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Eigentürmer</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_16">
@@ -914,7 +917,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>706</width>
+     <width>650</width>
      <height>22</height>
     </rect>
    </property>

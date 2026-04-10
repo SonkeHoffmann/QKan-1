@@ -45,7 +45,7 @@ class ShowVideo(QDialog):
         self.showschaedencolumns = 100
         #self.showlist()
 
-        ordner = QKan.config.videopath
+        ordner = QKan.config.videoRootPath
         get_database_QKan()
         with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
 
@@ -90,7 +90,7 @@ class ShowVideo(QDialog):
 
     def show_panoramo(self):
 
-        ordner = QKan.config.videopath
+        ordner = QKan.config.videoRootPath
 
         get_database_QKan()
         with DBConnection(dbname=QKan.config.database.qkan) as db_qkan:
@@ -120,7 +120,7 @@ class ShowVideo(QDialog):
                 os.system(f"xdg-open '{video}'")
 
     def show_bild(self):
-        ordner = QKan.config.fotopath
+        ordner = QKan.config.fotoRootPath
 
         # Bild laden
         bild = self.bild_ordner

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>548</width>
-    <height>708</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>720</height>
+    <height>750</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -55,12 +55,18 @@
         <x>0</x>
         <y>0</y>
         <width>546</width>
-        <height>660</height>
+        <height>710</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QGroupBox" name="groupBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -75,6 +81,7 @@
          </property>
          <property name="font">
           <font>
+           <family>Tahoma</family>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -116,6 +123,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -301,6 +309,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -330,6 +339,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="gb_projectfile">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -344,6 +359,7 @@
          </property>
          <property name="font">
           <font>
+           <family>Tahoma</family>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -385,6 +401,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -414,6 +431,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -428,6 +451,7 @@
          </property>
          <property name="font">
           <font>
+           <family>Tahoma</family>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -449,6 +473,7 @@
            <widget class="QCheckBox" name="cb_impStamm">
             <property name="font">
              <font>
+              <family>Tahoma</family>
               <weight>50</weight>
               <bold>false</bold>
              </font>
@@ -462,6 +487,7 @@
            <widget class="QCheckBox" name="cb_impAnschluesse">
             <property name="font">
              <font>
+              <family>Tahoma</family>
               <weight>50</weight>
               <bold>false</bold>
              </font>
@@ -477,6 +503,7 @@
              <widget class="QCheckBox" name="cb_zustand">
               <property name="font">
                <font>
+                <family>Tahoma</family>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -490,6 +517,7 @@
              <widget class="QCheckBox" name="cb_teilbefahrung">
               <property name="font">
                <font>
+                <family>Tahoma</family>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -505,21 +533,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_5">
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>130</height>
+           <height>170</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>120</height>
+           <height>170</height>
           </size>
          </property>
          <property name="font">
           <font>
+           <family>Tahoma</family>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -536,9 +571,12 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
+         <layout class="QVBoxLayout" name="verticalLayout_8" stretch="0,0,0,0,0,0">
+          <property name="topMargin">
+           <number>9</number>
+          </property>
           <item>
-           <widget class="QLabel" name="label_3">
+           <widget class="QLabel" name="label_9">
             <property name="font">
              <font>
               <family>Tahoma</family>
@@ -555,24 +593,28 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QLineEdit" name="tf_ordnerbild">
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>20</height>
+                <height>0</height>
                </size>
               </property>
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vollständiger Pfad zu den Fotos der TV-Befahrungen. In der Datenbank wird nur der Teil relativ zum Hauptpfad gespeichert.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Fotos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -582,7 +624,10 @@
             <item>
              <widget class="QPushButton" name="pb_ordnerbild">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ITWH-Quelldatenbank mit Kanalnetzdaten auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zu den Fotos auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Fotos auswählen</string>
               </property>
               <property name="text">
                <string>...</string>
@@ -592,7 +637,35 @@
            </layout>
           </item>
           <item>
-           <widget class="QLabel" name="label_6">
+           <widget class="QLabel" name="lf_rootFotos">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &amp;quot;Optionen&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &quot;Optionen&quot;</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(128, 128, 128);</string>
+            </property>
+            <property name="text">
+             <string>Hauptpfad: </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_10">
             <property name="font">
              <font>
               <family>Tahoma</family>
@@ -609,7 +682,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
              <widget class="QLineEdit" name="tf_ordnervideo">
               <property name="minimumSize">
@@ -621,12 +694,16 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vollständiger Pfad zu den Videos der TV-Befahrungen. In der Datenbank wird nur der Teil relativ zum Hauptpfad gespeichert.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Videos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -636,7 +713,10 @@
             <item>
              <widget class="QPushButton" name="pb_ordnervideo">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ITWH-Quelldatenbank mit Kanalnetzdaten auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zu den Videos auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Videos auswählen</string>
               </property>
               <property name="text">
                <string>...</string>
@@ -644,6 +724,34 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="lf_rootVideos">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &amp;quot;Optionen&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &quot;Optionen&quot;</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(128, 128, 128);</string>
+            </property>
+            <property name="text">
+             <string>Hauptpfad: </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

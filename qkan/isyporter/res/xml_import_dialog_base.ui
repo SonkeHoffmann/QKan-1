@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>794</height>
+    <height>815</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -55,7 +55,7 @@
         <x>0</x>
         <y>0</y>
         <width>548</width>
-        <height>746</height>
+        <height>775</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -116,6 +116,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -307,6 +308,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -391,6 +393,7 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
@@ -515,13 +518,13 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>130</height>
+           <height>170</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>120</height>
+           <height>170</height>
           </size>
          </property>
          <property name="font">
@@ -567,12 +570,16 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vollständiger Pfad zu den Fotos der TV-Befahrungen. In der Datenbank wird nur der Teil relativ zum Hauptpfad gespeichert.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Fotos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -582,7 +589,10 @@
             <item>
              <widget class="QPushButton" name="pb_ordnerbild">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ITWH-Quelldatenbank mit Kanalnetzdaten auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zu den Fotos auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Fotos auswählen</string>
               </property>
               <property name="text">
                <string>...</string>
@@ -590,6 +600,34 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="lf_rootFotos">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &amp;quot;Optionen&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &quot;Optionen&quot;</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(128, 128, 128);</string>
+            </property>
+            <property name="text">
+             <string>Hauptpfad: </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_6">
@@ -615,12 +653,16 @@
               <property name="font">
                <font>
                 <family>Tahoma</family>
+                <pointsize>10</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vollständiger Pfad zu den Videos der TV-Befahrungen. In der Datenbank wird nur der Teil relativ zum Hauptpfad gespeichert.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Videos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -630,7 +672,10 @@
             <item>
              <widget class="QPushButton" name="pb_ordnervideo">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ITWH-Quelldatenbank mit Kanalnetzdaten auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zu den Videos auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Videos auswählen</string>
               </property>
               <property name="text">
                <string>...</string>
@@ -638,6 +683,34 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="lf_rootVideos">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &amp;quot;Optionen&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Hauptpfad zu den Verzeichnissen mit allen Fotos. Bearbeitung über QKan-Menü &quot;Optionen&quot;</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(128, 128, 128);</string>
+            </property>
+            <property name="text">
+             <string>Hauptpfad: </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -653,13 +726,13 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>80</height>
+           <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>80</height>
+           <height>60</height>
           </size>
          </property>
          <property name="font">

@@ -325,6 +325,8 @@ class ImportTask:
 
         iface = QKan.instance.iface
 
+
+
         # Create progress bar
         self.progress_bar = QProgressBar(iface.messageBar())
         self.progress_bar.setRange(0, 100)

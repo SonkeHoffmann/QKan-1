@@ -147,6 +147,20 @@ def _create_yml_spatialite(db_qkan: DBConnection):
             objattr = ''
 
         # ---------------------------------------------------------------------------------------------------------------------
+        # Synchronisationstabelle löschen
+        sqls[f'sync_drop_{tabnam}'] = f'''DROP TABLE IF EXISTS sync_{tabnam};'''
+
+        # logger.debug(f'sync_create_{tabnam}:\n')
+        # logger.debug(sqls[f'sync_create_{tabnam}'])
+
+        if gobj is not None:
+            if ngeo is None:
+                logger.error_code(f'Fehler in Tabelle {tabnam}: {gobj=}, aber ngeo = None')
+                raise QkanError
+            typ = typlis[ngeo]
+            sqls[f'sync_drop_{tabnam}_geom'] = f"SELECT DiscardGeometryColumn('sync_{tabnam}', 'geom');"
+
+        # ---------------------------------------------------------------------------------------------------------------------
         # Synchronisationstabelle erstellen
         sqls[f'sync_create_{tabnam}'] = f'''        CREATE TABLE IF NOT EXISTS sync_{tabnam} (
             pk INTEGER PRIMARY KEY,
@@ -186,12 +200,7 @@ def _create_yml_spatialite(db_qkan: DBConnection):
                   GROUP BY t.{objnam}
                   HAVING count() = 1
               ) AS ex
-              LEFT JOIN (
-                  SELECT *
-                  FROM main.{tabnam} AS t
-                  GROUP BY t.{objnam}
-                  HAVING count() = 1
-              ) AS be
+              LEFT JOIN main.{tabnam} AS be
               ON be.{objnam} = ex.{objnam}
               WHERE be.pk IS NULL;'''
 
@@ -210,12 +219,7 @@ def _create_yml_spatialite(db_qkan: DBConnection):
                 GROUP BY t.{objnam}
                 HAVING count() = 1
             ) AS be
-            LEFT JOIN (
-                SELECT * 
-                FROM ext.{tabnam} AS t
-                GROUP BY t.{objnam}
-                HAVING count() = 1
-            ) AS ex
+            LEFT JOIN ext.{tabnam} AS ex
             ON be.{objnam} = ex.{objnam}
             WHERE ex.pk IS NULL;'''
 

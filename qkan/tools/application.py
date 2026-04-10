@@ -351,6 +351,9 @@ class QKanTools(QKanPlugin):
         # elif QKan.config.database.type == enums.QKanDBChoice.POSTGIS:
         # self.dlgop.rb_postgis.setChecked(True)
 
+        self.dlgop.tf_fotopath.setText(QKan.config.fotoRootPath)
+        self.dlgop.tf_videopath.setText(QKan.config.videoRootPath)
+
         # noinspection PyCallByClass,PyArgumentList
         self.dlgop.qsw_epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
 
@@ -424,8 +427,8 @@ class QKanTools(QKanPlugin):
             QKan.config.mindestflaeche = float(self.dlgop.tf_mindestflaeche.text())
             QKan.config.logeditor = self.dlgop.tf_logeditor.text().strip()
 
-            QKan.config.fotopath = self.dlgop.tf_fotopath.text()
-            QKan.config.videopath = self.dlgop.tf_videopath.text()
+            QKan.config.fotoRootPath = self.dlgop.tf_fotopath.text()
+            QKan.config.videoRootPath = self.dlgop.tf_videopath.text()
 
             print(self.dlgop.tf_videopath.text())
             print(type(self.dlgop.tf_videopath.text()))
@@ -1024,8 +1027,8 @@ class QKanTools(QKanPlugin):
 
     def run_filepath(self) -> None:
 
-        self.dlgfp.lineEdit.setText(QKan.config.xml.ordner_video)
-        self.dlgfp.lineEdit_2.setText(QKan.config.xml.ordner_bild)
+        self.dlgfp.lineEdit.setText(QKan.config.videoPathCurrent)
+        self.dlgfp.lineEdit_2.setText(QKan.config.fotoPathCurrent)
 
         # show the dialog
         self.dlgfp.show()
@@ -1047,8 +1050,8 @@ class QKanTools(QKanPlugin):
             ausw_schacht = self.dlgfp.checkBox_2.isChecked()
             ausw_leitung = self.dlgfp.checkBox_3.isChecked()
 
-            QKan.config.videopath = videopath
-            QKan.config.fotopath = fotopath
+            QKan.config.videoRootPath = videopath
+            QKan.config.fotoRootPath = fotopath
 
             QKan.config.save()
 

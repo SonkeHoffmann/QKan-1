@@ -176,10 +176,10 @@ Haltungsanfang</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sohlhöhe am Haltungsanfang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Sohlhöhe am Haltungsanfang</string>
      </property>
      <property name="inputMask">
       <string/>
@@ -226,10 +226,10 @@ Haltungsanfang</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sohlhöhe am Haltungsende&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Sohlhöhe am Haltungsende</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -492,10 +492,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Haltungslänge&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>vorgegebene Haltungslänge, falls diese nicht automatisch berechnet werden soll</string>
      </property>
     </widget>
     <widget class="QComboBox" name="entwart">
@@ -545,10 +545,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profil der Haltung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Profil der Haltung</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -791,10 +791,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Außendurchmesser&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Außendurchmesser</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_62">
@@ -832,10 +832,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profilauskleidung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Profilauskleidung</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_63">
@@ -873,10 +873,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Innenmaterial&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Innenmaterial</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="druckdicht">
@@ -895,10 +895,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Druckleitung&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Druckleitung</string>
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
@@ -923,7 +923,7 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltung mit Regenwasseranschlüssen. Wird bei automatischer Erzeugung der Haltungsflächen berücksichtigt&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Häkchen setzen, wenn die Haltung Regenwasseranschlüsse aufweist&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Haltung mit Regenwasseranschlüssen. Wird bei automatischer Erzeugung der Haltungsflächen berücksichtigt&lt;/p&gt;&lt;p&gt;Häkchen setzen, wenn die Haltung Regenwasseranschlüsse aufweist&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
       <string>Häkchen, wenn Haltung Regenwasseranschlüsse aufweist. Wird bei automatischer Erzeugung der Haltungsflächen berücksichtigt.</string>
@@ -970,10 +970,10 @@ Haltungsende</string>
       </rect>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Material des Schachtes (z.B. Beton, Gussstahl etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Material des Schachtes (z.B. Beton, Gussstahl etc.)</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_66">
@@ -1043,10 +1043,10 @@ Haltungsende</string>
       </rect>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Straßenname&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Straßenname</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="baujahr">
@@ -1059,10 +1059,10 @@ Haltungsende</string>
       </rect>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baujahr&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Baujahr</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="eigentum">
@@ -1075,10 +1075,10 @@ Haltungsende</string>
       </rect>
      </property>
      <property name="toolTip">
-      <string/>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eigentümer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string/>
+      <string>Eigentümer</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -1186,10 +1186,10 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri'; font-size:12pt; color:#000000;&quot;&gt;Zuordnung zu definiertem Teilgebiet&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Zuordnung zu definiertem Teilgebiet</string>
+      <string>zur Zuordnung auf ein selbstständig festgelegtes Teilgebiet</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -1233,7 +1233,7 @@ Haltungsende</string>
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif';&quot;&gt;aktueller Status (z.B. vorhanden, in Planung etc.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif'; font-size:11pt;&quot;&gt;aktueller Status (z.B. vorhanden, in Planung etc.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
       <string>aktueller Status (z.B. vorhanden, in Planung etc.)</string>

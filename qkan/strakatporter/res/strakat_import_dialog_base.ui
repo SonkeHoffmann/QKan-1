@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>681</width>
-    <height>496</height>
+    <height>547</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>520</height>
+    <height>550</height>
    </size>
   </property>
   <property name="font">
@@ -55,7 +55,7 @@
         <x>0</x>
         <y>0</y>
         <width>679</width>
-        <height>456</height>
+        <height>507</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -706,7 +706,10 @@ der Schachtnamen</string>
                </font>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vollständiger Pfad zu den Fotos der TV-Befahrungen. In der Datenbank wird nur der Teil relativ zum Hauptpfad gespeichert.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Fotos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -716,7 +719,13 @@ der Schachtnamen</string>
             <item>
              <widget class="QPushButton" name="pb_ordnerbild">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ITWH-Quelldatenbank mit Kanalnetzdaten auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zu den Fotos auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Fotos auswählen</string>
+              </property>
+              <property name="accessibleName">
+               <string/>
               </property>
               <property name="text">
                <string>...</string>
@@ -797,7 +806,10 @@ der Schachtnamen</string>
                </font>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quelldatenbank mit Kanaldaten aus HYSTEM-EXTRAN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vollständiger Pfad zu den Videos der TV-Befahrungen. In der Datenbank wird nur der Teil relativ zum Hauptpfad gespeichert.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Videos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -807,7 +819,10 @@ der Schachtnamen</string>
             <item>
              <widget class="QPushButton" name="pb_ordnervideo">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ITWH-Quelldatenbank mit Kanalnetzdaten auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad zu den Videos auswählen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string>Pfad zu den Videos auswählen</string>
               </property>
               <property name="text">
                <string>...</string>
