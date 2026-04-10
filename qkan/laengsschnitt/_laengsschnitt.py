@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 
 import matplotlib.animation as animation
 import matplotlib.dates as mdates
@@ -33,6 +34,7 @@ class LaengsTask:
                  massstab, features, db_erg, ausgabe, max, label_4,
                  pushButton_4, horizontalSlider_3, geschw_2, anf):
         self.db_qkan = db_qkan
+        self.db_qkan.loadmodule('laengsschnitt')
         self.fig = fig
         self.canv = canv
         self.fig_2 = fig_2
@@ -67,6 +69,9 @@ class LaengsTask:
         self.geschw = self.geschw_2.value()*10
         self.running = False
         self.timer = QTimer()
+
+    def _query(self, query_name: str, **kwargs: Any) -> str:
+        return self.db_qkan.load_query(query_name, **kwargs)
 
     def run(self) -> bool:
         self.zeichnen()
@@ -217,34 +222,7 @@ class LaengsTask:
         z_sohle_h = []
 
         sel = '), ('.join([f"'{num}', {el}" for el, num in enumerate(route[1])])         # sel = ('15600000-45', 0), ('15600000-50', 1), ...)
-        sql = f"""
-            SELECT
-                h.schoben,
-                h.hoehe,
-                h.schunten,
-                h.laenge,
-                schob.deckelhoehe,
-                schob.sohlhoehe,
-                schun.deckelhoehe,
-                schun.sohlhoehe,
-                h.entwart,
-                h.haltnam,
-                coalesce(h.breite, h.hoehe) AS breite,
-                h.material,
-                h.strasse,
-                h.haltungstyp,
-                h.sohleoben,
-                h.sohleunten,
-                schob.knotentyp,
-                schun.knotentyp,
-                schob.entwart,
-                schun.entwart,
-                sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as laenge_sum
-            FROM haltungen AS h
-            INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
-            INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
-            INNER JOIN (VALUES ({sel})) AS sel ON sel.column1 = h.haltnam
-            """
+        sql = self._query("laengsschnitt_zeichnen_route", sel_values=sel)
 
         if not self.db_qkan.sql(sql, "laengsschnitt.zeichnen.2"):
             #logger.error(f"{__file__}: Fehler in laengsschnitt.zeichnen Datenbankzugriff nicht möglich")
@@ -360,7 +338,7 @@ class LaengsTask:
             schaechte = {}
             if table == 'haltungen':
                 for haltung in liste2:
-                    sql = 'SELECT wasserstandoben,wasserstandunten FROM lau_max_el WHERE KANTE=?'
+                    sql = self._query("erg_lau_max_el_by_kante")
                     data = (haltung,)
 
                     try:
@@ -383,7 +361,7 @@ class LaengsTask:
             if table == 'schaechte':
 
                 for schacht in liste:
-                    sql = 'SELECT wasserstand FROM lau_max_s WHERE KNOTEN=?'
+                    sql = self._query("erg_lau_max_s_by_knoten")
                     data = (schacht,)
 
                     try:
@@ -941,36 +919,7 @@ class LaengsTask:
 
         sel = '), ('.join(
             [f"'{num}', {el}" for el, num in enumerate(route[1])])  # sel = ('15600000-45', 0), ('15600000-50', 1), ...)
-        sql = f"""
-                    SELECT
-                        h.schoben,
-                        h.hoehe,
-                        h.schunten,
-                        h.laenge,
-                        schob.deckelhoehe,
-                        schob.sohlhoehe,
-                        schun.deckelhoehe,
-                        schun.sohlhoehe,
-                        h.entwart,
-                        h.haltnam,
-                        coalesce(h.breite, h.hoehe) AS breite,
-                        h.material,
-                        h.strasse,
-                        h.haltungstyp,
-                        h.sohleoben,
-                        h.sohleunten,
-                        schob.knotentyp,
-                        schun.knotentyp,
-                        schob.entwart,
-                        schun.entwart,
-                        sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as laenge_sum,
-                        schob.durchm,
-                        schun.durchm
-                    FROM haltungen AS h
-                    INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
-                    INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
-                    INNER JOIN (VALUES ({sel})) AS sel ON sel.column1 = h.haltnam
-                    """
+        sql = self._query("laengsschnitt_cad_route", sel_values=sel)
 
         if not self.db_qkan.sql(sql, "laengsschnitt.zeichnen.2"):
             #logger.error(f"{__file__}: Fehler in laengsschnitt.zeichnen.2: Datenbankzugriff nicht möglich")
@@ -1168,7 +1117,7 @@ class LaengsTask:
             schaechte = {}
             if table == 'haltungen':
                 for haltung in liste2:
-                    sql = 'SELECT wasserstandoben,wasserstandunten FROM lau_max_el WHERE KANTE=?'
+                    sql = self._query("erg_lau_max_el_by_kante")
                     data = (haltung,)
 
                     try:
@@ -1190,7 +1139,7 @@ class LaengsTask:
 
             if table == 'schaechte':
                 for schacht in liste:
-                    sql = 'SELECT wasserstand FROM lau_max_s WHERE KNOTEN=?'
+                    sql = self._query("erg_lau_max_s_by_knoten")
                     data = (schacht,)
 
                     try:
@@ -1745,19 +1694,7 @@ class LaengsTask:
 
         if table == 'schaechte':
             for schacht in liste:
-                sql = '''SELECT es.zeitpunkt AS zeitpunkt,
-                          es.zufluss AS zufluss,
-                          es.wasserstand AS wasserstand,
-                          es.durchfluss AS durchfluss,
-                          es.wasserstand - kn.Sohlhoehe AS wassertiefe  
-                   FROM LAU_GL_S AS es
-                   INNER JOIN (
-                     SELECT Name, Sohlhoehe FROM Schacht UNION
-                     SELECT Name, Sohlhoehe FROM Speicherschacht UNION
-                     SELECT Name, Sohlhoehe FROM Auslass
-                   ) AS kn
-                   ON es.Knoten = kn.Name
-                   WHERE es.Knoten=?'''
+                sql = self._query("erg_ganglinie_schacht")
                 data = (schacht,)
 
                 try:
@@ -1791,7 +1728,7 @@ class LaengsTask:
 
         if table == 'haltungen':
             for haltung in liste:
-                sql='''SELECT zeitpunkt,auslastung,durchfluss,geschwindigkeit,wasserstand AS wassertiefe FROM lau_gl_el WHERE KANTE=?'''
+                sql = self._query("erg_ganglinie_haltung")
                 data = (haltung,)
 
                 try:
@@ -2060,34 +1997,7 @@ class LaengsTask:
 
         sel = '), ('.join(
             [f"'{num}', {el}" for el, num in enumerate(route[1])])  # sel = ('15600000-45', 0), ('15600000-50', 1), ...)
-        sql = f"""
-                    SELECT
-                        h.schoben,
-                        h.hoehe,
-                        h.schunten,
-                        h.laenge,
-                        schob.deckelhoehe,
-                        schob.sohlhoehe,
-                        schun.deckelhoehe,
-                        schun.sohlhoehe,
-                        h.entwart,
-                        h.haltnam,
-                        h.breite,
-                        h.material,
-                        h.strasse,
-                        h.haltungstyp,
-                        h.sohleoben,
-                        h.sohleunten,
-                        schob.knotentyp,
-                        schun.knotentyp,
-                        schob.entwart,
-                        schun.entwart,
-                        sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as laenge_sum
-                    FROM haltungen AS h
-                    INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
-                    INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
-                    INNER JOIN (VALUES ({sel})) AS sel ON sel.column1 = h.haltnam
-                    """
+        sql = self._query("laengsschnitt_laengs_route", sel_values=sel)
 
         if not self.db_qkan.sql(sql, "laengsschnitt.zeichnen.4"):
             #logger.error(f"{__file__}: Fehler in laengsschnitt.zeichnen.4: Datenbankzugriff nicht möglich")
@@ -2209,7 +2119,7 @@ class LaengsTask:
             x_deckel_neu = x_sohle2[::2]
 
             for haltung, xkoordinate_o, xkoordinate_u in zip(liste2, x_deckel_neu[0::2], x_deckel_neu[1::2]):
-                sql = 'SELECT wasserstandoben,wasserstandunten,zeitpunkt FROM lau_gl_el WHERE KANTE=?'
+                sql = self._query("erg_lau_gl_el_by_kante")
                 data = (haltung,)
 
                 try:
@@ -2366,7 +2276,7 @@ class LaengsTask:
 
 
             for schacht, xkoordinate in zip(liste, x_deckel_neu):
-                sql = 'SELECT wasserstand,zeitpunkt FROM lau_gl_s WHERE KNOTEN=?'
+                sql = self._query("erg_lau_gl_s_by_knoten")
                 data = (schacht,)
 
                 try:

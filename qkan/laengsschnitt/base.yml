@@ -1,0 +1,134 @@
+params: {}
+
+queries:
+  laengsschnitt_zeichnen_route: |
+    SELECT
+        h.schoben,
+        h.hoehe,
+        h.schunten,
+        h.laenge,
+        schob.deckelhoehe,
+        schob.sohlhoehe,
+        schun.deckelhoehe,
+        schun.sohlhoehe,
+        h.entwart,
+        h.haltnam,
+        coalesce(h.breite, h.hoehe) AS breite,
+        h.material,
+        h.strasse,
+        h.haltungstyp,
+        h.sohleoben,
+        h.sohleunten,
+        schob.knotentyp,
+        schun.knotentyp,
+        schob.entwart,
+        schun.entwart,
+        sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS laenge_sum
+    FROM haltungen AS h
+    INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
+    INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
+    INNER JOIN (VALUES ({sel_values})) AS sel ON sel.column1 = h.haltnam
+
+  laengsschnitt_cad_route: |
+    SELECT
+        h.schoben,
+        h.hoehe,
+        h.schunten,
+        h.laenge,
+        schob.deckelhoehe,
+        schob.sohlhoehe,
+        schun.deckelhoehe,
+        schun.sohlhoehe,
+        h.entwart,
+        h.haltnam,
+        coalesce(h.breite, h.hoehe) AS breite,
+        h.material,
+        h.strasse,
+        h.haltungstyp,
+        h.sohleoben,
+        h.sohleunten,
+        schob.knotentyp,
+        schun.knotentyp,
+        schob.entwart,
+        schun.entwart,
+        sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS laenge_sum,
+        schob.durchm,
+        schun.durchm
+    FROM haltungen AS h
+    INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
+    INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
+    INNER JOIN (VALUES ({sel_values})) AS sel ON sel.column1 = h.haltnam
+
+  laengsschnitt_laengs_route: |
+    SELECT
+        h.schoben,
+        h.hoehe,
+        h.schunten,
+        h.laenge,
+        schob.deckelhoehe,
+        schob.sohlhoehe,
+        schun.deckelhoehe,
+        schun.sohlhoehe,
+        h.entwart,
+        h.haltnam,
+        h.breite,
+        h.material,
+        h.strasse,
+        h.haltungstyp,
+        h.sohleoben,
+        h.sohleunten,
+        schob.knotentyp,
+        schun.knotentyp,
+        schob.entwart,
+        schun.entwart,
+        sum(h.laenge) OVER (ORDER BY sel.column2 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS laenge_sum
+    FROM haltungen AS h
+    INNER JOIN schaechte AS schob ON schob.schnam = h.schoben
+    INNER JOIN schaechte AS schun ON schun.schnam = h.schunten
+    INNER JOIN (VALUES ({sel_values})) AS sel ON sel.column1 = h.haltnam
+
+  erg_lau_max_el_by_kante: |
+    SELECT wasserstandoben, wasserstandunten
+    FROM lau_max_el
+    WHERE KANTE = ?
+
+  erg_lau_max_s_by_knoten: |
+    SELECT wasserstand
+    FROM lau_max_s
+    WHERE KNOTEN = ?
+
+  erg_ganglinie_schacht: |
+    SELECT
+        es.zeitpunkt AS zeitpunkt,
+        es.zufluss AS zufluss,
+        es.wasserstand AS wasserstand,
+        es.durchfluss AS durchfluss,
+        es.wasserstand - kn.Sohlhoehe AS wassertiefe
+    FROM LAU_GL_S AS es
+    INNER JOIN (
+        SELECT Name, Sohlhoehe FROM Schacht
+        UNION
+        SELECT Name, Sohlhoehe FROM Speicherschacht
+        UNION
+        SELECT Name, Sohlhoehe FROM Auslass
+    ) AS kn ON es.Knoten = kn.Name
+    WHERE es.Knoten = ?
+
+  erg_ganglinie_haltung: |
+    SELECT zeitpunkt, auslastung, durchfluss, geschwindigkeit, wasserstand AS wassertiefe
+    FROM lau_gl_el
+    WHERE KANTE = ?
+
+  erg_lau_gl_el_by_kante: |
+    SELECT wasserstandoben, wasserstandunten, zeitpunkt
+    FROM lau_gl_el
+    WHERE KANTE = ?
+
+  erg_lau_gl_s_by_knoten: |
+    SELECT wasserstand, zeitpunkt
+    FROM lau_gl_s
+    WHERE KNOTEN = ?
+
+  dijkstra_haltungen_netz: |
+    SELECT haltnam, schoben, schunten, laenge
+    FROM haltungen

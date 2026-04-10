@@ -120,11 +120,10 @@ def find_route(qkan_db: DBConnection, schachtauswahl):
         )
         return None
 
+    qkan_db.loadmodule('laengsschnitt')
+
     # Kanaldaten lesen
-    sql = """
-            SELECT haltnam, schoben, schunten, laenge
-            FROM haltungen
-        """
+    sql = qkan_db.load_query('dijkstra_haltungen_netz')
     qkan_db.sql(sql)
     netz = qkan_db.fetchall()
 
