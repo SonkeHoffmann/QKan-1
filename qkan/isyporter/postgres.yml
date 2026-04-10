@@ -1,0 +1,12 @@
+params:
+  x_func: ST_X
+  y_func: ST_Y
+  pointn_func: ST_PointN
+  intersects_func: ST_Intersects
+  haltungen_end_index_expr: ST_NumPoints(haltungen.geom)
+  anschlussleitungen_end_index_expr: ST_NumPoints(anschlussleitungen.geom)
+  haltungen_untersucht_end_index_expr: ST_NumPoints(haltungen_untersucht.geom)
+  haltungen_untersucht_bewertet_end_index_expr: ST_NumPoints(haltungen_untersucht_bewertet.geom)
+  haltungen_untersucht_substanz_end_index_expr: ST_NumPoints(haltungen_untersucht_substanz.geom)
+  anschlussleitungen_untersucht_end_index_expr: ST_NumPoints(anschlussleitungen_untersucht.geom)
+  anschlussleitungen_untersucht_bewertet_end_index_expr: ST_NumPoints(anschlussleitungen_untersucht_bewertet.geom)

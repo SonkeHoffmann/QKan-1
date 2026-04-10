@@ -106,6 +106,7 @@ class DBConnection:
 
         self.sqlnam = None
         self.sqls = {}
+        self.sqlparams = {}
 
         self._connect()
 
@@ -133,6 +134,7 @@ class DBConnection:
         # Bei Wechsel des Datenbanktyps QKan.sqls zurücksetzen
         if QKan.dbtype != self.dbtype:
             QKan.sqls = {}
+            setattr(QKan, 'sqlparams', {})
         # Queries zu diesem Modul laden, wenn noch nicht geschehen oder Modul geändert und Modul-Sqls
         # noch nicht gelesen
         if not QKan.dbtype or not QKan.sqls.get(module):
@@ -148,10 +150,65 @@ class DBConnection:
                 logger.error_code(f'{self.__class__.__name__}: Datenbanktyp {QKan.dbtype} nicht zulässig!')
                 raise QkanDbError
 
+            basefilename = os.path.join(pluginDirectory("qkan"), module, 'base.yml')
+
+            def _read_yaml(path: str) -> Tuple[Dict[str, str], Dict[str, str]]:
+                with open(path) as fr:
+                    loaded = yaml.load(fr.read(), Loader=yaml.BaseLoader) or {}
+
+                if not isinstance(loaded, dict):
+                    logger.error_code(
+                        f'{self.__class__.__name__}: YAML-Datei {path} hat ein ungültiges Format'
+                    )
+                    raise QkanAbortError
+
+                if 'queries' in loaded:
+                    query_dict = loaded.get('queries') or {}
+                    params_dict = loaded.get('params') or {}
+                else:
+                    query_dict = {k: v for k, v in loaded.items() if k != 'params'}
+                    params_dict = loaded.get('params') or {}
+
+                if not isinstance(query_dict, dict) or not isinstance(params_dict, dict):
+                    logger.error_code(
+                        f'{self.__class__.__name__}: YAML-Datei {path} hat ein ungültiges queries/params-Format'
+                    )
+                    raise QkanAbortError
+
+                return (
+                    {str(k): str(v) for k, v in query_dict.items()},
+                    {str(k): str(v) for k, v in params_dict.items()},
+                )
+
+            module_sqls: Dict[str, str] = {}
+            module_params: Dict[str, str] = {}
+
             try:
-                with open(sqlfilename) as fr:
-                    QKan.sqls[module] = yaml.load(fr.read(), Loader=yaml.BaseLoader)
-                logger.debug(f'{self.__class__.__name__}: SQL-Liste aus Datei {sqlfilename=} geladen')
+                if os.path.exists(basefilename):
+                    base_sqls, base_params = _read_yaml(basefilename)
+                    module_sqls |= base_sqls
+                    module_params |= base_params
+
+                if os.path.exists(sqlfilename):
+                    db_sqls, db_params = _read_yaml(sqlfilename)
+                    module_sqls |= db_sqls
+                    module_params |= db_params
+
+                if not module_sqls:
+                    logger.error_code(
+                        f'{self.__class__.__name__}: Keine SQLs für Modul {module} geladen '
+                        f'(weder {basefilename} noch {sqlfilename}).'
+                    )
+                    raise QkanAbortError
+
+                QKan.sqls[module] = module_sqls
+                if not hasattr(QKan, 'sqlparams'):
+                    setattr(QKan, 'sqlparams', {})
+                QKan.sqlparams[module] = module_params
+                logger.debug(
+                    f'{self.__class__.__name__}: SQL-Liste geladen: '
+                    f'base={basefilename}, db={sqlfilename}'
+                )
             except UnicodeDecodeError as err:
                 logger.error_code(f'{self.__class__.__name__}, Fehler {err}: '
                                   f'Yaml-Datei {sqlfilename} konnte nicht gelesen werden, '
@@ -164,6 +221,56 @@ class DBConnection:
 
         # set sqls for active module
         self.sqls |= QKan.sqls[module]
+        if hasattr(QKan, 'sqlparams'):
+            self.sqlparams |= QKan.sqlparams.get(module, {})
+
+    def load_query(
+            self,
+            query_name: str,
+            db_type: Optional[enums.QKanDBChoice] = None,
+            **params: Any,
+    ) -> str:
+        """Loads and formats a query from module YAML files.
+
+        Query templates come from base.yml and are optionally overridden by
+        sqlite.yml/postgres.yml. Format placeholders can be supplied by DB-specific
+        params in YAML and by call-specific params.
+        """
+
+        if db_type and db_type != self.dbtype:
+            logger.warning(
+                f'{self.__class__.__name__}: load_query mit {db_type=} aufgerufen, '
+                f'aktive Verbindung nutzt {self.dbtype=}.')
+
+        if query_name not in self.sqls:
+            logger.error_code(
+                f'{self.__class__.__name__}: SQL {query_name} nicht gefunden. '
+                f'geladene SQLs:\n{self.sqls}'
+            )
+            raise QkanDbError
+
+        sql_txt = self.sqls[query_name].replace('*/ ', '*/\n').strip()
+        format_params = dict(self.sqlparams)
+        format_params.update(params)
+
+        try:
+            return sql_txt.format(**format_params)
+        except KeyError as err:
+            logger.error_code(
+                f'{self.__class__.__name__}: Platzhalter {err} für SQL {query_name} '
+                f'konnte nicht aufgelöst werden. params={format_params}'
+            )
+            raise QkanDbError
+
+    def get_query(
+            self,
+            query_name: str,
+            db_type: Optional[enums.QKanDBChoice] = None,
+            **params: Any,
+    ) -> str:
+        """Backwards compatible alias for load_query()."""
+
+        return self.load_query(query_name=query_name, db_type=db_type, **params)
 
     def _connect(self) -> None:
         """Connects to SQLite3 or PostgreSAL database.

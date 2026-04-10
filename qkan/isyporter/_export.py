@@ -2,7 +2,7 @@ from datetime import date
 from pathlib import Path
 
 # noinspection PyUnresolvedReferences
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from xml.dom import minidom
 from xml.etree.ElementTree import Element, SubElement, tostring
 import xml.etree.ElementTree as ET
@@ -48,6 +48,7 @@ def SubElementText(parent: Element, name: str, text: Union[str, int]) -> Element
 class ExportTask:
     def __init__(self, db_qkan: DBConnection, export_file: str, vorlage: str, auswahl_zustand:str, selection):
         self.db_qkan = db_qkan
+        self.db_qkan.loadmodule('isyporter')
         self.export_file = export_file
         self.vorlage = vorlage
         self.auswahl_zustand = auswahl_zustand
@@ -63,6 +64,31 @@ class ExportTask:
             x = tree.xpath('namespace-uri(.)')
             self.NS = {"d": x}
 
+    @staticmethod
+    def _safe_clause(clause: str, expected_prefixes: tuple[str, ...]) -> str:
+        """Sanitize dynamic SQL suffixes assembled from internal filter logic."""
+
+        clause_clean = (clause or "").strip()
+        if not clause_clean:
+            return ""
+
+        clause_upper = clause_clean.upper()
+        if not any(clause_upper.startswith(prefix) for prefix in expected_prefixes):
+            logger.warning(
+                f"Unsichere SQL-Klausel verworfen: {clause_clean}. "
+                f"Erwartete Präfixe: {expected_prefixes}"
+            )
+            return ""
+
+        if ";" in clause_clean or "--" in clause_clean or "/*" in clause_clean:
+            logger.warning(f"Potentiell unsichere SQL-Klausel verworfen: {clause_clean}")
+            return ""
+
+        return f" {clause_clean}"
+
+    def _query(self, query_name: str, **kwargs: Any) -> str:
+        return self.db_qkan.load_query(query_name, **kwargs)
+
 
     def _export_wehre(self) -> None:
 
@@ -74,20 +100,10 @@ class ExportTask:
                 or not self.stamm
             ):
                 return
-            sql = f"""
-            SELECT
-                haltnam,
-                schoben,
-                schunten,
-                sohleunten,
-                sohleoben,
-                hoehe,
-                breite,
-                laenge,
-                simstatus,
-                kommentar
-            FROM haltungen WHERE haltungstyp = 'Wehr' {self.abfrage_h_where}
-            """
+            sql = self._query(
+                "export_wehre",
+                abfrage_h_where=self._safe_clause(self.abfrage_h_where, ("WHERE",)),
+            )
 
             if not self.db_qkan.sql(sql, "db_qkan: export_wehre"):
                 return
@@ -148,16 +164,10 @@ class ExportTask:
             ):
                 return
 
-            sql = f"""
-            SELECT
-                haltnam,
-                sohleoben,
-                schoben,
-                schunten,
-                simstatus,
-                kommentar
-            FROM haltungen WHERE haltungstyp = 'Pumpe' {self.abfrage_h_where}
-            """
+            sql = self._query(
+                "export_pumpen",
+                abfrage_h_where=self._safe_clause(self.abfrage_h_where, ("WHERE",)),
+            )
 
             if not self.db_qkan.sql(sql, "db_qkan: export_pumpen"):
                 return
@@ -209,26 +219,10 @@ class ExportTask:
             ):
                 return
 
-            sql = f"""
-            SELECT
-                schaechte.schnam,
-                schaechte.deckelhoehe,
-                schaechte.sohlhoehe,
-                schaechte.durchm,
-                x(schaechte.geop) AS xsch,
-                y(schaechte.geop) AS ysch,
-                schaechte.kommentar,
-                schaechte.simstatus,
-                ea.isybau,
-                schaechte.strasse,
-                schaechte.knotentyp,
-                schaechte.baujahr,
-                schaechte.material
-            FROM schaechte
-            LEFT JOIN Entwaesserungsarten AS ea
-            ON schaechte.entwart = ea.bezeichnung
-            WHERE schaechte.schachttyp = 'Auslass' {self.abfrage_s_and}
-            """
+            sql = self._query(
+                "export_auslaesse",
+                abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+            )
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_auslaesse"):
                 return
@@ -317,26 +311,10 @@ class ExportTask:
             tree = ET.parse(self.vorlage)
             root = tree.getroot()
 
-            sql = f"""
-                        SELECT
-                            schaechte.schnam,
-                            schaechte.deckelhoehe,
-                            schaechte.sohlhoehe,
-                            schaechte.durchm,
-                            x(schaechte.geop) AS xsch,
-                            y(schaechte.geop) AS ysch,
-                            schaechte.kommentar,
-                            schaechte.simstatus,
-                            schaechte.entwart,
-                            schaechte.strasse,
-                            schaechte.knotentyp,
-                            schaechte.baujahr,
-                            schaechte.material
-                        FROM schaechte
-                        LEFT JOIN Entwaesserungsarten AS ea
-                        ON schaechte.entwart = ea.bezeichnung
-                        WHERE schaechte.schachttyp = 'Auslass' {self.abfrage_s_and}
-                        """
+            sql = self._query(
+                "export_auslaesse_vorlage",
+                abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+            )
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_auslaesse"):
                 return
@@ -445,26 +423,10 @@ class ExportTask:
             ):
                 return
 
-            sql = f"""
-            SELECT
-                schaechte.schnam,
-                schaechte.deckelhoehe,
-                schaechte.sohlhoehe,
-                schaechte.durchm,
-                schaechte.druckdicht,
-                ea.isybau,
-                schaechte.strasse,
-                schaechte.knotentyp,
-                schaechte.kommentar,
-                schaechte.simstatus,
-                x(schaechte.geop) AS xsch,
-                y(schaechte.geop) AS ysch,
-                schaechte.baujahr
-            FROM schaechte
-            LEFT JOIN Entwaesserungsarten AS ea
-            ON schaechte.entwart = ea.bezeichnung
-            WHERE schaechte.schachttyp = 'Schacht' {self.abfrage_s_and}
-            """
+            sql = self._query(
+                "export_schaechte",
+                abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+            )
             if not self.db_qkan.sql(sql, "db_qkan: export_schaechte"):
                 return
 
@@ -553,27 +515,10 @@ class ExportTask:
             tree = ET.parse(self.vorlage)
             root = tree.getroot()
 
-            sql = f"""
-                        SELECT
-                            schaechte.schnam,
-                            schaechte.deckelhoehe,
-                            schaechte.sohlhoehe,
-                            schaechte.durchm,
-                            schaechte.druckdicht,
-                            ea.isybau,
-                            schaechte.entwart,
-                            schaechte.strasse,
-                            schaechte.knotentyp,
-                            schaechte.kommentar,
-                            schaechte.simstatus,
-                            x(schaechte.geop) AS xsch,
-                            y(schaechte.geop) AS ysch,
-                            schaechte.baujahr
-                        FROM schaechte
-                        LEFT JOIN Entwaesserungsarten AS ea
-                        ON schaechte.entwart = ea.bezeichnung
-                        WHERE schaechte.schachttyp = 'Schacht' {self.abfrage_s_and}
-                    """
+            sql = self._query(
+                "export_schaechte_vorlage",
+                abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+            )
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_schaechte"):
                 return
@@ -680,25 +625,10 @@ class ExportTask:
             ):
                 return
 
-            sql = f"""
-            SELECT
-                schaechte.schnam,
-                schaechte.deckelhoehe,
-                schaechte.sohlhoehe,
-                schaechte.durchm,
-                ea.isybau,
-                schaechte.strasse,
-                x(schaechte.geop) AS xsch,
-                y(schaechte.geop) AS ysch,
-                schaechte.kommentar,
-                schaechte.simstatus,
-                schaechte.knotentyp,
-                schaechte.baujahr
-            FROM schaechte
-            left join Entwaesserungsarten AS ea
-            ON schaechte.entwart = ea.bezeichnung
-            WHERE schaechte.schachttyp = 'Speicher' {self.abfrage_s_and}
-            """
+            sql = self._query(
+                "export_speicher",
+                abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+            )
 
             if not self.db_qkan.sql(sql, "db_qkan: export_speicher"):
                 return
@@ -781,27 +711,10 @@ class ExportTask:
             tree = ET.parse(self.vorlage)
             root = tree.getroot()
 
-            sql = f"""
-                        SELECT
-                            schaechte.schnam,
-                            schaechte.deckelhoehe,
-                            schaechte.sohlhoehe,
-                            schaechte.durchm,
-                            schaechte.druckdicht,
-                            ea.isybau,
-                            schaechte.entwart,
-                            schaechte.strasse,
-                            schaechte.knotentyp,
-                            schaechte.kommentar,
-                            schaechte.simstatus,
-                            x(schaechte.geop) AS xsch,
-                            y(schaechte.geop) AS ysch,
-                            schaechte.baujahr
-                        FROM schaechte
-                        LEFT JOIN Entwaesserungsarten AS ea
-                        ON schaechte.entwart = ea.bezeichnung
-                        WHERE schaechte.schachttyp = 'Speicher' {self.abfrage_s_and}
-                    """
+            sql = self._query(
+                "export_speicher_vorlage",
+                abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+            )
 
             if not self.db_qkan.sql(sql, u"db_qkan: export_schaechte"):
                 return
@@ -907,35 +820,10 @@ class ExportTask:
             ):
                 return
 
-            sql = f"""
-            SELECT
-                haltungen.haltnam,
-                haltungen.schoben,
-                haltungen.schunten,
-                haltungen.hoehe,
-                haltungen.breite,
-                haltungen.laenge,
-                haltungen.sohleoben,
-                haltungen.sohleunten,
-                haltungen.profilnam,
-                haltungen.strasse,
-                haltungen.material,
-                ea.isybau,
-                haltungen.ks,
-                haltungen.simstatus,
-                haltungen.kommentar,
-                x(PointN(haltungen.geom, 1)) AS xschob,
-                y(PointN(haltungen.geom, 1)) AS yschob,
-                x(PointN(haltungen.geom, -1)) AS xschun,
-                y(PointN(haltungen.geom, -1)) AS yschun,
-                haltungen.baujahr,
-                haltungen.aussendurchmesser,
-                haltungen.profilauskleidung,
-                haltungen.innenmaterial
-            FROM haltungen
-            LEFT JOIN Entwaesserungsarten AS ea 
-            ON haltungen.entwart = ea.bezeichnung {self.abfrage_h_where}
-            """
+            sql = self._query(
+                "export_haltungen",
+                abfrage_h_where=self._safe_clause(self.abfrage_h_where, ("WHERE",)),
+            )
 
             if not self.db_qkan.sql(sql, "db_qkan: export_haltungen"):
                 return
@@ -1077,71 +965,17 @@ class ExportTask:
                 return
 
             if self.abfrage_h_where:
-                sql = f"""
-                        WITH anschluss_haltung as( SELECT 
-                        a.pk AS anschluss_id, 
-                         haltungen.pk AS haltung_id
-                        FROM anschlussleitungen a
-                        JOIN haltungen 
-                        ON ST_Intersects(a.geom, haltungen.geom)
-                         {self.abfrage_h_where}
-                        )
-                        
-                        SELECT
-                        anschlussleitungen.leitnam,
-                        anschlussleitungen.schoben,
-                        anschlussleitungen.schunten,
-                        anschlussleitungen.hoehe,
-                        anschlussleitungen.breite,
-                        anschlussleitungen.laenge,
-                        anschlussleitungen.sohleoben,
-                        anschlussleitungen.sohleunten,
-                        anschlussleitungen.profilnam,
-                        anschlussleitungen.material,
-                        ea.isybau,
-                        anschlussleitungen.ks,
-                        anschlussleitungen.simstatus,
-                        anschlussleitungen.kommentar,
-                        x(PointN(anschlussleitungen.geom, 1)) AS xschob,
-                        y(PointN(anschlussleitungen.geom, 1)) AS yschob,
-                        x(PointN(anschlussleitungen.geom, -1)) AS xschun,
-                        y(PointN(anschlussleitungen.geom, -1)) AS yschun
-                    FROM anschlussleitungen
-                    LEFT JOIN Entwaesserungsarten AS ea 
-                    ON anschlussleitungen.entwart = ea.bezeichnung
-                    INNER JOIN anschluss_haltung  ah
-                    ON anschlussleitungen.pk =ah.anschluss_id
-                        """
+                sql = self._query(
+                    "export_anschlussleitungen_filtered",
+                    abfrage_h_where=self._safe_clause(self.abfrage_h_where, ("WHERE",)),
+                )
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
                     return
 
 
             else:
-                sql = f"""
-                        SELECT
-                            anschlussleitungen.leitnam,
-                            anschlussleitungen.schoben,
-                            anschlussleitungen.schunten,
-                            anschlussleitungen.hoehe,
-                            anschlussleitungen.breite,
-                            anschlussleitungen.laenge,
-                            anschlussleitungen.sohleoben,
-                            anschlussleitungen.sohleunten,
-                            anschlussleitungen.profilnam,
-                            anschlussleitungen.material,
-                            ea.isybau,
-                            anschlussleitungen.ks,
-                            anschlussleitungen.simstatus,
-                            anschlussleitungen.kommentar,
-                            x(PointN(anschlussleitungen.geom, 1)) AS xschob,
-                            y(PointN(anschlussleitungen.geom, 1)) AS yschob,
-                            x(PointN(anschlussleitungen.geom, -1)) AS xschun,
-                            y(PointN(anschlussleitungen.geom, -1)) AS yschun
-                        FROM anschlussleitungen
-                        LEFT JOIN Entwaesserungsarten AS ea 
-                        ON anschlussleitungen.entwart = ea.bezeichnung 
-                        """
+                sql = self._query("export_anschlussleitungen")
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
                     return
@@ -1266,171 +1100,30 @@ class ExportTask:
 
             if self.auswahl_zustand == "Stammdaten":
 
-                sql = f"""
-                 SELECT
-                    haltungen_untersucht.pk,
-                    haltungen_untersucht.haltnam,
-                    haltungen_untersucht.bezugspunkt,
-                    haltungen_untersucht.schoben,
-                    haltungen_untersucht.schunten,
-                    haltungen_untersucht.hoehe,
-                    haltungen_untersucht.breite,
-                    haltungen_untersucht.laenge,
-                    haltungen_untersucht.baujahr,
-                    haltungen_untersucht.untersuchtag,
-                    haltungen_untersucht.untersucher,
-                    haltungen_untersucht.untersuchrichtung,
-                    haltungen_untersucht.wetter,
-                    haltungen_untersucht.bewertungsart,
-                    haltungen_untersucht.bewertungstag,
-                    haltungen_untersucht.strasse,
-                    haltungen_untersucht.datenart,
-                    haltungen_untersucht.auftragsbezeichnung,
-                    haltungen_untersucht.max_ZD,
-                    haltungen_untersucht.max_ZB,
-                    haltungen_untersucht.max_ZS,
-                    x(PointN(haltungen_untersucht.geom, 1)) AS xschob,
-                    y(PointN(haltungen_untersucht.geom, 1)) AS yschob,
-                    x(PointN(haltungen_untersucht.geom, -1)) AS xschun,
-                    y(PointN(haltungen_untersucht.geom, -1)) AS yschun,
-                    haltungen_untersucht.kommentar,
-                    untersuchdat_haltung.station,
-                    untersuchdat_haltung.timecode,
-                    untersuchdat_haltung.kuerzel,
-                    untersuchdat_haltung.charakt1,
-                    untersuchdat_haltung.charakt2,
-                    untersuchdat_haltung.quantnr1,
-                    untersuchdat_haltung.quantnr2,
-                    untersuchdat_haltung.streckenschaden,
-                    untersuchdat_haltung.streckenschaden_lfdnr,
-                    untersuchdat_haltung.pos_von,
-                    untersuchdat_haltung.pos_bis,
-                    untersuchdat_haltung.foto_dateiname,
-                    untersuchdat_haltung.ZD,
-                    untersuchdat_haltung.ZB,
-                    untersuchdat_haltung.ZS,
-                    haltungen.profilnam,
-                    haltungen.material,
-                    haltungen.entwart
-                    FROM haltungen_untersucht
-                    JOIN untersuchdat_haltung 
-                    JOIN haltungen where haltungen_untersucht.haltnam = untersuchdat_haltung.untersuchhal and haltungen_untersucht.haltnam = haltungen.haltnam
-                    {self.abfrage_h_and}
-                    """
+                sql = self._query(
+                    "export_zustand_haltungen_stamm",
+                    abfrage_h_and=self._safe_clause(self.abfrage_h_and, ("AND",)),
+                )
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                     return
 
             elif self.auswahl_zustand == "Bewertet (Zustandsklassifizierung)":
 
-                sql = f"""
-                 SELECT
-                    haltungen_untersucht_bewertet.pk,
-                    haltungen_untersucht_bewertet.haltnam,
-                    haltungen_untersucht_bewertet.bezugspunkt,
-                    haltungen_untersucht_bewertet.schoben,
-                    haltungen_untersucht_bewertet.schunten,
-                    haltungen_untersucht_bewertet.hoehe,
-                    haltungen_untersucht_bewertet.breite,
-                    haltungen_untersucht_bewertet.laenge,
-                    haltungen_untersucht_bewertet.baujahr,
-                    haltungen_untersucht_bewertet.untersuchtag,
-                    haltungen_untersucht_bewertet.untersucher,
-                    haltungen_untersucht_bewertet.untersuchrichtung,
-                    haltungen_untersucht_bewertet.wetter,
-                    haltungen_untersucht_bewertet.bewertungsart,
-                    haltungen_untersucht_bewertet.bewertungstag,
-                    haltungen_untersucht_bewertet.strasse,
-                    haltungen_untersucht_bewertet.datenart,
-                    haltungen_untersucht_bewertet.auftragsbezeichnung,
-                    haltungen_untersucht_bewertet.max_ZD,
-                    haltungen_untersucht_bewertet.max_ZB,
-                    haltungen_untersucht_bewertet.max_ZS,
-                    x(PointN(haltungen_untersucht_bewertet.geom, 1)) AS xschob,
-                    y(PointN(haltungen_untersucht_bewertet.geom, 1)) AS yschob,
-                    x(PointN(haltungen_untersucht_bewertet.geom, -1)) AS xschun,
-                    y(PointN(haltungen_untersucht_bewertet.geom, -1)) AS yschun,
-                    haltungen_untersucht_bewertet.kommentar,
-                    untersuchdat_haltung_bewertet.station,
-                    untersuchdat_haltung_bewertet.timecode,
-                    untersuchdat_haltung_bewertet.kuerzel,
-                    untersuchdat_haltung_bewertet.charakt1,
-                    untersuchdat_haltung_bewertet.charakt2,
-                    untersuchdat_haltung_bewertet.quantnr1,
-                    untersuchdat_haltung_bewertet.quantnr2,
-                    untersuchdat_haltung_bewertet.streckenschaden,
-                    untersuchdat_haltung_bewertet.streckenschaden_lfdnr,
-                    untersuchdat_haltung_bewertet.pos_von,
-                    untersuchdat_haltung_bewertet.pos_bis,
-                    untersuchdat_haltung_bewertet.foto_dateiname,
-                    untersuchdat_haltung_bewertet.ZD,
-                    untersuchdat_haltung_bewertet.ZB,
-                    untersuchdat_haltung_bewertet.ZS,
-                    haltungen.profilnam,
-                    haltungen.material,
-                    haltungen.entwart
-                    FROM haltungen_untersucht_bewertet
-                    JOIN untersuchdat_haltung_bewertet 
-                    JOIN haltungen where haltungen_untersucht_bewertet.haltnam = untersuchdat_haltung_bewertet.untersuchhal and haltungen_untersucht_bewertet.haltnam = haltungen.haltnam
-                    {self.abfrage_h_and}
-                    """
+                sql = self._query(
+                    "export_zustand_haltungen_bewertet",
+                    abfrage_h_and=self._safe_clause(self.abfrage_h_and, ("AND",)),
+                )
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                     return
 
             elif self.auswahl_zustand == "Bewertet (Substanzklassifizierung)":
 
-                sql = f"""
-                 SELECT
-                    haltungen_untersucht_substanz.pk,
-                    haltungen_untersucht_substanz.haltnam,
-                    haltungen_untersucht_substanz.bezugspunkt,
-                    haltungen_untersucht_substanz.schoben,
-                    haltungen_untersucht_substanz.schunten,
-                    haltungen_untersucht_substanz.hoehe,
-                    haltungen_untersucht_substanz.breite,
-                    haltungen_untersucht_substanz.laenge,
-                    haltungen_untersucht_substanz.baujahr,
-                    haltungen_untersucht_substanz.untersuchtag,
-                    haltungen_untersucht_substanz.untersucher,
-                    haltungen_untersucht_substanz.untersuchrichtung,
-                    haltungen_untersucht_substanz.wetter,
-                    haltungen_untersucht_substanz.bewertungsart,
-                    haltungen_untersucht_substanz.bewertungstag,
-                    haltungen_untersucht_substanz.strasse,
-                    haltungen_untersucht_substanz.datenart,
-                    haltungen_untersucht_substanz.auftragsbezeichnung,
-                    haltungen_untersucht_substanz.max_ZD,
-                    haltungen_untersucht_substanz.max_ZB,
-                    haltungen_untersucht_substanz.max_ZS,
-                    x(PointN(haltungen_untersucht_substanz.geom, 1)) AS xschob,
-                    y(PointN(haltungen_untersucht_substanz.geom, 1)) AS yschob,
-                    x(PointN(haltungen_untersucht_substanz.geom, -1)) AS xschun,
-                    y(PointN(haltungen_untersucht_substanz.geom, -1)) AS yschun,
-                    haltungen_untersucht_substanz.kommentar,
-                    untersuchdat_haltung_substanz.station,
-                    untersuchdat_haltung_substanz.timecode,
-                    untersuchdat_haltung_substanz.kuerzel,
-                    untersuchdat_haltung_substanz.charakt1,
-                    untersuchdat_haltung_substanz.charakt2,
-                    untersuchdat_haltung_substanz.quantnr1,
-                    untersuchdat_haltung_substanz.quantnr2,
-                    untersuchdat_haltung_substanz.streckenschaden,
-                    untersuchdat_haltung_substanz.streckenschaden_lfdnr,
-                    untersuchdat_haltung_substanz.pos_von,
-                    untersuchdat_haltung_substanz.pos_bis,
-                    untersuchdat_haltung_substanz.foto_dateiname,
-                    untersuchdat_haltung_substanz.ZD,
-                    untersuchdat_haltung_substanz.ZB,
-                    untersuchdat_haltung_substanz.ZS,
-                    haltungen.profilnam,
-                    haltungen.material,
-                    haltungen.entwart
-                    FROM haltungen_untersucht_substanz
-                    JOIN untersuchdat_haltung_substanz 
-                    JOIN haltungen where haltungen_untersucht_substanz.haltnam = untersuchdat_haltung_substanz.untersuchhal and haltungen_untersucht_substanz.haltnam = haltungen.haltnam
-                    {self.abfrage_h_and}
-                    """
+                sql = self._query(
+                    "export_zustand_haltungen_substanz",
+                    abfrage_h_and=self._safe_clause(self.abfrage_h_and, ("AND",)),
+                )
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                     return
@@ -1588,125 +1281,16 @@ class ExportTask:
             if self.auswahl_zustand == "Stammdaten":
 
                 if self.abfrage_h_where:
-                    sql = f"""
-                            WITH anschluss_haltung as( SELECT 
-                                    a.leitnam AS leitnam, 
-                                    haltungen.pk AS haltung_id
-                                FROM anschlussleitungen a
-                                JOIN haltungen 
-                                ON ST_Intersects(a.geom, haltungen.geom)
-                                {self.abfrage_h_where}
-                                )
-                                
-                                SELECT
-                            anschlussleitungen_untersucht.pk,
-                            anschlussleitungen_untersucht.leitnam,
-                            anschlussleitungen_untersucht.bezugspunkt,
-                            anschlussleitungen_untersucht.schoben,
-                            anschlussleitungen_untersucht.schunten,
-                            anschlussleitungen_untersucht.hoehe,
-                            anschlussleitungen_untersucht.breite,
-                            anschlussleitungen_untersucht.laenge,
-                            anschlussleitungen_untersucht.baujahr,
-                            anschlussleitungen_untersucht.untersuchtag,
-                            anschlussleitungen_untersucht.untersucher,
-                            anschlussleitungen_untersucht.untersuchrichtung,
-                            anschlussleitungen_untersucht.wetter,
-                            anschlussleitungen_untersucht.bewertungsart,
-                            anschlussleitungen_untersucht.bewertungstag,
-                            anschlussleitungen_untersucht.strasse,
-                            anschlussleitungen_untersucht.datenart,
-                            anschlussleitungen_untersucht.auftragsbezeichnung,
-                            anschlussleitungen_untersucht.max_ZD,
-                            anschlussleitungen_untersucht.max_ZB,
-                            anschlussleitungen_untersucht.max_ZS,
-                            x(PointN(anschlussleitungen_untersucht.geom, 1)) AS xschob,
-                            y(PointN(anschlussleitungen_untersucht.geom, 1)) AS yschob,
-                            x(PointN(anschlussleitungen_untersucht.geom, -1)) AS xschun,
-                            y(PointN(anschlussleitungen_untersucht.geom, -1)) AS yschun,
-                            anschlussleitungen_untersucht.kommentar,
-                            untersuchdat_anschlussleitung.station,
-                            untersuchdat_anschlussleitung.timecode,
-                            untersuchdat_anschlussleitung.kuerzel,
-                            untersuchdat_anschlussleitung.charakt1,
-                            untersuchdat_anschlussleitung.charakt2,
-                            untersuchdat_anschlussleitung.quantnr1,
-                            untersuchdat_anschlussleitung.quantnr2,
-                            untersuchdat_anschlussleitung.streckenschaden,
-                            untersuchdat_anschlussleitung.streckenschaden_lfdnr,
-                            untersuchdat_anschlussleitung.pos_von,
-                            untersuchdat_anschlussleitung.pos_bis,
-                            untersuchdat_anschlussleitung.foto_dateiname,
-                            untersuchdat_anschlussleitung.ZD,
-                            untersuchdat_anschlussleitung.ZB,
-                            untersuchdat_anschlussleitung.ZS,
-                            anschlussleitungen.profilnam,
-                            anschlussleitungen.material,
-                            anschlussleitungen.entwart
-                            FROM anschlussleitungen_untersucht
-                            JOIN untersuchdat_anschlussleitung  ON anschlussleitungen_untersucht.leitnam = untersuchdat_anschlussleitung.untersuchleit
-                            JOIN anschlussleitungen ON anschlussleitungen_untersucht.leitnam = anschlussleitungen.leitnam
-                            LEFT JOIN Entwaesserungsarten ea
-                            ON anschlussleitungen.entwart = ea.bezeichnung
-                            INNER JOIN anschluss_haltung ah
-                            ON anschlussleitungen.leitnam = ah.leitnam;
-                                """
+                    sql = self._query(
+                        "export_zustand_anschluss_stamm_filtered",
+                        abfrage_h_where=self._safe_clause(self.abfrage_h_where, ("WHERE",)),
+                    )
 
                     if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
                         return
 
                 else:
-
-                    sql = f"""
-                     SELECT
-                        anschlussleitungen_untersucht.pk,
-                        anschlussleitungen_untersucht.leitnam,
-                        anschlussleitungen_untersucht.bezugspunkt,
-                        anschlussleitungen_untersucht.schoben,
-                        anschlussleitungen_untersucht.schunten,
-                        anschlussleitungen_untersucht.hoehe,
-                        anschlussleitungen_untersucht.breite,
-                        anschlussleitungen_untersucht.laenge,
-                        anschlussleitungen_untersucht.baujahr,
-                        anschlussleitungen_untersucht.untersuchtag,
-                        anschlussleitungen_untersucht.untersucher,
-                        anschlussleitungen_untersucht.untersuchrichtung,
-                        anschlussleitungen_untersucht.wetter,
-                        anschlussleitungen_untersucht.bewertungsart,
-                        anschlussleitungen_untersucht.bewertungstag,
-                        anschlussleitungen_untersucht.strasse,
-                        anschlussleitungen_untersucht.datenart,
-                        anschlussleitungen_untersucht.auftragsbezeichnung,
-                        anschlussleitungen_untersucht.max_ZD,
-                        anschlussleitungen_untersucht.max_ZB,
-                        anschlussleitungen_untersucht.max_ZS,
-                        x(PointN(anschlussleitungen_untersucht.geom, 1)) AS xschob,
-                        y(PointN(anschlussleitungen_untersucht.geom, 1)) AS yschob,
-                        x(PointN(anschlussleitungen_untersucht.geom, -1)) AS xschun,
-                        y(PointN(anschlussleitungen_untersucht.geom, -1)) AS yschun,
-                        anschlussleitungen_untersucht.kommentar,
-                        untersuchdat_anschlussleitung.station,
-                        untersuchdat_anschlussleitung.timecode,
-                        untersuchdat_anschlussleitung.kuerzel,
-                        untersuchdat_anschlussleitung.charakt1,
-                        untersuchdat_anschlussleitung.charakt2,
-                        untersuchdat_anschlussleitung.quantnr1,
-                        untersuchdat_anschlussleitung.quantnr2,
-                        untersuchdat_anschlussleitung.streckenschaden,
-                        untersuchdat_anschlussleitung.streckenschaden_lfdnr,
-                        untersuchdat_anschlussleitung.pos_von,
-                        untersuchdat_anschlussleitung.pos_bis,
-                        untersuchdat_anschlussleitung.foto_dateiname,
-                        untersuchdat_anschlussleitung.ZD,
-                        untersuchdat_anschlussleitung.ZB,
-                        untersuchdat_anschlussleitung.ZS,
-                        anschlussleitungen.profilnam,
-                        anschlussleitungen.material,
-                        anschlussleitungen.entwart
-                        FROM anschlussleitungen_untersucht
-                        JOIN untersuchdat_anschlussleitung 
-                        JOIN anschlussleitungen where anschlussleitungen_untersucht.leitnam = untersuchdat_anschlussleitung.untersuchleit and anschlussleitungen_untersucht.leitnam = anschlussleitungen.leitnam
-                        """
+                    sql = self._query("export_zustand_anschluss_stamm")
 
                     if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                         return
@@ -1714,126 +1298,16 @@ class ExportTask:
             elif self.auswahl_zustand == "Bewertet (Zustandsklassifizierung)":
 
                 if self.abfrage_h_where:
-                    sql = f"""
-                            WITH anschluss_haltung as( SELECT 
-                                    a.leitnam AS leitnam, 
-                                    haltungen.pk AS haltung_id
-                                FROM anschlussleitungen a
-                                JOIN haltungen 
-                                ON ST_Intersects(a.geom, haltungen.geom)
-                                {self.abfrage_h_where}
-                                )
-
-                                SELECT
-                            anschlussleitungen_untersucht_bewertet.pk,
-                            anschlussleitungen_untersucht_bewertet.leitnam,
-                            anschlussleitungen_untersucht_bewertet.bezugspunkt,
-                            anschlussleitungen_untersucht_bewertet.schoben,
-                            anschlussleitungen_untersucht_bewertet.schunten,
-                            anschlussleitungen_untersucht_bewertet.hoehe,
-                            anschlussleitungen_untersucht_bewertet.breite,
-                            anschlussleitungen_untersucht_bewertet.laenge,
-                            anschlussleitungen_untersucht_bewertet.baujahr,
-                            anschlussleitungen_untersucht_bewertet.untersuchtag,
-                            anschlussleitungen_untersucht_bewertet.untersucher,
-                            anschlussleitungen_untersucht_bewertet.untersuchrichtung,
-                            anschlussleitungen_untersucht_bewertet.wetter,
-                            anschlussleitungen_untersucht_bewertet.bewertungsart,
-                            anschlussleitungen_untersucht_bewertet.bewertungstag,
-                            anschlussleitungen_untersucht_bewertet.strasse,
-                            anschlussleitungen_untersucht_bewertet.datenart,
-                            anschlussleitungen_untersucht_bewertet.auftragsbezeichnung,
-                            anschlussleitungen_untersucht_bewertet.max_ZD,
-                            anschlussleitungen_untersucht_bewertet.max_ZB,
-                            anschlussleitungen_untersucht_bewertet.max_ZS,
-                            x(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS xschob,
-                            y(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS yschob,
-                            x(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS xschun,
-                            y(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS yschun,
-                            anschlussleitungen_untersucht_bewertet.kommentar,
-                            untersuchdat_anschlussleitung_bewertet.station,
-                            untersuchdat_anschlussleitung_bewertet.timecode,
-                            untersuchdat_anschlussleitung_bewertet.kuerzel,
-                            untersuchdat_anschlussleitung_bewertet.charakt1,
-                            untersuchdat_anschlussleitung_bewertet.charakt2,
-                            untersuchdat_anschlussleitung_bewertet.quantnr1,
-                            untersuchdat_anschlussleitung_bewertet.quantnr2,
-                            untersuchdat_anschlussleitung_bewertet.streckenschaden,
-                            untersuchdat_anschlussleitung_bewertet.streckenschaden_lfdnr,
-                            untersuchdat_anschlussleitung_bewertet.pos_von,
-                            untersuchdat_anschlussleitung_bewertet.pos_bis,
-                            untersuchdat_anschlussleitung_bewertet.foto_dateiname,
-                            untersuchdat_anschlussleitung_bewertet.ZD,
-                            untersuchdat_anschlussleitung_bewertet.ZB,
-                            untersuchdat_anschlussleitung_bewertet.ZS,
-                            anschlussleitungen.profilnam,
-                            anschlussleitungen.material,
-                            anschlussleitungen.entwart
-                            FROM anschlussleitungen_untersucht
-                            JOIN untersuchdat_anschlussleitung_bewertet  ON anschlussleitungen_untersucht_bewertet.leitnam = untersuchdat_anschlussleitung_bewertet.untersuchleit
-                            JOIN anschlussleitungen ON anschlussleitungen_untersucht_bewertet.leitnam = anschlussleitungen.leitnam
-                            LEFT JOIN Entwaesserungsarten ea
-                            ON anschlussleitungen.entwart = ea.bezeichnung
-                            INNER JOIN anschluss_haltung ah
-                            ON anschlussleitungen.leitnam = ah.leitnam;
-                                """
+                    sql = self._query(
+                        "export_zustand_anschluss_bewertet_filtered",
+                        abfrage_h_where=self._safe_clause(self.abfrage_h_where, ("WHERE",)),
+                    )
 
                     if not self.db_qkan.sql(sql, "db_qkan: export_anschlussleitungen"):
                         return
 
                 else:
-
-                    sql = f"""
-                     SELECT
-                        anschlussleitungen_untersucht_bewertet.pk,
-                        anschlussleitungen_untersucht_bewertet.leitnam,
-                        anschlussleitungen_untersucht_bewertet.bezugspunkt,
-                        anschlussleitungen_untersucht_bewertet.schoben,
-                        anschlussleitungen_untersucht_bewertet.schunten,
-                        anschlussleitungen_untersucht_bewertet.hoehe,
-                        anschlussleitungen_untersucht_bewertet.breite,
-                        anschlussleitungen_untersucht_bewertet.laenge,
-                        anschlussleitungen_untersucht_bewertet.baujahr,
-                        anschlussleitungen_untersucht_bewertet.untersuchtag,
-                        anschlussleitungen_untersucht_bewertet.untersucher,
-                        anschlussleitungen_untersucht_bewertet.untersuchrichtung,
-                        anschlussleitungen_untersucht_bewertet.wetter,
-                        anschlussleitungen_untersucht_bewertet.bewertungsart,
-                        anschlussleitungen_untersucht_bewertet.bewertungstag,
-                        anschlussleitungen_untersucht_bewertet.strasse,
-                        anschlussleitungen_untersucht_bewertet.datenart,
-                        anschlussleitungen_untersucht_bewertet.auftragsbezeichnung,
-                        anschlussleitungen_untersucht_bewertet.max_ZD,
-                        anschlussleitungen_untersucht_bewertet.max_ZB,
-                        anschlussleitungen_untersucht_bewertet.max_ZS,
-                        x(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS xschob,
-                        y(PointN(anschlussleitungen_untersucht_bewertet.geom, 1)) AS yschob,
-                        x(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS xschun,
-                        y(PointN(anschlussleitungen_untersucht_bewertet.geom, -1)) AS yschun,
-                        anschlussleitungen_untersucht_bewertet.kommentar,
-                        untersuchdat_anschlussleitung_bewertet.station,
-                        untersuchdat_anschlussleitung_bewertet.timecode,
-                        untersuchdat_anschlussleitung_bewertet.kuerzel,
-                        untersuchdat_anschlussleitung_bewertet.charakt1,
-                        untersuchdat_anschlussleitung_bewertet.charakt2,
-                        untersuchdat_anschlussleitung_bewertet.quantnr1,
-                        untersuchdat_anschlussleitung_bewertet.quantnr2,
-                        untersuchdat_anschlussleitung_bewertet.streckenschaden,
-                        untersuchdat_anschlussleitung_bewertet.streckenschaden_lfdnr,
-                        untersuchdat_anschlussleitung_bewertet.pos_von,
-                        untersuchdat_anschlussleitung_bewertet.pos_bis,
-                        untersuchdat_anschlussleitung_bewertet.foto_dateiname,
-                        untersuchdat_anschlussleitung_bewertet.ZD,
-                        untersuchdat_anschlussleitung_bewertet.ZB,
-                        untersuchdat_anschlussleitung_bewertet.ZS,
-                        anschlussleitungen.profilnam,
-                        anschlussleitungen.material,
-                        anschlussleitungen.entwart
-                        FROM anschlussleitungen_untersucht_bewertet
-                        JOIN untersuchdat_anschlussleitung_bewertet 
-                        JOIN anschlussleitungen where anschlussleitungen_untersucht_bewertet.leitnam = untersuchdat_anschlussleitung_bewertet.untersuchleit and anschlussleitungen_untersucht_bewertet.leitnam = anschlussleitungen.leitnam
-
-                        """
+                    sql = self._query("export_zustand_anschluss_bewertet")
 
                     if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                         return
@@ -1991,96 +1465,20 @@ class ExportTask:
 
             if self.auswahl_zustand == "Stammdaten":
 
-                sql = f"""
-                    SELECT
-                    schaechte_untersucht.pk,
-                    schaechte_untersucht.schnam,
-                    schaechte_untersucht.bezugspunkt,
-                    schaechte_untersucht.baujahr,
-                    schaechte_untersucht.untersuchtag,
-                    schaechte_untersucht.untersucher,
-                    schaechte_untersucht.wetter,
-                    schaechte_untersucht.bewertungsart,
-                    schaechte_untersucht.bewertungstag,
-                    schaechte_untersucht.strasse,
-                    schaechte_untersucht.datenart,
-                    schaechte_untersucht.auftragsbezeichnung,
-                    schaechte_untersucht.max_ZD,
-                    schaechte_untersucht.max_ZB,
-                    schaechte_untersucht.max_ZS,
-                    x(PointN(schaechte_untersucht.geop, 1)) AS x,
-                    y(PointN(schaechte_untersucht.geop, 1)) AS y,
-                    schaechte_untersucht.kommentar,
-                    untersuchdat_schacht.vertikale_lage,
-                    untersuchdat_schacht.timecode,
-                    untersuchdat_schacht.kuerzel,
-                    untersuchdat_schacht.charakt1,
-                    untersuchdat_schacht.charakt2,
-                    untersuchdat_schacht.quantnr1,
-                    untersuchdat_schacht.quantnr2,
-                    untersuchdat_schacht.streckenschaden,
-                    untersuchdat_schacht.streckenschaden_lfdnr,
-                    untersuchdat_schacht.pos_von,
-                    untersuchdat_schacht.pos_bis,
-                    untersuchdat_schacht.foto_dateiname,
-                    untersuchdat_schacht.ZD,
-                    untersuchdat_schacht.ZB,
-                    untersuchdat_schacht.ZS,
-                    schaechte.material,
-                    schaechte.entwart
-                    FROM schaechte_untersucht
-                    JOIN untersuchdat_schacht 
-                    JOIN schaechte where schaechte_untersucht.schnam = untersuchdat_schacht.untersuchsch and schaechte_untersucht.schnam = schaechte.schnam
-                 {self.abfrage_s_and}
-                 """
+                sql = self._query(
+                    "export_zustand_schaechte_stamm",
+                    abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+                )
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                     return
 
             elif self.auswahl_zustand == "Bewertet (Zustandsklassifizierung)":
 
-                sql = f"""
-                    SELECT
-                    schaechte_untersucht_bewertet.pk,
-                    schaechte_untersucht_bewertet.schnam,
-                    schaechte_untersucht_bewertet.bezugspunkt,
-                    schaechte_untersucht_bewertet.baujahr,
-                    schaechte_untersucht_bewertet.untersuchtag,
-                    schaechte_untersucht_bewertet.untersucher,
-                    schaechte_untersucht_bewertet.wetter,
-                    schaechte_untersucht_bewertet.bewertungsart,
-                    schaechte_untersucht_bewertet.bewertungstag,
-                    schaechte_untersucht_bewertet.strasse,
-                    schaechte_untersucht_bewertet.datenart,
-                    schaechte_untersucht_bewertet.auftragsbezeichnung,
-                    schaechte_untersucht_bewertet.max_ZD,
-                    schaechte_untersucht_bewertet.max_ZB,
-                    schaechte_untersucht_bewertet.max_ZS,
-                    x(PointN(schaechte_untersucht_bewertet.geop, 1)) AS x,
-                    y(PointN(schaechte_untersucht_bewertet.geop, 1)) AS y,
-                    schaechte_untersucht_bewertet.kommentar,
-                    untersuchdat_schacht_bewertet.vertikale_lage,
-                    untersuchdat_schacht_bewertet.timecode,
-                    untersuchdat_schacht_bewertet.kuerzel,
-                    untersuchdat_schacht_bewertet.charakt1,
-                    untersuchdat_schacht_bewertet.charakt2,
-                    untersuchdat_schacht_bewertet.quantnr1,
-                    untersuchdat_schacht_bewertet.quantnr2,
-                    untersuchdat_schacht_bewertet.streckenschaden,
-                    untersuchdat_schacht_bewertet.streckenschaden_lfdnr,
-                    untersuchdat_schacht_bewertet.pos_von,
-                    untersuchdat_schacht_bewertet.pos_bis,
-                    untersuchdat_schacht_bewertet.foto_dateiname,
-                    untersuchdat_schacht_bewertet.ZD,
-                    untersuchdat_schacht_bewertet.ZB,
-                    untersuchdat_schacht_bewertet.ZS,
-                    schaechte.material,
-                    schaechte.entwart
-                    FROM schaechte_untersucht_bewertet
-                    JOIN untersuchdat_schacht_bewertet 
-                    JOIN schaechte where schaechte_untersucht_bewertet.schnam = untersuchdat_schacht_bewertet.untersuchsch and schaechte_untersucht_bewertet.schnam = schaechte.schnam
-                 {self.abfrage_s_and}
-                 """
+                sql = self._query(
+                    "export_zustand_schaechte_bewertet",
+                    abfrage_s_and=self._safe_clause(self.abfrage_s_and, ("AND",)),
+                )
 
                 if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                     return
@@ -2216,17 +1614,8 @@ class ExportTask:
             ):
                 return
 
-            last_pk = None
-
             #TODO: jenachdem um was für ein objekt es sich handelt müssen unterschiedliche joins durchgeführt werden für inspektionsrichtung usw.
-
-            sql = """
-                    select name,
-                    untersuchtag,
-                    objekt,
-                    datei
-                    from videos
-             """
+            sql = self._query("export_zustand_filme")
 
             if not self.db_qkan.sql(sql, "db_qkan: export_zustandsdaten"):
                 return

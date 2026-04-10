@@ -1,9 +1,22 @@
-isy_update_schaechte_untersucht: "
-UPDATE schaechte_untersucht
-SET geop = s.geop, kommentar = s.kommentar
-FROM (
-    SELECT schnam, geop, kommentar
-    FROM schaechte 
-) AS s
-WHERE schaechte_untersucht.schnam = s.schnam
-"
+params:
+    x_func: x
+    y_func: y
+    pointn_func: PointN
+    intersects_func: ST_Intersects
+    haltungen_end_index_expr: -1
+    anschlussleitungen_end_index_expr: -1
+    haltungen_untersucht_end_index_expr: -1
+    haltungen_untersucht_bewertet_end_index_expr: -1
+    haltungen_untersucht_substanz_end_index_expr: -1
+    anschlussleitungen_untersucht_end_index_expr: -1
+    anschlussleitungen_untersucht_bewertet_end_index_expr: -1
+
+queries:
+    isy_update_schaechte_untersucht: |
+        UPDATE schaechte_untersucht
+        SET geop = s.geop, kommentar = s.kommentar
+        FROM (
+                SELECT schnam, geop, kommentar
+                FROM schaechte
+        ) AS s
+        WHERE schaechte_untersucht.schnam = s.schnam
