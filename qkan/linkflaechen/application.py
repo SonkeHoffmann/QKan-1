@@ -159,27 +159,21 @@ class LinkFl(QKanPlugin):
                 )
                 return
 
+            db_qkan.loadmodule("linkflaechen")
+
             # Check, ob alle Teilgebiete in Flächen und Haltungen auch in Tabelle "teilgebiete" enthalten
-            sql = """INSERT INTO teilgebiete (tgnam)
-                    SELECT teilgebiet FROM flaechen 
-                    WHERE teilgebiet IS NOT NULL AND teilgebiet <> '' AND
-                    teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
-                    GROUP BY teilgebiet"""
+                sql = db_qkan.load_query("linkflaechen_insert_teilgebiete_from_flaechen")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen (1)"):
                 return
 
-            sql = """INSERT INTO teilgebiete (tgnam)
-                    SELECT teilgebiet FROM haltungen 
-                    WHERE teilgebiet IS NOT NULL AND teilgebiet <> '' AND
-                    teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
-                    GROUP BY teilgebiet"""
+                sql = db_qkan.load_query("linkflaechen_insert_teilgebiete_from_haltungen")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen (1)"):
                 return
 
             db_qkan.commit()
 
             # Abfragen der Tabelle flaechen nach verwendeten Abflussparametern
-            sql = "SELECT abflussparameter FROM flaechen GROUP BY abflussparameter"
+            sql = db_qkan.load_query("linkflaechen_select_abflussparameter")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.run_createlinefl (1)"):
                 return
             daten = db_qkan.fetchall()
@@ -201,7 +195,7 @@ class LinkFl(QKanPlugin):
                         # self.dlg_cl.lw_flaechen_abflussparam.setCurrentRow(0)
 
             # Abfragen der Tabelle haltungen nach vorhandenen Entwässerungsarten
-            sql = 'SELECT "entwart" FROM "haltungen" GROUP BY "entwart"'
+            sql = db_qkan.load_query("linkflaechen_select_entwart")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.run_createlinefl (2)"):
                 return
             daten = db_qkan.fetchall()
@@ -216,7 +210,7 @@ class LinkFl(QKanPlugin):
                         # self.dlg_cl.lw_hal_entw.setCurrentRow(0)
 
             # Abfragen der Tabelle teilgebiete nach Teilgebieten
-            sql = 'SELECT "tgnam" FROM "teilgebiete" GROUP BY "tgnam"'
+            sql = db_qkan.load_query("linkflaechen_select_tgnam")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.run_createlinefl (3)"):
                 return
             daten = db_qkan.fetchall()
@@ -414,21 +408,15 @@ class LinkFl(QKanPlugin):
                 )
                 return
 
+            db_qkan.loadmodule("linkflaechen")
+
             # Check, ob alle Teilgebiete in Flächen und Haltungen auch in Tabelle "teilgebiete" enthalten
-            sql = """INSERT INTO teilgebiete (tgnam)
-                    SELECT teilgebiet FROM einleit 
-                    WHERE teilgebiet IS NOT NULL AND teilgebiet <> '' AND
-                    teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
-                    GROUP BY teilgebiet"""
+                sql = db_qkan.load_query("linkflaechen_insert_teilgebiete_from_einleit")
             if not db_qkan.sql(sql, "LinkFl.run_createlinesw (1)"):
                 logger.info("run_createlinesw: QKan-Datenbank wurde wegen eines Fehlers geschlossen")
                 return
 
-            sql = """INSERT INTO teilgebiete (tgnam)
-                    SELECT teilgebiet FROM haltungen 
-                    WHERE teilgebiet IS NOT NULL AND teilgebiet <> '' AND
-                    teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
-                    GROUP BY teilgebiet"""
+                sql = db_qkan.load_query("linkflaechen_insert_teilgebiete_from_haltungen")
             if not db_qkan.sql(sql, "LinkFl.run_createlinesw (2)"):
                 logger.info("run_createlinesw: QKan-Datenbank wurde wegen eines Fehlers geschlossen")
                 return
@@ -436,7 +424,7 @@ class LinkFl(QKanPlugin):
             db_qkan.commit()
 
             # Abfragen der Tabelle haltungen nach vorhandenen Entwässerungsarten
-            sql = 'SELECT "entwart" FROM "haltungen" GROUP BY "entwart"'
+            sql = db_qkan.load_query("linkflaechen_select_entwart")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.run_createlinesw (1)"):
                 logger.info("run_createlinesw: QKan-Datenbank wurde wegen eines Fehlers geschlossen")
                 return
@@ -454,7 +442,7 @@ class LinkFl(QKanPlugin):
                         # self.dlg_sw.lw_hal_entw.setCurrentRow(0)
 
             # Abfragen der Tabelle teilgebiete nach Teilgebieten
-            sql = 'SELECT "tgnam" FROM "teilgebiete" GROUP BY "tgnam"'
+            sql = db_qkan.load_query("linkflaechen_select_tgnam")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.run_createlinesw (2)"):
                 logger.info("run_createlinesw: QKan-Datenbank wurde wegen eines Fehlers geschlossen")
                 return
@@ -605,8 +593,10 @@ class LinkFl(QKanPlugin):
                 )
                 return
 
+            db_qkan.loadmodule("linkflaechen")
+
             # Abfragen der Tabelle teilgebiete nach Teilgebieten
-            sql = 'SELECT "tgnam" FROM "teilgebiete" GROUP BY "tgnam"'
+            sql = db_qkan.load_query("linkflaechen_select_tgnam")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.run_assigntgeb (1)"):
                 logger.info("run_assigntgb: QKan-Datenbank wurde wegen eines Fehlers geschlossen")
                 return

@@ -82,6 +82,8 @@ def createlinkfl(
                     nächste Kante der Fläche berücksichtigt wird
     """
 
+    db_qkan.loadmodule("linkflaechen")
+
     # Statusmeldung in der Anzeige
     progress_bar = QProgressBar(iface.messageBar())
     progress_bar.setRange(0, 100)
@@ -95,13 +97,13 @@ def createlinkfl(
     # MakeValid auf Tabellen "flaechen" und "tezg".
     if flaechen_bereinigen:
         if not db_qkan.sql(
-            "UPDATE flaechen SET geom=MakeValid(geom)", "k_link.createlinkfl (1)"
+            db_qkan.load_query("linkflaechen_update_flaechen_makevalid"), "k_link.createlinkfl (1)"
         ):
             progress_bar.reset()
             return False
 
         if not db_qkan.sql(
-            "UPDATE tezg SET geom=MakeValid(geom)", "k_link.createlinkfl (2)"
+            db_qkan.load_query("linkflaechen_update_tezg_makevalid"), "k_link.createlinkfl (2)"
         ):
             progress_bar.reset()
             return False
@@ -179,53 +181,30 @@ def createlinkfl(
     if mit_verschneidung:
         # 1. Nicht zu verschneidende Flächen: aufteilen <> 'ja'
         if links_in_tezg:
-            sql = f"""WITH linkadd AS (
-                          SELECT fl.flnam, fl.teilgebiet, fl.abflussparameter, fl.geom
-                          FROM flaechen AS fl
-                          LEFT JOIN linkfl AS lf
-                          ON lf.flnam = fl.flnam
-                          WHERE ((fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL) AND
-                                lf.pk IS NULL AND area(fl.geom) > {mindestflaeche}{ausw_einf})
-                      INSERT INTO linkfl (flnam, tezgnam, teilgebiet, geom)
-                      SELECT la.flnam, tg.flnam AS tezgnam, la.teilgebiet, la.geom
-                      FROM linkadd AS la
-                      INNER JOIN tezg AS tg
-                      ON within(PointOnSurface(la.geom),tg.geom){ausw_teil}
-                      """
+            sql = db_qkan.load_query(
+                "linkflaechen_createlinkfl_insert_mit_tezg",
+                mindestflaeche=mindestflaeche,
+                ausw_einf=ausw_einf,
+                ausw_teil=ausw_teil,
+            )
 
         else:
-            sql = f"""WITH linkadd AS (
-                          SELECT fl.flnam, fl.teilgebiet, fl.abflussparameter, fl.geom
-                          FROM flaechen AS fl
-                          LEFT JOIN linkfl AS lf
-                          ON lf.flnam = fl.flnam
-                          WHERE ((fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL) AND
-                                lf.pk IS NULL AND area(fl.geom) > {mindestflaeche}{ausw_einf})
-                      INSERT INTO linkfl (flnam, tezgnam, teilgebiet, geom)
-                      SELECT la.flnam, NULL AS tezgnam, la.teilgebiet, la.geom
-                      FROM linkadd AS la"""
+            sql = db_qkan.load_query(
+                "linkflaechen_createlinkfl_insert_ohne_tezg",
+                mindestflaeche=mindestflaeche,
+                ausw_einf=ausw_einf,
+            )
 
         if not db_qkan.sql(sql, "QKan_LinkFlaechen (4a)"):
             progress_bar.reset()
             return False
 
         # 1. Zu verschneidende Flächen: aufteilen = 'ja'
-        sql = f"""WITH linkadd AS (
-                      SELECT fl.flnam, tg.flnam AS tezgnam, fl.teilgebiet, 
-                             fl.geom AS geof, tg.geom AS geot
-                      FROM flaechen AS fl
-                      INNER JOIN tezg AS tg
-                      ON intersects(fl.geom, tg.geom) AND fl.geom IS NOT NULL AND tg.geom IS NOT NULL
-                      LEFT JOIN linkfl AS lf
-                      ON lf.flnam = fl.flnam AND lf.tezgnam = tg.flnam
-                      WHERE (fl.aufteilen = 'ja' OR fl.aufteilen) AND
-                            lf.pk IS NULL AND area(fl.geom) > {mindestflaeche}{ausw_vers})
-                  INSERT INTO linkfl (flnam, tezgnam, teilgebiet, geom)
-                  SELECT la.flnam, la.tezgnam, la.teilgebiet, 
-                          CastToMultiPolygon(CollectionExtract(intersection(la.geof,la.geot),3)) AS geom
-                  FROM linkadd AS la 
-                  WHERE geom IS NOT NULL AND 
-                        area(geom) > {mindestflaeche}"""
+        sql = db_qkan.load_query(
+            "linkflaechen_createlinkfl_insert_verschneidung",
+            mindestflaeche=mindestflaeche,
+            ausw_vers=ausw_vers,
+        )
 
         if not db_qkan.sql(sql, "QKan_LinkFlaechen (4b)"):
             progress_bar.reset()
@@ -259,20 +238,11 @@ def createlinkfl(
         # WHERE lpk IS NULL AND area(geom) > {minfl}""".format(ausw_einf=ausw_einf, ausw_teil=ausw_teil, minfl=mindestflaeche)
 
     else:
-        sql = f"""WITH linkadd AS (
-                SELECT
-                    linkfl.pk AS lpk, fl.flnam, fl.aufteilen, fl.teilgebiet, 
-                    fl.geom
-                FROM flaechen AS fl
-                LEFT JOIN linkfl
-                ON linkfl.flnam = fl.flnam
-                WHERE ((fl.aufteilen <> 'ja' OR fl.aufteilen IS NULL) 
-                    AND linkfl.pk IS NULL
-                    AND fl.geom IS NOT NULL){ausw_einf})
-            INSERT INTO linkfl (flnam, teilgebiet, geom)
-            SELECT flnam, teilgebiet, geom
-            FROM linkadd
-            WHERE area(geom) > {mindestflaeche}"""
+        sql = db_qkan.load_query(
+            "linkflaechen_createlinkfl_insert_ohne_verschneidung",
+            mindestflaeche=mindestflaeche,
+            ausw_einf=ausw_einf,
+        )
 
         if not db_qkan.sql(sql, "QKan_LinkFlaechen (4c)"):
             progress_bar.reset()
@@ -283,7 +253,7 @@ def createlinkfl(
     # Jetzt werden die Flächenobjekte mit einem Buffer erweitert und jeweils neu
     # hinzugekommmene mögliche Zuordnungen eingetragen.
 
-    sql = f"UPDATE linkfl SET gbuf = CastToMultiPolygon(buffer(geom,?)) WHERE linkfl.glink IS NULL"
+    sql = db_qkan.load_query("linkflaechen_update_linkfl_gbuf")
     if not db_qkan.sql(sql, "createlinkfl (2)", parameters=(suchradius,)):
         progress_bar.reset()
         return False
@@ -324,43 +294,21 @@ def createlinkfl(
 
     if links_in_tezg and mit_verschneidung:
         # links_in_tezg funktioniert nur, wenn mit_verschneidung aktiviert ist
-        sql = f"""WITH tlink AS
-            (SELECT lf.pk AS pk,
-                    ha.haltnam, 
-                    Distance(ha.geom,{bezug}) AS dist, 
-                    ha.geom AS geohal, lf.geom AS geolf
-                FROM (SELECT * FROM haltungen WHERE rwanschluss = 1) AS ha
-                INNER JOIN linkfl AS lf
-                ON Intersects(ha.geom,lf.gbuf)
-                INNER JOIN tezg AS tg
-                ON tg.flnam = lf.tezgnam
-                WHERE (within(centroid(ha.geom),tg.geom) and lf.glink IS NULL 
-                    and ha.geom IS NOT NULL and lf.gbuf IS NOT NULL and tg.geom IS NOT NULL){auswha})
-            UPDATE linkfl SET (glink, haltnam) = 
-            (   SELECT MakeLine(PointOnSurface(Buffer(t1.geolf, -1.1*{fangradius})),Centroid(t1.geohal)), t1.haltnam
-                FROM tlink AS t1
-                INNER JOIN (SELECT pk, Min(dist) AS dmin FROM tlink GROUP BY pk) AS t2
-                ON t1.pk=t2.pk AND t1.dist <= t2.dmin + 0.000001
-                WHERE linkfl.pk = t1.pk AND area(Buffer(t1.geolf, -1.1*{fangradius})) IS NOT NULL)
-            WHERE linkfl.glink IS NULL {auswlinkfl}"""
+        sql = db_qkan.load_query(
+            "linkflaechen_createlinkfl_update_glink_in_tezg",
+            bezug=bezug,
+            fangradius=fangradius,
+            auswha=auswha,
+            auswlinkfl=auswlinkfl,
+        )
     else:
-        sql = f"""WITH tlink AS
-            (SELECT lf.pk AS pk,
-                    ha.haltnam, 
-                    Distance(ha.geom,{bezug}) AS dist, 
-                    ha.geom AS geohal, lf.geom AS geolf
-                FROM (SELECT * FROM haltungen WHERE rwanschluss = 1) AS ha
-                INNER JOIN linkfl AS lf
-                ON Intersects(ha.geom,lf.gbuf)
-                WHERE lf.glink IS NULL
-                    and ha.geom IS NOT NULL and lf.gbuf IS NOT NULL {auswha})
-            UPDATE linkfl SET (glink, haltnam) =  
-            (   SELECT MakeLine(PointOnSurface(Buffer(t1.geolf, -1.1*{fangradius})),Centroid(t1.geohal)), t1.haltnam
-                FROM tlink AS t1
-                INNER JOIN (SELECT pk, Min(dist) AS dmin FROM tlink GROUP BY pk) AS t2
-                ON t1.pk=t2.pk AND t1.dist <= t2.dmin + 0.000001
-                WHERE linkfl.pk = t1.pk AND area(Buffer(t1.geolf, -1.1*{fangradius})) IS NOT NULL)
-            WHERE linkfl.glink IS NULL {auswlinkfl}"""
+        sql = db_qkan.load_query(
+            "linkflaechen_createlinkfl_update_glink",
+            bezug=bezug,
+            fangradius=fangradius,
+            auswha=auswha,
+            auswlinkfl=auswlinkfl,
+        )
 
     logger.debug("\nSQL-3a:\n{}\n".format(sql))
 
@@ -374,7 +322,7 @@ def createlinkfl(
     # nächste Haltung zu weit entfernt ist.
 
     if not db_qkan.sql(
-        "DELETE FROM linkfl WHERE glink IS NULL", "QKan_LinkFlaechen (7)"
+        db_qkan.load_query("linkflaechen_delete_linkfl_glink_null"), "QKan_LinkFlaechen (7)"
     ):
         progress_bar.reset()
         return False
@@ -427,6 +375,8 @@ def createlinksw(
     :param epsg: Nummer des Projektionssystems
     """
 
+    db_qkan.loadmodule("linkflaechen")
+
     # ------------------------------------------------------------------------------
     # Die Bearbeitung erfolgt analog zu createlinkfl, mit folgenden Änderungen:
     # - Es gibt keine Auswahl nach Abflussparametern und Entwässerungssystem
@@ -465,12 +415,7 @@ def createlinksw(
     else:
         auswahl = ""
 
-    sql = f"""INSERT INTO linksw (elnam, teilgebiet, geom)
-            SELECT einleit.elnam, einleit.teilgebiet,buffer(einleit.geom,0.5)
-            FROM einleit
-            LEFT JOIN linksw
-            ON linksw.elnam = einleit.elnam
-            WHERE linksw.pk IS NULL {auswahl}"""
+    sql = db_qkan.load_query("linkflaechen_createlinksw_insert", auswahl=auswahl)
 
     # logger.debug(u'\nSQL-2a:\n{}\n'.format(sql))
 
@@ -483,7 +428,7 @@ def createlinksw(
     # hinzugekommmene mögliche Zuordnungen eingetragen.
     # Wenn das Attribut "haltnam" vergeben ist, gilt die Fläche als zugeordnet.
 
-    sql = f"""UPDATE linksw SET gbuf = CastToMultiPolygon(buffer(geom,?)) WHERE linksw.glink IS NULL"""
+    sql = db_qkan.load_query("linkflaechen_update_linksw_gbuf")
 
     if not db_qkan.sql(sql, "QKan_LinkSW (2)", parameters=(suchradius,)):
         return False
@@ -510,27 +455,11 @@ def createlinksw(
     # Da diese Abfrage nur für neu zu erstellende Verknüpfungen gelten soll (also noch kein Eintrag
     # im Feld "einleit.haltnam" -> sw.haltnam -> tlink.linkhal -> t1.linkhal).
 
-    sql = f"""WITH tlink AS
-            (SELECT sw.pk AS pk,
-                    Distance(hal.geom,sw.geom) AS dist, 
-                    hal.geom AS geohal, sw.geom AS geosw
-                FROM
-                    (SELECT * FROM haltungen WHERE rwanschluss = 1) AS hal
-                INNER JOIN
-                    linksw AS sw
-                ON Intersects(hal.geom,sw.gbuf)
-                WHERE sw.glink IS NULL AND hal.ROWID IN
-                (   SELECT ROWID FROM SpatialIndex WHERE
-                    f_table_name = 'haltungen' AND
-                    search_frame = sw.gbuf)
-                    and hal.geom IS NOT NULL and sw.gbuf IS NOT NULL {auswahl})
-            UPDATE linksw SET glink =  
-            (SELECT MakeLine(PointOnSurface(t1.geosw),Centroid(t1.geohal))
-            FROM tlink AS t1
-            INNER JOIN (SELECT pk, Min(dist) AS dmin FROM tlink GROUP BY pk) AS t2
-            ON t1.pk=t2.pk AND t1.dist <= t2.dmin + 0.000001
-            WHERE linksw.pk = t1.pk)
-            WHERE linksw.glink IS NULL {auswlin}"""
+    sql = db_qkan.load_query(
+        "linkflaechen_createlinksw_update_glink",
+        auswahl=auswahl,
+        auswlin=auswlin,
+    )
 
     # logger.debug(u'\nSQL-3a:\n{}\n'.format(sql))
 
@@ -542,7 +471,7 @@ def createlinksw(
     # Löschen der Datensätze in linksw, bei denen keine Verbindung erstellt wurde, weil die
     # nächste Haltung zu weit entfernt ist.
 
-    if not db_qkan.sql("DELETE FROM linksw WHERE glink IS NULL", "QKan_LinkSW (7)"):
+    if not db_qkan.sql(db_qkan.load_query("linkflaechen_delete_linksw_glink_null"), "QKan_LinkSW (7)"):
         return False
 
     # Aktualisierung des logischen Cache
@@ -601,6 +530,8 @@ def assigntgeb(
 
     """
 
+    db_qkan.loadmodule("linkflaechen")
+
     # Statusmeldung in der Anzeige
     progress_bar = QProgressBar(iface.messageBar())
     progress_bar.setRange(0, 100)
@@ -616,13 +547,13 @@ def assigntgeb(
     # MakeValid auf Tabellen "flaechen" und "tezg".
     if flaechen_bereinigen:
         if not db_qkan.sql(
-            "UPDATE flaechen SET geom=MakeValid(geom)", "k_link.assigntgeb (1)"
+            db_qkan.load_query("linkflaechen_update_flaechen_makevalid"), "k_link.assigntgeb (1)"
         ):
             progress_bar.reset()
             return False
 
         if not db_qkan.sql(
-            "UPDATE tezg SET geom=MakeValid(geom)", "k_link.assigntgeb (2)"
+            db_qkan.load_query("linkflaechen_update_tezg_makevalid"), "k_link.assigntgeb (2)"
         ):
             progress_bar.reset()
             return False
@@ -645,53 +576,27 @@ def assigntgeb(
 
         if auswahltyp == enums.AuswahlTyp.WITHIN:
             if bufferradius <= 0.00001:
-                sql = f"""
-                UPDATE {table} SET teilgebiet = 
-                (SELECT teilgebiete.tgnam
-                    FROM teilgebiete
-                    INNER JOIN {table} AS tt
-                    ON within(tt.{geom}, teilgebiete.geom)
-                    WHERE tt.pk = {table}.pk
-                        and tt.{geom} IS NOT NULL and teilgebiete.geom IS NOT NULL {auswahl_1})
-                WHERE {table}.pk IN
-                (SELECT {table}.pk
-                    FROM teilgebiete
-                    INNER JOIN {table}
-                    ON within({table}.{geom}, teilgebiete.geom)
-                    WHERE {table}.{geom} IS NOT NULL and teilgebiete.geom IS NOT NULL {auswahl_1})
-                """
+                sql = db_qkan.load_query(
+                    "linkflaechen_assigntgeb_within_no_buffer",
+                    table=table,
+                    geom=geom,
+                    auswahl_1=auswahl_1,
+                )
             else:
-                sql = f"""
-                UPDATE {table} SET teilgebiet = 
-                (SELECT teilgebiete.tgnam
-                    FROM teilgebiete
-                    INNER JOIN {table} AS tt
-                    ON within(tt.{geom}, buffer(teilgebiete.geom, {bufferradius}))
-                    WHERE tt.pk = {table}.pk
-                        and tt.{geom} IS NOT NULL and teilgebiete.geom IS NOT NULL{auswahl_1})
-                WHERE {table}.pk IN
-                (SELECT {table}.pk
-                    FROM teilgebiete
-                    INNER JOIN {table}
-                    ON within({table}.{geom}, buffer(teilgebiete.geom, {bufferradius}))
-                    WHERE {table}.{geom} IS NOT NULL and teilgebiete.geom IS NOT NULL{auswahl_1})
-                """
+                sql = db_qkan.load_query(
+                    "linkflaechen_assigntgeb_within_buffer",
+                    table=table,
+                    geom=geom,
+                    bufferradius=bufferradius,
+                    auswahl_1=auswahl_1,
+                )
         elif auswahltyp == enums.AuswahlTyp.OVERLAPS:
-            sql = f"""
-            UPDATE {table} SET teilgebiet = 
-            (	SELECT teilgebiete.tgnam
-                FROM teilgebiete
-                INNER JOIN {table} AS tt
-                ON intersects(tt.{geom},teilgebiete.geom)
-                WHERE tt.pk = {table}.pk
-                    and tt.{geom} IS NOT NULL and teilgebiete.geom IS NOT NULL{auswahl_1})
-            WHERE {table}.pk IN
-            (	SELECT {table}.pk
-                FROM teilgebiete
-                INNER JOIN {table}
-                ON intersects({table}.{geom},teilgebiete.geom)
-                WHERE {table}.{geom} IS NOT NULL and teilgebiete.geom IS NOT NULL{auswahl_1})
-            """
+            sql = db_qkan.load_query(
+                "linkflaechen_assigntgeb_overlaps",
+                table=table,
+                geom=geom,
+                auswahl_1=auswahl_1,
+            )
         else:
             fehlermeldung(
                 "Programmfehler",
@@ -737,6 +642,8 @@ def reload_group(iface: QgisInterface, db_qkan: DBConnection, gruppenname: str) 
     :param gruppenname: Bezeichnung der Gruppe, unter der die Teilgebietszuordnungen abgelegt wurden.
     """
 
+    db_qkan.loadmodule("linkflaechen")
+
     # Statusmeldung in der Anzeige
     progress_bar = QProgressBar(iface.messageBar())
     progress_bar.setRange(0, 100)
@@ -758,19 +665,11 @@ def reload_group(iface: QgisInterface, db_qkan: DBConnection, gruppenname: str) 
     ]
 
     for table in tablist:
-        sql = f"""
-        UPDATE {table}
-        SET teilgebiet = 
-        (   SELECT g.teilgebiet
-            FROM gruppen AS g
-            WHERE g.grnam = '{gruppenname}' AND
-            g.tabelle = '{table}' AND
-            {table}.pk = g.pktab)
-        WHERE {table}.pk IN
-        (   SELECT g.teilgebiet
-            FROM gruppen AS g
-            WHERE g.grnam = '{gruppenname}' AND
-            g.tabelle = '{table}')"""
+        sql = db_qkan.load_query(
+            "linkflaechen_reload_group_table",
+            table=table,
+            gruppenname=gruppenname,
+        )
         # logger.debug(u'reloadgroup.sql: \n{}'.format(sql))
 
         if not db_qkan.sql(sql, "QKan_LinkFlaechen.reloadgroup (9): \n"):
@@ -799,6 +698,8 @@ def store_group(
     :param kommentar:
     """
 
+    db_qkan.loadmodule("linkflaechen")
+
     # Statusmeldung in der Anzeige
     progress_bar = QProgressBar(iface.messageBar())
     progress_bar.setRange(0, 100)
@@ -820,32 +721,19 @@ def store_group(
     ]
 
     # Abfrage setzt sich aus den mit UNION verbundenen Tabellen aus tablist zusammen...
-    sql = f"""
-    INSERT INTO gruppen
-    (grnam, pktab, teilgebiet, tabelle, kommentar)
-    SELECT 
-      '{gruppenname}' AS grnam,
-      pk AS pktab, 
-      teilgebiet AS teilgebiet, 
-      'haltungen' AS tabelle, 
-      '{kommentar}' AS kommentar
-    FROM
-      haltungen
-    WHERE teilgebiet <> '' And teilgebiet IS NOT NULL
-    """
+    sql = db_qkan.load_query(
+        "linkflaechen_store_group_base",
+        gruppenname=gruppenname,
+        kommentar=kommentar,
+    )
 
     for table in tablist[1:]:
-        sql += f"""UNION
-        SELECT 
-          '{gruppenname}' AS grnam,
-          pk AS pktab, 
-          teilgebiet AS teilgebiet, 
-          '{table}' AS tabelle, 
-          '{kommentar}' AS kommentar
-        FROM
-          {table}
-        WHERE teilgebiet <> '' And teilgebiet IS NOT NULL
-        """
+        sql += db_qkan.load_query(
+            "linkflaechen_store_group_union_part",
+            gruppenname=gruppenname,
+            table=table,
+            kommentar=kommentar,
+        )
 
     # logger.debug(u'\nSQL-4:\n{}\n'.format(sql))
     # Zusammengesetzte SQL-Abfrage ausführen...

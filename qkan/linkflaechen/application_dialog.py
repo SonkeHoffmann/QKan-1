@@ -254,8 +254,12 @@ class CreatelineflDialog(QKanDialog, FORM_CLASS_createlinefl):  # type: ignore
                 )
                 return
 
-            sql = f"""SELECT count(*) AS anzahl FROM flaechen
-                    WHERE ((aufteilen <> 'ja' AND not aufteilen) OR aufteilen IS NULL){auswahl}"""
+            db_qkan.loadmodule("linkflaechen")
+
+            sql = db_qkan.load_query(
+                "linkflaechen_count_flaechen_ohne_aufteilen",
+                auswahl=auswahl,
+            )
 
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.countselectionfl (1)"):
                 return
@@ -267,8 +271,9 @@ class CreatelineflDialog(QKanDialog, FORM_CLASS_createlinefl):  # type: ignore
 
             # Zu berücksichtigende zu verschneidende Flächen zählen
 
-            sql = (
-                f"SELECT count(*) AS anzahl FROM flaechen WHERE aufteilen = 'ja' {auswahl}"
+            sql = db_qkan.load_query(
+                "linkflaechen_count_flaechen_aufteilen_ja",
+                auswahl=auswahl,
             )
             logger.debug("sql Flaechen zu verschneiden:\n{}".format(sql))
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.countselectionfl (2)"):
@@ -297,7 +302,7 @@ class CreatelineflDialog(QKanDialog, FORM_CLASS_createlinefl):  # type: ignore
                         "', '".join(liste_teilgebiete)
                     )
 
-            sql = f"SELECT count(*) AS anzahl FROM haltungen {auswahl}"
+            sql = db_qkan.load_query("linkflaechen_count_haltungen", auswahl=auswahl)
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.countselectionfl (3)"):
                 return
             daten = db_qkan.fetchone()
@@ -415,7 +420,8 @@ class CreatelineswDialog(QDialog, FORM_CLASS_createlinesw):  # type: ignore
                 )
 
         with DBConnection(self.plugin.database_name) as db_qkan:
-            sql = f"SELECT count(*) AS anzahl FROM haltungen {auswahl}"
+            db_qkan.loadmodule("linkflaechen")
+            sql = db_qkan.load_query("linkflaechen_count_haltungen", auswahl=auswahl)
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.countselectionsw (1)"):
                 return
             daten = db_qkan.fetchone()
@@ -432,7 +438,7 @@ class CreatelineswDialog(QDialog, FORM_CLASS_createlinesw):  # type: ignore
             else:
                 auswahl = ""
 
-            sql = f"SELECT count(*) AS anzahl FROM einleit {auswahl}"
+            sql = db_qkan.load_query("linkflaechen_count_einleit", auswahl=auswahl)
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.countselectionsw (2)"):
                 return
             daten = db_qkan.fetchone()
@@ -571,13 +577,6 @@ class ManagegroupsDialog(QDialog, FORM_CLASS_managegroups):  # type: ignore
         if len(gr) > 0:
             self.gruppe = gr[0]  # Im Formular gesetzt: selectionMode = SingleSelection
 
-            sql = """
-                SELECT teilgebiet, tabelle, printf('%i',count(*)) AS Anzahl
-                FROM gruppen
-                WHERE grnam = ?
-                GROUP BY tabelle, teilgebiet
-                ORDER BY tabelle, teilgebiet
-                """
             with DBConnection(self.plugin.database_name) as db_qkan:
                 if not db_qkan.connected:
                     logger.error(
@@ -585,6 +584,9 @@ class ManagegroupsDialog(QDialog, FORM_CLASS_managegroups):  # type: ignore
                         "QKan-Datenbank %s wurde nicht gefunden oder war nicht aktuell!\nAbbruch!", self.database_name
                     )
                     return
+
+                db_qkan.loadmodule("linkflaechen")
+                sql = db_qkan.load_query("linkflaechen_list_group_attributes")
 
                 if not db_qkan.sql(
                     sql, "QKan_LinkFlaechen.listGroupAttr (1)", parameters=(self.gruppe,)
@@ -609,14 +611,14 @@ class ManagegroupsDialog(QDialog, FORM_CLASS_managegroups):  # type: ignore
     def show_groups(self) -> None:
         """Abfragen der Tabelle gruppen nach verwendeten vorhandenen Gruppen"""
 
-        sql = """SELECT grnam FROM gruppen GROUP BY grnam"""
-
         with DBConnection(self.plugin.database_name) as db_qkan:
             if not db_qkan.connected:
                 logger.error(
                     "Fehler in linkflaechen.application_dialog.show_groups:\n"
                     "QKan-Datenbank %s wurde nicht gefunden oder war nicht aktuell!\nAbbruch!", self.database_name
                 )
+            db_qkan.loadmodule("linkflaechen")
+            sql = db_qkan.load_query("linkflaechen_select_grnam")
             if not db_qkan.sql(sql, "QKan_LinkFlaechen.showgroups (1)"):
                 return
             daten = db_qkan.fetchall()

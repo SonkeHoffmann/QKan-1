@@ -60,6 +60,8 @@ def updatelinkfl(
     und die Korrektur nur für die darin nicht enthaltenen Datensätze durchgeführt.
     """
 
+    db_qkan.loadmodule("linkflaechen")
+
     # Statusmeldung in der Anzeige
     # global progress_bar
     # progress_bar = QProgressBar(iface.messageBar())
@@ -74,12 +76,12 @@ def updatelinkfl(
     # MakeValid auf Tabellen "flaechen" und "tezg".
     if flaechen_bereinigen:
         if not db_qkan.sql(
-            "UPDATE flaechen SET geom=MakeValid(geom)", "k_link.createlinkfl (1)"
+            db_qkan.load_query("linkflaechen_update_flaechen_makevalid"), "k_link.createlinkfl (1)"
         ):
             # progress_bar.reset()
             return False
         if not db_qkan.sql(
-            "UPDATE tezg SET geom=MakeValid(geom)", "k_link.createlinkfl (2)"
+            db_qkan.load_query("linkflaechen_update_tezg_makevalid"), "k_link.createlinkfl (2)"
         ):
             # progress_bar.reset()
             return False
@@ -94,7 +96,7 @@ def updatelinkfl(
     # Löschen von Datensätzen ohne Linienobjekt
     if deletelinkGeomNone:
         if not db_qkan.sql(
-            "DELETE FROM linkfl WHERE glink IS NULL",
+            db_qkan.load_query("linkflaechen_delete_linkfl_glink_null"),
             "db_qkan: linkflaechen.updatelinks.updatelinkfl (1)",
         ):
             return False
@@ -104,17 +106,7 @@ def updatelinkfl(
     # aus linkfl erstellt,
     # so dass im UPDATE-Teil nur noch alle darin enthaltenen Verknüpfungen bearbeitet werden
 
-    sql = """WITH linksvalid AS
-        (   SELECT lf.pk
-            FROM linkfl AS lf
-            INNER JOIN flaechen AS fl
-            ON lf.flnam = fl.flnam
-            WHERE fl.geom IS NOT NULL AND within(StartPoint(lf.glink),fl.geom))
-        UPDATE linkfl SET flnam =
-        (   SELECT flnam
-            FROM flaechen AS fl
-            WHERE within(StartPoint(linkfl.glink),fl.geom) AND fl.geom IS NOT NULL)
-        WHERE linkfl.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinkfl_set_flnam")
 
     if not db_qkan.sql(sql, "db_qkan: linkflaechen.updatelinks.updatelinkfl (2)"):
         return False
@@ -124,17 +116,7 @@ def updatelinkfl(
     # 2. Haltungen in "linkfl" eintragen (ohne Einschränkung auf auswahl)
     # Logik wie vor
 
-    sql = """WITH linksvalid AS
-        (   SELECT lf.pk
-            FROM linkfl AS lf
-            INNER JOIN haltungen AS ha
-            ON lf.haltnam = ha.haltnam
-            WHERE ha.geom IS NOT NULL AND Distance(EndPoint(lf.glink),ha.geom) < ?)
-        UPDATE linkfl SET haltnam =
-        (   SELECT haltnam
-            FROM haltungen AS ha
-            WHERE Distance(EndPoint(linkfl.glink),ha.geom) < ?)
-        WHERE linkfl.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinkfl_set_haltnam")
 
     if not db_qkan.sql(
         sql,
@@ -149,20 +131,7 @@ def updatelinkfl(
     # Gleiche Logik wie zuvor. Zusätzlich sind alle Flächen, die nicht aufgeteilt werden müssen, in
     # linksvalid enthalten, da Sie auf keinen Fall einen Eintrag in "tezgnam" erhalten sollen.
 
-    sql = """WITH linksvalid AS
-        (   SELECT lf.pk
-            FROM linkfl AS lf
-            INNER JOIN tezg AS tg
-            ON lf.tezgnam = tg.flnam
-            INNER JOIN flaechen AS fl
-            ON lf.flnam = fl.flnam
-            WHERE ((fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL) OR 
-                  (tg.geom IS NOT NULL AND within(StartPoint(lf.glink),buffer(tg.geom, ?))))
-        UPDATE linkfl SET tezgnam =
-        (   SELECT flnam
-            FROM tezg AS tg
-            WHERE within(StartPoint(linkfl.glink),tg.geom))
-        WHERE linkfl.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinkfl_set_tezgnam")
 
     if not db_qkan.sql(
         sql, "db_qkan: linkflaechen.updatelinks.updatelinkfl (4)", parameters=(radiusHal,)
@@ -179,6 +148,8 @@ def updatelinkfl(
 def updatelinksw(
     db_qkan: DBConnection, radiusHal: float = 0.1, deletelinkGeomNone: bool = True
 ) -> bool:
+    db_qkan.loadmodule("linkflaechen")
+
     # Datenvorbereitung: Verknüpfung von Einleitpunkt zu Haltung wird durch Tabelle "linksw"
     # repräsentiert. Diese Zuordnung wird zunächst in "einleit.haltnam" übertragen.
 
@@ -195,24 +166,14 @@ def updatelinksw(
 
     # Löschen von Datensätzen ohne Linienobjekt
     if deletelinkGeomNone:
-        sql = """DELETE FROM linksw WHERE glink IS NULL"""
+        sql = db_qkan.load_query("linkflaechen_delete_linksw_glink_null")
 
         if not db_qkan.sql(sql, "db_qkan: linkflaechen.updatelinks.updatelinksw (2)"):
             return False
 
     # 1. einleit-Punkt in "linksw" eintragen (ohne Einschränkung auf auswahl)
 
-    sql = """WITH linksvalid AS
-        (   SELECT lf.pk
-            FROM linksw AS lf
-            INNER JOIN einleit AS el
-            ON lf.elnam = el.elnam
-            WHERE el.geom IS NOT NULL AND Distance(StartPoint(lf.glink), el.geom) < ?)
-        UPDATE linksw SET elnam =
-        (   SELECT elnam
-            FROM einleit AS el
-            WHERE contains(buffer(StartPoint(linksw.glink), ?), el.geom))
-        WHERE linksw.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinksw_set_elnam")
 
     if not db_qkan.sql(
         sql,
@@ -225,17 +186,7 @@ def updatelinksw(
 
     # 2. Haltungen in "linksw" eintragen (ohne Einschränkung auf auswahl)
 
-    sql = """WITH linksvalid AS
-        (   SELECT lf.pk
-            FROM linksw AS lf
-            INNER JOIN haltungen AS ha
-            ON lf.haltnam = ha.haltnam
-            WHERE ha.geom IS NOT NULL AND Distance(EndPoint(lf.glink),ha.geom) < ?)
-        UPDATE linksw SET haltnam =
-        (   SELECT haltnam
-            FROM haltungen AS ha
-            WHERE Distance(EndPoint(linksw.glink),ha.geom) < ?)
-        WHERE linksw.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinksw_set_haltnam")
 
     logger.debug("\nSQL-4b:\n{}\n".format(sql))
 
@@ -252,17 +203,7 @@ def updatelinksw(
 
     # 3.2 Eintrag vornehmen
 
-    sql = """WITH linksvalid AS
-        (   SELECT el.pk
-            FROM einleit AS el
-            INNER JOIN linksw AS lf
-            ON el.elnam = lf.elnam
-            WHERE el.haltnam <> lf.haltnam)
-        UPDATE einleit SET haltnam =
-        (   SELECT haltnam
-            FROM linksw AS lf
-            WHERE einleit.elnam = lf.elnam)
-        WHERE einleit.pk IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinksw_sync_einleit_haltnam")
 
     logger.debug("\nSQL-4d:\n{}\n".format(sql))
 
@@ -282,30 +223,22 @@ def updatelinksw(
 def updatelinkageb(
     db_qkan: DBConnection, radius_hal: float = 0.1, deletelink_geom_none: bool = True
 ) -> bool:
+    db_qkan.loadmodule("linkflaechen")
+
     # Datenvorbereitung: Verknüpfung von Aussengebiet zu Schacht wird durch Tabelle "linkageb"
     # repräsentiert. Diese Zuordnung wird zunächst in "aussengebiete.schnam" übertragen.
 
     # Löschen von Datensätzen ohne Linienobjekt
     if deletelink_geom_none:
         if not db_qkan.sql(
-            "DELETE FROM linkageb WHERE glink IS NULL",
+            db_qkan.load_query("linkflaechen_delete_linkageb_glink_null"),
             "db_qkan: linkflaechen.updatelinks.updatelinkageb (2)",
         ):
             return False
 
     # 1. Aussengebiet in "linkageb" eintragen (ohne Einschränkung auf auswahl)
 
-    sql = """WITH linksvalid AS
-        (   SELECT lg.pk
-            FROM linkageb AS lg
-            LEFT JOIN aussengebiete AS ag
-            ON lg.gebnam = ag.gebnam
-            WHERE ag.pk IS NOT NULL AND within(StartPoint(lg.glink), ag.geom))
-        UPDATE linkageb SET gebnam =
-        (   SELECT gebnam
-            FROM aussengebiete AS ag
-            WHERE within(StartPoint(linkageb.glink),ag.geom))
-        WHERE linkageb.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinkageb_set_gebnam")
 
     if not db_qkan.sql(sql, "db_qkan: linkflaechen.updatelinks.updatelinkageb (3)"):
         return False
@@ -314,17 +247,7 @@ def updatelinkageb(
 
     # 2. Schächte in "linkageb" eintragen (ohne Einschränkung auf auswahl)
 
-    sql = """WITH linksvalid AS
-        (   SELECT lg.pk
-            FROM linkageb AS lg
-            LEFT JOIN schaechte AS sc
-            ON lg.schnam = sc.schnam
-            WHERE sc.pk IS NOT NULL AND contains(buffer(EndPoint(lg.glink),?),sc.geom))
-        UPDATE linkageb SET schnam =
-        (   SELECT schnam
-            FROM schaechte AS sc
-            WHERE contains(buffer(EndPoint(linkageb.glink),?),sc.geom))
-        WHERE linkageb.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinkageb_set_schnam")
 
     logger.debug("\nSQL-4b:\n%s\n", sql)
 
@@ -341,17 +264,7 @@ def updatelinkageb(
 
     # 3.2 Eintrag vornehmen
 
-    sql = """WITH linksvalid AS
-        (   SELECT ag.pk
-            FROM aussengebiete AS ag
-            INNER JOIN linkageb AS lg
-            ON ag.gebnam = lg.gebnam
-            WHERE ag.schnam == lg.schnam)
-        UPDATE aussengebiete SET schnam =
-        (   SELECT schnam
-            FROM linkageb AS lg
-            WHERE aussengebiete.gebnam = lg.gebnam)
-        WHERE aussengebiete.pk NOT IN linksvalid"""
+    sql = db_qkan.load_query("linkflaechen_updatelinkageb_sync_aussengebiete_schnam")
 
     logger.debug("\nSQL-4d:\n%s\n", sql)
 
