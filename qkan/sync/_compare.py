@@ -310,26 +310,63 @@ class CompareTask:
             # anz = len(db_qkan.sqls)
             # logger.debug(f"Anzahl SQLs in 'sync': {anz}")
 
+            # 1. Sync-Tabellen löschen
             for tabnam, userchoice, _, _ in tables:
                 tableexist = db_qkan.attrlist(tabnam)
+
                 if userchoice and tableexist:
+                    sqlnam = f'sync_drop_{tabnam}'
+                    if not db_qkan.sqlyml(
+                            sqlnam,
+                            stmt_category='comp_1',
+                    ):
+                        logger.error_code(f'SQL-Fehler: {sqlnam=}, {tabnam=}')
+                    if tabnam not in enums.SyncTables.TABLES_ATTR.value:
+                        sqlnam = f'sync_drop_{tabnam}_geom'
+                        if not db_qkan.sqlyml(
+                                sqlnam,
+                                stmt_category='comp_2',
+                        ):
+                            logger.error_code(f'SQL-Fehler: {sqlnam=}, {tabnam=}')
+            db_qkan.commit()
+
+            for tabnam, userchoice, _, _ in tables:
+                tableexist = db_qkan.attrlist(tabnam)
+
+                if userchoice and tableexist:
+            # 2. Sync-Tabellen (neu) erstellen und Vergleich ausführen
+                    if tabnam in enums.SyncTables.TABLES_ATTR.value:
+                        sqlnames = [
+                            f'sync_create_{tabnam}',
+                        ]
+                    else:
+                        sqlnames = [
+                            f'sync_create_{tabnam}',
+                            f'sync_create_{tabnam}_geom',
+                        ]
+
+                    for sqlnam in sqlnames:
+                        if not db_qkan.sqlyml(
+                            sqlnam,
+                            stmt_category='comp_3',
+                            parameters={
+                                'epsg': QKan.config.epsg,
+                            }
+                        ):
+                            logger.error_code(f'SQL-Fehler: {sqlnam=}, {tabnam=}')
+
+            # 3. Vergleich ausführen
                     sqlnames = [
-                        f'sync_create_{tabnam}',
-                        f'sync_create_{tabnam}_geom',
-                        f'sync_reset_{tabnam}',
+                        # f'sync_reset_{tabnam}',
                         f'sync_{tabnam}_ext',
                         f'sync_{tabnam}_local',
                         f'sync_{tabnam}_dif',
                     ]
-                    if tabnam in enums.SyncTables.TABLES_ATTR.value:
-                        del sqlnames[1]
-
                     for sqlnam in sqlnames:
                         if not db_qkan.sqlyml(
                             sqlnam,
                             stmt_category='comp_4',
                             parameters={
-                                'epsg': QKan.config.epsg,
                                 'status_add': QKan.config.sync.check_add,
                                 'status_mod': QKan.config.sync.check_mod,
                                 'status_del': QKan.config.sync.check_del,

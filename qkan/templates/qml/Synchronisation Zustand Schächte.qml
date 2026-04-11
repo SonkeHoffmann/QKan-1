@@ -135,7 +135,7 @@
             <Option type="QString" value="collection" name="type"/>
           </Option>
         </data_defined_properties>
-        <layer enabled="1" locked="0" class="SimpleMarker" pass="0" id="{cd1bbe70-7ced-464b-b8ce-51c0d69fdeae}">
+        <layer enabled="1" locked="0" class="SimpleMarker" pass="0" id="{52f95b57-4394-49f8-bb5f-9d8066ed615f}">
           <Option type="Map">
             <Option type="QString" value="0" name="angle"/>
             <Option type="QString" value="square" name="cap_style"/>
@@ -213,28 +213,112 @@
         </config>
       </editWidget>
     </field>
-    <field name="bezeichnung">
+    <field name="schnam">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="art">
+    <field name="durchm">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="link">
+    <field name="baujahr">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="gruppe">
+    <field name="bezugspunkt">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="id">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="untersuchtag">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="untersucher">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="wetter">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="strasse">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="bewertungsart">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="bewertungstag">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="datenart">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="auftragsbezeichnung">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="max_ZD">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="max_ZB">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="max_ZS">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -257,33 +341,45 @@
       <column type="field" width="-1" hidden="0" name="aktion"/>
       <column type="field" width="-1" hidden="0" name="status"/>
       <column type="field" width="-1" hidden="0" name="objekt"/>
-      <column type="field" width="-1" hidden="0" name="bezeichnung"/>
-      <column type="field" width="-1" hidden="0" name="art"/>
-      <column type="field" width="-1" hidden="0" name="link"/>
-      <column type="field" width="-1" hidden="0" name="gruppe"/>
+      <column type="field" width="-1" hidden="0" name="schnam"/>
+      <column type="field" width="-1" hidden="0" name="durchm"/>
+      <column type="field" width="-1" hidden="0" name="baujahr"/>
+      <column type="field" width="-1" hidden="0" name="bezugspunkt"/>
+      <column type="field" width="-1" hidden="0" name="id"/>
+      <column type="field" width="-1" hidden="0" name="untersuchtag"/>
+      <column type="field" width="-1" hidden="0" name="untersucher"/>
+      <column type="field" width="-1" hidden="0" name="wetter"/>
+      <column type="field" width="-1" hidden="0" name="strasse"/>
+      <column type="field" width="-1" hidden="0" name="bewertungsart"/>
+      <column type="field" width="-1" hidden="0" name="bewertungstag"/>
+      <column type="field" width="-1" hidden="0" name="datenart"/>
+      <column type="field" width="-1" hidden="0" name="auftragsbezeichnung"/>
+      <column type="field" width="-1" hidden="0" name="max_ZD"/>
+      <column type="field" width="-1" hidden="0" name="max_ZB"/>
+      <column type="field" width="-1" hidden="0" name="max_ZS"/>
       <column type="field" width="-1" hidden="0" name="kommentar"/>
       <column type="actions" width="-1" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles>
-      <style rule="status and aktion = 'hinzufügen'" background_color_alpha="255" background_color="#9ad871" name="hinzufügen">
-        <font underline="0" bold="0" strikethrough="0" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,0,0,0"/>
+      <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
-      <style rule="not status" text_color_alpha="255" text_color="#ff0000" name="nicht ausführen">
-        <font underline="0" bold="0" strikethrough="1" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,1,0,0"/>
+      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
+        <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
       </style>
-      <style rule="status and aktion = 'ändern'" background_color_alpha="255" background_color="#ff7f00" name="ändern">
-        <font underline="0" bold="0" strikethrough="0" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,0,0,0"/>
+      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
-      <style rule="status and aktion = 'löschen'" background_color_alpha="255" background_color="#ff1515" name="löschen">
-        <font underline="0" bold="0" strikethrough="0" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,0,0,0"/>
+      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
     </rowstyles>
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
-  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\sync_symbole.ui</editform>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\sync_schaechte_untersucht.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -306,45 +402,81 @@ def my_form_open(dialog, layer, feature):
   <editorlayout>uifilelayout</editorlayout>
   <editable>
     <field name="aktion" editable="1"/>
-    <field name="art" editable="1"/>
-    <field name="bezeichnung" editable="1"/>
-    <field name="gruppe" editable="1"/>
+    <field name="auftragsbezeichnung" editable="1"/>
+    <field name="baujahr" editable="1"/>
+    <field name="bewertungsart" editable="1"/>
+    <field name="bewertungstag" editable="1"/>
+    <field name="bezugspunkt" editable="1"/>
+    <field name="datenart" editable="1"/>
+    <field name="durchm" editable="1"/>
+    <field name="id" editable="1"/>
     <field name="kommentar" editable="1"/>
-    <field name="link" editable="1"/>
+    <field name="max_ZB" editable="1"/>
+    <field name="max_ZD" editable="1"/>
+    <field name="max_ZS" editable="1"/>
     <field name="objekt" editable="1"/>
     <field name="pk" editable="1"/>
     <field name="pk_best" editable="1"/>
     <field name="pk_ext" editable="1"/>
+    <field name="schnam" editable="1"/>
     <field name="status" editable="1"/>
+    <field name="strasse" editable="1"/>
+    <field name="untersucher" editable="1"/>
+    <field name="untersuchtag" editable="1"/>
+    <field name="wetter" editable="1"/>
   </editable>
   <labelOnTop>
     <field name="aktion" labelOnTop="0"/>
-    <field name="art" labelOnTop="0"/>
-    <field name="bezeichnung" labelOnTop="0"/>
-    <field name="gruppe" labelOnTop="0"/>
+    <field name="auftragsbezeichnung" labelOnTop="0"/>
+    <field name="baujahr" labelOnTop="0"/>
+    <field name="bewertungsart" labelOnTop="0"/>
+    <field name="bewertungstag" labelOnTop="0"/>
+    <field name="bezugspunkt" labelOnTop="0"/>
+    <field name="datenart" labelOnTop="0"/>
+    <field name="durchm" labelOnTop="0"/>
+    <field name="id" labelOnTop="0"/>
     <field name="kommentar" labelOnTop="0"/>
-    <field name="link" labelOnTop="0"/>
+    <field name="max_ZB" labelOnTop="0"/>
+    <field name="max_ZD" labelOnTop="0"/>
+    <field name="max_ZS" labelOnTop="0"/>
     <field name="objekt" labelOnTop="0"/>
     <field name="pk" labelOnTop="0"/>
     <field name="pk_best" labelOnTop="0"/>
     <field name="pk_ext" labelOnTop="0"/>
+    <field name="schnam" labelOnTop="0"/>
     <field name="status" labelOnTop="0"/>
+    <field name="strasse" labelOnTop="0"/>
+    <field name="untersucher" labelOnTop="0"/>
+    <field name="untersuchtag" labelOnTop="0"/>
+    <field name="wetter" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
     <field reuseLastValue="0" name="aktion"/>
-    <field reuseLastValue="0" name="art"/>
-    <field reuseLastValue="0" name="bezeichnung"/>
-    <field reuseLastValue="0" name="gruppe"/>
+    <field reuseLastValue="0" name="auftragsbezeichnung"/>
+    <field reuseLastValue="0" name="baujahr"/>
+    <field reuseLastValue="0" name="bewertungsart"/>
+    <field reuseLastValue="0" name="bewertungstag"/>
+    <field reuseLastValue="0" name="bezugspunkt"/>
+    <field reuseLastValue="0" name="datenart"/>
+    <field reuseLastValue="0" name="durchm"/>
+    <field reuseLastValue="0" name="id"/>
     <field reuseLastValue="0" name="kommentar"/>
-    <field reuseLastValue="0" name="link"/>
+    <field reuseLastValue="0" name="max_ZB"/>
+    <field reuseLastValue="0" name="max_ZD"/>
+    <field reuseLastValue="0" name="max_ZS"/>
     <field reuseLastValue="0" name="objekt"/>
     <field reuseLastValue="0" name="pk"/>
     <field reuseLastValue="0" name="pk_best"/>
     <field reuseLastValue="0" name="pk_ext"/>
+    <field reuseLastValue="0" name="schnam"/>
     <field reuseLastValue="0" name="status"/>
+    <field reuseLastValue="0" name="strasse"/>
+    <field reuseLastValue="0" name="untersucher"/>
+    <field reuseLastValue="0" name="untersuchtag"/>
+    <field reuseLastValue="0" name="wetter"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>
-  <previewExpression>"aktion"</previewExpression>
+  <previewExpression>"strasse"</previewExpression>
   <layerGeometryType>0</layerGeometryType>
 </qgis>

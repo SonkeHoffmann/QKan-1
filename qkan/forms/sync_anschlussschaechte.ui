@@ -59,7 +59,7 @@
    <widget class="QLabel" name="label_14">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>331</x>
       <y>260</y>
       <width>81</width>
       <height>16</height>
@@ -101,10 +101,10 @@
      </size>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Platz für zusätzliche Kommentare.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string>Platz für zusätzliche Kommentare</string>
+     <string>Platz für zusätzliche Kommentare.</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
@@ -128,10 +128,10 @@
     <widget class="QComboBox" name="teilgebiet">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>119</x>
        <y>30</y>
        <width>151</width>
-       <height>21</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="font">
@@ -169,16 +169,16 @@
       <string>Teilgebiet</string>
      </property>
      <property name="buddy">
-      <cstring>teilgebiet</cstring>
+      <cstring>simstatus</cstring>
      </property>
     </widget>
     <widget class="QComboBox" name="simstatus">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>121</y>
+       <y>120</y>
        <width>151</width>
-       <height>21</height>
+       <height>22</height>
       </rect>
      </property>
      <property name="font">
@@ -188,10 +188,10 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif'; font-size:11pt;&quot;&gt;aktueller Status (z.B. vorhanden, in Planung, etc.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri','sans-serif'; font-size:11pt;&quot;&gt;aktueller Status (z.B. vorhanden, in Planung etc.)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>aktueller Status (z.B. vorhanden, in Planung, etc.)</string>
+      <string>aktueller Status (z.B. vorhanden, in Planung etc.)</string>
      </property>
      <property name="editable">
       <bool>true</bool>
@@ -201,9 +201,9 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>152</y>
+       <y>150</y>
        <width>151</width>
-       <height>21</height>
+       <height>23</height>
       </rect>
      </property>
      <property name="font">
@@ -259,9 +259,6 @@
      <property name="text">
       <string>Erstelldatum</string>
      </property>
-     <property name="buddy">
-      <cstring>createdat</cstring>
-     </property>
     </widget>
     <widget class="QLabel" name="label_17">
      <property name="geometry">
@@ -282,23 +279,23 @@
       <string>Knotentyp</string>
      </property>
      <property name="buddy">
-      <cstring>knotentyp</cstring>
+      <cstring>simstatus</cstring>
      </property>
     </widget>
     <widget class="QComboBox" name="knotentyp">
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>61</y>
+       <y>60</y>
        <width>151</width>
-       <height>21</height>
+       <height>22</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Besondere Lage im Kanalnetz (z.B. Anfangsschacht)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Besondere Lage im Kanalnetz z.B. Anfangsschacht&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="statusTip">
-      <string>Besondere Lage im Kanalnetz (z.B. Anfangsschacht)</string>
+      <string>Besondere Lage im Kanalnetz z.B. Anfangsschacht</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_18">
@@ -326,7 +323,7 @@
       <string>Auslasstyp</string>
      </property>
      <property name="buddy">
-      <cstring>auslasstyp</cstring>
+      <cstring>simstatus</cstring>
      </property>
     </widget>
     <widget class="QComboBox" name="auslasstyp">
@@ -335,7 +332,7 @@
        <x>120</x>
        <y>90</y>
        <width>151</width>
-       <height>21</height>
+       <height>22</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -362,10 +359,10 @@
      </font>
     </property>
     <property name="toolTip">
-     <string/>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Material des Schachtes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="statusTip">
-     <string/>
+     <string>Material des Schachtes</string>
     </property>
     <property name="title">
      <string>Objektdaten</string>
@@ -580,7 +577,7 @@
       <rect>
        <x>250</x>
        <y>30</y>
-       <width>61</width>
+       <width>51</width>
        <height>21</height>
       </rect>
      </property>
@@ -591,7 +588,7 @@
       </font>
      </property>
      <property name="text">
-      <string>m ü. NHN</string>
+      <string>m NHN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_27">
@@ -618,7 +615,7 @@
       <rect>
        <x>250</x>
        <y>60</y>
-       <width>61</width>
+       <width>51</width>
        <height>21</height>
       </rect>
      </property>
@@ -629,7 +626,7 @@
       </font>
      </property>
      <property name="text">
-      <string>m ü. NHN</string>
+      <string>m NHN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -911,6 +908,27 @@
      </property>
     </widget>
    </widget>
+   <widget class="QLabel" name="label_21">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>470</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Grafikobjekt</string>
+    </property>
+   </widget>
    <widget class="QGroupBox" name="groupBox_sync">
     <property name="geometry">
      <rect>
@@ -923,9 +941,7 @@
     <property name="font">
      <font>
       <family>Tahoma</family>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="title">
@@ -944,8 +960,6 @@
       <font>
        <family>Tahoma</family>
        <pointsize>10</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
       </font>
      </property>
      <property name="toolTip">
@@ -971,8 +985,6 @@
       <font>
        <family>Tahoma</family>
        <pointsize>10</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
       </font>
      </property>
      <property name="text">
@@ -1010,27 +1022,6 @@
     </property>
     <property name="statusTip">
      <string>Textbeschreibung des Grafikobjekts</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_21">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>470</y>
-      <width>101</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Tahoma</family>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Grafikobjekt</string>
     </property>
    </widget>
   </widget>
@@ -1072,9 +1063,6 @@
   <tabstop>simstatus</tabstop>
   <tabstop>createdat</tabstop>
   <tabstop>kommentar</tabstop>
-  <tabstop>objekt</tabstop>
-  <tabstop>aktion</tabstop>
-  <tabstop>status</tabstop>
  </tabstops>
  <resources/>
  <connections/>

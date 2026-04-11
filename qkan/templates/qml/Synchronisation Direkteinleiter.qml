@@ -135,7 +135,7 @@
             <Option type="QString" value="collection" name="type"/>
           </Option>
         </data_defined_properties>
-        <layer enabled="1" locked="0" class="SimpleMarker" pass="0" id="{cd1bbe70-7ced-464b-b8ce-51c0d69fdeae}">
+        <layer enabled="1" locked="0" class="SimpleMarker" pass="0" id="{eab2cd2e-ff7c-4b35-b15d-da76069a1045}">
           <Option type="Map">
             <Option type="QString" value="0" name="angle"/>
             <Option type="QString" value="square" name="cap_style"/>
@@ -213,28 +213,49 @@
         </config>
       </editWidget>
     </field>
-    <field name="bezeichnung">
+    <field name="elnam">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="art">
+    <field name="haltnam">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="link">
+    <field name="schnam">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field name="gruppe">
+    <field name="teilgebiet">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="zufluss">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="ew">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="einzugsgebiet">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -257,33 +278,36 @@
       <column type="field" width="-1" hidden="0" name="aktion"/>
       <column type="field" width="-1" hidden="0" name="status"/>
       <column type="field" width="-1" hidden="0" name="objekt"/>
-      <column type="field" width="-1" hidden="0" name="bezeichnung"/>
-      <column type="field" width="-1" hidden="0" name="art"/>
-      <column type="field" width="-1" hidden="0" name="link"/>
-      <column type="field" width="-1" hidden="0" name="gruppe"/>
+      <column type="field" width="-1" hidden="0" name="elnam"/>
+      <column type="field" width="-1" hidden="0" name="haltnam"/>
+      <column type="field" width="-1" hidden="0" name="schnam"/>
+      <column type="field" width="-1" hidden="0" name="teilgebiet"/>
+      <column type="field" width="-1" hidden="0" name="zufluss"/>
+      <column type="field" width="-1" hidden="0" name="ew"/>
+      <column type="field" width="-1" hidden="0" name="einzugsgebiet"/>
       <column type="field" width="-1" hidden="0" name="kommentar"/>
       <column type="actions" width="-1" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles>
-      <style rule="status and aktion = 'hinzufügen'" background_color_alpha="255" background_color="#9ad871" name="hinzufügen">
-        <font underline="0" bold="0" strikethrough="0" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,0,0,0"/>
+      <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
-      <style rule="not status" text_color_alpha="255" text_color="#ff0000" name="nicht ausführen">
-        <font underline="0" bold="0" strikethrough="1" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,1,0,0"/>
+      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
+        <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
       </style>
-      <style rule="status and aktion = 'ändern'" background_color_alpha="255" background_color="#ff7f00" name="ändern">
-        <font underline="0" bold="0" strikethrough="0" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,0,0,0"/>
+      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
-      <style rule="status and aktion = 'löschen'" background_color_alpha="255" background_color="#ff1515" name="löschen">
-        <font underline="0" bold="0" strikethrough="0" italic="0" style="" description="MS Shell Dlg 2,8.3,-1,5,50,0,0,0,0,0"/>
+      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
+        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
       </style>
     </rowstyles>
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
-  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\sync_symbole.ui</editform>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\sync_einleit.ui</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
   <editforminitfilepath></editforminitfilepath>
@@ -306,42 +330,51 @@ def my_form_open(dialog, layer, feature):
   <editorlayout>uifilelayout</editorlayout>
   <editable>
     <field name="aktion" editable="1"/>
-    <field name="art" editable="1"/>
-    <field name="bezeichnung" editable="1"/>
-    <field name="gruppe" editable="1"/>
+    <field name="einzugsgebiet" editable="1"/>
+    <field name="elnam" editable="1"/>
+    <field name="ew" editable="1"/>
+    <field name="haltnam" editable="1"/>
     <field name="kommentar" editable="1"/>
-    <field name="link" editable="1"/>
     <field name="objekt" editable="1"/>
     <field name="pk" editable="1"/>
     <field name="pk_best" editable="1"/>
     <field name="pk_ext" editable="1"/>
+    <field name="schnam" editable="1"/>
     <field name="status" editable="1"/>
+    <field name="teilgebiet" editable="1"/>
+    <field name="zufluss" editable="1"/>
   </editable>
   <labelOnTop>
     <field name="aktion" labelOnTop="0"/>
-    <field name="art" labelOnTop="0"/>
-    <field name="bezeichnung" labelOnTop="0"/>
-    <field name="gruppe" labelOnTop="0"/>
+    <field name="einzugsgebiet" labelOnTop="0"/>
+    <field name="elnam" labelOnTop="0"/>
+    <field name="ew" labelOnTop="0"/>
+    <field name="haltnam" labelOnTop="0"/>
     <field name="kommentar" labelOnTop="0"/>
-    <field name="link" labelOnTop="0"/>
     <field name="objekt" labelOnTop="0"/>
     <field name="pk" labelOnTop="0"/>
     <field name="pk_best" labelOnTop="0"/>
     <field name="pk_ext" labelOnTop="0"/>
+    <field name="schnam" labelOnTop="0"/>
     <field name="status" labelOnTop="0"/>
+    <field name="teilgebiet" labelOnTop="0"/>
+    <field name="zufluss" labelOnTop="0"/>
   </labelOnTop>
   <reuseLastValue>
     <field reuseLastValue="0" name="aktion"/>
-    <field reuseLastValue="0" name="art"/>
-    <field reuseLastValue="0" name="bezeichnung"/>
-    <field reuseLastValue="0" name="gruppe"/>
+    <field reuseLastValue="0" name="einzugsgebiet"/>
+    <field reuseLastValue="0" name="elnam"/>
+    <field reuseLastValue="0" name="ew"/>
+    <field reuseLastValue="0" name="haltnam"/>
     <field reuseLastValue="0" name="kommentar"/>
-    <field reuseLastValue="0" name="link"/>
     <field reuseLastValue="0" name="objekt"/>
     <field reuseLastValue="0" name="pk"/>
     <field reuseLastValue="0" name="pk_best"/>
     <field reuseLastValue="0" name="pk_ext"/>
+    <field reuseLastValue="0" name="schnam"/>
     <field reuseLastValue="0" name="status"/>
+    <field reuseLastValue="0" name="teilgebiet"/>
+    <field reuseLastValue="0" name="zufluss"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>
