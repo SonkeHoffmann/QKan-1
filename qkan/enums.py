@@ -298,3 +298,12 @@ class SyncTables(enum.Enum):
         "fotos",
         "videos",
     ]
+
+    TABLES_UNTERSUCH = [
+        "untersuchdat_haltung",
+        "untersuchdat_schacht",
+        "untersuchdat_anschlussleitung",
+        "haltungen_untersucht",
+        "schaechte_untersucht",
+        "anschlussleitungen_untersucht",
+    ]

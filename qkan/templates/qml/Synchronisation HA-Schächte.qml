@@ -1,108 +1,108 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis styleCategories="Symbology|Fields|AttributeTable" version="3.28.13-Firenze">
-  <renderer-v2 referencescale="-1" type="singleSymbol" enableorderby="0" symbollevels="0" forceraster="0">
+<qgis styleCategories="Symbology|Forms|AttributeTable|Notes" version="3.40.14-Bratislava">
+  <renderer-v2 symbollevels="0" type="singleSymbol" enableorderby="0" referencescale="-1" forceraster="0">
     <symbols>
-      <symbol name="0" alpha="1" is_animated="0" clip_to_extent="1" type="marker" force_rhr="0" frame_rate="10">
+      <symbol clip_to_extent="1" force_rhr="0" is_animated="0" frame_rate="10" type="marker" alpha="1" name="0">
         <data_defined_properties>
           <Option type="Map">
-            <Option name="name" value="" type="QString"/>
+            <Option value="" type="QString" name="name"/>
             <Option name="properties"/>
-            <Option name="type" value="collection" type="QString"/>
+            <Option value="collection" type="QString" name="type"/>
           </Option>
         </data_defined_properties>
-        <layer pass="0" locked="0" class="SimpleMarker" enabled="1">
+        <layer id="{cb6d24b8-d2a4-41b6-b2d6-ce722c4aeafb}" enabled="1" class="SimpleMarker" locked="0" pass="0">
           <Option type="Map">
-            <Option name="angle" value="0" type="QString"/>
-            <Option name="cap_style" value="square" type="QString"/>
-            <Option name="color" value="184,8,8,255" type="QString"/>
-            <Option name="horizontal_anchor_point" value="1" type="QString"/>
-            <Option name="joinstyle" value="bevel" type="QString"/>
-            <Option name="name" value="star" type="QString"/>
-            <Option name="offset" value="0,0" type="QString"/>
-            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
-            <Option name="outline_color" value="184,8,8,255" type="QString"/>
-            <Option name="outline_style" value="solid" type="QString"/>
-            <Option name="outline_width" value="0.2" type="QString"/>
-            <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
-            <Option name="scale_method" value="area" type="QString"/>
-            <Option name="size" value="8.25" type="QString"/>
-            <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
-            <Option name="vertical_anchor_point" value="1" type="QString"/>
+            <Option value="0" type="QString" name="angle"/>
+            <Option value="square" type="QString" name="cap_style"/>
+            <Option value="184,8,8,255,rgb:0.72156862745098038,0.03137254901960784,0.03137254901960784,1" type="QString" name="color"/>
+            <Option value="1" type="QString" name="horizontal_anchor_point"/>
+            <Option value="bevel" type="QString" name="joinstyle"/>
+            <Option value="star" type="QString" name="name"/>
+            <Option value="0,0" type="QString" name="offset"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="offset_map_unit_scale"/>
+            <Option value="MM" type="QString" name="offset_unit"/>
+            <Option value="184,8,8,255,rgb:0.72156862745098038,0.03137254901960784,0.03137254901960784,1" type="QString" name="outline_color"/>
+            <Option value="solid" type="QString" name="outline_style"/>
+            <Option value="0.2" type="QString" name="outline_width"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="outline_width_map_unit_scale"/>
+            <Option value="MM" type="QString" name="outline_width_unit"/>
+            <Option value="area" type="QString" name="scale_method"/>
+            <Option value="8.25" type="QString" name="size"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="size_map_unit_scale"/>
+            <Option value="MM" type="QString" name="size_unit"/>
+            <Option value="1" type="QString" name="vertical_anchor_point"/>
           </Option>
           <effect enabled="1" type="effectStack">
             <effect type="dropShadow">
               <Option type="Map">
-                <Option name="blend_mode" value="0" type="QString"/>
-                <Option name="blur_level" value="2.645" type="QString"/>
-                <Option name="blur_unit" value="MM" type="QString"/>
-                <Option name="blur_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="color" value="0,0,0,255" type="QString"/>
-                <Option name="draw_mode" value="2" type="QString"/>
-                <Option name="enabled" value="1" type="QString"/>
-                <Option name="offset_angle" value="135" type="QString"/>
-                <Option name="offset_distance" value="2" type="QString"/>
-                <Option name="offset_unit" value="MM" type="QString"/>
-                <Option name="offset_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-                <Option name="opacity" value="1" type="QString"/>
+                <Option value="0" type="QString" name="blend_mode"/>
+                <Option value="2.645" type="QString" name="blur_level"/>
+                <Option value="MM" type="QString" name="blur_unit"/>
+                <Option value="3x:0,0,0,0,0,0" type="QString" name="blur_unit_scale"/>
+                <Option value="0,0,0,255,rgb:0,0,0,1" type="QString" name="color"/>
+                <Option value="2" type="QString" name="draw_mode"/>
+                <Option value="1" type="QString" name="enabled"/>
+                <Option value="135" type="QString" name="offset_angle"/>
+                <Option value="2" type="QString" name="offset_distance"/>
+                <Option value="MM" type="QString" name="offset_unit"/>
+                <Option value="3x:0,0,0,0,0,0" type="QString" name="offset_unit_scale"/>
+                <Option value="1" type="QString" name="opacity"/>
               </Option>
             </effect>
             <effect type="drawSource">
               <Option type="Map">
-                <Option name="blend_mode" value="0" type="QString"/>
-                <Option name="draw_mode" value="2" type="QString"/>
-                <Option name="enabled" value="1" type="QString"/>
-                <Option name="opacity" value="1" type="QString"/>
+                <Option value="0" type="QString" name="blend_mode"/>
+                <Option value="2" type="QString" name="draw_mode"/>
+                <Option value="1" type="QString" name="enabled"/>
+                <Option value="1" type="QString" name="opacity"/>
               </Option>
             </effect>
           </effect>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option value="" type="QString" name="name"/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option value="collection" type="QString" name="type"/>
             </Option>
           </data_defined_properties>
         </layer>
-        <layer pass="0" locked="0" class="SimpleMarker" enabled="1">
+        <layer id="{f19b47ab-3007-49c5-9940-22049310d8c7}" enabled="1" class="SimpleMarker" locked="0" pass="0">
           <Option type="Map">
-            <Option name="angle" value="34" type="QString"/>
-            <Option name="cap_style" value="square" type="QString"/>
-            <Option name="color" value="255,0,0,255" type="QString"/>
-            <Option name="horizontal_anchor_point" value="1" type="QString"/>
-            <Option name="joinstyle" value="bevel" type="QString"/>
-            <Option name="name" value="star" type="QString"/>
-            <Option name="offset" value="0,0" type="QString"/>
-            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
-            <Option name="outline_color" value="255,0,0,255" type="QString"/>
-            <Option name="outline_style" value="solid" type="QString"/>
-            <Option name="outline_width" value="0.2" type="QString"/>
-            <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
-            <Option name="scale_method" value="area" type="QString"/>
-            <Option name="size" value="9" type="QString"/>
-            <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
-            <Option name="vertical_anchor_point" value="1" type="QString"/>
+            <Option value="34" type="QString" name="angle"/>
+            <Option value="square" type="QString" name="cap_style"/>
+            <Option value="255,0,0,255,rgb:1,0,0,1" type="QString" name="color"/>
+            <Option value="1" type="QString" name="horizontal_anchor_point"/>
+            <Option value="bevel" type="QString" name="joinstyle"/>
+            <Option value="star" type="QString" name="name"/>
+            <Option value="0,0" type="QString" name="offset"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="offset_map_unit_scale"/>
+            <Option value="MM" type="QString" name="offset_unit"/>
+            <Option value="255,0,0,255,rgb:1,0,0,1" type="QString" name="outline_color"/>
+            <Option value="solid" type="QString" name="outline_style"/>
+            <Option value="0.2" type="QString" name="outline_width"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="outline_width_map_unit_scale"/>
+            <Option value="MM" type="QString" name="outline_width_unit"/>
+            <Option value="area" type="QString" name="scale_method"/>
+            <Option value="9" type="QString" name="size"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="size_map_unit_scale"/>
+            <Option value="MM" type="QString" name="size_unit"/>
+            <Option value="1" type="QString" name="vertical_anchor_point"/>
           </Option>
           <effect enabled="0" type="effectStack">
             <effect type="drawSource">
               <Option type="Map">
-                <Option name="blend_mode" value="0" type="QString"/>
-                <Option name="draw_mode" value="2" type="QString"/>
-                <Option name="enabled" value="1" type="QString"/>
-                <Option name="opacity" value="1" type="QString"/>
+                <Option value="0" type="QString" name="blend_mode"/>
+                <Option value="2" type="QString" name="draw_mode"/>
+                <Option value="1" type="QString" name="enabled"/>
+                <Option value="1" type="QString" name="opacity"/>
               </Option>
             </effect>
           </effect>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option value="" type="QString" name="name"/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option value="collection" type="QString" name="type"/>
             </Option>
           </data_defined_properties>
         </layer>
@@ -110,198 +110,406 @@
     </symbols>
     <rotation/>
     <sizescale/>
+    <data-defined-properties>
+      <Option type="Map">
+        <Option value="" type="QString" name="name"/>
+        <Option name="properties"/>
+        <Option value="collection" type="QString" name="type"/>
+      </Option>
+    </data-defined-properties>
   </renderer-v2>
+  <selection mode="Default">
+    <selectionColor invalid="1"/>
+    <selectionSymbol>
+      <symbol clip_to_extent="1" force_rhr="0" is_animated="0" frame_rate="10" type="marker" alpha="1" name="">
+        <data_defined_properties>
+          <Option type="Map">
+            <Option value="" type="QString" name="name"/>
+            <Option name="properties"/>
+            <Option value="collection" type="QString" name="type"/>
+          </Option>
+        </data_defined_properties>
+        <layer id="{a58b5465-9659-4172-9e5d-a939927fd122}" enabled="1" class="SimpleMarker" locked="0" pass="0">
+          <Option type="Map">
+            <Option value="0" type="QString" name="angle"/>
+            <Option value="square" type="QString" name="cap_style"/>
+            <Option value="255,0,0,255,rgb:1,0,0,1" type="QString" name="color"/>
+            <Option value="1" type="QString" name="horizontal_anchor_point"/>
+            <Option value="bevel" type="QString" name="joinstyle"/>
+            <Option value="circle" type="QString" name="name"/>
+            <Option value="0,0" type="QString" name="offset"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="offset_map_unit_scale"/>
+            <Option value="MM" type="QString" name="offset_unit"/>
+            <Option value="35,35,35,255,rgb:0.13725490196078433,0.13725490196078433,0.13725490196078433,1" type="QString" name="outline_color"/>
+            <Option value="solid" type="QString" name="outline_style"/>
+            <Option value="0" type="QString" name="outline_width"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="outline_width_map_unit_scale"/>
+            <Option value="MM" type="QString" name="outline_width_unit"/>
+            <Option value="diameter" type="QString" name="scale_method"/>
+            <Option value="2" type="QString" name="size"/>
+            <Option value="3x:0,0,0,0,0,0" type="QString" name="size_map_unit_scale"/>
+            <Option value="MM" type="QString" name="size_unit"/>
+            <Option value="1" type="QString" name="vertical_anchor_point"/>
+          </Option>
+          <data_defined_properties>
+            <Option type="Map">
+              <Option value="" type="QString" name="name"/>
+              <Option name="properties"/>
+              <Option value="collection" type="QString" name="type"/>
+            </Option>
+          </data_defined_properties>
+        </layer>
+      </symbol>
+    </selectionSymbol>
+  </selection>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <fieldConfiguration>
-    <field name="pk" configurationFlags="None"/>
-    <field name="pk_best" configurationFlags="None"/>
-    <field name="pk_ext" configurationFlags="None"/>
-    <field name="aktion" configurationFlags="None"/>
-    <field name="status" configurationFlags="None"/>
-    <field name="objekt" configurationFlags="None"/>
-    <field name="schnam" configurationFlags="None"/>
-    <field name="sohlhoehe" configurationFlags="None"/>
-    <field name="deckelhoehe" configurationFlags="None"/>
-    <field name="durchm" configurationFlags="None"/>
-    <field name="druckdicht" configurationFlags="None"/>
-    <field name="entwart" configurationFlags="None"/>
-    <field name="strasse" configurationFlags="None"/>
-    <field name="baujahr" configurationFlags="None"/>
-    <field name="haltnam" configurationFlags="None"/>
-    <field name="urstation" configurationFlags="None"/>
-    <field name="ursprung" configurationFlags="None"/>
-    <field name="anschlusstyp" configurationFlags="None"/>
-    <field name="eigentum" configurationFlags="None"/>
-    <field name="teilgebiet" configurationFlags="None"/>
-    <field name="simstatus" configurationFlags="None"/>
-    <field name="material" configurationFlags="None"/>
-    <field name="xsch" configurationFlags="None"/>
-    <field name="ysch" configurationFlags="None"/>
-    <field name="kommentar" configurationFlags="None"/>
-    <field name="createdat" configurationFlags="None"/>
+    <field name="pk">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="pk_best">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="pk_ext">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="aktion">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="status">
+      <editWidget type="CheckBox">
+        <config>
+          <Option type="Map">
+            <Option value="true" type="bool" name="AllowNullState"/>
+            <Option value="1" type="QString" name="CheckedState"/>
+            <Option value="1" type="int" name="TextDisplayMethod"/>
+            <Option value="0" type="QString" name="UncheckedState"/>
+          </Option>
+        </config>
+      </editWidget>
+    </field>
+    <field name="objekt">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="schnam">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="sohlhoehe">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="deckelhoehe">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="durchm">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="druckdicht">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="entwart">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="strasse">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="baujahr">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="haltnam">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="urstation">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="ursprung">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="anschlusstyp">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="eigentum">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="teilgebiet">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="simstatus">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="material">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="xsch">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="ysch">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
+    <field name="kommentar">
+      <editWidget type="TextEdit">
+        <config>
+          <Option/>
+        </config>
+      </editWidget>
+    </field>
   </fieldConfiguration>
-  <aliases>
-    <alias index="0" field="pk" name=""/>
-    <alias index="1" name="id_Bestand" field="pk_best"/>
-    <alias index="2" name="id_extern" field="pk_ext"/>
-    <alias index="3" name="Maßnahme" field="aktion"/>
-    <alias index="4" name="ausführen" field="status"/>
-    <alias index="5" name="Grafikobjekt" field="objekt"/>
-    <alias index="6" field="schnam" name="Schachtname"/>
-    <alias index="7" field="sohlhoehe" name="Sohlhöhe"/>
-    <alias index="8" field="deckelhoehe" name="Deckelhöhe"/>
-    <alias index="9" field="durchm" name="Durchmesser"/>
-    <alias index="10" field="druckdicht" name="Druckdicht"/>
-    <alias index="11" field="entwart" name="Entwässerungssystem"/>
-    <alias index="12" field="strasse" name="Straße"/>
-    <alias index="13" field="baujahr" name="Baujahr"/>
-    <alias index="14" field="haltnam" name="Angeschlossen an Haltung"/>
-    <alias index="15" field="urstation" name="Urstation"/>
-    <alias index="16" field="ursprung" name="Ursprung"/>
-    <alias index="17" field="anschlusstyp" name="Anschlusstyp"/>
-    <alias index="18" field="eigentum" name="Eigentum"/>
-    <alias index="19" field="teilgebiet" name="Teilgebiet"/>
-    <alias index="20" field="simstatus" name="Planungsstatus"/>
-    <alias index="21" field="material" name="Material"/>
-    <alias index="22" field="xsch" name=""/>
-    <alias index="23" field="ysch" name=""/>
-    <alias index="24" field="kommentar" name="Kommentar"/>
-    <alias index="25" field="createdat" name="bearbeitet"/>
-  </aliases>
-  <defaults>
-    <default expression="" field="pk" applyOnUpdate="0"/>
-    <default expression="" field="pk_best" applyOnUpdate="0"/>
-    <default expression="" field="pk_ext" applyOnUpdate="0"/>
-    <default expression="" field="aktion" applyOnUpdate="0"/>
-    <default expression="" field="status" applyOnUpdate="0"/>
-    <default expression="" field="objekt" applyOnUpdate="0"/>
-    <default expression="" field="schnam" applyOnUpdate="0"/>
-    <default expression="" field="sohlhoehe" applyOnUpdate="0"/>
-    <default expression="" field="deckelhoehe" applyOnUpdate="0"/>
-    <default expression="" field="durchm" applyOnUpdate="0"/>
-    <default expression="" field="druckdicht" applyOnUpdate="0"/>
-    <default expression="" field="entwart" applyOnUpdate="0"/>
-    <default expression="" field="strasse" applyOnUpdate="0"/>
-    <default expression="" field="baujahr" applyOnUpdate="0"/>
-    <default expression="" field="haltnam" applyOnUpdate="0"/>
-    <default expression="" field="urstation" applyOnUpdate="0"/>
-    <default expression="" field="ursprung" applyOnUpdate="0"/>
-    <default expression="" field="anschlusstyp" applyOnUpdate="0"/>
-    <default expression="" field="eigentum" applyOnUpdate="0"/>
-    <default expression="" field="teilgebiet" applyOnUpdate="0"/>
-    <default expression="" field="simstatus" applyOnUpdate="0"/>
-    <default expression="" field="material" applyOnUpdate="0"/>
-    <default expression="" field="xsch" applyOnUpdate="0"/>
-    <default expression="" field="ysch" applyOnUpdate="0"/>
-    <default expression="" field="kommentar" applyOnUpdate="0"/>
-    <default expression="" field="createdat" applyOnUpdate="0"/>
-  </defaults>
-  <constraints>
-    <constraint constraints="3" unique_strength="1" field="pk" exp_strength="0" notnull_strength="1"/>
-    <constraint constraints="0" unique_strength="0" field="pk_best" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="pk_ext" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="aktion" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="status" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="objekt" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="schnam" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="sohlhoehe" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="deckelhoehe" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="durchm" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="druckdicht" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="entwart" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="strasse" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="baujahr" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="haltnam" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="urstation" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="ursprung" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="anschlusstyp" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="eigentum" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="teilgebiet" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="simstatus" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="material" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="xsch" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="ysch" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="kommentar" exp_strength="0" notnull_strength="0"/>
-    <constraint constraints="0" unique_strength="0" field="createdat" exp_strength="0" notnull_strength="0"/>
-  </constraints>
-  <constraintExpressions>
-    <constraint field="pk" desc="" exp=""/>
-    <constraint field="pk_best" desc="" exp=""/>
-    <constraint field="pk_ext" desc="" exp=""/>
-    <constraint field="aktion" desc="" exp=""/>
-    <constraint field="status" desc="" exp=""/>
-    <constraint field="objekt" desc="" exp=""/>
-    <constraint field="schnam" desc="" exp=""/>
-    <constraint field="sohlhoehe" desc="" exp=""/>
-    <constraint field="deckelhoehe" desc="" exp=""/>
-    <constraint field="durchm" desc="" exp=""/>
-    <constraint field="druckdicht" desc="" exp=""/>
-    <constraint field="entwart" desc="" exp=""/>
-    <constraint field="strasse" desc="" exp=""/>
-    <constraint field="baujahr" desc="" exp=""/>
-    <constraint field="haltnam" desc="" exp=""/>
-    <constraint field="urstation" desc="" exp=""/>
-    <constraint field="ursprung" desc="" exp=""/>
-    <constraint field="anschlusstyp" desc="" exp=""/>
-    <constraint field="eigentum" desc="" exp=""/>
-    <constraint field="teilgebiet" desc="" exp=""/>
-    <constraint field="simstatus" desc="" exp=""/>
-    <constraint field="material" desc="" exp=""/>
-    <constraint field="xsch" desc="" exp=""/>
-    <constraint field="ysch" desc="" exp=""/>
-    <constraint field="kommentar" desc="" exp=""/>
-    <constraint field="createdat" desc="" exp=""/>
-  </constraintExpressions>
-  <expressionfields/>
-  <attributetableconfig sortExpression="" sortOrder="0" actionWidgetStyle="dropDown">
+  <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
     <columns>
-      <column name="pk" width="-1" type="field" hidden="0"/>
-      <column name="pk_best" width="-1" type="field" hidden="0"/>
-      <column name="pk_ext" width="-1" type="field" hidden="0"/>
-      <column name="aktion" width="-1" type="field" hidden="0"/>
-      <column name="status" width="-1" type="field" hidden="0"/>
-      <column name="objekt" width="-1" type="field" hidden="0"/>
-      <column name="schnam" width="-1" type="field" hidden="0"/>
-      <column name="sohlhoehe" width="-1" type="field" hidden="0"/>
-      <column name="deckelhoehe" width="-1" type="field" hidden="0"/>
-      <column name="durchm" width="-1" type="field" hidden="0"/>
-      <column name="druckdicht" width="-1" type="field" hidden="0"/>
-      <column name="entwart" width="-1" type="field" hidden="0"/>
-      <column name="strasse" width="-1" type="field" hidden="0"/>
-      <column name="baujahr" width="-1" type="field" hidden="0"/>
-      <column name="haltnam" width="-1" type="field" hidden="0"/>
-      <column name="urstation" width="-1" type="field" hidden="0"/>
-      <column name="ursprung" width="-1" type="field" hidden="0"/>
-      <column name="anschlusstyp" width="-1" type="field" hidden="0"/>
-      <column name="eigentum" width="-1" type="field" hidden="0"/>
-      <column name="teilgebiet" width="-1" type="field" hidden="0"/>
-      <column name="simstatus" width="-1" type="field" hidden="0"/>
-      <column name="material" width="-1" type="field" hidden="0"/>
-      <column name="xsch" width="-1" type="field" hidden="0"/>
-      <column name="ysch" width="-1" type="field" hidden="0"/>
-      <column name="kommentar" width="-1" type="field" hidden="0"/>
-      <column name="createdat" width="-1" type="field" hidden="0"/>
+      <column width="-1" type="field" hidden="0" name="status"/>
+      <column width="-1" type="field" hidden="0" name="aktion"/>
+      <column width="-1" type="field" hidden="0" name="schnam"/>
+      <column width="-1" type="field" hidden="0" name="objekt"/>
+      <column width="-1" type="field" hidden="0" name="sohlhoehe"/>
+      <column width="-1" type="field" hidden="0" name="deckelhoehe"/>
+      <column width="-1" type="field" hidden="0" name="durchm"/>
+      <column width="-1" type="field" hidden="0" name="druckdicht"/>
+      <column width="-1" type="field" hidden="0" name="entwart"/>
+      <column width="-1" type="field" hidden="0" name="strasse"/>
+      <column width="-1" type="field" hidden="0" name="baujahr"/>
+      <column width="-1" type="field" hidden="0" name="haltnam"/>
+      <column width="-1" type="field" hidden="0" name="urstation"/>
+      <column width="-1" type="field" hidden="0" name="ursprung"/>
+      <column width="-1" type="field" hidden="0" name="anschlusstyp"/>
+      <column width="-1" type="field" hidden="0" name="eigentum"/>
+      <column width="-1" type="field" hidden="0" name="teilgebiet"/>
+      <column width="-1" type="field" hidden="0" name="simstatus"/>
+      <column width="-1" type="field" hidden="0" name="material"/>
+      <column width="-1" type="field" hidden="0" name="xsch"/>
+      <column width="-1" type="field" hidden="0" name="ysch"/>
+      <column width="-1" type="field" hidden="0" name="kommentar"/>
+      <column width="-1" type="field" hidden="0" name="pk"/>
+      <column width="-1" type="field" hidden="0" name="pk_best"/>
+      <column width="-1" type="field" hidden="0" name="pk_ext"/>
       <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles>
-      <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'hinzufügen'" background_color_alpha="255" background_color="#b2df8a" name="hinzufügen">
+        <font underline="0" strikethrough="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
-        <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
+      <style rule="not status and aktion = 'hinzufügen'" text_color="#33a02c" text_color_alpha="255" name="hinzufügen nicht ausführen">
+        <font underline="0" strikethrough="1" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" italic="1"/>
       </style>
-      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'ändern'" background_color_alpha="255" background_color="#fdbf6f" name="ändern">
+        <font underline="0" strikethrough="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="not status and aktion = 'ändern'" text_color="#ff7f00" text_color_alpha="255" name="ändern nicht ausführen">
+        <font underline="0" strikethrough="1" style="" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style rule="status and aktion = 'löschen'" background_color_alpha="255" background_color="#fb9a99" name="löschen">
+        <font underline="0" strikethrough="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
+      </style>
+      <style rule="not status and aktion = 'löschen'" text_color="#e31a1c" text_color_alpha="255" name="löschen nicht ausführen">
+        <font underline="0" strikethrough="1" style="" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style rule="aktion = 'Bezeichnung im Bestand nicht eindeutig'" background_color_alpha="255" text_color="#5500ff" background_color="#e6d9ff" text_color_alpha="255" name="redundant">
+        <font underline="0" strikethrough="0" style="" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" italic="1"/>
+      </style>
+      <style rule="aktion = 'Bezeichnung extern nicht eindeutig'" background_color_alpha="255" text_color="#9500ff" background_color="#efd9ff" text_color_alpha="255" name="redundant extern">
+        <font underline="0" strikethrough="0" style="" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" italic="1"/>
       </style>
     </rowstyles>
     <fieldstyles/>
   </conditionalstyles>
   <storedexpressions/>
+  <editform tolerant="1">C:\Users/hoettges/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\qkan\forms\sync_anschlussschaechte.ui</editform>
+  <editforminit/>
+  <editforminitcodesource>0</editforminitcodesource>
+  <editforminitfilepath></editforminitfilepath>
+  <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+QGIS-Formulare können eine Python-Funktion haben,, die aufgerufen wird, wenn sich das Formular öffnet
+
+Diese Funktion kann verwendet werden um dem Formular Extralogik hinzuzufügen.
+
+Der Name der Funktion wird im Feld "Python Init-Function" angegeben
+Ein Beispiel folgt:
+"""
+from qgis.PyQt.QtWidgets import QWidget
+
+def my_form_open(dialog, layer, feature):
+	geom = feature.geometry()
+	control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+  <featformsuppress>0</featformsuppress>
+  <editorlayout>uifilelayout</editorlayout>
+  <editable>
+    <field editable="0" name="aktion"/>
+    <field editable="0" name="anschlusstyp"/>
+    <field editable="0" name="baujahr"/>
+    <field editable="0" name="createdat"/>
+    <field editable="0" name="deckelhoehe"/>
+    <field editable="0" name="druckdicht"/>
+    <field editable="0" name="durchm"/>
+    <field editable="0" name="eigentum"/>
+    <field editable="0" name="entwart"/>
+    <field editable="0" name="haltnam"/>
+    <field editable="0" name="kommentar"/>
+    <field editable="0" name="material"/>
+    <field editable="0" name="objekt"/>
+    <field editable="0" name="pk"/>
+    <field editable="0" name="pk_best"/>
+    <field editable="0" name="pk_ext"/>
+    <field editable="0" name="schnam"/>
+    <field editable="0" name="simstatus"/>
+    <field editable="0" name="sohlhoehe"/>
+    <field editable="1" name="status"/>
+    <field editable="0" name="strasse"/>
+    <field editable="0" name="teilgebiet"/>
+    <field editable="0" name="ursprung"/>
+    <field editable="0" name="urstation"/>
+    <field editable="0" name="xsch"/>
+    <field editable="0" name="ysch"/>
+  </editable>
+  <labelOnTop>
+    <field labelOnTop="0" name="aktion"/>
+    <field labelOnTop="0" name="anschlusstyp"/>
+    <field labelOnTop="0" name="baujahr"/>
+    <field labelOnTop="0" name="deckelhoehe"/>
+    <field labelOnTop="0" name="druckdicht"/>
+    <field labelOnTop="0" name="durchm"/>
+    <field labelOnTop="0" name="eigentum"/>
+    <field labelOnTop="0" name="entwart"/>
+    <field labelOnTop="0" name="haltnam"/>
+    <field labelOnTop="0" name="kommentar"/>
+    <field labelOnTop="0" name="material"/>
+    <field labelOnTop="0" name="objekt"/>
+    <field labelOnTop="0" name="pk"/>
+    <field labelOnTop="0" name="pk_best"/>
+    <field labelOnTop="0" name="pk_ext"/>
+    <field labelOnTop="0" name="schnam"/>
+    <field labelOnTop="0" name="simstatus"/>
+    <field labelOnTop="0" name="sohlhoehe"/>
+    <field labelOnTop="0" name="status"/>
+    <field labelOnTop="0" name="strasse"/>
+    <field labelOnTop="0" name="teilgebiet"/>
+    <field labelOnTop="0" name="ursprung"/>
+    <field labelOnTop="0" name="urstation"/>
+    <field labelOnTop="0" name="xsch"/>
+    <field labelOnTop="0" name="ysch"/>
+  </labelOnTop>
+  <reuseLastValue>
+    <field reuseLastValue="0" name="aktion"/>
+    <field reuseLastValue="0" name="anschlusstyp"/>
+    <field reuseLastValue="0" name="baujahr"/>
+    <field reuseLastValue="0" name="deckelhoehe"/>
+    <field reuseLastValue="0" name="druckdicht"/>
+    <field reuseLastValue="0" name="durchm"/>
+    <field reuseLastValue="0" name="eigentum"/>
+    <field reuseLastValue="0" name="entwart"/>
+    <field reuseLastValue="0" name="haltnam"/>
+    <field reuseLastValue="0" name="kommentar"/>
+    <field reuseLastValue="0" name="material"/>
+    <field reuseLastValue="0" name="objekt"/>
+    <field reuseLastValue="0" name="pk"/>
+    <field reuseLastValue="0" name="pk_best"/>
+    <field reuseLastValue="0" name="pk_ext"/>
+    <field reuseLastValue="0" name="schnam"/>
+    <field reuseLastValue="0" name="simstatus"/>
+    <field reuseLastValue="0" name="sohlhoehe"/>
+    <field reuseLastValue="0" name="status"/>
+    <field reuseLastValue="0" name="strasse"/>
+    <field reuseLastValue="0" name="teilgebiet"/>
+    <field reuseLastValue="0" name="ursprung"/>
+    <field reuseLastValue="0" name="urstation"/>
+    <field reuseLastValue="0" name="xsch"/>
+    <field reuseLastValue="0" name="ysch"/>
+  </reuseLastValue>
+  <dataDefinedFieldProperties/>
+  <widgets/>
   <layerGeometryType>0</layerGeometryType>
 </qgis>

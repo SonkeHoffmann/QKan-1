@@ -248,9 +248,14 @@
       </editWidget>
     </field>
     <field name="status" configurationFlags="NoFlag">
-      <editWidget type="TextEdit">
+      <editWidget type="CheckBox">
         <config>
-          <Option/>
+          <Option type="Map">
+            <Option type="bool" name="AllowNullState" value="true"/>
+            <Option type="QString" name="CheckedState" value="1"/>
+            <Option type="int" name="TextDisplayMethod" value="1"/>
+            <Option type="QString" name="UncheckedState" value="0"/>
+          </Option>
         </config>
       </editWidget>
     </field>
@@ -339,30 +344,42 @@
   <expressionfields/>
   <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
     <columns>
+      <column width="-1" name="status" type="field" hidden="0"/>
+      <column width="-1" name="aktion" type="field" hidden="0"/>
+      <column width="-1" name="gebnam" type="field" hidden="0"/>
+      <column width="-1" name="objekt" type="field" hidden="0"/>
+      <column width="-1" name="schnam" type="field" hidden="0"/>
       <column width="-1" name="pk" type="field" hidden="0"/>
       <column width="-1" name="pk_best" type="field" hidden="0"/>
       <column width="-1" name="pk_ext" type="field" hidden="0"/>
-      <column width="-1" name="aktion" type="field" hidden="0"/>
-      <column width="-1" name="status" type="field" hidden="0"/>
-      <column width="-1" name="objekt" type="field" hidden="0"/>
-      <column width="-1" name="gebnam" type="field" hidden="0"/>
-      <column width="-1" name="schnam" type="field" hidden="0"/>
       <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles>
-      <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'hinzufügen'" background_color="#b2df8a" background_color_alpha="255" name="hinzufügen">
+        <font strikethrough="0" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
-        <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
+      <style rule="not status and aktion = 'hinzufügen'" text_color="#33a02c" text_color_alpha="255" name="hinzufügen nicht ausführen">
+        <font strikethrough="1" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" italic="1"/>
       </style>
-      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'ändern'" background_color="#fdbf6f" background_color_alpha="255" name="ändern">
+        <font strikethrough="0" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="not status and aktion = 'ändern'" text_color="#ff7f00" text_color_alpha="255" name="ändern nicht ausführen">
+        <font strikethrough="1" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style rule="status and aktion = 'löschen'" background_color="#fb9a99" background_color_alpha="255" name="löschen">
+        <font strikethrough="0" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
+      </style>
+      <style rule="not status and aktion = 'löschen'" text_color="#e31a1c" text_color_alpha="255" name="löschen nicht ausführen">
+        <font strikethrough="1" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style text_color="#5500ff" name="redundant" rule="aktion = 'Bezeichnung im Bestand nicht eindeutig'" text_color_alpha="255" background_color_alpha="255" background_color="#e6d9ff">
+        <font strikethrough="0" italic="1" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" underline="0" style=""/>
+      </style>
+      <style text_color="#9500ff" name="redundant extern" rule="aktion = 'Bezeichnung extern nicht eindeutig'" text_color_alpha="255" background_color_alpha="255" background_color="#efd9ff">
+        <font strikethrough="0" italic="1" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" underline="0" style=""/>
       </style>
     </rowstyles>
     <fieldstyles/>
@@ -390,13 +407,13 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field editable="1" name="aktion"/>
-    <field editable="1" name="gebnam"/>
-    <field editable="1" name="objekt"/>
-    <field editable="1" name="pk"/>
-    <field editable="1" name="pk_best"/>
-    <field editable="1" name="pk_ext"/>
-    <field editable="1" name="schnam"/>
+    <field editable="0" name="aktion"/>
+    <field editable="0" name="gebnam"/>
+    <field editable="0" name="objekt"/>
+    <field editable="0" name="pk"/>
+    <field editable="0" name="pk_best"/>
+    <field editable="0" name="pk_ext"/>
+    <field editable="0" name="schnam"/>
     <field editable="1" name="status"/>
   </editable>
   <labelOnTop>

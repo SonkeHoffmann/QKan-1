@@ -1,14 +1,8 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis simplifyAlgorithm="0" autoRefreshMode="Disabled" readOnly="0" simplifyDrawingTol="1" simplifyMaxScale="1" symbologyReferenceScale="-1" maxScale="0" version="3.40.14-Bratislava" minScale="100000000" simplifyDrawingHints="1" simplifyLocal="1" labelsEnabled="0" hasScaleBasedVisibilityFlag="0" autoRefreshTime="0" styleCategories="LayerConfiguration|Symbology|Labeling|Fields|Forms|MapTips|AttributeTable|Rendering|CustomProperties|Legend|Notes">
-  <flags>
-    <Identifiable>1</Identifiable>
-    <Removable>1</Removable>
-    <Searchable>1</Searchable>
-    <Private>0</Private>
-  </flags>
-  <renderer-v2 referencescale="-1" forceraster="0" symbollevels="0" enableorderby="0" type="singleSymbol">
+<qgis styleCategories="Symbology|Forms|AttributeTable|Notes" version="3.40.14-Bratislava">
+  <renderer-v2 symbollevels="0" type="singleSymbol" enableorderby="0" referencescale="-1" forceraster="0">
     <symbols>
-      <symbol is_animated="0" alpha="1" force_rhr="0" type="line" frame_rate="10" clip_to_extent="1" name="0">
+      <symbol clip_to_extent="1" force_rhr="0" is_animated="0" frame_rate="10" type="line" alpha="1" name="0">
         <data_defined_properties>
           <Option type="Map">
             <Option value="" type="QString" name="name"/>
@@ -16,7 +10,7 @@
             <Option value="collection" type="QString" name="type"/>
           </Option>
         </data_defined_properties>
-        <layer pass="0" enabled="1" id="{c10e217f-9cfc-4f2a-8517-1c984fac0f4c}" locked="0" class="SimpleLine">
+        <layer id="{c10e217f-9cfc-4f2a-8517-1c984fac0f4c}" enabled="1" class="SimpleLine" locked="0" pass="0">
           <Option type="Map">
             <Option value="0" type="QString" name="align_dash_pattern"/>
             <Option value="round" type="QString" name="capstyle"/>
@@ -46,7 +40,7 @@
             <Option value="0" type="QString" name="use_custom_dash"/>
             <Option value="3x:0,0,0,0,0,0" type="QString" name="width_map_unit_scale"/>
           </Option>
-          <effect type="effectStack" enabled="1">
+          <effect enabled="1" type="effectStack">
             <effect type="dropShadow">
               <Option type="Map">
                 <Option value="13" type="QString" name="blend_mode"/>
@@ -155,7 +149,7 @@
   <selection mode="Default">
     <selectionColor invalid="1"/>
     <selectionSymbol>
-      <symbol is_animated="0" alpha="1" force_rhr="0" type="line" frame_rate="10" clip_to_extent="1" name="">
+      <symbol clip_to_extent="1" force_rhr="0" is_animated="0" frame_rate="10" type="line" alpha="1" name="">
         <data_defined_properties>
           <Option type="Map">
             <Option value="" type="QString" name="name"/>
@@ -163,7 +157,7 @@
             <Option value="collection" type="QString" name="type"/>
           </Option>
         </data_defined_properties>
-        <layer pass="0" enabled="1" id="{19b561a4-a8b2-4791-96d1-171b124ed8d4}" locked="0" class="SimpleLine">
+        <layer id="{19b561a4-a8b2-4791-96d1-171b124ed8d4}" enabled="1" class="SimpleLine" locked="0" pass="0">
           <Option type="Map">
             <Option value="0" type="QString" name="align_dash_pattern"/>
             <Option value="square" type="QString" name="capstyle"/>
@@ -204,285 +198,288 @@
       </symbol>
     </selectionSymbol>
   </selection>
-  <customproperties>
-    <Option type="Map">
-      <Option value="0" type="int" name="embeddedWidgets/count"/>
-      <Option name="variableNames"/>
-      <Option name="variableValues"/>
-    </Option>
-  </customproperties>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
-  <layerOpacity>1</layerOpacity>
-  <legend type="default-vector" showLabelLegend="0"/>
   <fieldConfiguration>
-    <field configurationFlags="NoFlag" name="pk">
+    <field name="pk">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="pk_best">
+    <field name="pk_best">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="pk_ext">
+    <field name="pk_ext">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="aktion">
+    <field name="aktion">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="status">
+    <field name="status">
+      <editWidget type="CheckBox">
+        <config>
+          <Option type="Map">
+            <Option value="true" type="bool" name="AllowNullState"/>
+            <Option value="1" type="QString" name="CheckedState"/>
+            <Option value="1" type="int" name="TextDisplayMethod"/>
+            <Option value="0" type="QString" name="UncheckedState"/>
+          </Option>
+        </config>
+      </editWidget>
+    </field>
+    <field name="objekt">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="objekt">
+    <field name="untersuchleit">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="untersuchleit">
+    <field name="schoben">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="schoben">
+    <field name="schunten">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="schunten">
+    <field name="id">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="id">
+    <field name="untersuchtag">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="untersuchtag">
+    <field name="bandnr">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="bandnr">
+    <field name="videozaehler">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="videozaehler">
+    <field name="inspektionslaenge">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="inspektionslaenge">
+    <field name="station">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="station">
+    <field name="stationtext">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="stationtext">
+    <field name="timecode">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="timecode">
+    <field name="video_offset">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="video_offset">
+    <field name="langtext">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="langtext">
+    <field name="kuerzel">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="kuerzel">
+    <field name="charakt1">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="charakt1">
+    <field name="charakt2">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="charakt2">
+    <field name="quantnr1">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="quantnr1">
+    <field name="quantnr2">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="quantnr2">
+    <field name="streckenschaden">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="streckenschaden">
+    <field name="streckenschaden_lfdnr">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="streckenschaden_lfdnr">
+    <field name="pos_von">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="pos_von">
+    <field name="pos_bis">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="pos_bis">
+    <field name="foto_dateiname">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="foto_dateiname">
+    <field name="film_dateiname">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="film_dateiname">
+    <field name="ordner_bild">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="ordner_bild">
+    <field name="ordner_video">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="ordner_video">
+    <field name="filmtyp">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="filmtyp">
+    <field name="video_start">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="video_start">
+    <field name="video_ende">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="video_ende">
+    <field name="bw_bs">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="ZD">
+    <field name="ZD">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="ZB">
+    <field name="ZB">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="ZS">
+    <field name="ZS">
       <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
-    <field configurationFlags="NoFlag" name="kommentar">
+    <field name="kommentar">
       <editWidget type="TextEdit">
         <config>
           <Option/>
@@ -490,310 +487,76 @@
       </editWidget>
     </field>
   </fieldConfiguration>
-  <aliases>
-    <alias field="pk" index="0" name=""/>
-    <alias field="pk_best" index="1" name=""/>
-    <alias field="pk_ext" index="2" name=""/>
-    <alias field="aktion" index="3" name=""/>
-    <alias field="status" index="4" name=""/>
-    <alias field="objekt" index="5" name=""/>
-    <alias field="untersuchleit" index="6" name=""/>
-    <alias field="schoben" index="7" name=""/>
-    <alias field="schunten" index="8" name=""/>
-    <alias field="id" index="9" name=""/>
-    <alias field="untersuchtag" index="10" name=""/>
-    <alias field="bandnr" index="11" name=""/>
-    <alias field="videozaehler" index="12" name=""/>
-    <alias field="inspektionslaenge" index="13" name=""/>
-    <alias field="station" index="14" name=""/>
-    <alias field="stationtext" index="15" name=""/>
-    <alias field="timecode" index="16" name=""/>
-    <alias field="video_offset" index="17" name=""/>
-    <alias field="langtext" index="18" name=""/>
-    <alias field="kuerzel" index="19" name=""/>
-    <alias field="charakt1" index="20" name=""/>
-    <alias field="charakt2" index="21" name=""/>
-    <alias field="quantnr1" index="22" name=""/>
-    <alias field="quantnr2" index="23" name=""/>
-    <alias field="streckenschaden" index="24" name=""/>
-    <alias field="streckenschaden_lfdnr" index="25" name=""/>
-    <alias field="pos_von" index="26" name=""/>
-    <alias field="pos_bis" index="27" name=""/>
-    <alias field="foto_dateiname" index="28" name=""/>
-    <alias field="film_dateiname" index="29" name=""/>
-    <alias field="ordner_bild" index="30" name=""/>
-    <alias field="ordner_video" index="31" name=""/>
-    <alias field="filmtyp" index="32" name=""/>
-    <alias field="video_start" index="33" name=""/>
-    <alias field="video_ende" index="34" name=""/>
-    <alias field="ZD" index="35" name=""/>
-    <alias field="ZB" index="36" name=""/>
-    <alias field="ZS" index="37" name=""/>
-    <alias field="kommentar" index="38" name=""/>
-  </aliases>
-  <splitPolicies>
-    <policy field="pk" policy="Duplicate"/>
-    <policy field="pk_best" policy="Duplicate"/>
-    <policy field="pk_ext" policy="Duplicate"/>
-    <policy field="aktion" policy="Duplicate"/>
-    <policy field="status" policy="Duplicate"/>
-    <policy field="objekt" policy="Duplicate"/>
-    <policy field="untersuchleit" policy="Duplicate"/>
-    <policy field="schoben" policy="Duplicate"/>
-    <policy field="schunten" policy="Duplicate"/>
-    <policy field="id" policy="Duplicate"/>
-    <policy field="untersuchtag" policy="Duplicate"/>
-    <policy field="bandnr" policy="Duplicate"/>
-    <policy field="videozaehler" policy="Duplicate"/>
-    <policy field="inspektionslaenge" policy="Duplicate"/>
-    <policy field="station" policy="Duplicate"/>
-    <policy field="stationtext" policy="Duplicate"/>
-    <policy field="timecode" policy="Duplicate"/>
-    <policy field="video_offset" policy="Duplicate"/>
-    <policy field="langtext" policy="Duplicate"/>
-    <policy field="kuerzel" policy="Duplicate"/>
-    <policy field="charakt1" policy="Duplicate"/>
-    <policy field="charakt2" policy="Duplicate"/>
-    <policy field="quantnr1" policy="Duplicate"/>
-    <policy field="quantnr2" policy="Duplicate"/>
-    <policy field="streckenschaden" policy="Duplicate"/>
-    <policy field="streckenschaden_lfdnr" policy="Duplicate"/>
-    <policy field="pos_von" policy="Duplicate"/>
-    <policy field="pos_bis" policy="Duplicate"/>
-    <policy field="foto_dateiname" policy="Duplicate"/>
-    <policy field="film_dateiname" policy="Duplicate"/>
-    <policy field="ordner_bild" policy="Duplicate"/>
-    <policy field="ordner_video" policy="Duplicate"/>
-    <policy field="filmtyp" policy="Duplicate"/>
-    <policy field="video_start" policy="Duplicate"/>
-    <policy field="video_ende" policy="Duplicate"/>
-    <policy field="ZD" policy="Duplicate"/>
-    <policy field="ZB" policy="Duplicate"/>
-    <policy field="ZS" policy="Duplicate"/>
-    <policy field="kommentar" policy="Duplicate"/>
-  </splitPolicies>
-  <duplicatePolicies>
-    <policy field="pk" policy="Duplicate"/>
-    <policy field="pk_best" policy="Duplicate"/>
-    <policy field="pk_ext" policy="Duplicate"/>
-    <policy field="aktion" policy="Duplicate"/>
-    <policy field="status" policy="Duplicate"/>
-    <policy field="objekt" policy="Duplicate"/>
-    <policy field="untersuchleit" policy="Duplicate"/>
-    <policy field="schoben" policy="Duplicate"/>
-    <policy field="schunten" policy="Duplicate"/>
-    <policy field="id" policy="Duplicate"/>
-    <policy field="untersuchtag" policy="Duplicate"/>
-    <policy field="bandnr" policy="Duplicate"/>
-    <policy field="videozaehler" policy="Duplicate"/>
-    <policy field="inspektionslaenge" policy="Duplicate"/>
-    <policy field="station" policy="Duplicate"/>
-    <policy field="stationtext" policy="Duplicate"/>
-    <policy field="timecode" policy="Duplicate"/>
-    <policy field="video_offset" policy="Duplicate"/>
-    <policy field="langtext" policy="Duplicate"/>
-    <policy field="kuerzel" policy="Duplicate"/>
-    <policy field="charakt1" policy="Duplicate"/>
-    <policy field="charakt2" policy="Duplicate"/>
-    <policy field="quantnr1" policy="Duplicate"/>
-    <policy field="quantnr2" policy="Duplicate"/>
-    <policy field="streckenschaden" policy="Duplicate"/>
-    <policy field="streckenschaden_lfdnr" policy="Duplicate"/>
-    <policy field="pos_von" policy="Duplicate"/>
-    <policy field="pos_bis" policy="Duplicate"/>
-    <policy field="foto_dateiname" policy="Duplicate"/>
-    <policy field="film_dateiname" policy="Duplicate"/>
-    <policy field="ordner_bild" policy="Duplicate"/>
-    <policy field="ordner_video" policy="Duplicate"/>
-    <policy field="filmtyp" policy="Duplicate"/>
-    <policy field="video_start" policy="Duplicate"/>
-    <policy field="video_ende" policy="Duplicate"/>
-    <policy field="ZD" policy="Duplicate"/>
-    <policy field="ZB" policy="Duplicate"/>
-    <policy field="ZS" policy="Duplicate"/>
-    <policy field="kommentar" policy="Duplicate"/>
-  </duplicatePolicies>
-  <defaults>
-    <default field="pk" expression="" applyOnUpdate="0"/>
-    <default field="pk_best" expression="" applyOnUpdate="0"/>
-    <default field="pk_ext" expression="" applyOnUpdate="0"/>
-    <default field="aktion" expression="" applyOnUpdate="0"/>
-    <default field="status" expression="" applyOnUpdate="0"/>
-    <default field="objekt" expression="" applyOnUpdate="0"/>
-    <default field="untersuchleit" expression="" applyOnUpdate="0"/>
-    <default field="schoben" expression="" applyOnUpdate="0"/>
-    <default field="schunten" expression="" applyOnUpdate="0"/>
-    <default field="id" expression="" applyOnUpdate="0"/>
-    <default field="untersuchtag" expression="" applyOnUpdate="0"/>
-    <default field="bandnr" expression="" applyOnUpdate="0"/>
-    <default field="videozaehler" expression="" applyOnUpdate="0"/>
-    <default field="inspektionslaenge" expression="" applyOnUpdate="0"/>
-    <default field="station" expression="" applyOnUpdate="0"/>
-    <default field="stationtext" expression="" applyOnUpdate="0"/>
-    <default field="timecode" expression="" applyOnUpdate="0"/>
-    <default field="video_offset" expression="" applyOnUpdate="0"/>
-    <default field="langtext" expression="" applyOnUpdate="0"/>
-    <default field="kuerzel" expression="" applyOnUpdate="0"/>
-    <default field="charakt1" expression="" applyOnUpdate="0"/>
-    <default field="charakt2" expression="" applyOnUpdate="0"/>
-    <default field="quantnr1" expression="" applyOnUpdate="0"/>
-    <default field="quantnr2" expression="" applyOnUpdate="0"/>
-    <default field="streckenschaden" expression="" applyOnUpdate="0"/>
-    <default field="streckenschaden_lfdnr" expression="" applyOnUpdate="0"/>
-    <default field="pos_von" expression="" applyOnUpdate="0"/>
-    <default field="pos_bis" expression="" applyOnUpdate="0"/>
-    <default field="foto_dateiname" expression="" applyOnUpdate="0"/>
-    <default field="film_dateiname" expression="" applyOnUpdate="0"/>
-    <default field="ordner_bild" expression="" applyOnUpdate="0"/>
-    <default field="ordner_video" expression="" applyOnUpdate="0"/>
-    <default field="filmtyp" expression="" applyOnUpdate="0"/>
-    <default field="video_start" expression="" applyOnUpdate="0"/>
-    <default field="video_ende" expression="" applyOnUpdate="0"/>
-    <default field="ZD" expression="" applyOnUpdate="0"/>
-    <default field="ZB" expression="" applyOnUpdate="0"/>
-    <default field="ZS" expression="" applyOnUpdate="0"/>
-    <default field="kommentar" expression="" applyOnUpdate="0"/>
-  </defaults>
-  <constraints>
-    <constraint field="pk" constraints="3" unique_strength="1" exp_strength="0" notnull_strength="1"/>
-    <constraint field="pk_best" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="pk_ext" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="aktion" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="status" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="objekt" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="untersuchleit" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="schoben" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="schunten" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="id" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="untersuchtag" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="bandnr" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="videozaehler" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="inspektionslaenge" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="station" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="stationtext" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="timecode" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="video_offset" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="langtext" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="kuerzel" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="charakt1" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="charakt2" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="quantnr1" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="quantnr2" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="streckenschaden" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="streckenschaden_lfdnr" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="pos_von" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="pos_bis" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="foto_dateiname" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="film_dateiname" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="ordner_bild" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="ordner_video" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="filmtyp" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="video_start" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="video_ende" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="ZD" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="ZB" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="ZS" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="kommentar" constraints="0" unique_strength="0" exp_strength="0" notnull_strength="0"/>
-  </constraints>
-  <constraintExpressions>
-    <constraint field="pk" desc="" exp=""/>
-    <constraint field="pk_best" desc="" exp=""/>
-    <constraint field="pk_ext" desc="" exp=""/>
-    <constraint field="aktion" desc="" exp=""/>
-    <constraint field="status" desc="" exp=""/>
-    <constraint field="objekt" desc="" exp=""/>
-    <constraint field="untersuchleit" desc="" exp=""/>
-    <constraint field="schoben" desc="" exp=""/>
-    <constraint field="schunten" desc="" exp=""/>
-    <constraint field="id" desc="" exp=""/>
-    <constraint field="untersuchtag" desc="" exp=""/>
-    <constraint field="bandnr" desc="" exp=""/>
-    <constraint field="videozaehler" desc="" exp=""/>
-    <constraint field="inspektionslaenge" desc="" exp=""/>
-    <constraint field="station" desc="" exp=""/>
-    <constraint field="stationtext" desc="" exp=""/>
-    <constraint field="timecode" desc="" exp=""/>
-    <constraint field="video_offset" desc="" exp=""/>
-    <constraint field="langtext" desc="" exp=""/>
-    <constraint field="kuerzel" desc="" exp=""/>
-    <constraint field="charakt1" desc="" exp=""/>
-    <constraint field="charakt2" desc="" exp=""/>
-    <constraint field="quantnr1" desc="" exp=""/>
-    <constraint field="quantnr2" desc="" exp=""/>
-    <constraint field="streckenschaden" desc="" exp=""/>
-    <constraint field="streckenschaden_lfdnr" desc="" exp=""/>
-    <constraint field="pos_von" desc="" exp=""/>
-    <constraint field="pos_bis" desc="" exp=""/>
-    <constraint field="foto_dateiname" desc="" exp=""/>
-    <constraint field="film_dateiname" desc="" exp=""/>
-    <constraint field="ordner_bild" desc="" exp=""/>
-    <constraint field="ordner_video" desc="" exp=""/>
-    <constraint field="filmtyp" desc="" exp=""/>
-    <constraint field="video_start" desc="" exp=""/>
-    <constraint field="video_ende" desc="" exp=""/>
-    <constraint field="ZD" desc="" exp=""/>
-    <constraint field="ZB" desc="" exp=""/>
-    <constraint field="ZS" desc="" exp=""/>
-    <constraint field="kommentar" desc="" exp=""/>
-  </constraintExpressions>
-  <expressionfields/>
-  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+  <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
     <columns>
-      <column width="-1" hidden="0" type="field" name="pk"/>
-      <column width="-1" hidden="0" type="field" name="pk_best"/>
-      <column width="-1" hidden="0" type="field" name="pk_ext"/>
-      <column width="-1" hidden="0" type="field" name="aktion"/>
-      <column width="-1" hidden="0" type="field" name="status"/>
-      <column width="-1" hidden="0" type="field" name="objekt"/>
-      <column width="-1" hidden="0" type="field" name="untersuchleit"/>
-      <column width="-1" hidden="0" type="field" name="schoben"/>
-      <column width="-1" hidden="0" type="field" name="schunten"/>
-      <column width="-1" hidden="0" type="field" name="id"/>
-      <column width="-1" hidden="0" type="field" name="untersuchtag"/>
-      <column width="-1" hidden="0" type="field" name="bandnr"/>
-      <column width="-1" hidden="0" type="field" name="videozaehler"/>
-      <column width="-1" hidden="0" type="field" name="inspektionslaenge"/>
-      <column width="-1" hidden="0" type="field" name="station"/>
-      <column width="-1" hidden="0" type="field" name="stationtext"/>
-      <column width="-1" hidden="0" type="field" name="timecode"/>
-      <column width="-1" hidden="0" type="field" name="video_offset"/>
-      <column width="-1" hidden="0" type="field" name="langtext"/>
-      <column width="-1" hidden="0" type="field" name="kuerzel"/>
-      <column width="-1" hidden="0" type="field" name="charakt1"/>
-      <column width="-1" hidden="0" type="field" name="charakt2"/>
-      <column width="-1" hidden="0" type="field" name="quantnr1"/>
-      <column width="-1" hidden="0" type="field" name="quantnr2"/>
-      <column width="-1" hidden="0" type="field" name="streckenschaden"/>
-      <column width="-1" hidden="0" type="field" name="streckenschaden_lfdnr"/>
-      <column width="-1" hidden="0" type="field" name="pos_von"/>
-      <column width="-1" hidden="0" type="field" name="pos_bis"/>
-      <column width="-1" hidden="0" type="field" name="foto_dateiname"/>
-      <column width="-1" hidden="0" type="field" name="film_dateiname"/>
-      <column width="-1" hidden="0" type="field" name="ordner_bild"/>
-      <column width="-1" hidden="0" type="field" name="ordner_video"/>
-      <column width="-1" hidden="0" type="field" name="filmtyp"/>
-      <column width="-1" hidden="0" type="field" name="video_start"/>
-      <column width="-1" hidden="0" type="field" name="video_ende"/>
-      <column width="-1" hidden="0" type="field" name="ZD"/>
-      <column width="-1" hidden="0" type="field" name="ZB"/>
-      <column width="-1" hidden="0" type="field" name="ZS"/>
-      <column width="-1" hidden="0" type="field" name="kommentar"/>
-      <column width="-1" hidden="1" type="actions"/>
+      <column width="-1" type="field" hidden="0" name="status"/>
+      <column width="-1" type="field" hidden="0" name="aktion"/>
+      <column width="-1" type="field" hidden="0" name="untersuchleit"/>
+      <column width="-1" type="field" hidden="0" name="objekt"/>
+      <column width="-1" type="field" hidden="0" name="schoben"/>
+      <column width="-1" type="field" hidden="0" name="schunten"/>
+      <column width="-1" type="field" hidden="0" name="id"/>
+      <column width="-1" type="field" hidden="0" name="untersuchtag"/>
+      <column width="-1" type="field" hidden="0" name="bandnr"/>
+      <column width="-1" type="field" hidden="0" name="videozaehler"/>
+      <column width="-1" type="field" hidden="0" name="inspektionslaenge"/>
+      <column width="-1" type="field" hidden="0" name="station"/>
+      <column width="-1" type="field" hidden="0" name="stationtext"/>
+      <column width="-1" type="field" hidden="0" name="timecode"/>
+      <column width="-1" type="field" hidden="0" name="video_offset"/>
+      <column width="-1" type="field" hidden="0" name="langtext"/>
+      <column width="-1" type="field" hidden="0" name="kuerzel"/>
+      <column width="-1" type="field" hidden="0" name="charakt1"/>
+      <column width="-1" type="field" hidden="0" name="charakt2"/>
+      <column width="-1" type="field" hidden="0" name="quantnr1"/>
+      <column width="-1" type="field" hidden="0" name="quantnr2"/>
+      <column width="-1" type="field" hidden="0" name="streckenschaden"/>
+      <column width="-1" type="field" hidden="0" name="streckenschaden_lfdnr"/>
+      <column width="-1" type="field" hidden="0" name="pos_von"/>
+      <column width="-1" type="field" hidden="0" name="pos_bis"/>
+      <column width="-1" type="field" hidden="0" name="foto_dateiname"/>
+      <column width="-1" type="field" hidden="0" name="film_dateiname"/>
+      <column width="-1" type="field" hidden="0" name="ordner_bild"/>
+      <column width="-1" type="field" hidden="0" name="ordner_video"/>
+      <column width="-1" type="field" hidden="0" name="filmtyp"/>
+      <column width="-1" type="field" hidden="0" name="video_start"/>
+      <column width="-1" type="field" hidden="0" name="video_ende"/>
+      <column width="-1" type="field" hidden="0" name="ZD"/>
+      <column width="-1" type="field" hidden="0" name="ZB"/>
+      <column width="-1" type="field" hidden="0" name="ZS"/>
+      <column width="-1" type="field" hidden="0" name="kommentar"/>
+      <column width="-1" type="field" hidden="0" name="pk"/>
+      <column width="-1" type="field" hidden="0" name="pk_best"/>
+      <column width="-1" type="field" hidden="0" name="pk_ext"/>
+      <column width="-1" type="field" hidden="0" name="bw_bs"/>
+      <column width="-1" type="actions" hidden="1"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles>
-      <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'hinzufügen'" background_color_alpha="255" background_color="#b2df8a" name="hinzufügen">
+        <font underline="0" strikethrough="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
-        <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
+      <style rule="not status and aktion = 'hinzufügen'" text_color="#33a02c" text_color_alpha="255" name="hinzufügen nicht ausführen">
+        <font underline="0" strikethrough="1" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" italic="1"/>
       </style>
-      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'ändern'" background_color_alpha="255" background_color="#fdbf6f" name="ändern">
+        <font underline="0" strikethrough="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="not status and aktion = 'ändern'" text_color="#ff7f00" text_color_alpha="255" name="ändern nicht ausführen">
+        <font underline="0" strikethrough="1" style="" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style rule="status and aktion = 'löschen'" background_color_alpha="255" background_color="#fb9a99" name="löschen">
+        <font underline="0" strikethrough="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
+      </style>
+      <style rule="not status and aktion = 'löschen'" text_color="#e31a1c" text_color_alpha="255" name="löschen nicht ausführen">
+        <font underline="0" strikethrough="1" style="" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style rule="aktion = 'Bezeichnung im Bestand nicht eindeutig'" background_color_alpha="255" text_color="#5500ff" background_color="#e6d9ff" text_color_alpha="255" name="redundant">
+        <font underline="0" strikethrough="0" style="" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" italic="1"/>
+      </style>
+      <style rule="aktion = 'Bezeichnung extern nicht eindeutig'" background_color_alpha="255" text_color="#9500ff" background_color="#efd9ff" text_color_alpha="255" name="redundant extern">
+        <font underline="0" strikethrough="0" style="" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" italic="1"/>
       </style>
     </rowstyles>
     <fieldstyles/>
@@ -821,45 +584,46 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field editable="1" name="ZB"/>
-    <field editable="1" name="ZD"/>
-    <field editable="1" name="ZS"/>
-    <field editable="1" name="aktion"/>
-    <field editable="1" name="bandnr"/>
-    <field editable="1" name="charakt1"/>
-    <field editable="1" name="charakt2"/>
-    <field editable="1" name="film_dateiname"/>
-    <field editable="1" name="filmtyp"/>
-    <field editable="1" name="foto_dateiname"/>
-    <field editable="1" name="id"/>
-    <field editable="1" name="inspektionslaenge"/>
-    <field editable="1" name="kommentar"/>
-    <field editable="1" name="kuerzel"/>
-    <field editable="1" name="langtext"/>
-    <field editable="1" name="objekt"/>
-    <field editable="1" name="ordner_bild"/>
-    <field editable="1" name="ordner_video"/>
-    <field editable="1" name="pk"/>
-    <field editable="1" name="pk_best"/>
-    <field editable="1" name="pk_ext"/>
-    <field editable="1" name="pos_bis"/>
-    <field editable="1" name="pos_von"/>
-    <field editable="1" name="quantnr1"/>
-    <field editable="1" name="quantnr2"/>
-    <field editable="1" name="schoben"/>
-    <field editable="1" name="schunten"/>
-    <field editable="1" name="station"/>
-    <field editable="1" name="stationtext"/>
+    <field editable="0" name="ZB"/>
+    <field editable="0" name="ZD"/>
+    <field editable="0" name="ZS"/>
+    <field editable="0" name="aktion"/>
+    <field editable="0" name="bandnr"/>
+    <field editable="1" name="bw_bs"/>
+    <field editable="0" name="charakt1"/>
+    <field editable="0" name="charakt2"/>
+    <field editable="0" name="film_dateiname"/>
+    <field editable="0" name="filmtyp"/>
+    <field editable="0" name="foto_dateiname"/>
+    <field editable="0" name="id"/>
+    <field editable="0" name="inspektionslaenge"/>
+    <field editable="0" name="kommentar"/>
+    <field editable="0" name="kuerzel"/>
+    <field editable="0" name="langtext"/>
+    <field editable="0" name="objekt"/>
+    <field editable="0" name="ordner_bild"/>
+    <field editable="0" name="ordner_video"/>
+    <field editable="0" name="pk"/>
+    <field editable="0" name="pk_best"/>
+    <field editable="0" name="pk_ext"/>
+    <field editable="0" name="pos_bis"/>
+    <field editable="0" name="pos_von"/>
+    <field editable="0" name="quantnr1"/>
+    <field editable="0" name="quantnr2"/>
+    <field editable="0" name="schoben"/>
+    <field editable="0" name="schunten"/>
+    <field editable="0" name="station"/>
+    <field editable="0" name="stationtext"/>
     <field editable="1" name="status"/>
-    <field editable="1" name="streckenschaden"/>
-    <field editable="1" name="streckenschaden_lfdnr"/>
-    <field editable="1" name="timecode"/>
-    <field editable="1" name="untersuchleit"/>
-    <field editable="1" name="untersuchtag"/>
-    <field editable="1" name="video_ende"/>
-    <field editable="1" name="video_offset"/>
-    <field editable="1" name="video_start"/>
-    <field editable="1" name="videozaehler"/>
+    <field editable="0" name="streckenschaden"/>
+    <field editable="0" name="streckenschaden_lfdnr"/>
+    <field editable="0" name="timecode"/>
+    <field editable="0" name="untersuchleit"/>
+    <field editable="0" name="untersuchtag"/>
+    <field editable="0" name="video_ende"/>
+    <field editable="0" name="video_offset"/>
+    <field editable="0" name="video_start"/>
+    <field editable="0" name="videozaehler"/>
   </editable>
   <labelOnTop>
     <field labelOnTop="0" name="ZB"/>
@@ -867,6 +631,7 @@ def my_form_open(dialog, layer, feature):
     <field labelOnTop="0" name="ZS"/>
     <field labelOnTop="0" name="aktion"/>
     <field labelOnTop="0" name="bandnr"/>
+    <field labelOnTop="0" name="bw_bs"/>
     <field labelOnTop="0" name="charakt1"/>
     <field labelOnTop="0" name="charakt2"/>
     <field labelOnTop="0" name="film_dateiname"/>
@@ -903,49 +668,48 @@ def my_form_open(dialog, layer, feature):
     <field labelOnTop="0" name="videozaehler"/>
   </labelOnTop>
   <reuseLastValue>
-    <field name="ZB" reuseLastValue="0"/>
-    <field name="ZD" reuseLastValue="0"/>
-    <field name="ZS" reuseLastValue="0"/>
-    <field name="aktion" reuseLastValue="0"/>
-    <field name="bandnr" reuseLastValue="0"/>
-    <field name="charakt1" reuseLastValue="0"/>
-    <field name="charakt2" reuseLastValue="0"/>
-    <field name="film_dateiname" reuseLastValue="0"/>
-    <field name="filmtyp" reuseLastValue="0"/>
-    <field name="foto_dateiname" reuseLastValue="0"/>
-    <field name="id" reuseLastValue="0"/>
-    <field name="inspektionslaenge" reuseLastValue="0"/>
-    <field name="kommentar" reuseLastValue="0"/>
-    <field name="kuerzel" reuseLastValue="0"/>
-    <field name="langtext" reuseLastValue="0"/>
-    <field name="objekt" reuseLastValue="0"/>
-    <field name="ordner_bild" reuseLastValue="0"/>
-    <field name="ordner_video" reuseLastValue="0"/>
-    <field name="pk" reuseLastValue="0"/>
-    <field name="pk_best" reuseLastValue="0"/>
-    <field name="pk_ext" reuseLastValue="0"/>
-    <field name="pos_bis" reuseLastValue="0"/>
-    <field name="pos_von" reuseLastValue="0"/>
-    <field name="quantnr1" reuseLastValue="0"/>
-    <field name="quantnr2" reuseLastValue="0"/>
-    <field name="schoben" reuseLastValue="0"/>
-    <field name="schunten" reuseLastValue="0"/>
-    <field name="station" reuseLastValue="0"/>
-    <field name="stationtext" reuseLastValue="0"/>
-    <field name="status" reuseLastValue="0"/>
-    <field name="streckenschaden" reuseLastValue="0"/>
-    <field name="streckenschaden_lfdnr" reuseLastValue="0"/>
-    <field name="timecode" reuseLastValue="0"/>
-    <field name="untersuchleit" reuseLastValue="0"/>
-    <field name="untersuchtag" reuseLastValue="0"/>
-    <field name="video_ende" reuseLastValue="0"/>
-    <field name="video_offset" reuseLastValue="0"/>
-    <field name="video_start" reuseLastValue="0"/>
-    <field name="videozaehler" reuseLastValue="0"/>
+    <field reuseLastValue="0" name="ZB"/>
+    <field reuseLastValue="0" name="ZD"/>
+    <field reuseLastValue="0" name="ZS"/>
+    <field reuseLastValue="0" name="aktion"/>
+    <field reuseLastValue="0" name="bandnr"/>
+    <field reuseLastValue="0" name="bw_bs"/>
+    <field reuseLastValue="0" name="charakt1"/>
+    <field reuseLastValue="0" name="charakt2"/>
+    <field reuseLastValue="0" name="film_dateiname"/>
+    <field reuseLastValue="0" name="filmtyp"/>
+    <field reuseLastValue="0" name="foto_dateiname"/>
+    <field reuseLastValue="0" name="id"/>
+    <field reuseLastValue="0" name="inspektionslaenge"/>
+    <field reuseLastValue="0" name="kommentar"/>
+    <field reuseLastValue="0" name="kuerzel"/>
+    <field reuseLastValue="0" name="langtext"/>
+    <field reuseLastValue="0" name="objekt"/>
+    <field reuseLastValue="0" name="ordner_bild"/>
+    <field reuseLastValue="0" name="ordner_video"/>
+    <field reuseLastValue="0" name="pk"/>
+    <field reuseLastValue="0" name="pk_best"/>
+    <field reuseLastValue="0" name="pk_ext"/>
+    <field reuseLastValue="0" name="pos_bis"/>
+    <field reuseLastValue="0" name="pos_von"/>
+    <field reuseLastValue="0" name="quantnr1"/>
+    <field reuseLastValue="0" name="quantnr2"/>
+    <field reuseLastValue="0" name="schoben"/>
+    <field reuseLastValue="0" name="schunten"/>
+    <field reuseLastValue="0" name="station"/>
+    <field reuseLastValue="0" name="stationtext"/>
+    <field reuseLastValue="0" name="status"/>
+    <field reuseLastValue="0" name="streckenschaden"/>
+    <field reuseLastValue="0" name="streckenschaden_lfdnr"/>
+    <field reuseLastValue="0" name="timecode"/>
+    <field reuseLastValue="0" name="untersuchleit"/>
+    <field reuseLastValue="0" name="untersuchtag"/>
+    <field reuseLastValue="0" name="video_ende"/>
+    <field reuseLastValue="0" name="video_offset"/>
+    <field reuseLastValue="0" name="video_start"/>
+    <field reuseLastValue="0" name="videozaehler"/>
   </reuseLastValue>
   <dataDefinedFieldProperties/>
   <widgets/>
-  <previewExpression>"foto_dateiname"</previewExpression>
-  <mapTip enabled="1"></mapTip>
   <layerGeometryType>1</layerGeometryType>
 </qgis>

@@ -188,9 +188,10 @@
       <editWidget type="CheckBox">
         <config>
           <Option type="Map">
-            <Option name="CheckedState" value="1" type="QString"/>
-            <Option name="TextDisplayMethod" value="1" type="int"/>
-            <Option name="UncheckedState" value="0" type="QString"/>
+            <Option value="true" type="bool" name="AllowNullState"/>
+            <Option value="1" type="QString" name="CheckedState"/>
+            <Option value="1" type="int" name="TextDisplayMethod"/>
+            <Option value="0" type="QString" name="UncheckedState"/>
           </Option>
         </config>
       </editWidget>
@@ -532,29 +533,41 @@
       <column name="profilauskleidung" hidden="0" width="-1" type="field"/>
       <column name="innenmaterial" hidden="0" width="-1" type="field"/>
       <column name="ks" hidden="0" width="-1" type="field"/>
+      <column name="anschlusstyp" hidden="0" width="-1" type="field"/>
       <column name="simstatus" hidden="0" width="-1" type="field"/>
       <column name="kommentar" hidden="0" width="-1" type="field"/>
       <column name="createdat" hidden="0" width="-1" type="field"/>
       <column name="pk" hidden="0" width="-1" type="field"/>
       <column name="pk_best" hidden="0" width="-1" type="field"/>
       <column name="pk_ext" hidden="0" width="-1" type="field"/>
-      <column name="anschlusstyp" hidden="0" width="-1" type="field"/>
       <column hidden="1" width="-1" type="actions"/>
     </columns>
   </attributetableconfig>
   <conditionalstyles>
     <rowstyles>
-      <style name="hinzufügen" background_color_alpha="255" rule="status and aktion = 'hinzufügen'" background_color="#9ad871">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'hinzufügen'" background_color="#b2df8a" background_color_alpha="255" name="hinzufügen">
+        <font strikethrough="0" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="nicht ausführen" text_color="#ff0000" rule="not status" text_color_alpha="255">
-        <font italic="1" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" strikethrough="1"/>
+      <style rule="not status and aktion = 'hinzufügen'" text_color="#33a02c" text_color_alpha="255" name="hinzufügen nicht ausführen">
+        <font strikethrough="1" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,1,0,1,0,0" italic="1"/>
       </style>
-      <style name="ändern" background_color_alpha="255" rule="status and aktion = 'ändern'" background_color="#ff7f00">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="status and aktion = 'ändern'" background_color="#fdbf6f" background_color_alpha="255" name="ändern">
+        <font strikethrough="0" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
       </style>
-      <style name="löschen" background_color_alpha="255" rule="status and aktion = 'löschen'" background_color="#ff0000">
-        <font italic="0" underline="0" style="" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" strikethrough="0"/>
+      <style rule="not status and aktion = 'ändern'" text_color="#ff7f00" text_color_alpha="255" name="ändern nicht ausführen">
+        <font strikethrough="1" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style rule="status and aktion = 'löschen'" background_color="#fb9a99" background_color_alpha="255" name="löschen">
+        <font strikethrough="0" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" italic="0"/>
+      </style>
+      <style rule="not status and aktion = 'löschen'" text_color="#e31a1c" text_color_alpha="255" name="löschen nicht ausführen">
+        <font strikethrough="1" style="" underline="0" bold="0" description="MS Shell Dlg 2,8.3,-1,5,50,1,0,1,0,0" italic="1"/>
+      </style>
+      <style text_color="#5500ff" name="redundant" rule="aktion = 'Bezeichnung im Bestand nicht eindeutig'" text_color_alpha="255" background_color_alpha="255" background_color="#e6d9ff">
+        <font strikethrough="0" italic="1" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" underline="0" style=""/>
+      </style>
+      <style text_color="#9500ff" name="redundant extern" rule="aktion = 'Bezeichnung extern nicht eindeutig'" text_color_alpha="255" background_color_alpha="255" background_color="#efd9ff">
+        <font strikethrough="0" italic="1" bold="1" description="MS Shell Dlg 2,8.3,-1,5,75,1,0,0,0,0" underline="0" style=""/>
       </style>
     </rowstyles>
     <fieldstyles/>
@@ -581,41 +594,41 @@ def my_form_open(dialog, layer, feature):
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
   <editable>
-    <field name="aktion" editable="1"/>
-    <field name="anschlusstyp" editable="1"/>
-    <field name="aussendurchmesser" editable="1"/>
-    <field name="baujahr" editable="1"/>
-    <field name="breite" editable="1"/>
-    <field name="createdat" editable="1"/>
-    <field name="druckdicht" editable="1"/>
-    <field name="eigentum" editable="1"/>
-    <field name="entwart" editable="1"/>
-    <field name="haltnam" editable="1"/>
-    <field name="haltungstyp" editable="1"/>
-    <field name="hoehe" editable="1"/>
-    <field name="innenmaterial" editable="1"/>
-    <field name="kommentar" editable="1"/>
-    <field name="ks" editable="1"/>
-    <field name="laenge" editable="1"/>
-    <field name="leitnam" editable="1"/>
-    <field name="material" editable="1"/>
-    <field name="objekt" editable="1"/>
-    <field name="pk" editable="1"/>
-    <field name="pk_best" editable="1"/>
-    <field name="pk_ext" editable="1"/>
-    <field name="pk_ist" editable="1"/>
-    <field name="pk_neu" editable="1"/>
-    <field name="profilauskleidung" editable="1"/>
-    <field name="profilnam" editable="1"/>
-    <field name="schoben" editable="1"/>
-    <field name="schunten" editable="1"/>
-    <field name="simstatus" editable="1"/>
-    <field name="sohleoben" editable="1"/>
-    <field name="sohleunten" editable="1"/>
+    <field name="aktion" editable="0"/>
+    <field name="anschlusstyp" editable="0"/>
+    <field name="aussendurchmesser" editable="0"/>
+    <field name="baujahr" editable="0"/>
+    <field name="breite" editable="0"/>
+    <field name="createdat" editable="0"/>
+    <field name="druckdicht" editable="0"/>
+    <field name="eigentum" editable="0"/>
+    <field name="entwart" editable="0"/>
+    <field name="haltnam" editable="0"/>
+    <field name="haltungstyp" editable="0"/>
+    <field name="hoehe" editable="0"/>
+    <field name="innenmaterial" editable="0"/>
+    <field name="kommentar" editable="0"/>
+    <field name="ks" editable="0"/>
+    <field name="laenge" editable="0"/>
+    <field name="leitnam" editable="0"/>
+    <field name="material" editable="0"/>
+    <field name="objekt" editable="0"/>
+    <field name="pk" editable="0"/>
+    <field name="pk_best" editable="0"/>
+    <field name="pk_ext" editable="0"/>
+    <field name="pk_ist" editable="0"/>
+    <field name="pk_neu" editable="0"/>
+    <field name="profilauskleidung" editable="0"/>
+    <field name="profilnam" editable="0"/>
+    <field name="schoben" editable="0"/>
+    <field name="schunten" editable="0"/>
+    <field name="simstatus" editable="0"/>
+    <field name="sohleoben" editable="0"/>
+    <field name="sohleunten" editable="0"/>
     <field name="status" editable="1"/>
-    <field name="strasse" editable="1"/>
-    <field name="teilgebiet" editable="1"/>
-    <field name="transport" editable="1"/>
+    <field name="strasse" editable="0"/>
+    <field name="teilgebiet" editable="0"/>
+    <field name="transport" editable="0"/>
   </editable>
   <labelOnTop>
     <field name="aktion" labelOnTop="0"/>

@@ -31,6 +31,7 @@ def _create_yml_spatialite(db_qkan: DBConnection):
     TABLES_GEOP = enums.SyncTables.TABLES_GEOP.value
     TABLES_GLINK = enums.SyncTables.TABLES_GLINK.value
     TABLES_ATTR = enums.SyncTables.TABLES_ATTR.value
+    TABLES_UNTERSUCH = enums.SyncTables.TABLES_UNTERSUCH.value
 
     # db_qkan.loadmodule('sync')
 
@@ -133,18 +134,26 @@ def _create_yml_spatialite(db_qkan: DBConnection):
         attributes = '\n    '.join(textwrap.wrap(', '.join(attrlis[:nlis])))
         attributes_ex = '\n    '.join(textwrap.wrap(', ex.'.join(attrlis[:nlis])))
         attributes_be = '\n    '.join(textwrap.wrap(', be.'.join(attrlis[:nlis])))
+        attributes_t =  '\n    '.join(textwrap.wrap( ', t.'.join(attrlis[:nlis])))
         if gobj is not None:
             geoattr =   f',\n    geom'
             geoattrs =  f',\n    {gobj}'
-            geoattrex = f',\n    ex.{gobj} AS {gobj}'
-            geoattrbe = f',\n    be.{gobj} AS {gobj}'
+            geoattr_ex = f',\n    ex.{gobj} AS {gobj}'
+            geoattr_be = f',\n    be.{gobj} AS {gobj}'
+            geoattr_t  = f',\n    t.{gobj} AS {gobj}'
             objattr = 'objekt, '
         else:
             geoattr = ''
             geoattrs =  ''
-            geoattrex = ''
-            geoattrbe = ''
+            geoattr_ex = ''
+            geoattr_be = ''
+            geoattr_t = ''
             objattr = ''
+
+        if tabnam in TABLES_UNTERSUCH:
+            untersuch = ' AND be.untersuchtag = ex.untersuchtag'
+        else:
+            untersuch = ''
 
         # ---------------------------------------------------------------------------------------------------------------------
         # Synchronisationstabelle löschen
@@ -193,34 +202,25 @@ def _create_yml_spatialite(db_qkan: DBConnection):
                 NULL AS pk_best, ex.pk AS pk_ext, ex.{objnam},''' + \
         ("" if gobj is None else "\n    'Datensatz nicht im Bestand' AS objekt,") + f'''
                 'hinzufügen' AS aktion, :status_add AS status,      /* hinzufügen */ 
-                ex.{attributes_ex}{geoattrex}
-                FROM (
-                    SELECT * 
-                  FROM ext.{tabnam} AS t
-                  GROUP BY t.{objnam}
-                  HAVING count() = 1
-              ) AS ex
+                ex.{attributes_ex}{geoattr_ex}
+              FROM ext.{tabnam} AS ex
               LEFT JOIN main.{tabnam} AS be
-              ON be.{objnam} = ex.{objnam}
+              ON be.{objnam} = ex.{objnam}{untersuch}
               WHERE be.pk IS NULL;'''
 
         # ---------------------------------------------------------------------------------------------------------------------
         # Datensätze, die nur in der bestehenden Datenbank vorkommen, Vergleich anhand Objektbezeichnung
         sqls[f'sync_{tabnam}_local'] = f'''                INSERT INTO sync_{tabnam} (
                     pk_best, pk_ext, {objnam}, {objattr}aktion, status,
-                    {attributes}{geoattr})\nSELECT
+                    {attributes}{geoattr})
+                SELECT
                     be.pk AS pk_best, NULL AS pk_ext, be.{objnam},''' + \
         ("" if gobj is None else "\n    'Datensatz extern nicht vorhanden' AS objekt,") + f'''
                  'löschen' AS aktion, :status_del AS status,      /* löschen */
-                  be.{attributes_be}{geoattrbe}
-            FROM (
-                SELECT *
-                FROM main.{tabnam} AS t
-                GROUP BY t.{objnam}
-                HAVING count() = 1
-            ) AS be
+                  be.{attributes_be}{geoattr_be}
+            FROM main.{tabnam} AS be
             LEFT JOIN ext.{tabnam} AS ex
-            ON be.{objnam} = ex.{objnam}
+            ON be.{objnam} = ex.{objnam}{untersuch}
             WHERE ex.pk IS NULL;'''
 
         # ---------------------------------------------------------------------------------------------------------------------
@@ -232,18 +232,18 @@ def _create_yml_spatialite(db_qkan: DBConnection):
                 be.pk AS pk_best,
                 ex.pk AS pk_ext,
                 ex.{objnam},''' + \
-        ("" if gobj is None else f"\n    iif(be.{gobj} <> ex.{gobj}, printf('Geometrie geändert'), NULL) AS objekt,") + f'''
+        ("" if gobj is None else f"\n    iif(be.{gobj} <> ex.{gobj}, printf('Geometrie geändert'), '') AS objekt,") + f'''
                 'ändern' AS aktion,
                 :status_mod AS status'''
         for attr, typ in fieldlis[:nlis]:
             if attr == 'createdat':
                 pass
             elif typ == 'TEXT':
-                sql += f",\n    iif(be.{attr} <> ex.{attr}, printf('%s -> %s', be.{attr}, ex.{attr}), NULL) AS {attr}"
+                sql += f",\n    iif(be.{attr} <> ex.{attr}, printf('%s -> %s', be.{attr}, ex.{attr}), '') AS {attr}"
             elif typ[:3] == 'INT':
-                sql += f",\n    iif(be.{attr} <> ex.{attr}, printf('%d -> %d', be.{attr}, ex.{attr}), NULL) AS {attr}"
+                sql += f",\n    iif(be.{attr} <> ex.{attr}, printf('%d -> %d', be.{attr}, ex.{attr}), '') AS {attr}"
             elif typ == 'REAL':
-                sql += f",\n    iif(coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001, printf('%.3f -> %.3f', be.{attr}, ex.{attr}), NULL) AS {attr}"
+                sql += f",\n    iif(coalesce(abs(be.{attr} - ex.{attr}), 0) > 0.001, printf('%.3f -> %.3f', be.{attr}, ex.{attr}), '') AS {attr}"
             else:
                 logger.error_code(f'Fehler: {attr=}, {typ=}')
                 raise QkanError
@@ -275,6 +275,56 @@ def _create_yml_spatialite(db_qkan: DBConnection):
                 prefix = ' OR\n    '
         sql += (";" if gobj is None else prefix + f"be.{gobj} <> ex.{gobj};")
         sqls[f'sync_{tabnam}_dif'] = sql
+
+        # ---------------------------------------------------------------------------------------------------------------------
+        # Doppelte Datensätze in externer Datenbank
+        if tabnam not in TABLES_UNTERSUCH:
+            sqls[f'sync_{tabnam}_ex_redundant'] = f'''            WITH ex AS (
+                    SELECT {objnam}, count() AS anz
+                    FROM ext.{tabnam}
+                    GROUP BY {objnam}
+                ),
+                be AS (
+                    SELECT DISTINCT {objnam}
+                    FROM main.{tabnam}
+                )
+                INSERT INTO sync_{tabnam} (
+                    pk_best, pk_ext, {objnam}, {objattr}aktion, status,
+                    {attributes}{geoattr})
+                SELECT
+                    NULL AS pk_best, t.pk AS pk_ext, t.{objnam},''' + \
+            ("" if gobj is None else "\n    '' AS objekt,") + f'''
+                    'Bezeichnung extern nicht eindeutig' AS aktion, NULL AS status,
+                    t.{attributes_t}{geoattr_t}
+                FROM {tabnam} AS t
+                JOIN ex ON ex.{objnam} = t.{objnam}
+                JOIN be ON be.{objnam} = t.{objnam}
+                WHERE ex.anz > 1;'''
+
+        # ---------------------------------------------------------------------------------------------------------------------
+        # Doppelte Datensätze in bestehender Datenbank
+            if tabnam not in TABLES_UNTERSUCH:
+                sqls[f'sync_{tabnam}_be_redundant'] = f'''            WITH be AS (
+                    SELECT {objnam}, count() AS anz
+                    FROM main.{tabnam}
+                    GROUP BY {objnam}
+                ),
+                ex AS (
+                    SELECT DISTINCT {objnam}
+                    FROM ext.{tabnam}
+                )
+                INSERT INTO sync_{tabnam} (
+                    pk_best, pk_ext, {objnam}, {objattr}aktion, status,
+                    {attributes}{geoattr})
+                SELECT
+                    t.pk AS pk_best, NULL AS pk_ext, t.{objnam},''' + \
+            ("" if gobj is None else "\n    '' AS objekt,") + f'''
+                    'Bezeichnung im Bestand nicht eindeutig' AS aktion, NULL AS status,
+                    t.{attributes_t}{geoattr_t}
+                FROM {tabnam} AS t
+                JOIN be ON be.{objnam} = t.{objnam}
+                JOIN ex ON ex.{objnam} = t.{objnam}
+                WHERE be.anz > 1;'''
 
         # ---------------------------------------------------------------------------------------------------------------------
         # Datensätze hinzufügen
@@ -345,3 +395,45 @@ def _create_yml_spatialite(db_qkan: DBConnection):
     # logger.debug(f"Anzahl SQLs in 'sync': {anz}")
     # for key in db_qkan.sqls['sync'].keys():
     #     logger.debug(f"{key}:\n{db_qkan.sqls['sync'][key]}\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

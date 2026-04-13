@@ -362,6 +362,11 @@ class CompareTask:
                         f'sync_{tabnam}_local',
                         f'sync_{tabnam}_dif',
                     ]
+                    if tabnam not in enums.SyncTables.TABLES_UNTERSUCH.value:
+                        sqlnames += [
+                            f'sync_{tabnam}_be_redundant',
+                            f'sync_{tabnam}_ex_redundant',
+                        ]
                     for sqlnam in sqlnames:
                         if not db_qkan.sqlyml(
                             sqlnam,
