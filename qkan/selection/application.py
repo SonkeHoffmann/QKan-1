@@ -61,22 +61,27 @@ class Selection(QKanPlugin):
         dropdown_menu = dropdown_button.menu()
 
         action = QAction("Objekte oberhalb", dropdown_menu)
+        action.setStatusTip("Bitte einen Schacht auswählen")
         action.triggered.connect(self.oberhalb_clicked)
         dropdown_menu.addAction(action)
 
         action1 = QAction("Objekte unterhalb", dropdown_menu)
+        action1.setStatusTip("Bitte einen Schacht auswählen")
         action1.triggered.connect(self.unterhalb_clicked)
         dropdown_menu.addAction(action1)
 
         action2 = QAction("längster Fließweg oberhalb", dropdown_menu)
+        action2.setStatusTip("Bitte einen Schacht auswählen")
         action2.triggered.connect(self.laengster_clicked)
         dropdown_menu.addAction(action2)
 
         action3 = QAction("kürzester Weg", dropdown_menu)
+        action3.setStatusTip("Bitte zwei Haltungen oder zwei Schächte wählen")
         action3.triggered.connect(self.kuerzester_clicked)
         dropdown_menu.addAction(action3)
 
         action4 = QAction("Objekte innerhalb Teilgebiet", dropdown_menu)
+        action4.setStatusTip("Bitte Teilgebiete wählen")
         action4.triggered.connect(self.teilgebiet_clicked)
         dropdown_menu.addAction(action4)
 
