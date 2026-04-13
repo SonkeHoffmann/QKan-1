@@ -229,15 +229,15 @@ class ImportTask(Schadenstexte):
     def __init__(self, db_qkan: DBConnection):
         self.db_qkan = db_qkan
 
-        xml_file = QKan.config.xml.import_file,
-        data_choice = QKan.config.xml.data_choice,
-        self.ordner_bild = QKan.config.fotoPathCurrent,
+        xml_file = QKan.config.xml.import_file
+        data_choice = QKan.config.xml.data_choice
+        self.ordner_bild = QKan.config.fotoPathCurrent
         self.ordner_video = QKan.config.videoPathCurrent
 
-        self.data_coice= data_choice
-        if data_choice == "ISYBAU Daten":
+        self.data_choice= data_choice
+        if self.data_choice == "ISYBAU Daten":
             self.datenart = "ISYBAU"
-        if data_choice == "DWA M-150 Daten":
+        if self.data_choice == "DWA M-150 Daten":
             self.datenart = "DWA"
 
         # nr (str) => description
