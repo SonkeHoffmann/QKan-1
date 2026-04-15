@@ -43,7 +43,7 @@ class CompareTask:
                 stmt_category='compare_dbs',
                 parameters=(QKan.config.sync.ext,),
             ):
-                logger.error_data('Datenbank {QKan.config.sync.ext=} konnte nicht angebunden werden')
+                logger.error_data(f'Datenbank {QKan.config.sync.ext=} konnte nicht angebunden werden')
                 raise QkanDbError
 
             # Ergänzen der SQL-Abfragen für sync
@@ -426,15 +426,28 @@ class CompareTask:
                     qkan_db=    QKan.config.sync.ext,
                 )
 
+                loadLayer(
+                    layerbez=   f'{layer_loc} Bestand',
+                    table=      tabnam,
+                    geom_column=gobj,
+                    qmlfile=    f'{layer_loc}.qml',
+                    filter=     '',
+                    uifile=     f'qkan_{tabnam}.ui',
+                    group=      grouppath,
+                    gpos=       0,
+                    qkan_db=    QKan.config.database.qkan,
+                )
+
         # Attributtabellen anzeigen
         if QKan.config.sync.check_showAttrTables:
             project = QgsProject.instance()
             for _, userchoice, layers, _ in tables:
-                layercomp = layers[0]
-                layer = project.mapLayersByName(layercomp)[0]
-                nds = layer.featureCount()
-                if nds > 0:
-                    iface.showAttributeTable(layer)
+                if userchoice:
+                    layercomp = layers[0]
+                    layer = project.mapLayersByName(layercomp)[0]
+                    nds = layer.featureCount()
+                    if nds > 0:
+                        iface.showAttributeTable(layer)
 
         progress_bar.setValue(100)
         status_message.setText("Vergleich der ausgewählten Tabellen abgeschlossen.")

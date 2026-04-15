@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>471</width>
-    <height>381</height>
+    <height>278</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -64,7 +64,7 @@
         <x>0</x>
         <y>0</y>
         <width>469</width>
-        <height>335</height>
+        <height>238</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -249,69 +249,24 @@
             </item>
            </layout>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="font">
-          <font>
-           <family>Tahoma</family>
-           <pointsize>8</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="title">
-          <string/>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QLabel" name="label_11">
-            <property name="font">
-             <font>
-              <family>Tahoma</family>
-              <pointsize>10</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
+           <widget class="QCheckBox" name="cb_allow_deletions">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bestätigung, dass Datensätze im Bestand gelöscht werden sollen, wenn Sie in den externen Tabellen fehlen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string>Bestätigung, dass Datensätze im Bestand gelöscht werden sollen, wenn Sie in den externen Tabellen fehlen.</string>
             </property>
             <property name="text">
-             <string>Doppelte Objektnamen werden nicht synchronisiert</string>
+             <string>Löschen von Datensätzen zulassen</string>
             </property>
            </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_12">
-              <property name="font">
-               <font>
-                <family>Tahoma</family>
-                <pointsize>10</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Anzahl doppelter Objektnamen: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="tf_doppelte">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="toolTip">
-               <string>Gesamtzahl doppelter Objektnamen in den ausgewählten Tabellen</string>
-              </property>
-              <property name="statusTip">
-               <string>Gesamtzahl doppelter Objektnamen in den ausgewählten Tabellen</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </item>
          </layout>
         </widget>

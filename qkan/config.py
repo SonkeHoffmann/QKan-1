@@ -264,6 +264,8 @@ class SyncConfig(ClassObject):
     check_mod: bool = True
     check_del: bool = False
 
+    check_allow_deletions: bool = False
+
     protfile: str = ""
 
 

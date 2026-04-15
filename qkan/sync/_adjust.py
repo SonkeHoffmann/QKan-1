@@ -2,11 +2,14 @@ from typing import Optional
 from qgis.core import Qgis
 from qgis.PyQt.QtWidgets import QProgressBar
 from datetime import datetime as dtim
+import os
+from pathlib import Path
+import tempfile
 
-from qkan import QKan
+from qkan import QKan, enums
 from qkan.database.dbfunc import DBConnection
 
-from qkan.utils import get_logger
+from qkan.utils import get_logger, QkanDbError
 
 logger = get_logger("QKan.sync._adjust")
 
@@ -40,11 +43,26 @@ class AdjustTask:
             # SQL-Statements für dieses Modul laden
             # db_qkan.loadmodule('sync')
 
-            db_qkan.sqlyml(
-                sqlnam='sync_attach_ext',
-                stmt_category='attach_ext',
+
+            if not db_qkan.sql(
+                sql='ATTACH DATABASE ? AS ext;',
+                stmt_category='synchronisation_dbs',
                 parameters=(QKan.config.sync.ext,),
-            )
+            ):
+                logger.error_data(f'Datenbank {QKan.config.sync.ext=} konnte nicht angebunden werden')
+                raise QkanDbError
+
+
+            # Ergänzen der SQL-Abfragen für sync
+            if QKan.sqls.get('sync_create_haltungen') is None:
+                logger.debug('_adjust: sqls erneut geladen...')
+                if QKan.config.database.type == enums.QKanDBChoice.SPATIALITE:
+                    from ._create_yml import _create_yml_spatialite
+                    _create_yml_spatialite(db_qkan)
+                elif QKan.config.database.type == enums.QKanDBChoice.POSTGIS:
+                    from ._create_yml import _create_yml_postgis
+                    _create_yml_postgis(db_qkan)
+
 
             # Synchronisation aller gewählten Tabellen
             # Medien müssen in allen nachfolgenden Fällen berücksichtigt werden:
@@ -83,34 +101,40 @@ class AdjustTask:
             ]
 
             try:
-                with open(QKan.config.sync.protfile, 'w') as protfile:
-                    dat = dtim.now().strftime('%A, %d/%m/%y %H:%M:%S')
-                    protfile.write(f'Protokoll der Synchronisation am {dat}')
-                    for table, userchoice in userchoices:
-                        if userchoice:
-                            # Protokoll schreiben
-                            sqlnam = f'sync_{table}_prot'
-                            db_qkan.sqlyml(
-                                sqlnam,
-                                'adjust'
-                            )
-                            protfile.write(f'\nSynchronisation Tabelle {table}:')
-                            for ds in db_qkan.fetchall():
-                                line = ', '.join([f'{el}' for el in ds])
-                                protfile.write(line + '\n')
+                protfile = open(QKan.config.sync.protfile, 'w')
             except:
-                logger.warning(f'Protokolldatei {QKan.config.sync.protfile=} konnte nicht geschrieben werden')
-                return False
+                fpath = Path(tempfile.gettempdir())
+                fnam = fpath / Path(QKan.config.sync.protfile).name
+                protfile = open(fnam, 'w')
+                logger.warning(f'Protokolldatei {QKan.config.sync.protfile=} konnte nicht geschrieben werden\n'
+                               f'Stattdessen wird eine Protokolldatei {fnam} geschrieben')
+
+            dat = dtim.now().strftime('%A, %d/%m/%y %H:%M:%S')
+            protfile.write(f'Protokoll der Synchronisation am {dat}')
+            for table, userchoice in userchoices:
+                if userchoice:
+                    # Protokoll schreiben
+                    sqlnam = f'sync_{table}_prot'
+                    db_qkan.sqlyml(
+                        sqlnam,
+                        'adjust'
+                    )
+                    protfile.write(f'\nSynchronisation Tabelle {table}:')
+                    for ds in db_qkan.fetchall():
+                        line = ', '.join([f'{el}' for el in ds])
+                        protfile.write(line + '\n')
 
             for table, userchoice in userchoices:
                 if userchoice:
 
                     sqlnames = [
                         f'sync_{table}_add',
-                        f'sync_{table}_del',
                         f'sync_{table}_mod',
                         f'sync_reset_{table}',
                     ]
+                    if QKan.config.sync.check_allow_deletions:
+                        sqlnames += [f'sync_{table}_del']
+
                     for sqlnam in sqlnames:
                         db_qkan.sqlyml(
                             sqlnam,

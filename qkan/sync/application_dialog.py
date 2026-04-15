@@ -203,11 +203,9 @@ class AdjustDialog(_Dialog, ADJUST_CLASS):  # type: ignore
     tf_extdb: QLineEdit
     tf_protokolldatei: QLineEdit
 
-    pb_select_extdb: QPushButton
-    pb_project: QPushButton
+    cb_allow_deletions: QCheckBox
 
-    cb_haltungen: QCheckBox
-    cb_schaechte: QCheckBox
+    pb_protokolldatei: QPushButton
 
     def __init__(
         self,
@@ -244,11 +242,15 @@ class AdjustDialog(_Dialog, ADJUST_CLASS):  # type: ignore
 
         self.tf_protokolldatei.setText(QKan.config.sync.protfile)
 
+        self.cb_allow_deletions.setChecked(False)           # zur Sicherheit muss der Anwender dies bewusst aktivieren
+
     def _save_adjust_config(self):
         # Read from form and save to config
         QKan.config.database.qkan = self.tf_database.text()
         QKan.config.sync.ext = self.tf_extdb.text()
         QKan.config.sync.protfile = self.tf_protokolldatei.text()
+
+        QKan.config.sync.check_allow_deletions = self.cb_allow_deletions.isChecked()
 
         QKan.config.save()
 

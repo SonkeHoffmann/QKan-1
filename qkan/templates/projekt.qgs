@@ -184,7 +184,7 @@
           </customproperties>
         </layer-tree-layer>
       </layer-tree-group>
-      <layer-tree-group groupLayer="" mutually-exclusive-child="0" expanded="1" mutually-exclusive="1" name="Inspektionsdaten" checked="Qt::Checked">
+      <layer-tree-group groupLayer="" mutually-exclusive-child="0" expanded="0" mutually-exclusive="1" name="Inspektionsdaten" checked="Qt::Checked">
         <customproperties>
           <Option/>
         </customproperties>
