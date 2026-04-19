@@ -225,8 +225,9 @@ class SchemaParser:
             self.statements.append(stmt)
 
             # CREATE TABLE erkennen und Tabellennamen extrahieren
-            create_match = re.match(
-                r'CREATE\s+TABLE\s+(?:\w+\.)?(\w+)\s*\(',
+            # re.search statt re.match, da Statements mit Kommentaren beginnen können
+            create_match = re.search(
+                r'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:\w+\.)?(\w+)\s*\(',
                 stmt, re.IGNORECASE
             )
             if create_match:
@@ -237,8 +238,31 @@ class SchemaParser:
                 # Spalten-Definitionen extrahieren
                 self._parse_column_definitions(table_name, stmt)
 
+                # Inline-Geometrie-Spalten erkennen:
+                # colname geometry(TYPE) oder colname geometry(TYPE, SRID)
+                for gm in re.finditer(
+                    r'(\w+)\s+geometry\s*\(\s*(\w+)\s*(?:,\s*(\d+))?\s*\)',
+                    stmt, re.IGNORECASE
+                ):
+                    col = gm.group(1)
+                    gtype = gm.group(2)
+                    gsrid = int(gm.group(3)) if gm.group(3) else 0
+                    if table_name not in self.geometry_columns:
+                        self.geometry_columns[table_name] = []
+                    self.geometry_columns[table_name].append({
+                        'column': col,
+                        'srid': gsrid,
+                        'type': gtype,
+                        'dim': 2
+                    })
+                    logger.debug(
+                        f"Inline-Geometrie-Spalte erkannt: "
+                        f"{table_name}.{col} ({gtype}, SRID {gsrid})"
+                    )
+
             # AddGeometryColumn erkennen und Geometrie-Info extrahieren
-            geom_match = re.match(
+            # re.search statt re.match, da Statements mit Kommentaren beginnen können
+            geom_match = re.search(
                 r"SELECT\s+AddGeometryColumn\s*\(\s*'(\w+)'\s*,\s*'(\w+)'\s*,\s*'(\w+)'\s*,\s*(\d+)\s*,\s*'(\w+)'\s*,\s*(\d+)\s*\)",
                 stmt, re.IGNORECASE
             )
@@ -276,6 +300,33 @@ class SchemaParser:
         """Gibt ein Set aller Geometrie-Spaltennamen (lowercase) für eine Tabelle zurück."""
         return {gc['column'].lower() for gc in self.get_geometry_columns(table_name)}
 
+    @staticmethod
+    def _split_columns(block: str) -> List[str]:
+        """Spaltet den Spalten-Block am Komma, aber respektiert Klammern.
+
+        Kommas innerhalb von Klammern (z.B. NUMERIC(4,1) oder
+        geometry(MULTIPOLYGON, 25832)) werden NICHT als Trennzeichen
+        verwendet.
+        """
+        parts: List[str] = []
+        depth = 0
+        current: List[str] = []
+        for ch in block:
+            if ch == '(':
+                depth += 1
+                current.append(ch)
+            elif ch == ')':
+                depth -= 1
+                current.append(ch)
+            elif ch == ',' and depth == 0:
+                parts.append(''.join(current))
+                current = []
+            else:
+                current.append(ch)
+        if current:
+            parts.append(''.join(current))
+        return parts
+
     def _parse_column_definitions(self, table_name: str, create_stmt: str) -> None:
         """Extrahiert Spaltendefinitionen aus einem CREATE TABLE Statement.
         
@@ -283,23 +334,27 @@ class SchemaParser:
         - type: 'varchar', 'smallint', 'integer', 'double precision', 'timestamp', 'date', 'text'
         - max_length: für character varying(N)
         """
-        # Column-Block zwischen ( und ) extrahieren
-        match = re.search(r'\((.*?)\)\s*$', create_stmt, re.DOTALL | re.IGNORECASE)
-        if not match:
+        # Column-Block: Inhalt der äußersten Klammern extrahieren
+        # Wir suchen die erste '(' und die letzte ')' im Statement
+        first_paren = create_stmt.find('(')
+        last_paren = create_stmt.rfind(')')
+        if first_paren < 0 or last_paren <= first_paren:
             return
         
-        columns_block = match.group(1)
+        columns_block = create_stmt[first_paren + 1:last_paren]
         self.column_info[table_name] = {}
         
         # Einzelne Spalten-Definitionen parsen
         # Regex: spaltenname whitespace datentyp [constraints]
         col_pattern = re.compile(
-            r'\s*(\w+)\s+(character\s+varying\((\d+)\)|smallint|integer|double\s+precision|timestamp|date|text)',
+            r'\s*(\w+)\s+(character\s+varying\((\d+)\)|(?:small|big)?int(?:eger)?|double\s+precision|numeric(?:\(\d+(?:,\s*\d+)?\))?|timestamp|date|text)',
             re.IGNORECASE
         )
         
-        for line in columns_block.split(','):
+        for line in self._split_columns(columns_block):
             line = line.strip()
+            # Inline-Kommentare entfernen /* ... */
+            line = re.sub(r'/\*.*?\*/', '', line).strip()
             col_match = col_pattern.match(line)
             if col_match:
                 col_name = col_match.group(1).lower()
@@ -312,10 +367,15 @@ class SchemaParser:
                         'type': 'varchar',
                         'max_length': varchar_len
                     }
-                # Smallint (für Boolean-Konvertierung)
-                elif col_type_full == 'smallint':
+                # Integer-Typen (für Boolean-Konvertierung ja/nein → 1/0)
+                elif re.match(r'(?:small|big)?int(?:eger)?$', col_type_full, re.IGNORECASE):
                     self.column_info[table_name][col_name] = {
-                        'type': 'smallint'
+                        'type': 'integer'
+                    }
+                # NUMERIC
+                elif col_type_full.startswith('numeric'):
+                    self.column_info[table_name][col_name] = {
+                        'type': 'numeric'
                     }
                 # Andere Typen
                 else:
@@ -779,8 +839,9 @@ class UploadPostgisTask:
 
         Ermittelt die gemeinsamen Spalten zwischen PostgreSQL (aus schema.sql
         erstellt) und SQLite, und überträgt die entsprechenden Daten.
-        Geometrie-Spalten werden über SpatiaLite (AsText) oder hex-Konvertierung
-        korrekt nach PostGIS übertragen.
+        Geometrie-Spalten werden über einen robusten WKB-Workflow übertragen,
+        damit mehrere Geometriespalten (z.B. geom und geop) zuverlässig
+        befüllt werden.
 
         Args:
             table_name: Name der Tabelle (wie in schema.sql definiert)
@@ -859,10 +920,16 @@ class UploadPostgisTask:
 
         for geom_col in geom_sqlite_cols:
             if self.use_spatialite:
-                select_parts.append(f'AsText("{geom_col}")')
+                # Geometrie in SpatiaLite direkt als WKB-Hex lesen.
+                # Das ist robuster als AsText() und funktioniert zuverlässig
+                # auch bei Tabellen mit mehreren Geometriespalten.
+                select_parts.append(
+                    f'CASE WHEN "{geom_col}" IS NULL THEN NULL '
+                    f'ELSE Hex(AsBinary("{geom_col}")) END'
+                )
             else:
-                # SpatiaLite-BLOB direkt als bytes lesen;
-                # Konvertierung zu Standard-WKB erfolgt in _preprocess_value()
+                # Ohne SpatiaLite liegen Geometrien als BLOB vor;
+                # Konvertierung zu Standard-WKB erfolgt in _preprocess_value().
                 select_parts.append(f'"{geom_col}"')
 
         select_sql = (
@@ -877,18 +944,15 @@ class UploadPostgisTask:
         for pg_col, geom_info in zip(geom_pg_cols, geom_infos_ordered):
             srid = geom_info['srid']
             insert_col_parts.append(f'"{pg_col}"')
-            if self.use_spatialite:
-                template_parts.append(f'ST_GeomFromText(%s, {srid})')
-            else:
-                template_parts.append(
-                    f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})"
-                )
+            template_parts.append(
+                f"ST_GeomFromWKB(decode(%s, 'hex'), {srid})"
+            )
 
         insert_cols = ', '.join(insert_col_parts)
         value_template = '(' + ', '.join(template_parts) + ')'
         insert_sql = (
             f"INSERT INTO {self.schema_name}.{table_name} "
-            f"({insert_cols}) VALUES %s"
+            f"({insert_cols}) OVERRIDING SYSTEM VALUE VALUES %s"
         )
 
         # Daten aus SQLite lesen
@@ -902,8 +966,10 @@ class UploadPostgisTask:
         batch_size = 2000
         inserted_records = 0
         error_count = 0
-        # Geometrien liegen als Hex-WKB vor wenn SpatiaLite nicht verfügbar
-        use_geom_hex = not self.use_spatialite and bool(geom_pg_cols)
+        # Geometrien werden grundsätzlich als Hex-WKB verarbeitet:
+        # - mit SpatiaLite über Hex(AsBinary(...))
+        # - ohne SpatiaLite über BLOB->WKB-Konvertierung in _preprocess_value()
+        use_geom_hex = bool(geom_pg_cols)
         num_regular = len(regular_pg_cols)
 
         old_autocommit = self.pg_conn.autocommit
@@ -973,6 +1039,7 @@ class UploadPostgisTask:
                     single_insert_sql = (
                         f"INSERT INTO {self.schema_name}.{table_name} "
                         f"({insert_cols}) "
+                        f"OVERRIDING SYSTEM VALUE "
                         f"VALUES ({', '.join(template_parts)})"
                     )
 
@@ -1045,8 +1112,8 @@ class UploadPostgisTask:
                 # Fallback: Wert ist bereits ein Hex-String
                 pass
             else:
-                # Deutsche Boolean-Werte für smallint-Spalten konvertieren
-                if column_info and column_info.get('type') == 'smallint':
+                # Deutsche Boolean-Werte für Integer-Spalten konvertieren
+                if column_info and column_info.get('type') in ('smallint', 'integer'):
                     value_lower = value.lower().strip()
                     if value_lower in ('ja', 'yes', 'wahr', 'true', '1'):
                         return 1
@@ -1116,6 +1183,81 @@ class UploadPostgisTask:
                 )
             )
         return tuple(result)
+
+    def _backfill_missing_geom_from_geop(self, table_name: str) -> int:
+        """Befüllt fehlende geom-Werte aus geop, wenn beide Spalten existieren.
+
+        Die Funktion ist bewusst allgemein gehalten und greift für jede
+        Tabelle, in der sowohl `geop` als auch `geom` vorhanden sind.
+        Der Ausdruck für `geom` wird abhängig vom erwarteten Geometrietyp
+        der `geom`-Spalte gewählt.
+
+        Returns:
+            Anzahl der aktualisierten Datensätze.
+        """
+        if self.schema_name is None:
+            return 0
+
+        pg_columns = {c.lower() for c in self._get_postgres_columns(table_name)}
+        if 'geop' not in pg_columns or 'geom' not in pg_columns:
+            return 0
+
+        geom_info = None
+        for gc in self.schema_parser.get_geometry_columns(table_name):
+            if gc['column'].lower() == 'geom':
+                geom_info = gc
+                break
+
+        expected_type = (geom_info.get('type', '') if geom_info else '').upper()
+        has_durchm = 'durchm' in pg_columns
+        radius_expr = (
+            "COALESCE(NULLIF(durchm, 0) / 2.0, 0.5)"
+            if has_durchm else "0.5"
+        )
+
+        # Typabhängige Geometrieableitung aus geop.
+        if 'MULTILINESTRING' in expected_type:
+            geom_expr = (
+                "ST_Multi(ST_Boundary(" 
+                f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')" 
+                "))"
+            )
+        elif 'LINESTRING' in expected_type:
+            geom_expr = (
+                "ST_Boundary(" 
+                f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')" 
+                ")"
+            )
+        elif 'MULTIPOLYGON' in expected_type:
+            geom_expr = (
+                "ST_Multi(" 
+                f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')" 
+                ")"
+            )
+        elif 'POLYGON' in expected_type:
+            geom_expr = f"ST_Buffer(geop, {radius_expr}, 'quad_segs=9')"
+        elif 'MULTIPOINT' in expected_type:
+            geom_expr = "ST_Multi(geop)"
+        else:
+            # POINT oder unbekannt: Punkt direkt übernehmen.
+            geom_expr = "geop"
+
+        sql = f"""
+            UPDATE {self.schema_name}.{table_name}
+            SET geom = {geom_expr}
+            WHERE geop IS NOT NULL
+              AND geom IS NULL
+        """
+
+        self.pg_cursor.execute(sql)
+        updated = self.pg_cursor.rowcount if self.pg_cursor.rowcount > 0 else 0
+
+        if updated > 0:
+            logger.info(
+                f"{table_name}.geom aus geop nachberechnet: {updated} Datensätze"
+            )
+
+        return updated
 
     # ---------------------------------------------------------------
     # Finalisierung und QGIS-Integration
@@ -1362,6 +1504,17 @@ class UploadPostgisTask:
                                 )
                             })
                             transferred_records = 0
+
+                        # Allgemeiner Fallback: Wenn eine Tabelle sowohl geop
+                        # als auch geom enthält, wird geom bei Bedarf aus geop
+                        # abgeleitet.
+                        try:
+                            self._backfill_missing_geom_from_geop(table_name)
+                        except Exception as fill_error:
+                            logger.warning(
+                                f"Nachberechnung {table_name}.geom "
+                                f"aus geop fehlgeschlagen: {fill_error}"
+                            )
 
                         # Datensatz-Progress Bar zurücksetzen
                         if self.progress_bar_records:

@@ -7,15 +7,6 @@
 --  - sel_flaechen
 
 -- Schema qkan erstellen
-CREATE SCHEMA IF NOT EXISTS qkan
-    AUTHORIZATION isce;
-
-GRANT ALL ON SCHEMA qkan TO isce;
-
-GRANT USAGE ON SCHEMA qkan TO juelich;
-
-ALTER DEFAULT PRIVILEGES FOR ROLE gwsrw IN SCHEMA qkan
-GRANT SELECT ON TABLES TO juelich;
 
 
 
@@ -29,17 +20,12 @@ CREATE TABLE IF NOT EXISTS qkan.notizen (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING) )
 
+;
+
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS qkan.notizen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.notizen FROM juelich;
-
-GRANT ALL ON TABLE qkan.notizen TO isce;
-GRANT ALL ON TABLE qkan.notizen TO juelich;
-
 -- database_createspatialindex_notizen_geom: "
-CREATE INDEX idx_notizen_geom ON qkan.notizen USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_notizen_geom ON qkan.notizen USING GIST (geom);
 
 -- database_create_haltungen: "
 CREATE TABLE IF NOT EXISTS qkan.haltungen (
@@ -75,17 +61,24 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.haltungen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.haltungen FROM juelich;
-
-GRANT ALL ON TABLE qkan.haltungen TO isce;
-GRANT ALL ON TABLE qkan.haltungen TO juelich;
+-- database_create_einleit: "
+CREATE TABLE IF NOT EXISTS qkan.einleit (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    elnam TEXT,
+    haltnam TEXT,               /* join haltungen.haltnam */
+    schnam TEXT,                /* join schaechte.schnam */
+    teilgebiet TEXT,            /* join teilgebiet.tgnam  */
+    zufluss NUMERIC(8,2),       /* Zufluss (l/s) */
+    ew NUMERIC(8,2),            /* Einwohner */
+    einzugsgebiet TEXT,         /* join einzugsgebiete.tgnam */
+    kommentar TEXT,
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP,
+    geom geometry(POINT, 25832) )
 
 -- database_createspatialindex_haltungen_geom: "
-CREATE INDEX idx_haltungen_geom ON qkan.haltungen USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_haltungen_geom ON qkan.haltungen USING GIST (geom) ;
 
 -- database_create_haltungen_untersucht: "
 CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht (
@@ -119,17 +112,12 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.haltungen_untersucht OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.haltungen_untersucht FROM juelich;
-
-GRANT ALL ON TABLE qkan.haltungen_untersucht TO isce;
-GRANT ALL ON TABLE qkan.haltungen_untersucht TO juelich;
+ALTER TABLE IF EXISTS qkan.einleit OWNER to isce;
 
 -- database_createspatialindex_haltungen_untersucht_geom: "
-CREATE INDEX idx_haltungen_untersucht_geom ON qkan.haltungen_untersucht USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_haltungen_untersucht_geom ON qkan.haltungen_untersucht USING GIST (geom) ;
 
 -- database_create_haltungen_untersucht_bewertung: "
 CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht_bewertung (
@@ -171,17 +159,13 @@ CREATE TABLE IF NOT EXISTS qkan.haltungen_untersucht_bewertung (
     bodengruppe                     TEXT,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.haltungen_untersucht_bewertung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.haltungen_untersucht_bewertung FROM juelich;
-
-GRANT ALL ON TABLE qkan.haltungen_untersucht_bewertung TO isce;
-GRANT ALL ON TABLE qkan.haltungen_untersucht_bewertung TO juelich;
+GRANT ALL ON TABLE qkan.einleit TO isce;
+GRANT ALL ON TABLE qkan.einleit TO juelich;
 
 -- database_createspatialindex_haltungen_untersucht_bewertung_geom: "
-CREATE INDEX idx_haltungen_untersucht_bewertung_geom ON qkan.haltungen_untersucht_bewertung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_haltungen_untersucht_bewertung_geom ON qkan.haltungen_untersucht_bewertung USING GIST (geom) ;
 
 -- database_create_untersuchdat_haltung: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchdat_haltung (
@@ -222,17 +206,14 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchdat_haltung (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.untersuchdat_haltung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.untersuchdat_haltung FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchdat_haltung TO isce;
-GRANT ALL ON TABLE qkan.untersuchdat_haltung TO juelich;
+-- Einleitungen aus Aussengebieten 
+-- Erfasst alle Außengebiete
+-- Die Zuordnung zum Teilgebiet dient nur der Auswahl
 
 -- database_createspatialindex_untersuchdat_haltung_geom: "
-CREATE INDEX idx_untersuchdat_haltung_geom ON qkan.untersuchdat_haltung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_untersuchdat_haltung_geom ON qkan.untersuchdat_haltung USING GIST (geom) ;
 
 -- database_create_untersuchdat_haltung_bewertung: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchdat_haltung_bewertung (
@@ -278,17 +259,12 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchdat_haltung_bewertung (
     Zustandsklasse_B TEXT,
     geom geometry(LINESTRING, 25832) )
 
+;
+
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS qkan.untersuchdat_haltung_bewertung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.untersuchdat_haltung_bewertung FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchdat_haltung_bewertung TO isce;
-GRANT ALL ON TABLE qkan.untersuchdat_haltung_bewertung TO juelich;
-
 -- database_createspatialindex_untersuchdat_haltung_bewertung_geom: "
-CREATE INDEX idx_untersuchdat_haltung_bewertung_geom ON qkan.untersuchdat_haltung_bewertung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_untersuchdat_haltung_bewertung_geom ON qkan.untersuchdat_haltung_bewertung USING GIST (geom) ;
 
 -- database_create_anschlussleitungen: "
 CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen (
@@ -325,17 +301,10 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.anschlussleitungen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.anschlussleitungen FROM juelich;
-
-GRANT ALL ON TABLE qkan.anschlussleitungen TO isce;
-GRANT ALL ON TABLE qkan.anschlussleitungen TO juelich;
+;
 
 -- database_createspatialindex_anschlussleitungen_geom: "
-CREATE INDEX idx_anschlussleitungen_geom ON qkan.anschlussleitungen USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_anschlussleitungen_geom ON qkan.anschlussleitungen USING GIST (geom) ;
 
 -- database_create_anschlussleitungen_untersucht: "
 CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen_untersucht (
@@ -369,17 +338,12 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen_untersucht (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.anschlussleitungen_untersucht OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.anschlussleitungen_untersucht FROM juelich;
-
-GRANT ALL ON TABLE qkan.anschlussleitungen_untersucht TO isce;
-GRANT ALL ON TABLE qkan.anschlussleitungen_untersucht TO juelich;
-
+REVOKE ALL ON TABLE qkan.aussengebiete FROM juelich;
 -- database_createspatialindex_anschlussleitungen_untersucht_geom: "
-CREATE INDEX idx_anschlussleitungen_untersucht_geom ON qkan.anschlussleitungen_untersucht USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_anschlussleitungen_untersucht_geom ON qkan.anschlussleitungen_untersucht USING GIST (geom) ;
 
 -- database_create_anschlussleitungen_untersucht_bewertung: "
 CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen_untersucht_bewertung (
@@ -421,17 +385,11 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussleitungen_untersucht_bewertung (
     bodengruppe                     TEXT,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.anschlussleitungen_untersucht_bewertung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.anschlussleitungen_untersucht_bewertung FROM juelich;
-
-GRANT ALL ON TABLE qkan.anschlussleitungen_untersucht_bewertung TO isce;
-GRANT ALL ON TABLE qkan.anschlussleitungen_untersucht_bewertung TO juelich;
 
 -- database_createspatialindex_anschlussleitungen_untersucht_bewertung_geom: "
-CREATE INDEX idx_anschlussleitungen_untersucht_bewertung_geom ON qkan.anschlussleitungen_untersucht_bewertung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_anschlussleitungen_untersucht_bewertung_geom ON qkan.anschlussleitungen_untersucht_bewertung USING GIST (geom) ;
 
 -- database_create_untersuchdat_anschlussleitung: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchdat_anschlussleitung (
@@ -472,17 +430,11 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchdat_anschlussleitung (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.untersuchdat_anschlussleitung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.untersuchdat_anschlussleitung FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchdat_anschlussleitung TO isce;
-GRANT ALL ON TABLE qkan.untersuchdat_anschlussleitung TO juelich;
 
 -- database_createspatialindex_untersuchdat_anschlussleitung_geom: "
-CREATE INDEX idx_untersuchdat_anschlussleitung_geom ON qkan.untersuchdat_anschlussleitung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_untersuchdat_anschlussleitung_geom ON qkan.untersuchdat_anschlussleitung USING GIST (geom) ;
 
 -- database_create_untersuchdat_anschlussleitung_bewertung: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchdat_anschlussleitung_bewertung (
@@ -528,17 +480,11 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchdat_anschlussleitung_bewertung (
     Zustandsklasse_B TEXT,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.untersuchdat_anschlussleitung_bewertung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.untersuchdat_anschlussleitung_bewertung FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchdat_anschlussleitung_bewertung TO isce;
-GRANT ALL ON TABLE qkan.untersuchdat_anschlussleitung_bewertung TO juelich;
 
 -- database_createspatialindex_untersuchdat_anschlussleitung_bewertung_geom: "
-CREATE INDEX idx_untersuchdat_anschlussleitung_bewertung_geom ON qkan.untersuchdat_anschlussleitung_bewertung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_untersuchdat_anschlussleitung_bewertung_geom ON qkan.untersuchdat_anschlussleitung_bewertung USING GIST (geom) ;
 
 -- database_create_anschlussschaechte (ergänzt jh, 16.02.2026)
 CREATE TABLE IF NOT EXISTS qkan.anschlussschaechte (
@@ -546,7 +492,7 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussschaechte (
     schnam  TEXT,
     sohlhoehe NUMERIC(7,3),
     deckelhoehe NUMERIC(7,3),
-    durchm NUMERIC(4,2),                            /* Schachtdurchmesser (m) */
+    durchm NUMERIC(7,3),                            /* Schachtdurchmesser (m) */
     druckdicht INTEGER, 
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
     strasse TEXT,
@@ -565,17 +511,11 @@ CREATE TABLE IF NOT EXISTS qkan.anschlussschaechte (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(POINT, 25832))
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.anschlussschaechte OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.anschlussschaechte FROM juelich;
-
-GRANT ALL ON TABLE qkan.anschlussschaechte TO isce;
-GRANT ALL ON TABLE qkan.anschlussschaechte TO juelich;
 
 -- database_createspatialindex_schaechte_geom: "
-CREATE INDEX idx_anschlussschaechte_geom ON qkan.anschlussschaechte USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_anschlussschaechte_geom ON qkan.anschlussschaechte USING GIST (geom) ;
 
 -- database_create_schaechte: "
 CREATE TABLE IF NOT EXISTS qkan.schaechte (
@@ -583,7 +523,7 @@ CREATE TABLE IF NOT EXISTS qkan.schaechte (
     schnam TEXT,
     sohlhoehe NUMERIC(7,3),
     deckelhoehe NUMERIC(7,3),
-    durchm NUMERIC(4,2),                            /* Schachtdurchmesser (m) */
+    durchm NUMERIC(7,3),                            /* Schachtdurchmesser (m) */
     druckdicht INTEGER, 
     ueberstauflaeche NUMERIC(7,0) DEFAULT 0,
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
@@ -603,17 +543,10 @@ CREATE TABLE IF NOT EXISTS qkan.schaechte (
     geop geometry(POINT, 25832),
     geom geometry(MULTILINESTRING, 25832) )
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.schaechte OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.schaechte FROM juelich;
-
-GRANT ALL ON TABLE qkan.schaechte TO isce;
-GRANT ALL ON TABLE qkan.schaechte TO juelich;
+;
 
 -- database_createspatialindex_schaechte_geom: "
-CREATE INDEX idx_schaechte_geom ON qkan.schaechte USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_schaechte_geom ON qkan.schaechte USING GIST (geom) ;
 
 -- database_createspatialindex_schaechte_geop: "
 CREATE INDEX idx_schaechte_geop ON qkan.schaechte USING GIST (geop);
@@ -622,7 +555,7 @@ CREATE INDEX idx_schaechte_geop ON qkan.schaechte USING GIST (geop);
 CREATE TABLE IF NOT EXISTS qkan.schaechte_untersucht (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     schnam TEXT, 
-    durchm NUMERIC(4,2),                            /* Schachtdurchmesser (m) */
+    durchm NUMERIC(7,3),                            /* Schachtdurchmesser (m) */
     baujahr INTEGER,
     bezugspunkt TEXT,
     id INTEGER,                                     /* absolute Nummer der Inspektion */
@@ -641,23 +574,21 @@ CREATE TABLE IF NOT EXISTS qkan.schaechte_untersucht (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geop geometry(POINT, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.schaechte_untersucht OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.schaechte_untersucht FROM juelich;
-
-GRANT ALL ON TABLE qkan.schaechte_untersucht TO isce;
-GRANT ALL ON TABLE qkan.schaechte_untersucht TO juelich;
-
+-- Anbindung Aussengebiete 
+-- Die Tabelle linkageb verwaltet die Anbindung von Aussengebieten an Schächte. Diese Anbindung
+-- wird anschließend in das Feld schnam eingetragen. Der Export erfolgt allerdings anhand
+-- der grafischen Verknüpfungen dieser Tabelle.
 -- database_createspatialindex_schaechte_untersucht_geop: "
-CREATE INDEX idx_schaechte_untersucht_geop ON qkan.schaechte_untersucht USING GIST (geop) TABLESPACE pg_default;
+CREATE INDEX idx_schaechte_untersucht_geop ON qkan.schaechte_untersucht USING GIST (geop) ;
 
 -- database_create_schaechte_untersucht_bewertung: "
 CREATE TABLE IF NOT EXISTS qkan.schaechte_untersucht_bewertung (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     schnam TEXT, 
-    durchm NUMERIC(4,2),                            /* Schachtdurchmesser (m) */
+    durchm NUMERIC(7,3),                            /* Schachtdurchmesser (m) */
     baujahr INTEGER,
     bezugspunkt TEXT,
     id INTEGER,                                     /* absolute Nummer der Inspektion */
@@ -684,17 +615,12 @@ CREATE TABLE IF NOT EXISTS qkan.schaechte_untersucht_bewertung (
     bodengruppe                     TEXT,
     geop geometry(POINT, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.schaechte_untersucht_bewertung OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.schaechte_untersucht_bewertung FROM juelich;
-
-GRANT ALL ON TABLE qkan.schaechte_untersucht_bewertung TO isce;
-GRANT ALL ON TABLE qkan.schaechte_untersucht_bewertung TO juelich;
-
+ALTER TABLE IF EXISTS qkan.linkageb OWNER to isce;
 -- database_createspatialindex_schaechte_untersucht_bewertung_geop: "
-CREATE INDEX idx_schaechte_untersucht_bewertung_geop ON qkan.schaechte_untersucht_bewertung USING GIST (geop) TABLESPACE pg_default;
+CREATE INDEX idx_schaechte_untersucht_bewertung_geop ON qkan.schaechte_untersucht_bewertung USING GIST (geop) ;
 
 -- database_create_untersuchdat_schacht: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchdat_schacht (
@@ -732,17 +658,13 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchdat_schacht (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.untersuchdat_schacht OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.untersuchdat_schacht FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchdat_schacht TO isce;
-GRANT ALL ON TABLE qkan.untersuchdat_schacht TO juelich;
-
+GRANT ALL ON TABLE qkan.linkageb TO isce;
+GRANT ALL ON TABLE qkan.linkageb TO juelich;
 -- database_createspatialindex_untersuchdat_schacht_geom: "
-CREATE INDEX idx_untersuchdat_schacht_geom ON qkan.untersuchdat_schacht USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_untersuchdat_schacht_geom ON qkan.untersuchdat_schacht USING GIST (geom) ;
 
 -- database_create_untersuchdat_schacht_bewertung: "
 CREATE TABLE IF NOT EXISTS qkan.untersuchdat_schacht_bewertung (
@@ -785,17 +707,12 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchdat_schacht_bewertung (
     Zustandsklasse_B TEXT,
     geom geometry(LINESTRING, 25832) )
 
+;
+
+
 TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.untersuchdat_schacht_bewertung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.untersuchdat_schacht_bewertung FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchdat_schacht_bewertung TO isce;
-GRANT ALL ON TABLE qkan.untersuchdat_schacht_bewertung TO juelich;
-
 -- database_createspatialindex_untersuchdat_schacht_bewertung_geom: "
-CREATE INDEX idx_untersuchdat_schacht_bewertung_geom ON qkan.untersuchdat_schacht_bewertung USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_untersuchdat_schacht_bewertung_geom ON qkan.untersuchdat_schacht_bewertung USING GIST (geom);
 
 -- Einzugsgebiete 
 -- Entsprechen in HYSTEM-EXTRAN 7.x den Siedlungstypen
@@ -815,17 +732,13 @@ CREATE TABLE IF NOT EXISTS qkan.einzugsgebiete (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(MULTIPOLYGON, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.einzugsgebiete OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.einzugsgebiete FROM juelich;
-
-GRANT ALL ON TABLE qkan.einzugsgebiete TO isce;
-GRANT ALL ON TABLE qkan.einzugsgebiete TO juelich;
-
+GRANT ALL ON TABLE qkan.simulationsstatus TO isce;
+GRANT ALL ON TABLE qkan.simulationsstatus TO juelich;
 -- database_createspatialindex_einzugsgebiete_geom: "
-CREATE INDEX idx_einzugsgebiete_geom ON qkan.einzugsgebiete USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_einzugsgebiete_geom ON qkan.einzugsgebiete USING GIST (geom) ;
 
 -- Teilgebiete: Auswahl von Objekten in verschiedenen Tabellen für verschiedene 
 -- Aufgaben, z. B. automatische Verknüpfung von befestigten Flächen und direkten 
@@ -838,17 +751,12 @@ CREATE TABLE IF NOT EXISTS qkan.teilgebiete (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(MULTIPOLYGON, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.teilgebiete OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.teilgebiete FROM juelich;
-
-GRANT ALL ON TABLE qkan.teilgebiete TO isce;
-GRANT ALL ON TABLE qkan.teilgebiete TO juelich;
-
+ALTER TABLE IF EXISTS qkan.material OWNER to isce;
 -- database_createspatialindex_teilgebiete_geom: "
-CREATE INDEX idx_teilgebiete_geom ON qkan.teilgebiete USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_teilgebiete_geom ON qkan.teilgebiete USING GIST (geom) ;
 
 -- database_create_flaechen: "
 CREATE TABLE IF NOT EXISTS qkan.flaechen (
@@ -866,17 +774,18 @@ CREATE TABLE IF NOT EXISTS qkan.flaechen (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(MULTIPOLYGON, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.flaechen OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.flaechen FROM juelich;
-
-GRANT ALL ON TABLE qkan.flaechen TO isce;
-GRANT ALL ON TABLE qkan.flaechen TO juelich;
-
+-- database_create_auslasstypen: "
+CREATE TABLE IF NOT EXISTS qkan.auslasstypen (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    bezeichnung TEXT,
+    he_nr INTEGER,
+    mu_nr INTEGER,
+    kp_nr INTEGER)
 -- database_createspatialindex_flaechen_geom: "
-CREATE INDEX idx_flaechen_geom ON qkan.flaechen USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_flaechen_geom ON qkan.flaechen USING GIST (geom) ;
 
 -- Anbindung Flächen
 -- Die Tabelle linkfl verwaltet die Anbindung von Flächen an Haltungen. Diese Anbindung
@@ -903,17 +812,13 @@ CREATE TABLE IF NOT EXISTS qkan.linkfl (
     gbuf geometry(MULTIPOLYGON, 25832) ,
     glink geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.linkfl OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.linkfl FROM juelich;
-
-GRANT ALL ON TABLE qkan.linkfl TO isce;
-GRANT ALL ON TABLE qkan.linkfl TO juelich;
+REVOKE ALL ON TABLE qkan.auslasstypen FROM juelich;
 
 -- database_createspatialindex_linkfl_geom: "
-CREATE INDEX idx_linkfl_geom ON qkan.linkfl USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_linkfl_geom ON qkan.linkfl USING GIST (geom) ;
 
 -- database_createspatialindex_linkfl_gbuf: "
 CREATE INDEX idx_linkfl_gbuf ON qkan.linkfl USING GIST (gbuf);
@@ -937,17 +842,10 @@ CREATE TABLE IF NOT EXISTS qkan.linksw (
     gbuf geometry(MULTIPOLYGON, 25832),
     glink geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.linksw OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.linksw FROM juelich;
-
-GRANT ALL ON TABLE qkan.linksw TO isce;
-GRANT ALL ON TABLE qkan.linksw TO juelich;
+;
 
 -- database_createspatialindex_linksw_geom: "
-CREATE INDEX idx_linksw_geom ON qkan.linksw USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_linksw_geom ON qkan.linksw USING GIST (geom) ;
 
 -- database_createspatialindex_linksw_gbuf: "
 CREATE INDEX idx_linksw_gbuf ON qkan.linksw USING GIST (gbuf);
@@ -972,17 +870,27 @@ CREATE TABLE IF NOT EXISTS qkan.tezg (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(MULTIPOLYGON, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.tezg OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.tezg FROM juelich;
-
-GRANT ALL ON TABLE qkan.tezg TO isce;
-GRANT ALL ON TABLE qkan.tezg TO juelich;
-
+-- database_create_abflussparameter: "
+CREATE TABLE IF NOT EXISTS qkan.abflussparameter (
+    pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    apnam TEXT, 
+    anfangsabflussbeiwert NUMERIC(4,1), 
+    endabflussbeiwert NUMERIC(4,1), 
+    benetzungsverlust NUMERIC(4,1), 
+    muldenverlust NUMERIC(4,1), 
+    benetzung_startwert NUMERIC(4,1), 
+    mulden_startwert NUMERIC(4,1), 
+    rauheit_kst NUMERIC(4,1),               /* Rauheit Stricklerbeiwert = 1/n */
+    pctZero NUMERIC(4,1),                   /* SWMM % Zero-Imperv */
+    bodenklasse TEXT,                       /* impervious = NULL, pervious = JOIN TO bodenklasse.bknam */
+    flaechentyp TEXT,                       /* JOIN TO flaechentypen.bezeichnung */
+    kommentar TEXT, 
+    createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 -- database_createspatialindex_tezg_geom: "
-CREATE INDEX idx_tezg_geom ON qkan.tezg USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_tezg_geom ON qkan.tezg USING GIST (geom) ;
 
 -- Direkte Einleitungen:
 -- Erfasst alle Direkteinleitungen mit festem SW-Zufluss (m³/a)
@@ -1002,17 +910,12 @@ CREATE TABLE IF NOT EXISTS qkan.einleit (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(POINT, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.einleit OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.einleit FROM juelich;
-
-GRANT ALL ON TABLE qkan.einleit TO isce;
-GRANT ALL ON TABLE qkan.einleit TO juelich;
+ALTER TABLE IF EXISTS qkan.abflussparameter OWNER to isce;
 
 -- database_createspatialindex_einleit_geom: "
-CREATE INDEX idx_einleit_geom ON qkan.einleit USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_einleit_geom ON qkan.einleit USING GIST (geom) ;
 
 -- Einleitungen aus Aussengebieten 
 -- Erfasst alle Außengebiete
@@ -1034,17 +937,11 @@ CREATE TABLE IF NOT EXISTS qkan.aussengebiete (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(MULTIPOLYGON, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.aussengebiete OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.aussengebiete FROM juelich;
-
-GRANT ALL ON TABLE qkan.aussengebiete TO isce;
-GRANT ALL ON TABLE qkan.aussengebiete TO juelich;
 
 -- database_createspatialindex_aussengebiete_geom: "
-CREATE INDEX idx_aussengebiete_geom ON qkan.aussengebiete USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_aussengebiete_geom ON qkan.aussengebiete USING GIST (geom) ;
 
 -- Anbindung Aussengebiete 
 -- Die Tabelle linkageb verwaltet die Anbindung von Aussengebieten an Schächte. Diese Anbindung
@@ -1058,17 +955,11 @@ CREATE TABLE IF NOT EXISTS qkan.linkageb (
     schnam TEXT,
     glink geometry(LINESTRING, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.linkageb OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.linkageb FROM juelich;
-
-GRANT ALL ON TABLE qkan.linkageb TO isce;
-GRANT ALL ON TABLE qkan.linkageb TO juelich;
 
 -- database_createspatialindex_linkageb_glink: "
-CREATE INDEX idx_linkageb_glink ON qkan.linkageb USING GIST (glink) TABLESPACE pg_default;
+CREATE INDEX idx_linkageb_glink ON qkan.linkageb USING GIST (glink) ;
 
 -- database_create_simulationsstatus: "
 CREATE TABLE IF NOT EXISTS qkan.simulationsstatus (
@@ -1083,14 +974,8 @@ CREATE TABLE IF NOT EXISTS qkan.simulationsstatus (
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.simulationsstatus OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.simulationsstatus FROM juelich;
-
-GRANT ALL ON TABLE qkan.simulationsstatus TO isce;
-GRANT ALL ON TABLE qkan.simulationsstatus TO juelich;
 
 -- database_create_material: "
 CREATE TABLE IF NOT EXISTS qkan.material (
@@ -1102,14 +987,8 @@ CREATE TABLE IF NOT EXISTS qkan.material (
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.material OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.material FROM juelich;
-
-GRANT ALL ON TABLE qkan.material TO isce;
-GRANT ALL ON TABLE qkan.material TO juelich;
 
 -- database_create_auslasstypen: "
 CREATE TABLE IF NOT EXISTS qkan.auslasstypen (
@@ -1119,14 +998,8 @@ CREATE TABLE IF NOT EXISTS qkan.auslasstypen (
     mu_nr INTEGER,
     kp_nr INTEGER)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.auslasstypen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.auslasstypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.auslasstypen TO isce;
-GRANT ALL ON TABLE qkan.auslasstypen TO juelich;
 
 -- database_create_abflussparameter: "
 CREATE TABLE IF NOT EXISTS qkan.abflussparameter (
@@ -1145,14 +1018,8 @@ CREATE TABLE IF NOT EXISTS qkan.abflussparameter (
     kommentar TEXT, 
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.abflussparameter OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.abflussparameter FROM juelich;
-
-GRANT ALL ON TABLE qkan.abflussparameter TO isce;
-GRANT ALL ON TABLE qkan.abflussparameter TO juelich;
 
 -- database_create_flaechentypen: "
 CREATE TABLE IF NOT EXISTS qkan.flaechentypen (
@@ -1160,14 +1027,8 @@ CREATE TABLE IF NOT EXISTS qkan.flaechentypen (
     bezeichnung TEXT,
     he_nr INTEGER)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.flaechentypen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.flaechentypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.flaechentypen TO isce;
-GRANT ALL ON TABLE qkan.flaechentypen TO juelich;
 
 -- database_create_bodenklassen: "
 CREATE TABLE IF NOT EXISTS qkan.bodenklassen (
@@ -1182,14 +1043,8 @@ CREATE TABLE IF NOT EXISTS qkan.bodenklassen (
     kommentar TEXT, 
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.bodenklassen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.bodenklassen FROM juelich;
-
-GRANT ALL ON TABLE qkan.bodenklassen TO isce;
-GRANT ALL ON TABLE qkan.bodenklassen TO juelich;
 
 -- database_create_abflusstypen: "
 CREATE TABLE IF NOT EXISTS qkan.abflusstypen (
@@ -1198,42 +1053,26 @@ CREATE TABLE IF NOT EXISTS qkan.abflusstypen (
     he_nr INTEGER,              /* JOIN he.Flaeche.BerechnungSpeicherkonstante */
     kp_nr INTEGER)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.abflusstypen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.abflusstypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.abflusstypen TO isce;
-GRANT ALL ON TABLE qkan.abflusstypen TO juelich;
 
 -- database_create_knotentypen: "
 CREATE TABLE IF NOT EXISTS qkan.knotentypen (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     knotentyp TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.knotentypen OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.knotentypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.knotentypen TO isce;
-GRANT ALL ON TABLE qkan.knotentypen TO juelich;
 
 -- database_create_schachttypen: "
 CREATE TABLE IF NOT EXISTS qkan.schachttypen (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     schachttyp TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.schachttypen OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.schachttypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.schachttypen TO isce;
-GRANT ALL ON TABLE qkan.schachttypen TO juelich;
 
 -- database_create_eigentum: "
 CREATE TABLE IF NOT EXISTS qkan.eigentum (
@@ -1241,14 +1080,9 @@ CREATE TABLE IF NOT EXISTS qkan.eigentum (
     name TEXT, 
     kommentar TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.eigentum OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.eigentum FROM juelich;
-
-GRANT ALL ON TABLE qkan.eigentum TO isce;
-GRANT ALL ON TABLE qkan.eigentum TO juelich;
 
 -- Tabelle Gruppen:
 -- Bearbeitungen, die auf Auswahlen basieren, verwenden ausschließlich die
@@ -1275,14 +1109,8 @@ CREATE TABLE IF NOT EXISTS qkan.gruppen (
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.gruppen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.gruppen FROM juelich;
-
-GRANT ALL ON TABLE qkan.gruppen TO isce;
-GRANT ALL ON TABLE qkan.gruppen TO juelich;
 
 -- database_create_profile: "
 CREATE TABLE IF NOT EXISTS qkan.profile (
@@ -1297,14 +1125,8 @@ CREATE TABLE IF NOT EXISTS qkan.profile (
     m145 TEXT,                          /* DWA M145 */
     kommentar TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.profile OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.profile FROM juelich;
-
-GRANT ALL ON TABLE qkan.profile TO isce;
-GRANT ALL ON TABLE qkan.profile TO juelich;
 
 -- database_create_entwaesserungsarten: "
 CREATE TABLE IF NOT EXISTS qkan.entwaesserungsarten (
@@ -1318,14 +1140,8 @@ CREATE TABLE IF NOT EXISTS qkan.entwaesserungsarten (
     m145 TEXT,                          /* DWA M145 */
     bemerkung TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.entwaesserungsarten OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.entwaesserungsarten FROM juelich;
-
-GRANT ALL ON TABLE qkan.entwaesserungsarten TO isce;
-GRANT ALL ON TABLE qkan.entwaesserungsarten TO juelich;
 
 -- database_create_haltungstypen: "
 CREATE TABLE IF NOT EXISTS qkan.haltungstypen (
@@ -1333,14 +1149,9 @@ CREATE TABLE IF NOT EXISTS qkan.haltungstypen (
     bezeichnung TEXT, 
     bemerkung TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.haltungstypen OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.haltungstypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.haltungstypen TO isce;
-GRANT ALL ON TABLE qkan.haltungstypen TO juelich;
 
 -- Tabelle Untersuchungsrichtung wird nur für das Nachschlagefeld benötigt
 -- database_create_untersuchrichtung: "
@@ -1353,14 +1164,8 @@ CREATE TABLE IF NOT EXISTS qkan.untersuchrichtung (
     m145 TEXT,                          /* DWA M145 */
     bemerkung TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.untersuchrichtung OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.untersuchrichtung FROM juelich;
-
-GRANT ALL ON TABLE qkan.untersuchrichtung TO isce;
-GRANT ALL ON TABLE qkan.untersuchrichtung TO juelich;
 
 -- database_create_wetter: "
 CREATE TABLE IF NOT EXISTS qkan.wetter (
@@ -1372,14 +1177,8 @@ CREATE TABLE IF NOT EXISTS qkan.wetter (
     m145 TEXT,                          /* DWA M145 */
     bemerkung TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.wetter OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.wetter FROM juelich;
-
-GRANT ALL ON TABLE qkan.wetter TO isce;
-GRANT ALL ON TABLE qkan.wetter TO juelich;
 
 -- database_create_bewertungsart: "
 CREATE TABLE IF NOT EXISTS qkan.bewertungsart (
@@ -1388,14 +1187,7 @@ CREATE TABLE IF NOT EXISTS qkan.bewertungsart (
     bezeichnung TEXT, 
     bemerkung TEXT)
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.bewertungsart OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.bewertungsart FROM juelich;
-
-GRANT ALL ON TABLE qkan.bewertungsart TO isce;
-GRANT ALL ON TABLE qkan.bewertungsart TO juelich;
+;
 
 -- database_create_pumpentypen: "
 CREATE TABLE IF NOT EXISTS qkan.pumpentypen (
@@ -1404,14 +1196,8 @@ CREATE TABLE IF NOT EXISTS qkan.pumpentypen (
     he_nr INTEGER,
     isybau INTEGER)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.pumpentypen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.pumpentypen FROM juelich;
-
-GRANT ALL ON TABLE qkan.pumpentypen TO isce;
-GRANT ALL ON TABLE qkan.pumpentypen TO juelich;
 
 -- Abfragen für Plausibilitätsprüfungen
 -- database_create_pruefsql: "
@@ -1426,14 +1212,8 @@ CREATE TABLE IF NOT EXISTS qkan.pruefsql (
     attrname TEXT,                      /* Objektsuche Attribut zur Objektidentifikation, */
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.pruefsql OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.pruefsql FROM juelich;
-
-GRANT ALL ON TABLE qkan.pruefsql TO isce;
-GRANT ALL ON TABLE qkan.pruefsql TO juelich;
 
 -- Ergebnisse der Plausibilitätsprüfungen
 -- database_create_pruefliste: "
@@ -1447,14 +1227,8 @@ CREATE TABLE IF NOT EXISTS qkan.pruefliste (
     objname TEXT,                       /* Objektsuche Objektname */
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.pruefliste OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.pruefliste FROM juelich;
-
-GRANT ALL ON TABLE qkan.pruefliste TO isce;
-GRANT ALL ON TABLE qkan.pruefliste TO juelich;
 
 -- Referenztabelle für Plausi Zustandsklassen
 -- database_create_reflist_zustand: "
@@ -1466,14 +1240,8 @@ CREATE TABLE IF NOT EXISTS qkan.reflist_zustand (
     charakterisierung2 TEXT,
     bereich TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.reflist_zustand OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.reflist_zustand FROM juelich;
-
-GRANT ALL ON TABLE qkan.reflist_zustand TO isce;
-GRANT ALL ON TABLE qkan.reflist_zustand TO juelich;
 
 -- Allgemeine Referenztabelle
 -- database_create_refdata:
@@ -1487,14 +1255,9 @@ CREATE TABLE IF NOT EXISTS qkan.refdata (
     kommentar TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.refdata OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.refdata FROM juelich;
-
-GRANT ALL ON TABLE qkan.refdata TO isce;
-GRANT ALL ON TABLE qkan.refdata TO juelich;
 
 -- database_create_info: "
 CREATE TABLE IF NOT EXISTS qkan.info (
@@ -1503,14 +1266,8 @@ CREATE TABLE IF NOT EXISTS qkan.info (
     value TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.info OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.info FROM juelich;
-
-GRANT ALL ON TABLE qkan.info TO isce;
-GRANT ALL ON TABLE qkan.info TO juelich;
 
 -- database_create_fotos: "
 CREATE TABLE IF NOT EXISTS qkan.fotos (
@@ -1521,14 +1278,7 @@ CREATE TABLE IF NOT EXISTS qkan.fotos (
     datei TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.fotos OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.fotos FROM juelich;
-
-GRANT ALL ON TABLE qkan.fotos TO isce;
-GRANT ALL ON TABLE qkan.fotos TO juelich;
+;
 
 -- database_create_videos: "
 CREATE TABLE IF NOT EXISTS qkan.videos (
@@ -1540,14 +1290,8 @@ CREATE TABLE IF NOT EXISTS qkan.videos (
     datei TEXT,
     createdat TEXT DEFAULT CURRENT_TIMESTAMP)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.videos OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.videos FROM juelich;
-
-GRANT ALL ON TABLE qkan.videos TO isce;
-GRANT ALL ON TABLE qkan.videos TO juelich;
 
 -- database_create_symbole: "
 CREATE TABLE IF NOT EXISTS qkan.symbole (
@@ -1560,17 +1304,11 @@ CREATE TABLE IF NOT EXISTS qkan.symbole (
     createdat TEXT DEFAULT CURRENT_TIMESTAMP,
     geom geometry(POINT, 25832) )
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.symbole OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.symbole FROM juelich;
-
-GRANT ALL ON TABLE qkan.symbole TO isce;
-GRANT ALL ON TABLE qkan.symbole TO juelich;
 
 -- database_createspatialindex_symbole_geom: "
-CREATE INDEX idx_symbole_geom ON qkan.symbole USING GIST (geom) TABLESPACE pg_default;
+CREATE INDEX idx_symbole_geom ON qkan.symbole USING GIST (geom) ;
 
 -- database_create_symbolkatalog: "
 CREATE TABLE IF NOT EXISTS qkan.symbolkatalog (
@@ -1579,14 +1317,9 @@ CREATE TABLE IF NOT EXISTS qkan.symbolkatalog (
     gruppe TEXT,                            /* zur Aufteilung auf verschiedene Layer */
     kommentar TEXT)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.symbolkatalog OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.symbolkatalog FROM juelich;
-
-GRANT ALL ON TABLE qkan.symbolkatalog TO isce;
-GRANT ALL ON TABLE qkan.symbolkatalog TO juelich;
 
 -- database_createview_untersuchdat_aktuell: "
 CREATE VIEW qkan.v_untersuchdat_hal_last AS
@@ -1602,38 +1335,19 @@ JOIN um USING(untersuchhal, schoben, schunten);
 CREATE TABLE IF NOT EXISTS qkan.sel_haltungen (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.sel_haltungen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.sel_haltungen FROM juelich;
-
-GRANT ALL ON TABLE qkan.sel_haltungen TO isce;
-GRANT ALL ON TABLE qkan.sel_haltungen TO juelich;
 
 -- database_create_sel_schaechte: "
 CREATE TABLE IF NOT EXISTS qkan.sel_schaechte (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY)
 
-TABLESPACE pg_default;
+;
 
-ALTER TABLE IF EXISTS qkan.sel_schaechte OWNER to isce;
 
-REVOKE ALL ON TABLE qkan.sel_schaechte FROM juelich;
-
-GRANT ALL ON TABLE qkan.sel_schaechte TO isce;
-GRANT ALL ON TABLE qkan.sel_schaechte TO juelich;
 
 -- database_create_sel_flaechen: "
 CREATE TABLE IF NOT EXISTS qkan.sel_flaechen (
     pk bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY)
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS qkan.sel_flaechen OWNER to isce;
-
-REVOKE ALL ON TABLE qkan.sel_flaechen FROM juelich;
-
-GRANT ALL ON TABLE qkan.sel_flaechen TO isce;
-GRANT ALL ON TABLE qkan.sel_flaechen TO juelich;
-
+;
