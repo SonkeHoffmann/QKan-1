@@ -11,7 +11,7 @@ Die Einstellungen wirken sich auf das geöffnete QKan-Projekt aus.
 
 Im ersten Reiter können die allgemeinen Programmeinstellungen konfiguriert werden:
 
-.. image:: ./QKan_Bilder/Formular/optionen1.png
+.. image:: ./QKan_Bilder/Formulare/optionen1.png
 .. |Tool_projekt_allgemein| image:: ./QKan_Bilder/Tool_optionen.png
                              :width: 1.25 em
 							 
@@ -31,7 +31,7 @@ Sie enthält detaillierte Informationen zum Programmablauf, Fehlern und Hintergr
 
 Im zweiten Reiter werden die Standardwerte für die grafische Darstellung und Bearbeitung von QKan-Daten in QGIS festgelegt:
 
-.. image:: ./QKan_Bilder/Formular/optionen2.png
+.. image:: ./QKan_Bilder/Formulare/optionen2.png
 
 Fangradius und Mindestflächengröße
 Diese Parameter sind relevant für die automatische Anbindung von Flächen an Haltungen.
@@ -44,7 +44,7 @@ Durch die Änderung der Standardwerte lässt sich eine bessere Lesbarkeit und Ü
 
 Im dritten Reiter Automatische Datenübernahme werden die Trigger verwaltet die bei dem neuanlegen von Haltungen und Schächten genutzt werden können.
 
-.. image:: ./QKan_Bilder/Formular/optionen3.png
+.. image:: ./QKan_Bilder/Formulare/optionen3.png
 
 
 QKan-Projekt aktualisieren

@@ -3,10 +3,14 @@ import xml.etree.ElementTree as ElementTree
 from lxml import etree
 from typing import Dict, Iterator, Union
 from fnmatch import fnmatch
+
+from pathlib import Path
+from qgis.utils import pluginDirectory
+
 from qkan import QKan
 from qkan.config import ClassObject
 from qkan.database.dbfunc import DBConnection
-from qkan.tools.qkan_utils import fehlermeldung
+from qkan.tools.qkan_utils import Patterns
 from qgis.PyQt.QtWidgets import QProgressBar
 from qgis.core import Qgis
 from qgis.utils import iface
@@ -325,8 +329,6 @@ class ImportTask:
 
         iface = QKan.instance.iface
 
-
-
         # Create progress bar
         self.progress_bar = QProgressBar(iface.messageBar())
         self.progress_bar.setRange(0, 100)
@@ -476,25 +478,30 @@ class ImportTask:
 
     def _init_mappers(self) -> None:
 
+        filename = Path(pluginDirectory("qkan")) / 'patterns.yml'
+        self.mapPatterns = Patterns(filename)
+
         # Entwässerungsarten
         blocks = self.xml.findall("d:RT1005", self.NS)
-        pattern = QKan.config.tools.clipboardattributes.qkan_patterns.get('entwart')
-        if pattern and blocks:
+        # pattern = QKan.config.tools.clipboardattributes.qkan_patterns.get('entwart')
+        if 'entwart' in self.mapPatterns.patterns and blocks:
             for block in blocks:
                 nr = block.findtext("RT0001", None)
                 bez = block.findtext("RT0003", None)
                 # Falls einer der beiden Einträge fehlt:
                 if nr is None or bez is None:
                     continue
-                qkan_bez = None
-                for x in pattern.keys():
-                    for patt in pattern[x]:
-                        if fnmatch(bez, patt):
-                            qkan_bez = x
-                            break
-                    if qkan_bez:
-                        break
-                self.mapper_entwart[nr] = qkan_bez
+                self.mapper_entwart[nr] = self.mapPatterns.find('entwart', bez)
+
+                # qkan_bez = None
+                # for x in pattern.keys():
+                #     for patt in pattern[x]:
+                #         if fnmatch(bez, patt):
+                #             qkan_bez = x
+                #             break
+                #     if qkan_bez:
+                #         break
+                # self.mapper_entwart[nr] = qkan_bez
         else:
             self.mapper_entwart = {
                 'M': 'Mischwasser',
@@ -513,23 +520,25 @@ class ImportTask:
 
         # Planungsstatus
         blocks = self.xml.findall("d:RT1010", self.NS)
-        pattern = QKan.config.tools.clipboardattributes.qkan_patterns.get('simstatus')
-        if pattern and blocks:
+        # pattern = QKan.config.tools.clipboardattributes.qkan_patterns.get('simstatus')
+        if 'simstatus' in self.mapPatterns.patterns and blocks:
             for block in blocks:
                 nr = block.findtext("RT0001", None)
                 bez = block.findtext("RT0003", None)
                 # Falls einer der beiden Einträge fehlt:
                 if nr is None or bez is None:
                     continue
-                qkan_bez = None
-                for x in pattern.keys():
-                    for patt in pattern[x]:
-                        if fnmatch(bez, patt):
-                            qkan_bez = x
-                            break
-                    if qkan_bez:
-                        break
-                self.mapper_simstatus[nr] = qkan_bez
+                self.mapper_simstatus[nr] = self.mapPatterns.find('simstatus', bez)
+
+                # qkan_bez = None
+                # for x in pattern.keys():
+                #     for patt in pattern[x]:
+                #         if fnmatch(bez, patt):
+                #             qkan_bez = x
+                #             break
+                #     if qkan_bez:
+                #         break
+                # self.mapper_simstatus[nr] = qkan_bez
         else:
             self.mapper_simstatus = {
                 '1': 'In Betrieb',
@@ -2039,9 +2048,9 @@ class ImportTask:
                 smp = block.find("GO/GP")
 
                 if smp is None:
-                    fehlermeldung(
-                        "Fehler beim XML-Import: Pumpen",
-                        f'Keine Geometrie "SMP" für Pumpe {pnam}',
+                    logger.error_data(
+                        "Fehler beim XML-Import: Pumpen\n"
+                        f'Keine Geometrie "SMP" für Pumpe {pnam}'
                     )
                     xsch, ysch, sohlhoehe = (0.0,) * 3
                 else:

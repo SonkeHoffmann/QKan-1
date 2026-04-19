@@ -652,6 +652,7 @@ def loadLayer(
         filter = '',
         uifile = None,
         group: Union[List, str] = 'QKan',
+        exclusive: bool = False,
         gpos=0,
         qkan_db: str = None
 ) -> bool:
@@ -674,6 +675,9 @@ def loadLayer(
     :group:                 Bezeichnung der Gruppe, in der der Layer eingefügt werden soll
     :type group:            List, String
 
+    :exclusive:             Neue Gruppen sollen exklusiv sein
+    :type exclusive:        Bool
+
     :gpos:                  Index der Position innerhalb der Gruppe
     :type gpos:             int
 
@@ -684,14 +688,6 @@ def loadLayer(
     """
 
     project = QgsProject.instance()
-
-    # Gruppen, deren Layer in QKan exklusiv sichtbar sein sollen
-    exclusive_groups = [
-        enums.LAYERBEZ.SYNC_GROUP_SYNCHRONISATION.value,
-        enums.LAYERBEZ.SYNC_GROUP_SCHAECHTE.value,
-        enums.LAYERBEZ.SYNC_GROUP_HALTUNGEN.value,
-        enums.LAYERBEZ.SYNC_GROUP_HA_LEITUNGEN.value,
-    ]
 
     dlayers = project.mapLayersByName(layerbez)
     for dlayer in dlayers:
@@ -741,7 +737,7 @@ def loadLayer(
             newGroup = layersRoot.findGroup(subgroup)
             if newGroup is None:
                 actGroup = actGroup.addGroup(subgroup)
-                if subgroup in exclusive_groups:
+                if exclusive:
                     # Gruppe zeigt Elemente exklusiv an
                     actGroup.setIsMutuallyExclusive(True)
                 actGroup.setExpanded(False)
@@ -814,21 +810,22 @@ def zoomAll():
 
 
 class Patterns():
-    """Management of pattern lists in yaml-Files"""
+    """Management of pattern lists in yaml-Files
+
+    pats = Patterns(ymlfile)
+    theme in pats.patterns        # Test, ob Thema vorhanden
+    pats.find(theme, key)         # gibt gefundene QKan-Bezeichnung zurück
+    """
 
     def __init__(self, filepath):
         with open(filepath) as fr:
             self.patterns = yaml.load(fr.read(), Loader=yaml.BaseLoader)
 
-    def write(self, filepath):
-        """writes patterns"""
-        with open(filepath, 'w') as fw:
-            yaml.dump(self.patterns, fw)
-
-    def find(self, m150key):
+    def find(self, theme: str, key):
         """Zugeorndeten QKan-Wert finden"""
-        for qkan_name in self.patterns:
-            for patt in self.patterns[qkan_name]:
-                if fnmatch(m150key.strip().lower(), patt):
+        patts = self.patterns[theme]
+        for qkan_name in patts:
+            for patt in patts[qkan_name]:
+                if fnmatch(key.strip().lower(), patt.lower()):
                     return qkan_name
         return None

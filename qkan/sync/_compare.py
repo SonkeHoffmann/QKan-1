@@ -381,6 +381,7 @@ class CompareTask:
 
             db_qkan.commit()
 
+        project = QgsProject.instance()
         for tabnam, userchoice, layers, group in tables:
             if userchoice:
                 grouppath = [
@@ -412,6 +413,7 @@ class CompareTask:
                     filter=     '',
                     uifile=     f'sync_{tabnam}.ui',
                     group=      grouppath,
+                    exclusive=  True,
                 )
 
                 loadLayer(
@@ -438,9 +440,14 @@ class CompareTask:
                     qkan_db=    QKan.config.database.qkan,
                 )
 
+                # Synchronisationslayer sichtbar machen
+                layer = project.mapLayersByName(layer_sync)[0]
+                root = QgsProject.instance().layerTreeRoot()
+                layer_node = root.findLayer(layer.id())
+                layer_node.setItemVisibilityChecked(True)
+
         # Attributtabellen anzeigen
         if QKan.config.sync.check_showAttrTables:
-            project = QgsProject.instance()
             for _, userchoice, layers, _ in tables:
                 if userchoice:
                     layercomp = layers[0]

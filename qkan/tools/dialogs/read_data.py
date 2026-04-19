@@ -1,5 +1,7 @@
 from fnmatch import fnmatch
 from typing import TYPE_CHECKING, Dict, List, Optional, Union, Any, Callable
+from pathlib import Path
+from qgis.utils import pluginDirectory
 
 from qgis.PyQt.QtWidgets import QWidget
 from qgis.core import Qgis
@@ -10,6 +12,7 @@ from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import (
     fehlermeldung,
     get_qkanlayer_attributes,
+    Patterns,
 )
 from datetime import datetime
 from qkan.utils import get_logger
@@ -44,10 +47,56 @@ class ReadData:  # type: ignore
 
         self.db_name: Optional[str] = None
 
-        self.required_fields = QKan.config.tools.clipboardattributes.required_fields
-        self.schacht_types = QKan.config.tools.clipboardattributes.schacht_types
-        self.haltung_types = QKan.config.tools.clipboardattributes.haltung_types
-        self.qkan_patterns = QKan.config.tools.clipboardattributes.qkan_patterns
+        # self.required_fields = QKan.config.tools.clipboardattributes.required_fields
+        # self.schacht_types = QKan.config.tools.clipboardattributes.schacht_types
+        # self.haltung_types = QKan.config.tools.clipboardattributes.haltung_types
+        # self.qkan_patterns = QKan.config.tools.clipboardattributes.qkan_patterns
+
+        filename = Path(pluginDirectory("qkan")) / 'patterns.yml'
+        self.clipPatterns = Patterns(filename)
+
+        self.required_fields: dict = {
+            "schaechte": ["schnam", "sohlhoehe"],
+            "auslaesse": ["schnam", "sohlhoehe"],
+            "speicher": ["schnam", "sohlhoehe"],
+            "haltungen": ["haltnam"],
+            "pumpen": ["pnam", "schoben", "schunten"],
+            "wehre": ["wnam", "schoben", "schunten"],
+            "drosseln": ["wnam", "schoben", "schunten"],
+            "schieber": ["wnam", "schoben", "schunten"],
+            "grundseitenauslaesse": ["wnam", "schoben", "schunten"],
+            "qregler": ["wnam", "schoben", "schunten"],
+            "hregler": ["wnam", "schoben", "schunten"],
+            "tezg": [],
+            "flaechen": [],
+            "teilgebiete": [],
+            "anschlussleitungen": ["leitnam"],
+            "untersuchdat_haltung": ["untersuchhal", "schoben", "schunten", "station", 'kuerzel'],
+            "untersuchdat_schacht": ['untersuchsch', 'kuerzel'],
+            'haltungen_untersucht': ['haltnam', 'schoben', 'schunten'],
+            'schaechte_untersucht': ['schnam'],
+        }
+
+        # Layer names with data source table 'schaechte'
+        self.schacht_types: dict = {
+            enums.LAYERBEZ.SCHAECHTE.value: "Schacht",                  # Filterkriterium in Attribut schachttyp
+            enums.LAYERBEZ.GEOMETRIEN.value: "Schacht",
+            enums.LAYERBEZ.KNOTENTYP.value: "Schacht",
+            enums.LAYERBEZ.SPEICHER.value: "Speicher",
+            enums.LAYERBEZ.AUSLAESSE.value: "Auslass",
+        }
+
+        # Layer names with data source table 'haltungen'
+        self.haltung_types: dict = {
+            enums.LAYERBEZ.HALTUNGEN.value: "Haltung",                  # Filterkriterium in Attribut haltungstyp
+            enums.LAYERBEZ.PUMPEN.value: "Pumpe",
+            enums.LAYERBEZ.WEHRE.value: "Wehr",
+            enums.LAYERBEZ.DROSSELN.value: "Drossel",
+            enums.LAYERBEZ.SCHIEBER.value: "Schieber",
+            enums.LAYERBEZ.GRUND_SEITENAUSLASS.value: "GrundSeitenauslass",
+            enums.LAYERBEZ.H_REGLER.value: "H-Regler",
+            enums.LAYERBEZ.Q_REGLER.value: "Q-Regler",
+        }
 
         self.proceed = proceed
 
@@ -89,9 +138,6 @@ class ReadData:  # type: ignore
 
         if layer.providerType() == "spatialite":
             self.read_clipboard()
-            # Redraw map
-            project = QgsProject.instance()
-            project.reloadAllLayers()
         else:
             return
 
@@ -155,11 +201,7 @@ class ReadData:  # type: ignore
         )  # attribute names from QKan table
         # corresponding to head_clipboard
         # replace column names by QKan-names using qkan_patterns
-        if self.table_name in self.qkan_patterns:
-            patternLis: Dict[str, List[str]] = self.qkan_patterns[
-                self.table_name
-            ].copy()
-        else:
+        if self.table_name not in self.clipPatterns.patterns:
             logger.warning_user(
                 f'In die Tabelle "{self.table_name}" kann QKan (noch) nicht einfügen.'
             )
@@ -201,18 +243,20 @@ class ReadData:  # type: ignore
                 else:
                     head_match[icol] = "geom"
             else:
+                head_match[icol] = self.clipPatterns.find(self.table_name, colClip)
+
                 # 2. test if match in patternLis (see: config.py)
-                found = False  # Suche kann beendet werden
-                for colnamQKan in patternLis.keys():
-                    for patt in patternLis[colnamQKan]:
-                        if fnmatch(colClip, patt):
-                            if head_match[icol] is None:
-                                # only if not just matched
-                                head_match[icol] = colnamQKan
-                            found = True
-                            break
-                    if found:
-                        break
+                # found = False  # Suche kann beendet werden
+                # for colnamQKan in patternLis.keys():
+                #     for patt in patternLis[colnamQKan]:
+                #         if fnmatch(colClip.lower(), patt.lower()):
+                #             if head_match[icol] is None:
+                #                 # only if not just matched
+                #                 head_match[icol] = colnamQKan
+                #             found = True
+                #             break
+                #     if found:
+                #         break
 
         # Dict mit relevanten Spalten, name: Spaltenindex
         qkan_columntypes: Dict[str, str] = {}
@@ -353,6 +397,9 @@ class ReadData:  # type: ignore
             f'Daten in Layer "{self.layer_name}" (Datenbanktabelle "{tabnam_db}") eingefügt.',
             level=Qgis.MessageLevel.Info,
         )
+
+        project = QgsProject.instance()
+        project.reloadAllLayers()
 
     def _parsed_dataset(
             self,
