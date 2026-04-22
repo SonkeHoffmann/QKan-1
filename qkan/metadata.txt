@@ -26,6 +26,12 @@ repository=https://github.com/hoettges/QKan
 
 changelog= 
 
+    3.4.9:
+        - Haltungsbericht neu hinzugefügt
+        - Synchronisation neu hinzugefügt
+        - Upload QKan-SQLite in eine PostGIS-Datenbank (Websuite) neu hinzugefügt
+        - M150-Export exportiert ausgewählte Abschnitte
+        - Pfad zu Fotos und Videos setzt sich jetzt aus Wurzelpfad (in Optionen) und relativem Pfad (in Tabellen) zusammen
     3.4.8:
         - Leitungsverfolgung ergänzt
         - Exporte auf Auswahl beschränken ergänzt
