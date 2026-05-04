@@ -15,7 +15,6 @@ from qkan.utils import get_logger, QkanDbError, QkanAbortError
 
 logger = get_logger("QKan.xml.export")
 
-
 def _create_children(parent: Element, names: List[str]) -> None:
     for child in names:
         SubElement(parent, child)
@@ -70,7 +69,7 @@ class ExportTask:
             self.ksys = 'UTM'
             self.gp_x = 'GP005'
             self.gp_y = 'GP006'
-        elif round(QKan.config.epsg - 5, -1) == (31460, 4640):
+        elif round(QKan.config.epsg - 5, -1) in (31460, 4640):
             self.ksys = 'GK'
             self.gp_x = 'GP003'
             self.gp_y = 'GP004'

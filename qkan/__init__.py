@@ -13,7 +13,7 @@ from qgis.gui import QgisInterface
 from qgis.utils import pluginDirectory
 
 from .config import Config
-from .utils import setup_logging
+from .utils import setup_logging, QkanAbortError
 
 from qkan import enums
 
@@ -270,8 +270,17 @@ class QKan:
         svgPaths = QgsSettings().value('svg/searchPathsForSVG')
         if svgPaths:                        # Ist bei automatisierten Text Null...
             if qkanSvgPath not in svgPaths:
-                svgPaths.append(qkanSvgPath)
-                QgsSettings().setValue('svg/searchPathsForSVG', svgPaths)
+                try:
+                    svgPaths.append(qkanSvgPath)
+                except AttributeError:
+                    if isinstance(qkanSvgPath, str):
+                        svgPaths = [svgPaths, qkanSvgPath]
+                    else:
+                        self.logger.error_code("Fehler in QGIS-Optionen 'svg/searchPathsForSVG': qkanSvgPath")
+                        raise QkanAbortError()
+        else:
+            svgPaths = [qkanSvgPath]
+        QgsSettings().setValue('svg/searchPathsForSVG', svgPaths)
 
         # Set Identify Forms Option
         QgsSettings().setValue('Map/identifyAutoFeatureForm', 'true')
@@ -336,14 +345,11 @@ class QKan:
             flood2D = self.menu.addMenu("Überflutung")
             info = self.menu.addMenu("Info")
 
-            safe_add_action(allgemein, "Optionen")
-            safe_add_action(allgemein, "QKan-Projekt aktualisieren")
-            safe_add_action(allgemein, "QKan-Projektdatei übertragen")
             safe_add_action(allgemein, "QKan-Datenbank aktualisieren")
+            safe_add_action(allgemein, "QKan-Projektdatei übernehmen")
+            safe_add_action(allgemein, "QKan-Projekt anpassen")
             safe_add_action(allgemein, "Neue QKan-Datenbank erstellen")
-            safe_add_action(allgemein, "Dateipfade suchen")
-            safe_add_action(allgemein, "Inspektionsdaten anpassen")
-            safe_add_action(allgemein, "Haltungsbericht")
+            safe_add_action(allgemein, "Optionen")
 
             safe_add_action(daten, "Plausibilitätsprüfungen")
             safe_add_action(daten, "Tabellendaten aus Clipboard einfügen")
@@ -388,6 +394,9 @@ class QKan:
             safe_add_action(zustand, "Zustandsklassen ermitteln")
             safe_add_action(zustand, "Sanierungsbedarfszahl ermitteln")
             safe_add_action(substanz, "Substanzklassen ermitteln")
+            safe_add_action(zustand, "Dateipfade suchen")
+            safe_add_action(zustand, "Inspektionsdaten anpassen")
+            safe_add_action(zustand, "Haltungsbericht")
 
             safe_add_action(sync, "Vergleich mit einem anderen QKan-Projekt")
             safe_add_action(sync, "Synchronisation mit einem anderen QKan-Projekt")

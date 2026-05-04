@@ -1,7 +1,8 @@
-from qgis.core import Qgis, QgsProject
+from qgis.core import QgsProject
 from qkan import QKan, enums
 from qkan.utils import get_logger
 from datetime import datetime as dtim
+from pathlib import Path
 
 logger = get_logger("QKan.tools.zeige_schaeden")
 
@@ -16,7 +17,8 @@ class ShowSelected():
             self,
             layername: str = None,
             untersuchbezeich: str = None,
-            untersuchattribut: str = None
+            untersuchattribut: str = None,
+            einzel: bool = True,
     ):
         """Ändert den Layerfilter der Untersuchungsdaten
 
@@ -42,17 +44,25 @@ class ShowSelected():
 
         self.iface = QKan.instance.iface
 
-        splitstr = f" AND {untersuchattribut} = "
         project = QgsProject.instance()
         if project.mapLayersByName(layername):
             layer = project.mapLayersByName(layername)[0]
         else:
+            logger.debug(f"Kein Layer {layername} gefunden. Rules können nicht bearbeitet werden")
             return False
         ren = layer.renderer()
         if ren.type() != 'RuleRenderer':
-            logger.warning(f"Fehler: Der Layer '{layername}' enthält keine regelbasierenden Symbole"
-                           "\nAktualisieren Sie das Projekt oder bearbeiten den Layer entsprechend.")
-            return False
+            # logger.warning(f"Fehler: Der Layer '{layername}' enthält keine regelbasierenden Symbole"
+            #                "\nAktualisieren Sie das Projekt oder bearbeiten den Layer entsprechend.")
+            # return False
+            style_file = str(Path(QKan.template_dir) / 'qml' / f'{layername}.qml')
+            if style_file:
+                layer.loadNamedStyle(style_file)
+                layer.triggerRepaint()
+                ren = layer.renderer()
+                if ren.type() != 'RuleRenderer':
+                    logger.error_code(f'Layerstil mit Rule {style_file=} konnte nicht geladen werden')
+                    return
         try:
             root_rule = ren.rootRule()
         except BaseException as e:
@@ -65,21 +75,20 @@ class ShowSelected():
             if 'Zustandsklasse' in label:
                 pos = label.find('Zustandsklasse') + 15
                 i = label[pos]
-                baserule = f"if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))) = {i}"
+                if einzel:
+                    expr = f"min(ZD, ZB, ZS) = {i}"
+                else:
+                    expr = f"min(max_ZD, max_ZB, max_ZS) = {i}"
+                # Filter auf Haltung, ID oder Untersuchungsdatum ergänzen:
+                if untersuchbezeich is not None:
+                    expr += f" AND {untersuchattribut} = '{untersuchbezeich}'"
+                if self.untersuchtag is not None:
+                    expr += f" AND untersuchtag = '{self.untersuchtag}'"
+                elif self.id is not None:  # nur alternativ zu Untersuchungsdatum!
+                    expr += f" AND id = {self.id}"
             else:
-                baserule = "((if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))) < 0 OR if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))) > 5 OR if(min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6))>5,'-',min( coalesce( ZD,6), coalesce( ZB,6),coalesce( ZS,6)))='-'))"
-
-            filterlis = [baserule]
-            if untersuchbezeich is not None:
-                filterlis.append(f"{untersuchattribut} = '{untersuchbezeich}'")
-
-            if self.untersuchtag is not None:
-                filterlis.append(f"untersuchtag = '{self.untersuchtag}'")
-            elif self.id is not None:                   # nur alternativ zu Untersuchungsdatum!
-                filterlis.append(f"id = {self.id}")
-
-            filter = ' AND '.join(filterlis)
-            rule.setFilterExpression(filter)
+                expr = "ELSE"
+            rule.setFilterExpression(expr)
             root_rule.appendChild(rule)
         layer.triggerRepaint()
         self.iface.layerTreeView().refreshLayerSymbology(layer.id())
@@ -96,10 +105,15 @@ class ShowHaltungsschaeden(ShowSelected):
         self.id = id
         self.showschaedencolumns = QKan.config.zustand.showschaedencolumns      # evtl. ergänzen: Eingabe unter Optionen
 
-        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN.value
         untersuchbezeich = self.haltnam
+
         untersuchattribut = 'untersuchhal'
-        self.show_selected(layername, untersuchbezeich, untersuchattribut)
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HALTUNGEN.value
+        self.show_selected(layername, untersuchbezeich, untersuchattribut, True)
+
+        untersuchattribut = 'haltnam'
+        layername = enums.LAYERBEZ.ZUSTAND_HALTUNGEN.value
+        self.show_selected(layername, untersuchbezeich, untersuchattribut, False)
 
         # self.showlist()
 
@@ -116,10 +130,15 @@ class ShowSchachtschaeden(ShowSelected):
 
         self.iface = QKan.instance.iface
 
-        layername = enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE.value
         untersuchbezeich = self.schnam
+
         untersuchattribut = 'untersuchsch'
-        self.show_selected(layername, untersuchbezeich, untersuchattribut)
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_SCHAECHTE.value
+        self.show_selected(layername, untersuchbezeich, untersuchattribut, True)
+
+        untersuchattribut = 'schnam'
+        layername = enums.LAYERBEZ.ZUSTAND_SCHAECHTE.value
+        self.show_selected(layername, untersuchbezeich, untersuchattribut, False)
 
 
 class ShowHausanschlussschaeden(ShowSelected):
@@ -132,7 +151,12 @@ class ShowHausanschlussschaeden(ShowSelected):
 
         self.iface = QKan.instance.iface
 
-        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN.value
         untersuchbezeich = self.untersuchleit
+
         untersuchattribut = 'untersuchleit'
-        self.show_selected(layername, untersuchbezeich, untersuchattribut)
+        layername = enums.LAYERBEZ.EINZELSCHAEDEN_HA_LEITUNGEN.value
+        self.show_selected(layername, untersuchbezeich, untersuchattribut, True)
+
+        untersuchattribut = 'leitnam'
+        layername = enums.LAYERBEZ.ZUSTAND_HA_LEITUNGEN.value
+        self.show_selected(layername, untersuchbezeich, untersuchattribut, False)

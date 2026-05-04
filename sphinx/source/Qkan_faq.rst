@@ -28,7 +28,7 @@ Intervall angezeigt.
 
 .. image:: ./QKan_Bilder/symbole_auf_linien.png
 
-Zur Fehlerbehebung wird im Menü unter :guilabel:`QKan` unter dem Punkt :guilabel:`Allgemein` mit |Tool_projekt_aktualisieren| :guilabel:`QKan-Projekt aktualisieren` 
+Zur Fehlerbehebung wird im Menü unter :guilabel:`QKan` unter dem Punkt :guilabel:`Allgemein` mit |Tool_projekt_aktualisieren| :guilabel:`QKan-Projekt anpassen`
 ein Fenster geöffnet, welches ohne eine weitere Auswahl mit :guilabel:`OK` geschlossen werden kann. Nun sollten die Symbole richtig 
 angezeigt werden.
 
@@ -56,7 +56,7 @@ angeordneten Feldern anstelle eines QKan-Formulares angezeigt.
 **Lösung:** Hierfür gibt es zwei mögliche Ursachen, welche auch beide zusammen vorliegen können:
 
 1. Die Projektdatei wurde (in der Regel zusammen mit der eingebundenen QKan-Datenbank) in ein anderes Verzeichnis verschoben. Ist dies der Fall,
-kann im Menü unter :guilabel:`QKan` unter dem Punkt :guilabel:`Allgemein` mit |Tool_projekt_aktualisieren| :guilabel:`QKan-Projekt aktualisieren`
+kann im Menü unter :guilabel:`QKan` unter dem Punkt :guilabel:`Allgemein` mit |Tool_projekt_aktualisieren| :guilabel:`QKan-Projekt anpassen`
 der Pfad wieder hergestellt werden. Dazu muss in dem sich öffnenden Fenster das Kontrollfeld im Bereich "Layer anpassen > Formularanbindung auf
 QKan-Standard setzten" sowie das Optionsfeld im Bereich "QKan-Layer > alle anpassen" aktiviert werden (siehe Bild unten).
 

@@ -556,7 +556,7 @@ verzichtet.
 
 Übertragen einer anderen Projektdatei auf eine QKan-Datenbank
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. index:: Video: Projektdatei übertragen
+.. index:: Video: Projektdatei übernehmen
 
 Eine Videoanleitung, wie für eine bestehende QKan-Kanaldatenbank eine Vorlage-Projektdatei geladen werden kann:
 - `Video: QKan Projekt laden <https://fh-aachen.sciebo.de/s/JOjxXdF72eLrJsw>`_
