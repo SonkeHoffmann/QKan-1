@@ -207,7 +207,7 @@
           <customproperties>
             <Option/>
           </customproperties>
-          <layer-tree-layer id="Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea" checked="Qt::Checked" legend_split_behavior="0" name="Zustand_HA-Leitungen_gesamt" providerKey="spatialite" patch_size="-1,-1" source="dbname='./demo.sqlite' table=&quot;anschlussleitungen_untersucht&quot; (geom)" expanded="0" legend_exp="">
+          <layer-tree-layer id="anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea" checked="Qt::Checked" legend_split_behavior="0" name="Zustand_HA-Leitungen_gesamt" providerKey="spatialite" patch_size="-1,-1" source="dbname='./demo.sqlite' table=&quot;anschlussleitungen_untersucht&quot; (geom)" expanded="0" legend_exp="">
             <customproperties>
               <Option/>
             </customproperties>
@@ -389,7 +389,7 @@
       <item>grundseitenauslass_a55e1f5b_c607_42b6_ac36_7a95ac6d12c2</item>
       <item>pumpen_583cb538_0769_4e29_854e_673651cf1dc8</item>
       <item>wehre_ff594268_95b1_4bc1_a517_1fdcbebaf19c</item>
-      <item>Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea</item>
+      <item>anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea</item>
       <item>Untersuchungsdaten_Haltung_7767147c_60ff_42dd_b556_f613b1ca413f</item>
       <item>Notizen_2587bda1_bb43_4345_ae3a_c134e85a92f2</item>
       <item>Geometrien_53c691ed_4408_4aea_a1e3_95482f944a0b</item>
@@ -421,7 +421,7 @@
       <layer-setting id="q_Regler_57813400_9ca1_47b5_a8c4_12a9903c1eb9" maxScale="0" units="1" minScale="0" tolerance="12" enabled="1" type="1"/>
       <layer-setting id="pumpen_583cb538_0769_4e29_854e_673651cf1dc8" maxScale="0" units="1" minScale="0" tolerance="12" enabled="1" type="1"/>
       <layer-setting id="Anbindung20170920132347429" maxScale="0" units="2" minScale="0" tolerance="0" enabled="0" type="2"/>
-      <layer-setting id="Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea" maxScale="0" units="1" minScale="0" tolerance="12" enabled="0" type="1"/>
+      <layer-setting id="anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea" maxScale="0" units="1" minScale="0" tolerance="12" enabled="0" type="1"/>
       <layer-setting id="Haltungsflächen_38cc9a58_a57d_487e_bbac_6000457b0748" maxScale="0" units="1" minScale="0" tolerance="12" enabled="1" type="1"/>
       <layer-setting id="aussengebiete_f10e164f_ca69_4195_a242_7885980a6eae" maxScale="0" units="1" minScale="0" tolerance="12" enabled="1" type="1"/>
       <layer-setting id="Geometrien_53c691ed_4408_4aea_a1e3_95482f944a0b" maxScale="0" units="1" minScale="0" tolerance="12" enabled="0" type="1"/>
@@ -617,7 +617,7 @@
         <legendgroup checked="Qt::Unchecked" name="Zustandsdaten_HA-Leitungen" open="false">
           <legendlayer checked="Qt::Checked" name="Zustand_HA-Leitungen_gesamt" showFeatureCount="0" drawingOrder="-1" open="false">
             <filegroup hidden="false" open="false">
-              <legendlayerfile layerid="Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea" isInOverview="0" visible="0"/>
+              <legendlayerfile layerid="anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea" isInOverview="0" visible="0"/>
             </filegroup>
           </legendlayer>
           <legendlayer checked="Qt::Checked" name="Einzelschäden_HA-Leitungen" showFeatureCount="0" drawingOrder="-1" open="false">
@@ -7429,7 +7429,7 @@ def my_form_open(dialog, layer, feature):
       <mapTip></mapTip>
     </maplayer>
     <maplayer styleCategories="AllStyleCategories" maxScale="0" type="vector" simplifyDrawingHints="1" symbologyReferenceScale="-1" autoRefreshEnabled="0" refreshOnNotifyEnabled="0" wkbType="LineString" autoRefreshTime="0" refreshOnNotifyMessage="" legendPlaceholderImage="" simplifyMaxScale="1" readOnly="0" minScale="100000000" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" simplifyLocal="1" simplifyDrawingTol="1" geometry="Line">
-      <id>Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea</id>
+      <id>anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea</id>
       <datasource>dbname='./demo.sqlite' table="anschlussleitungen_untersucht" (geom)</datasource>
       <keywordList>
         <value></value>
@@ -7647,12 +7647,12 @@ def my_form_open(dialog, layer, feature):
       <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Filterung nach Inspektionsdatum über das Aktionen-Symbol&lt;/p>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
       <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
         <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 0" symbol="0"/>
+          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 1" symbol="1"/>
+          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 2" symbol="2"/>
+          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 3" symbol="3"/>
+          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 4" symbol="4"/>
+          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 5" symbol="5"/>
           <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
         </rules>
         <symbols>
@@ -8449,21 +8449,21 @@ def my_form_open(dialog, layer, feature):
       <expressionfields/>
       <attributeactions>
         <defaultAction value="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" key="Canvas"/>
-        <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Hausanschlussleitungen anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden(id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Hausanschlussleitungen anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden(id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Layer"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{33764888-a85a-479d-961f-e1e8dc370402}" capture="0" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Hausanschlussleitung anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Hausanschlussleitung" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHausanschlussschaeden(untersuchleit = '[%leitnam%]', id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{33764888-a85a-479d-961f-e1e8dc370402}" capture="0" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Hausanschlussleitung anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Hausanschlussleitung" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHausanschlussschaeden(untersuchleit = '[%leitnam%]', id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{f0ac47bb-207a-48d1-8d1d-b983bc11a172}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Hausanschlussleitungen anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden()&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{f0ac47bb-207a-48d1-8d1d-b983bc11a172}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Hausanschlussleitungen anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden()&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Layer"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Hausanschlussleitung und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Hausanschlussleitung und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden(untersuchleit = '[%leitnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;&#xd;&#xa;" type="1">
+        <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Hausanschlussleitung und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Hausanschlussleitung und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHausanschlussschaeden&#xd;&#xa;&#xd;&#xa;form = ShowHausanschlussschaeden(untersuchleit = '[%leitnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;del form&#xd;&#xa;&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
@@ -12038,12 +12038,12 @@ Zur Filterung nach Inspektionsdatum entsprechende Aktion im Layer "Zustand_Haltu
       <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;>&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Zur Anzeige von Videos und Fotos entsprechende Aktion auswählen&lt;/li>&#xa;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Zur Filterung der angezeigten Schäden entsprechende Aktion im Layer &amp;quot;Zustand_Haltungen_gesamt&amp;quot; auswählen&lt;/li>&lt;/ul>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
       <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
         <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 0" symbol="0"/>
+          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 1" symbol="1"/>
+          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 2" symbol="2"/>
+          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 3" symbol="3"/>
+          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 4" symbol="4"/>
+          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 5" symbol="5"/>
           <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
         </rules>
         <symbols>
@@ -12475,7 +12475,7 @@ Zur Filterung nach Inspektionsdatum entsprechende Aktion im Layer "Zustand_Haltu
               <Option name="properties" type="Map">
                 <Option name="Color" type="Map">
                   <Option value="true" name="active" type="bool"/>
-                  <Option value="CASE &#xd;&#xa;WHEN min(ZD, ZB, ZS) = 0 THEN '#FF0000'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 1 THEN '#FF7F00'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 2 THEN '#FFFF00'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 3 THEN '#8FCF4F'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 4 THEN '#00AF4F'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 5 THEN '#0000FF'END" name="expression" type="QString"/>
+                  <Option value="CASE &#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 0 THEN '#FF0000'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 1 THEN '#FF7F00'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 2 THEN '#FFFF00'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 3 THEN '#8FCF4F'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 4 THEN '#00AF4F'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 5 THEN '#0000FF'END" name="expression" type="QString"/>
                   <Option value="3" name="type" type="int"/>
                 </Option>
               </Option>
@@ -13496,12 +13496,12 @@ def my_form_open(dialog, layer, feature):
       <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Zur Anzeige von Videos und Fotos entsprechende Aktion auswählen&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Zur Filterung der angezeigten Schäden entsprechende Aktion im Layer &amp;quot;Zustand_Schächte_gesamt&amp;quot; auswählen&lt;/p>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
       <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
         <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 0" symbol="0"/>
+          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 1" symbol="1"/>
+          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 2" symbol="2"/>
+          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 3" symbol="3"/>
+          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 4" symbol="4"/>
+          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 5" symbol="5"/>
           <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
         </rules>
         <symbols>
@@ -13933,7 +13933,7 @@ def my_form_open(dialog, layer, feature):
               <Option name="properties" type="Map">
                 <Option name="Color" type="Map">
                   <Option value="true" name="active" type="bool"/>
-                  <Option value="CASE &#xd;&#xa;WHEN min(ZD, ZB, ZS) = 0 THEN '#FF0000'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 1 THEN '#FF7F00'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 2 THEN '#FFFF00'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 3 THEN '#8FCF4F'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 4 THEN '#00AF4F'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 5 THEN '#0000FF'END" name="expression" type="QString"/>
+                  <Option value="CASE &#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 0 THEN '#FF0000'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 1 THEN '#FF7F00'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 2 THEN '#FFFF00'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 3 THEN '#8FCF4F'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 4 THEN '#00AF4F'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 5 THEN '#0000FF'END" name="expression" type="QString"/>
                   <Option value="3" name="type" type="int"/>
                 </Option>
               </Option>
@@ -14901,12 +14901,12 @@ def my_form_open(dialog, layer, feature):
       <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Zur Anzeige von Videos und Fotos entsprechende Aktion auswählen&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Zur Filterung der angezeigten Schäden entsprechende Aktion im Layer &amp;quot;Zustand_HA-Leitungen_gesamt&amp;quot; auswählen&lt;/p>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
       <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
         <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 0" symbol="0"/>
+          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 1" symbol="1"/>
+          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 2" symbol="2"/>
+          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 3" symbol="3"/>
+          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 4" symbol="4"/>
+          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 5" symbol="5"/>
           <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
         </rules>
         <symbols>
@@ -15338,7 +15338,7 @@ def my_form_open(dialog, layer, feature):
               <Option name="properties" type="Map">
                 <Option name="Color" type="Map">
                   <Option value="true" name="active" type="bool"/>
-                  <Option value="CASE &#xd;&#xa;WHEN min(ZD, ZB, ZS) = 0 THEN '#FF0000'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 1 THEN '#FF7F00'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 2 THEN '#FFFF00'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 3 THEN '#8FCF4F'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 4 THEN '#00AF4F'&#xd;&#xa;WHEN min(ZD, ZB, ZS) = 5 THEN '#0000FF'END" name="expression" type="QString"/>
+                  <Option value="CASE &#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 0 THEN '#FF0000'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 1 THEN '#FF7F00'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 2 THEN '#FFFF00'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 3 THEN '#8FCF4F'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 4 THEN '#00AF4F'&#xd;&#xa;WHEN min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = 5 THEN '#0000FF'END" name="expression" type="QString"/>
                   <Option value="3" name="type" type="int"/>
                 </Option>
               </Option>
@@ -27202,12 +27202,12 @@ def my_form_open(dialog, layer, feature):
       <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Filterung nach Inspektionsdatum über das Aktionen-Symbol&lt;/p>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
       <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
         <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 0" symbol="0"/>
+          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 1" symbol="1"/>
+          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 2" symbol="2"/>
+          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 3" symbol="3"/>
+          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 4" symbol="4"/>
+          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 5" symbol="5"/>
           <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
         </rules>
         <symbols>
@@ -28013,19 +28013,19 @@ def my_form_open(dialog, layer, feature):
       <expressionfields/>
       <attributeactions>
         <defaultAction value="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" key="Canvas"/>
-        <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Haltungen anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Haltungen anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{89c4a6ee-1b24-4219-996f-61aaebcc49ac}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Haltung anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Haltung" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(haltnam = '[%haltnam%]', id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{89c4a6ee-1b24-4219-996f-61aaebcc49ac}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Haltung anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Haltung" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(haltnam = '[%haltnam%]', id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Haltungen anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden()&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Haltungen anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden()&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{9a8adc00-698b-4b5b-af2b-fbfa3b93d012}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Haltung und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Haltung und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(haltnam = '[%haltnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{9a8adc00-698b-4b5b-af2b-fbfa3b93d012}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Haltung und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Haltung und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowHaltungsschaeden(haltnam = '[%haltnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
@@ -36494,12 +36494,12 @@ def my_form_open(dialog, layer, feature):
       <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Filterung nach Inspektionsdatum über das Aktionen-Symbol&lt;/p>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
       <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
         <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+          <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 0" symbol="0"/>
+          <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 1" symbol="1"/>
+          <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 2" symbol="2"/>
+          <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 3" symbol="3"/>
+          <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 4" symbol="4"/>
+          <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 5" symbol="5"/>
           <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
         </rules>
         <symbols>
@@ -37107,21 +37107,21 @@ def my_form_open(dialog, layer, feature):
       <expressionfields/>
       <attributeactions>
         <defaultAction value="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" key="Canvas"/>
-        <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Layer"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{4a3a0185-2108-467d-99e9-ceaa5a1af8ad}" capture="0" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Schacht anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Schacht" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{4a3a0185-2108-467d-99e9-ceaa5a1af8ad}" capture="0" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Schacht anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Schacht" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{ea503012-c406-40af-9578-1bee6456d353}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden()&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{ea503012-c406-40af-9578-1bee6456d353}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden()&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Layer"/>
           <actionScope id="Feature"/>
         </actionsetting>
-        <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Schacht und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Schacht und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+        <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Schacht und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Schacht und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;del form&#xd;&#xa;" type="1">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
         </actionsetting>
@@ -42926,7 +42926,7 @@ def my_form_open(dialog, layer, feature):
     <layer id="grundseitenauslass_a55e1f5b_c607_42b6_ac36_7a95ac6d12c2"/>
     <layer id="pumpen_583cb538_0769_4e29_854e_673651cf1dc8"/>
     <layer id="wehre_ff594268_95b1_4bc1_a517_1fdcbebaf19c"/>
-    <layer id="Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea"/>
+    <layer id="anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea"/>
     <layer id="Untersuchungsdaten_Haltung_7767147c_60ff_42dd_b556_f613b1ca413f"/>
     <layer id="Notizen_2587bda1_bb43_4345_ae3a_c134e85a92f2"/>
     <layer id="Geometrien_53c691ed_4408_4aea_a1e3_95482f944a0b"/>
@@ -48049,7 +48049,7 @@ def closeProject():
           <Option name="pdfExportThemes" type="invalid"/>
           <Option name="pdfGroupOrder" type="invalid"/>
           <Option value="1" name="pdfIncludeMetadata" type="int"/>
-          <Option value="Notizen_2587bda1_bb43_4345_ae3a_c134e85a92f2~~~schaechte20161220162259105~~~auslass_20161221080207994~~~speicher_20161221075653754~~~anschlussschaechte_40ba3139_67b9_43cf_9c10_1b62ad11f61b~~~knotentyp_20161204084617148~~~Geometrien_53c691ed_4408_4aea_a1e3_95482f944a0b~~~haltungen20161016203756230~~~HA_Leitungen_a15ec7ac_e753_4eed_8604_d5ffb8724574~~~drosseln_207f9ebd_6ea3_471f_b2d6_f8075b271b18~~~schieber_fbf0962b_83f8_4716_9e1d_81e730cc38c8~~~grundseitenauslass_a55e1f5b_c607_42b6_ac36_7a95ac6d12c2~~~hregler_01cd099d_d829_448e_a928_ffc1040ce5dd~~~q_Regler_57813400_9ca1_47b5_a8c4_12a9903c1eb9~~~pumpen_583cb538_0769_4e29_854e_673651cf1dc8~~~wehre_ff594268_95b1_4bc1_a517_1fdcbebaf19c~~~Haltungsflächen_38cc9a58_a57d_487e_bbac_6000457b0748~~~Anbindung20170920132347429~~~Einzelfl_chen_7dbcb03c_6415_49c1_b295_0152f545904c~~~Teilgebiete_786fa926_704f_4cb1_bc67_eb8571f2f6c0~~~einleit20171004110830029~~~Anbindungen_Direkteinleitungen_e3cf7f26_ce12_4d64_aca5_2d557b56cd0c~~~aussengebiete_f10e164f_ca69_4195_a242_7885980a6eae~~~linkageb_909dd60e_8c02_42d6_bb33_7e4cc1b5f81d~~~haltungen_untersucht_aa82edb8_17a1_46de_9c85_52ebc93a3d0d~~~Untersuchdat_haltung_a6c1b54a_8938_44e9_b4a6_9b9f7c4f76b0~~~Haltungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea~~~Untersuchungsdaten_Haltung_7767147c_60ff_42dd_b556_f613b1ca413f~~~schaechte_untersucht_057f1e2b_23bd_4c9b_b3d6_15bb6eedc796~~~Untersuchdat_schacht_2cb42d68_83d5_4574_932c_36fe3ccc7135~~~symbole_9401efbd_da0f_4b5d_8589_bb76adf2efe3~~~ABK_Symbole_NRW_0d0bf295_b65e_4fcb_8427_9264f3691035~~~DTK_Farbe_0a60cc40_5336_464f_bd2b_f910bdb54535~~~TopPlusOpen_28c47e2b_d52f_426a_82fb_3a0cb8d4e71a~~~DOP_NRW_98d3ffc8_c5be_4760_8481_2ba53395039b" name="pdfLayerOrder" type="QString"/>
+          <Option value="Notizen_2587bda1_bb43_4345_ae3a_c134e85a92f2~~~schaechte20161220162259105~~~auslass_20161221080207994~~~speicher_20161221075653754~~~anschlussschaechte_40ba3139_67b9_43cf_9c10_1b62ad11f61b~~~knotentyp_20161204084617148~~~Geometrien_53c691ed_4408_4aea_a1e3_95482f944a0b~~~haltungen20161016203756230~~~HA_Leitungen_a15ec7ac_e753_4eed_8604_d5ffb8724574~~~drosseln_207f9ebd_6ea3_471f_b2d6_f8075b271b18~~~schieber_fbf0962b_83f8_4716_9e1d_81e730cc38c8~~~grundseitenauslass_a55e1f5b_c607_42b6_ac36_7a95ac6d12c2~~~hregler_01cd099d_d829_448e_a928_ffc1040ce5dd~~~q_Regler_57813400_9ca1_47b5_a8c4_12a9903c1eb9~~~pumpen_583cb538_0769_4e29_854e_673651cf1dc8~~~wehre_ff594268_95b1_4bc1_a517_1fdcbebaf19c~~~Haltungsflächen_38cc9a58_a57d_487e_bbac_6000457b0748~~~Anbindung20170920132347429~~~Einzelfl_chen_7dbcb03c_6415_49c1_b295_0152f545904c~~~Teilgebiete_786fa926_704f_4cb1_bc67_eb8571f2f6c0~~~einleit20171004110830029~~~Anbindungen_Direkteinleitungen_e3cf7f26_ce12_4d64_aca5_2d557b56cd0c~~~aussengebiete_f10e164f_ca69_4195_a242_7885980a6eae~~~linkageb_909dd60e_8c02_42d6_bb33_7e4cc1b5f81d~~~haltungen_untersucht_aa82edb8_17a1_46de_9c85_52ebc93a3d0d~~~Untersuchdat_haltung_a6c1b54a_8938_44e9_b4a6_9b9f7c4f76b0~~~anschlussleitungen_untersucht_a92c55e6_e0e0_41e4_b702_65fb52bdf2ea~~~Untersuchungsdaten_Haltung_7767147c_60ff_42dd_b556_f613b1ca413f~~~schaechte_untersucht_057f1e2b_23bd_4c9b_b3d6_15bb6eedc796~~~Untersuchdat_schacht_2cb42d68_83d5_4574_932c_36fe3ccc7135~~~symbole_9401efbd_da0f_4b5d_8589_bb76adf2efe3~~~ABK_Symbole_NRW_0d0bf295_b65e_4fcb_8427_9264f3691035~~~DTK_Farbe_0a60cc40_5336_464f_bd2b_f910bdb54535~~~TopPlusOpen_28c47e2b_d52f_426a_82fb_3a0cb8d4e71a~~~DOP_NRW_98d3ffc8_c5be_4760_8481_2ba53395039b" name="pdfLayerOrder" type="QString"/>
           <Option value="0" name="pdfLosslessImages" type="int"/>
           <Option value="0" name="pdfOgcBestPracticeFormat" type="int"/>
           <Option value="1" name="pdfSimplify" type="int"/>

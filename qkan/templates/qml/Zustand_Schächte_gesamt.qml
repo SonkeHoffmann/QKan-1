@@ -147,12 +147,12 @@
   <userNotes value="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;>&#xa;&lt;html>&lt;head>&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; />&lt;style type=&quot;text/css&quot;>&#xa;p, li { white-space: pre-wrap; }&#xa;&lt;/style>&lt;/head>&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>Filterung nach Inspektionsdatum über das Aktionen-Symbol&lt;/p>&#xa;&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;br />&lt;/p>&#xa;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;>&lt;a href=&quot;https://qkan.eu&quot;>&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;>Zur QKan-Dokumentation&lt;/span>&lt;/a>&lt;/p>&lt;/body>&lt;/html>"/>
   <renderer-v2 enableorderby="0" forceraster="0" referencescale="-1" type="RuleRenderer" symbollevels="0">
     <rules key="{4c108ca8-1203-477a-9f48-96d4e381b74c}">
-      <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(ZD, ZB, ZS) = 0" symbol="0"/>
-      <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(ZD, ZB, ZS) = 1" symbol="1"/>
-      <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(ZD, ZB, ZS) = 2" symbol="2"/>
-      <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(ZD, ZB, ZS) = 3" symbol="3"/>
-      <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(ZD, ZB, ZS) = 4" symbol="4"/>
-      <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(ZD, ZB, ZS) = 5" symbol="5"/>
+      <rule label="Zustandsklasse 0, starker Mangel, Gefahr im Verzug" key="{14f6fa52-828b-4173-9779-a734185c7d50}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 0" symbol="0"/>
+      <rule label="Zustandsklasse 1, starker Mangel" key="{6ac64b31-87c5-46df-b895-c8f9618ff645}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 1" symbol="1"/>
+      <rule label="Zustandsklasse 2, mittlerer Mangel" key="{9c39bafb-a521-44a9-a29e-0fb200ff73c2}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 2" symbol="2"/>
+      <rule label="Zustandsklasse 3, leichter Mangel" key="{dbe7c6f4-43a6-47c8-8dd3-f4d395b62016}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 3" symbol="3"/>
+      <rule label="Zustandsklasse 4, geringfügiger Mangel" key="{857733ab-acb9-405b-aa85-9270d8a95091}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 4" symbol="4"/>
+      <rule label="Zustandsklasse 5, kein Mangel" key="{a5aced04-09fd-409a-9f4b-ca71ca17d7bd}" filter="min(coalesce(max_ZD, max_ZB, max_ZS), coalesce(max_ZB, max_ZS, max_ZD), coalesce(max_ZS, max_ZD, max_ZB)) = 5" symbol="5"/>
       <rule label="nicht ermittelt" checkstate="0" key="{06fa0df9-3a60-4a3c-a72c-ca8f10d3ad45}" filter="ELSE" symbol="6"/>
     </rules>
     <symbols>
@@ -760,21 +760,21 @@
   <expressionfields/>
   <attributeactions>
     <defaultAction value="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" key="Canvas"/>
-    <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+    <actionsetting id="{7f802d16-fd1e-45ac-9683-a33a61fc674b}" capture="1" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
       <actionScope id="Canvas"/>
       <actionScope id="Layer"/>
       <actionScope id="Feature"/>
     </actionsetting>
-    <actionsetting id="{4a3a0185-2108-467d-99e9-ceaa5a1af8ad}" capture="0" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Schacht anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Schacht" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', id = 1)&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+    <actionsetting id="{4a3a0185-2108-467d-99e9-ceaa5a1af8ad}" capture="0" isEnabledOnlyWhenEditable="0" name="Aktuelle Zustandsdaten zu Schacht anzeigen" icon="" shortTitle="Aktuelle Zustandsdaten zu Schacht" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowHaltungsschaeden&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', id = 1)&#xd;&#xa;del form&#xd;&#xa;" type="1">
       <actionScope id="Canvas"/>
       <actionScope id="Feature"/>
     </actionsetting>
-    <actionsetting id="{ea503012-c406-40af-9578-1bee6456d353}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden()&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+    <actionsetting id="{ea503012-c406-40af-9578-1bee6456d353}" capture="1" isEnabledOnlyWhenEditable="0" name="Alle Zustandsdaten für alle Schächte anzeigen" icon="" shortTitle="Alle Zustandsdaten" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden()&#xd;&#xa;del form&#xd;&#xa;" type="1">
       <actionScope id="Canvas"/>
       <actionScope id="Layer"/>
       <actionScope id="Feature"/>
     </actionsetting>
-    <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Schacht und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Schacht und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;form.show_selected()&#xd;&#xa;del form&#xd;&#xa;" type="1">
+    <actionsetting id="{df45edbe-ca08-43ef-85cf-7e9ae15140b0}" capture="1" isEnabledOnlyWhenEditable="0" name="Zustandsdaten zu Schacht und Untersuchungsdatum anzeigen" icon="" shortTitle="Zustandsdaten zu Schacht und Untersuchungsdatum" notificationMessage="" action="from qkan.tools.zeige_untersuchungsdaten import ShowSchachtschaeden&#xd;&#xa;&#xd;&#xa;form = ShowSchachtschaeden(schnam = '[%schnam%]', untersuchtag = '[%untersuchtag%]')&#xd;&#xa;del form&#xd;&#xa;" type="1">
       <actionScope id="Canvas"/>
       <actionScope id="Feature"/>
     </actionsetting>

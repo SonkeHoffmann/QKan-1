@@ -11,7 +11,7 @@ class ShowSelected():
 
     # Der Zeitstempel wird als Workaraound benötigt, um bei den Aktionen die Auswahl "Alle Objekte"
     # zu identifizieren.
-    lastcalltime = dtim.now()
+    # lastcalltime = None
 
     def show_selected(
             self,
@@ -32,15 +32,19 @@ class ShowSelected():
         :type untersuchattribut:    str
         """
 
-        actcalltime = dtim.now()
-        td = actcalltime - ShowSelected.lastcalltime
-        # Wenn bei aktivierten Aktionen im Kontextmenü der Objektauswahl "Alle Objekte" angeklickt
-        # wird, wird die Aktion direkt hintereinander für alle Objekte ausgelöst. Für diesen Fall
-        # wird die Selektion auf untersuchtag deaktiviert. Auf ein Unterdrücken der nachfolgenden
-        # Aktionen wird hier verzichtet, um den Code nicht noch komplizierter zu machen.
-        if td.total_seconds() < 0.05:
-            self.untersuchtag = None
-        ShowSelected.lastcalltime = actcalltime
+        # if ShowSelected.lastcalltime is None:
+        #     ShowSelected.lastcalltime = dtim.now()
+        # else:
+        #     actcalltime = dtim.now()
+        #     td = actcalltime - ShowSelected.lastcalltime
+        #     # Wenn bei aktivierten Aktionen im Kontextmenü der Objektauswahl "Alle Objekte" angeklickt
+        #     # wird, wird die Aktion direkt hintereinander für alle Objekte ausgelöst. Für diesen Fall
+        #     # wird die Selektion auf untersuchtag deaktiviert. Auf ein Unterdrücken der nachfolgenden
+        #     # Aktionen wird hier verzichtet, um den Code nicht noch komplizierter zu machen.
+        #     if td.total_seconds() < 0.05:
+        #         logger.debug(f"ShowSelected: Abbruch wegen Mehrfachaufruf")
+        #         return
+        #     ShowSelected.lastcalltime = actcalltime
 
         self.iface = QKan.instance.iface
 
@@ -76,9 +80,11 @@ class ShowSelected():
                 pos = label.find('Zustandsklasse') + 15
                 i = label[pos]
                 if einzel:
-                    expr = f"min(ZD, ZB, ZS) = {i}"
+                    expr = f"min(coalesce(ZD, ZB, ZS), coalesce(ZB, ZS, ZD), coalesce(ZS, ZD, ZB)) = {i}"
                 else:
-                    expr = f"min(max_ZD, max_ZB, max_ZS) = {i}"
+                    expr = (f"min(coalesce(max_ZD, max_ZB, max_ZS), "
+                            f"coalesce(max_ZB, max_ZS, max_ZD), "
+                            f"coalesce(max_ZS, max_ZD, max_ZB)) = {i}")
                 # Filter auf Haltung, ID oder Untersuchungsdatum ergänzen:
                 if untersuchbezeich is not None:
                     expr += f" AND {untersuchattribut} = '{untersuchbezeich}'"
@@ -96,6 +102,9 @@ class ShowSelected():
 
 class ShowHaltungsschaeden(ShowSelected):
     """Zeigt Zustandsdaten an Haltungen selektiv an"""
+
+    lastcalltime = None
+
     def __init__(self, haltnam: str = None, schoben: str = None, schunten: str = None, untersuchtag: str = None, id: int = None):
 
         self.haltnam = haltnam
@@ -104,6 +113,19 @@ class ShowHaltungsschaeden(ShowSelected):
         self.untersuchtag = untersuchtag
         self.id = id
         self.showschaedencolumns = QKan.config.zustand.showschaedencolumns      # evtl. ergänzen: Eingabe unter Optionen
+
+        # Wenn bei aktivierten Aktionen im Kontextmenü der Objektauswahl "Alle Objekte" angeklickt
+        # wird, wird die Aktion direkt hintereinander für alle Objekte ausgelöst. Für diesen Fall
+        # wird die Prozedur ab dem 2. Aufruf abgebrochen
+        if ShowHaltungsschaeden.lastcalltime is None:
+            ShowHaltungsschaeden.lastcalltime = dtim.now()
+        else:
+            actcalltime = dtim.now()
+            td = actcalltime - ShowHaltungsschaeden.lastcalltime
+            if td.total_seconds() < 0.05:
+                logger.debug(f"ShowHaltungsschaeden: Abbruch wegen Mehrfachaufruf")
+                return
+            ShowHaltungsschaeden.lastcalltime = actcalltime
 
         untersuchbezeich = self.haltnam
 
@@ -115,20 +137,28 @@ class ShowHaltungsschaeden(ShowSelected):
         layername = enums.LAYERBEZ.ZUSTAND_HALTUNGEN.value
         self.show_selected(layername, untersuchbezeich, untersuchattribut, False)
 
-        # self.showlist()
-
-        # self.pb_showAll.clicked.connect(self.show_all)
-
 
 class ShowSchachtschaeden(ShowSelected):
     """Zeigt Zustandsdaten an Schächten selektiv an"""
+
+    lastcalltime = None
+
     def __init__(self, schnam: str = None, untersuchtag: str = None, id: int = None):
 
         self.schnam = schnam
         self.untersuchtag = untersuchtag
         self.id = id
 
-        self.iface = QKan.instance.iface
+        # Siehe Erläuterung oben
+        if ShowSchachtschaeden.lastcalltime is None:
+            ShowSchachtschaeden.lastcalltime = dtim.now()
+        else:
+            actcalltime = dtim.now()
+            td = actcalltime - ShowSchachtschaeden.lastcalltime
+            if td.total_seconds() < 0.05:
+                logger.debug(f"ShowSchachtschaeden: Abbruch wegen Mehrfachaufruf")
+                return
+            ShowSchachtschaeden.lastcalltime = actcalltime
 
         untersuchbezeich = self.schnam
 
@@ -143,13 +173,25 @@ class ShowSchachtschaeden(ShowSelected):
 
 class ShowHausanschlussschaeden(ShowSelected):
     """Zeigt Zustandsdaten an Hausanschlussleitungen selektiv an"""
+
+    lastcalltime = None
+
     def __init__(self, untersuchleit: str = None, untersuchtag: str = None, id: int = None):
 
         self.untersuchleit = untersuchleit
         self.untersuchtag = untersuchtag
         self.id = id
 
-        self.iface = QKan.instance.iface
+        # Siehe Erläuterung oben
+        if ShowHausanschlussschaeden.lastcalltime is None:
+            ShowHausanschlussschaeden.lastcalltime = dtim.now()
+        else:
+            actcalltime = dtim.now()
+            td = actcalltime - ShowHausanschlussschaeden.lastcalltime
+            if td.total_seconds() < 0.05:
+                logger.debug(f"ShowHausanschlussschaeden: Abbruch wegen Mehrfachaufruf")
+                return
+            ShowHausanschlussschaeden.lastcalltime = actcalltime
 
         untersuchbezeich = self.untersuchleit
 
