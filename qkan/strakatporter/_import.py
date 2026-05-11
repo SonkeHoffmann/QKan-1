@@ -490,143 +490,24 @@ class ImportTask(Schadenstexte):
             'strakat_prep1'
         ]
         sqls = [
-            # 1.0 Fehlende Schacht- und Haltungsbezeichnungen ergänzen
-            # Die 2. Abfrage übernimmt den Schachtnamen nur dann als Haltungsnamen, wenn dadurch keine
-            # neuen Dopplungen entstehen könnten.
-            """ UPDATE t_strakatkanal SET schacht_oben = 'SN_' || substr(printf('0000%d', pk), -5)
-                WHERE schacht_oben = '' OR schacht_oben = '0'""",
-            """ UPDATE t_strakatkanal SET haltungsname = schacht_oben
-                WHERE (haltungsname = '' OR haltungsname = '0')
-                  AND schacht_oben NOT IN (
-                        SELECT stk.haltungsname
-                        FROM t_strakatkanal AS stk)
-                  AND schacht_oben IN (
-                        SELECT stk.schacht_oben
-                        FROM t_strakatkanal AS stk
-						GROUP BY stk.schacht_oben
-						HAVING count() = 1
-						)""",
-            """ UPDATE t_strakatkanal SET haltungsname = 'HN_' || substr(printf('0000%d', pk), -5)
-                WHERE haltungsname = '' OR haltungsname = '0'""",
-            # 1.1 Doppelte Haltungsbezeichnungen eindeutig machen. Erkennungsmerkmal zur späteren
-            # Analyse: Diese Haltungsnamen beginnen
-            # mit HA_ im Gegensatz zu den Haltungen ohne Namen, die mit HN_ beginnen
-            """ UPDATE t_strakatkanal
-                SET haltungsname = 'HA_' || substr(printf('0000%d', t_strakatkanal.pk), -5)
-                FROM (SELECT pk, haltungsname FROM t_strakatkanal) AS std
-                WHERE t_strakatkanal.haltungsname = std.haltungsname AND t_strakatkanal.pk > std.pk""",
-            # 1.2.1 Schacht_unten auf Schacht_oben von Haltungen übertragen, auf die Abflussnummer (abflussnummer1 - abflussnummer5) verweist.
-            """ WITH abflussnummern AS (
-                    SELECT abflussnummer1 AS abflussnummer, schacht_unten AS schachtname
-                    FROM t_strakatkanal
-                    UNION
-                    SELECT abflussnummer2 AS abflussnummer, schacht_unten AS schachtname
-                    FROM t_strakatkanal
-                    UNION
-                    SELECT abflussnummer3 AS abflussnummer, schacht_unten AS schachtname
-                    FROM t_strakatkanal
-                    UNION
-                    SELECT abflussnummer4 AS abflussnummer, schacht_unten AS schachtname
-                    FROM t_strakatkanal
-                    UNION
-                    SELECT abflussnummer5 AS abflussnummer, schacht_unten AS schachtname
-                    FROM t_strakatkanal
-                ), schaechte_unten AS (
-                    SELECT abflussnummer, schachtname
-                    FROM abflussnummern
-                    WHERE abflussnummer IS NOT NULL AND
-                          abflussnummer <> 0 AND
-                          schachtname <> '0' AND
-                          schachtname <> ''
-                    ORDER BY abflussnummer
-                )
-                UPDATE t_strakatkanal SET schacht_oben = schaechte_unten.schachtname
-                FROM schaechte_unten
-                WHERE t_strakatkanal.nummer = schaechte_unten.abflussnummer
-            """,
-            # Mehrfache "schacht_oben" mit SA_ im Gegensatz zu den Haltungen ohne Namen, die mit SN_ beginnen
-            """ UPDATE t_strakatkanal
-                SET schacht_oben = 'SA_' || substr(printf('SA_00000%d_', t_strakatkanal.pk), -7) || 
-                                    t_strakatkanal.schacht_oben
-                
-                FROM (SELECT pk, schacht_oben FROM t_strakatkanal) AS std
-                WHERE t_strakatkanal.schacht_oben = std.schacht_oben AND t_strakatkanal.pk > std.pk""",
-            # 1.2.2 Abzweigende Haltungen (k1k), deren schacht_oben nicht mit dem eines durchlaufenden
-            #     Stranges (schacht_unten = schacht_oben: k2k) übereinstimmt.
-            """WITH k2k AS (
-                    SELECT ku.ROWID, ku.nummer, ku.geop, ku.schacht_oben, ku.schachtart, ku.kanalart
-                    FROM t_strakatkanal ko
-                    JOIN t_strakatkanal ku ON ko.abflussnummer1 = ku.nummer AND ko.schacht_unten = ku.schacht_oben
-                ),
-                k1k AS (
-                    SELECT
-                        k1.nummer AS n1, k2.nummer AS n2, k1.schacht_oben AS schoben_diff, 
-                        k2.schacht_oben AS schoben, k1.schachtart, k1.kanalart
-                    FROM k2k AS k2
-                    JOIN t_strakatkanal AS k1 ON st_distance(k2.geop, k1.geop) < :maxdiff
-                    WHERE
-                        k2.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='t_strakatkanal'
-                            AND search_frame=makecircle(x(k1.geop),y(k1.geop), :maxdiff, :epsg))
-                        AND k2.schacht_oben <> k1.schacht_oben
-                )
-                UPDATE t_strakatkanal SET schacht_oben = ksk.schoben
-                FROM (SELECT n1, schoben FROM k1k) AS ksk
-                WHERE ksk.n1 = t_strakatkanal.nummer AND ksk.schoben <> '' AND ksk.schoben <> '0'""",
-
-            # 1.3 Unterschiedliche Schachtnamen an der gleichen Position
-            """WITH k2k AS (
-                    SELECT k2.nummer AS nummer, k1.schacht_oben AS schoben
-                    FROM t_strakatkanal AS k2
-                    JOIN t_strakatkanal AS k1 ON st_distance(k2.geop, k1.geop) < :maxdiff
-                    WHERE
-                        k2.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='t_strakatkanal'
-                            AND search_frame=makecircle(x(k1.geop),y(k1.geop), :maxdiff, :epsg))
-                        AND k1.schacht_oben <> k2.schacht_oben AND k1.nummer < k2.nummer
-                )
-                UPDATE t_strakatkanal SET schacht_oben = ksk.schoben
-                FROM (SELECT nummer, schoben FROM k2k) AS ksk
-                WHERE ksk.nummer = t_strakatkanal.nummer AND ksk.schoben <> ''""",
-
-            # 1.4 Test der Haltungen, die über "abflussnummmerx" und "zuflussnummerx" verbunden sind.
-            """ WITH ka AS (
-                    SELECT n1 AS id, n4, kurz, text
-                    FROM t_reflists
-                    WHERE tabtyp = 'schachtart' 
-                ),
-                sx AS (
-                    SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
-                    FROM t_strakatkanal AS ko
-                    JOIN t_strakatkanal AS ku ON ko.abflussnummer1 = ku.nummer
-                    WHERE ko.abflussnummer1 > 0 AND ko.schacht_unten <> ku.schacht_oben
-                    UNION 
-                    SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
-                    FROM t_strakatkanal AS ko
-                    JOIN t_strakatkanal AS ku ON ko.abflussnummer2 = ku.nummer
-                    WHERE ko.abflussnummer2 > 0 AND ko.schacht_unten <> ku.schacht_oben
-                    UNION 
-                    SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
-                    FROM t_strakatkanal AS ko
-                    JOIN t_strakatkanal AS ku ON ko.abflussnummer3 = ku.nummer
-                    WHERE ko.abflussnummer3 > 0 AND ko.schacht_unten <> ku.schacht_oben
-                    UNION 
-                    SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
-                    FROM t_strakatkanal AS ko
-                    JOIN t_strakatkanal AS ku ON ko.abflussnummer4 = ku.nummer
-                    WHERE ko.abflussnummer4 > 0 AND ko.schacht_unten <> ku.schacht_oben
-                    UNION 
-                    SELECT ko.nummer AS nummer_oben, ku.nummer AS nummer_unten, ko.schacht_unten, ku.schacht_oben, ko.schachtart AS schachtart_ob, ku.schachtart AS schachtart_un
-                    FROM t_strakatkanal AS ko
-                    JOIN t_strakatkanal AS ku ON ko.abflussnummer5 = ku.nummer
-                    WHERE ko.abflussnummer5 > 0 AND ko.schacht_unten <> ku.schacht_oben
-                )
-                UPDATE t_strakatkanal SET schacht_unten = sx.schacht_oben
-                FROM sx
-                WHERE sx.nummer_oben = t_strakatkanal.nummer AND t_strakatkanal.schacht_unten <> sx.schacht_oben AND sx.schacht_oben <> ''""",
+            "strakat_prep1",
+            "strakat_prep2",
+            "strakat_prep3",
+            "strakat_prep4",
+            "strakat_prep5",
+            "strakat_prep6",
+            "strakat_prep7",
+            "strakat_prep8",
+            "strakat_prep9",
         ]
 
         params = {"epsg": self.epsg, "maxdiff": self.maxdiff}
-        for sql in sqls:
-            if not self.db_qkan.sql(sql=sql, stmt_category="strakat_import Korrektur Schachtnamen t_strakatkanal", parameters=params):
+        for sqlnam in sqls:
+            if not self.db_qkan.sqlyml(
+                    sqlnam=sqlnam,
+                    stmt_category="strakat_import Korrektur Schachtnamen t_strakatkanal",
+                    parameters=params
+            ):
                 raise Exception(f'{self.__class__.__name__}:Fehler bei der Korrektur der Schachtnamen t_strakatkanal')
 
         self.db_qkan.commit()
@@ -639,26 +520,12 @@ class ImportTask(Schadenstexte):
 
         # Erstellung Tabelle t_reflists. Diese Tabelle enthält die STRAKAT-Rohdaten aller Referenztabellen.
         # Diese werden in den einzelnen Importen mittels Filter auf die Spalte "tabtyp" spezifiziert und eingebunden.
-        sql = "PRAGMA table_list('t_reflists')"
-        if not self.db_qkan.sql(sql, "Prüfen, ob temporäre Tabelle 't_reflists', vorhanden ist"):
-            return False                                        # Abbruch weil Anfrage fehlgeschlagen
         if not self.db_qkan.fetchone():
-            sql = """ 
-            CREATE TABLE IF NOT EXISTS t_reflists (
-                pk INTEGER PRIMARY KEY,
-                id INTEGER,                 -- Schlüssel je Tabellenart
-                tabtyp TEXT,                -- Tabellenart
-                n1 INTEGER,                 -- Inhalt abhängig von von tabtyp 
-                n2 INTEGER,                 -- Inhalt abhängig von von tabtyp
-                n3 INTEGER,                 -- Inhalt abhängig von von tabtyp
-                n4 INTEGER,                 -- Inhalt abhängig von von tabtyp
-                n5 INTEGER,                 -- Inhalt abhängig von von tabtyp
-                kurz TEXT, 
-                text TEXT
-            )"""
+            sqlnam = """strakat_create_t_reflists"""
 
-            if not self.db_qkan.sql(sql, 'Erstellung Tabelle "t_reflists"'):
-                return False
+            if not self.db_qkan.sqlyml(sqlnam=sqlnam, stmt_category='Erstellung Tabelle "t_reflists"'):
+                logger.error_code('Fehler bei der Erstellung der Tabelle t_reflists')
+                raise QkanDbError
 
         t_typen = {
             1: 'kanalart',
@@ -725,16 +592,10 @@ class ImportTask(Schadenstexte):
                           'n1': n1, 'n2': n2, 'n3': n3, 'n4': n4, 'n5': n5,
                           'kurz': kurz, 'text': text}
 
-                sql = """INSERT INTO t_reflists (
-                    tabtyp, id,
-                    n1, n2, n3, n4, n5, 
-                    kurz, text                    
-                )
-                VALUES (
-                    :tabtyp, :id, :n1, :n2, :n3, :n4, :n5, :kurz, :text
-                )"""
-
-                if not self.db_qkan.sql(sql, "strakat_import Referenztabellen", params):
+                if not self.db_qkan.sqlyml(
+                        sqlnam = "strakat_add_t_reflists",
+                        stmt_category= "strakat_import Referenztabellen",
+                        parameters=params):
                     raise Exception(f'{self.__class__.__name__}:Fehler beim Lesen der Datei "system/referenztabelle.strakat"')
             else:
                 raise Exception(f'{self.__class__.__name__}:Programmfehler: Einlesen der Datei '
@@ -748,16 +609,9 @@ class ImportTask(Schadenstexte):
         """Import der Hausanschlussdaten aus der STRAKAT-Datei 'haus.rwtopen', entspricht ACCESS-Tabelle 'HAUSANSCHLUSSTABELLE'
         """
 
-        # Erstellung Tabelle t_strakathausanschluesse
-        sql = "PRAGMA table_list('t_strakathausanschluesse')"
-        if not self.db_qkan.sql(sql, "Prüfen, ob temporäre Tabelle 't_strakathausanschluesse', vorhanden ist"):
-            raise Exception(f'{self.__class__.__name__}: Fehler bei Prüfung der Tabelle t_strakathausanschluesse')
-
-        # Bereits vorhandene Tabelle muss erst gelöscht werden
-        if self.db_qkan.fetchone():
-            sql = "SELECT DropTable(NULL, 't_strakathausanschluesse')"
-            if not self.db_qkan.sql(sql, 'Löschung Tabelle "t_strakathausanschluesse wegen Neuanlage"'):
-                raise Exception(f'{self.__class__.__name__}: Fehler beim Löschen der Tabelle t_strakathausanschluesse')
+        sql = "SELECT DropTable(NULL, 't_strakathausanschluesse')"
+        if not self.db_qkan.sql(sql, 'Löschung Tabelle "t_strakathausanschluesse wegen Neuanlage"'):
+            raise Exception(f'{self.__class__.__name__}: Fehler beim Löschen der Tabelle t_strakathausanschluesse')
 
         if not self.db_qkan.fetchone():
             sql = """ 
@@ -996,7 +850,7 @@ class ImportTask(Schadenstexte):
 
     def _anschlussschaechte(self) -> bool:
         """Erzeugen der zusätzlichen Schächte aus Anschlussleitungen"""
-        sql = """"""
+        pass
         return True
 
     def _strakat_berichte(self) -> bool:

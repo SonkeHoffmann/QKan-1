@@ -112,7 +112,8 @@ class AdjustTask:
             dat = dtim.now().strftime('%A, %d/%m/%y %H:%M:%S')
             protfile.write(f'Protokoll der Synchronisation am {dat}')
             for table, userchoice in userchoices:
-                if userchoice:
+                tableexist = db_qkan.sqls.get(f'sync_create_{table}')
+                if userchoice and tableexist:
                     # Protokoll schreiben
                     sqlnam = f'sync_{table}_prot'
                     db_qkan.sqlyml(
@@ -125,7 +126,8 @@ class AdjustTask:
                         protfile.write(line + '\n')
 
             for table, userchoice in userchoices:
-                if userchoice:
+                tableexist = db_qkan.sqls.get(f'sync_create_{table}')
+                if userchoice and tableexist:
 
                     sqlnames = [
                         f'sync_{table}_add',

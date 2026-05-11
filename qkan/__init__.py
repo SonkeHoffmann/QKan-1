@@ -1,6 +1,7 @@
 import importlib
 import json
 import os
+import re
 from pathlib import Path
 from typing import Callable, List, Optional, cast, Dict
 
@@ -165,9 +166,9 @@ class QKan:
     build = "0000"
 
     # SQL-Statements werden abhängig vom Datenbanktyp und Modul geladen.
-    sqls: dict = {}                     # SQL-Statements for all loaded modules
-    dbtype: enums.QKanDBChoice = None   # Datenbanktyp des Projekts, wird durch get_database_QKan() aktualisiert
-    dbsource: str = None                # Datenbankverbindung des Projekts, wird durch get_database_QKan() aktualisiert
+    sqls: dict = {}  # SQL-Statements for all loaded modules
+    dbtype: enums.QKanDBChoice = None  # Datenbanktyp des Projekts, wird durch get_database_QKan() aktualisiert
+    dbsource: str = None  # Datenbankverbindung des Projekts, wird durch get_database_QKan() aktualisiert
 
     def __init__(self, iface: qgis.gui.QgisInterface):
         QKan.instance = self
@@ -250,8 +251,8 @@ class QKan:
 
         # mnuSub1 = self.menu.addMenu('Sub-menu')
 
-        #self.toolbar = self.iface.addToolBar("QKan")
-        #self.toolbar.setObjectName("QKan")
+        # self.toolbar = self.iface.addToolBar("QKan")
+        # self.toolbar.setObjectName("QKan")
 
         self.toolbar = self.iface.addToolBar("QKan-Allgemein")
         self.toolbar.setObjectName("QKan-Allgemein")
@@ -268,7 +269,7 @@ class QKan:
         # Add QKan SVG path
         qkanSvgPath = os.path.join(pluginDirectory("qkan"), "templates/svg")
         svgPaths = QgsSettings().value('svg/searchPathsForSVG')
-        if svgPaths:                        # Ist bei automatisierten Text Null...
+        if svgPaths:  # Ist bei automatisierten Text Null...
             if qkanSvgPath not in svgPaths:
                 try:
                     svgPaths.append(qkanSvgPath)
@@ -466,18 +467,18 @@ class QKan:
             self.plugins.remove(plugin)
 
     def add_action(
-        self,
-        icon_path: str,
-        text: str,
-        toolbar: str,
-        callback: Callable,
-        enabled_flag: bool = True,
-        checkable: bool = False,
-        add_to_menu: bool = True,
-        add_to_toolbar: bool = True,
-        status_tip: str = None,
-        whats_this: str = None,
-        parent: QWidget = None,
+            self,
+            icon_path: str,
+            text: str,
+            toolbar: str,
+            callback: Callable,
+            enabled_flag: bool = True,
+            checkable: bool = False,
+            add_to_menu: bool = True,
+            add_to_toolbar: bool = True,
+            status_tip: str = None,
+            whats_this: str = None,
+            parent: QWidget = None,
     ) -> QAction:
         """Add a toolbar icon to the toolbar/menu.
 
