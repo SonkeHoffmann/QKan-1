@@ -4,6 +4,7 @@ from qkan import QKan
 from qkan.plugin import QKanPlugin
 from qkan.tools.qkan_utils import get_default_dir
 from qkan.utils import get_logger
+from qkan.error_wrapper import error_boundary
 
 logger = get_logger("QKan.uploadPostgis.application")
 
@@ -20,6 +21,11 @@ class UploadPostgis(QKanPlugin):
     Ermöglicht den Transfer aller geometrischen Objekte aus einer QKan
     SQLite-Datenbank auf einen PostGIS-Server für die Kartendarstellung
     in der WebSuite.
+    
+    FEHLERBEHANDLUNG:
+    - Alle Fehler werden zentral über den error_boundary Handler gefangen
+    - Dialog-Handler (openform_uploadPostgis) ist die Fehlergrenze
+    - Interne Module müssen nur noch QKAN-spezifische Fehler werfen
     """
     
     def __init__(self, iface: QgisInterface):
@@ -42,16 +48,18 @@ class UploadPostgis(QKanPlugin):
     def unload(self) -> None:
         self.uploadPostgis_dlg.close()
 
+    @error_boundary(context="PostGIS-Upload Dialog")
     def openform_uploadPostgis(self) -> None:
-        """Anzeigen des Formulars für den Upload zu PostGIS WebSuite"""
-
+        """Anzeigen des Formulars für den Upload zu PostGIS WebSuite
+        
+        FEHLERBEHANDLUNG: Dieser Handler ist die äußerste Fehlergrenze.
+        Alle Exceptions aus dem Dialog werden hier zentral abgefangen.
+        """
         self.uploadPostgis_dlg._load_uploadPostgis_config()
-
         self.uploadPostgis_dlg.show()
 
         if self.uploadPostgis_dlg.exec_():
             self.uploadPostgis_dlg._save_uploadPostgis_config()
-            
             # Upload wird im Dialog gestartet (über DatabaseDialog)
             self.log.info("Upload-Dialog abgeschlossen")
 

@@ -13,6 +13,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from qkan import QKan
+from qkan.error_dispatcher import global_error
 from qkan.utils import get_logger
 
 from .database_dialog import UploadPostgisDatabaseDialog
@@ -332,10 +333,9 @@ class UploadPostgisDialog(_Dialog, IMPORT_CLASS):  # type: ignore
                 "psycopg2 Python-Paket ist nicht installiert.\n\nBitte installieren Sie psycopg2 für PostgreSQL-Verbindungen."
             )
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Verbindungstest fehlgeschlagen",
-                f"Fehler beim Verbinden zu '{connection_name}':\n\n{str(e)}"
+            global_error.report_exception(
+                e,
+                message=f"Fehler beim Verbinden zu '{connection_name}':\n\n{str(e)}",
             )
 
     def load_server_connections(self):

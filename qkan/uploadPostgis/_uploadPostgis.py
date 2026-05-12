@@ -24,6 +24,7 @@ from qgis.PyQt.QtWidgets import QProgressBar, QApplication
 from qgis.utils import spatialite_connect
 
 from qkan.utils import get_logger, QkanError
+from qkan.error_dispatcher import global_error
 from .connection_dialog import normalize_hostname
 
 logger = get_logger("QKan.uploadPostgis._uploadPostgis")
@@ -198,7 +199,9 @@ class SchemaParser:
         - Geometrie-Spalten-Info aus AddGeometryColumn Aufrufen
         """
         if not os.path.exists(self.schema_sql_path):
-            raise QkanError(f"schema.sql nicht gefunden: {self.schema_sql_path}")
+            global_error.report(
+                f"schema.sql nicht gefunden: {self.schema_sql_path}"
+            )
 
         with open(self.schema_sql_path, 'r', encoding='utf-8') as f:
             sql_content = f.read()
@@ -514,7 +517,10 @@ class UploadPostgisTask:
             logger.info(f"Verbindung zu Datenbank '{params['database']}' erfolgreich")
 
         except Exception as e:
-            raise QkanError(f"Fehler beim Verbinden zu PostGIS: {str(e)}")
+            global_error.report_exception(
+                e,
+                message=f"Fehler beim Verbinden zu PostGIS: {str(e)}",
+            )
 
     def _check_and_reconnect_postgis(self) -> bool:
         """Prüft die PostgreSQL-Verbindung und stellt sie bei Bedarf wieder her."""
@@ -581,8 +587,9 @@ class UploadPostgisTask:
             )
 
         except Exception as e:
-            raise QkanError(
-                f"Reconnect zur Zieldatenbank fehlgeschlagen: {str(e)}"
+            global_error.report_exception(
+                e,
+                message=f"Reconnect zur Zieldatenbank fehlgeschlagen: {str(e)}",
             )
 
     def _disconnect_postgis(self) -> None:
@@ -1361,7 +1368,7 @@ class UploadPostgisTask:
                     f"{self.source_database_file}"
                 )
                 logger.error(error_msg)
-                raise QkanError(error_msg)
+                global_error.report(error_msg)
 
             file_size = os.path.getsize(self.source_database_file)
             logger.info(f"Quelldatei-Größe: {file_size / 1024:.1f} KB")
@@ -1441,7 +1448,7 @@ class UploadPostgisTask:
                         f"{str(sqlite_error)}"
                     )
                     logger.error(error_msg)
-                    raise QkanError(error_msg)
+                    global_error.report(error_msg, exception=sqlite_error)
 
             try:
                 self.db_conn = db_conn
@@ -1694,7 +1701,7 @@ class UploadPostgisTask:
 
         except Exception as e:
             logger.error(f"Upload fehlgeschlagen: {str(e)}")
-            raise QkanError(f"Upload fehlgeschlagen: {str(e)}")
+            global_error.report_exception(e, message=f"Upload fehlgeschlagen: {str(e)}")
 
         finally:
             self._disconnect_postgis()

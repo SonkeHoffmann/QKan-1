@@ -17,6 +17,7 @@ from qgis.PyQt.QtWidgets import (
 )
 from qgis.PyQt.QtCore import QSettings
 
+from qkan.error_dispatcher import global_error
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.uploadPostgis.database_dialog")
@@ -459,12 +460,10 @@ GBD WEBSUITE SPEZIFISCH:
             self.accept()
             
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Upload fehlgeschlagen",
-                f"Fehler beim Upload:\n\n{str(e)}"
+            global_error.report_exception(
+                e,
+                message=f"Fehler beim Upload:\n\n{str(e)}",
             )
-            logger.error(f"Upload fehlgeschlagen: {str(e)}")
     
     def perform_upload(self, connection_name: str, target_database: str, target_schema: str, source_file: str, overwrite: bool):
         """Führt den Upload durch mit Fortschrittsanzeige"""
@@ -497,8 +496,7 @@ GBD WEBSUITE SPEZIFISCH:
         success = task.run()
         
         if not success:
-            from qkan.utils import QkanError
-            raise QkanError("Upload-Task wurde nicht erfolgreich abgeschlossen")
+            global_error.report("Upload-Task wurde nicht erfolgreich abgeschlossen")
         
         # Upload abgeschlossen
         self.progressBar_upload.setValue(self.progressBar_upload.maximum())

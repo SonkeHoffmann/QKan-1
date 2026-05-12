@@ -10,6 +10,7 @@ import datetime
 from typing import Optional, List, Dict, Any
 
 from qgis.utils import spatialite_connect
+from qkan.error_dispatcher import global_error
 from qkan.utils import get_logger, QkanError
 
 logger = get_logger("QKan.uploadPostgis.export_sql_dump")
@@ -71,7 +72,10 @@ class SQLiteToPgSQLDumper:
             
         except Exception as e:
             logger.error(f"Fehler beim Erstellen des SQL-Dumps: {e}")
-            raise QkanError(f"SQL-Dump Export fehlgeschlagen: {e}")
+            global_error.report_exception(
+                e,
+                message=f"SQL-Dump Export fehlgeschlagen: {e}",
+            )
         
         finally:
             if self.db_cursor:
