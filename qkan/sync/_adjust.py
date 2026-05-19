@@ -125,25 +125,26 @@ class AdjustTask:
                         line = ', '.join([f'{el}' for el in ds])
                         protfile.write(line + '\n')
 
-            for table, userchoice in userchoices:
-                tableexist = db_qkan.sqls.get(f'sync_create_{table}')
-                if userchoice and tableexist:
-
                     sqlnames = [
                         f'sync_{table}_add',
                         f'sync_{table}_mod',
                         f'sync_reset_{table}',
                     ]
                     if QKan.config.sync.check_allow_deletions:
-                        sqlnames += [f'sync_{table}_del']
+                        sqlnames.insert(2, f'sync_{table}_del')
+
+                    sqllis = ', '.join(sqlnames)
+                    logger.debug(f'Abgleich: {sqllis=}')
 
                     for sqlnam in sqlnames:
-                        db_qkan.sqlyml(
-                            sqlnam,
-                            'adjust'
-                        )
+                        if not db_qkan.sqlyml(
+                            sqlnam=sqlnam,
+                            stmt_category='adjust',
+                        ):
+                            logger.error_code(f"Fehler in Abgleich: {sqlnam}")
 
             db_qkan.commit()
+        del db_qkan
 
         progress_bar.setValue(100)
         status_message.setText("Synchronisation der ausgewählten Daten abgeschlossen.")

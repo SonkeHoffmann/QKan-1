@@ -590,7 +590,7 @@ class DBConnection:
         :type many:             Boolean
 
         :mute_logger:           suppress logging message for the same stmt_category for 2 seconds
-        :type mute_logger:      String
+        :type mute_logger:      Boolean
 
         :ignore:                ignore error and continue
         :type ignore:           Boolean
