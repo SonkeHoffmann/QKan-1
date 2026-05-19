@@ -1,5 +1,5 @@
-Formulare
-=========
+Dialogfenster
+=============
 
 ..  toctree::
     :maxdepth: 2

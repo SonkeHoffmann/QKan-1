@@ -28,6 +28,7 @@ CREATE TABLE haltungen (
     strasse TEXT,                                   /* für ISYBAU benötigt */
     profilnam TEXT DEFAULT 'Kreisquerschnitt',      /* join profile.profilnam */
     entwart TEXT DEFAULT 'Regenwasser',             /* join entwaesserungsarten.bezeichnung */
+    abflussart TEXT DEFAULT 'Freispiegel',          /* join abflussart.bezeichnung */
     material TEXT,                                  /* join material.bezeichnung */
     profilauskleidung TEXT,
     innenmaterial TEXT,

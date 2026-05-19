@@ -2419,6 +2419,16 @@
         </config>
       </editWidget>
     </field>
+    <field name="abflussart" configurationFlags="None">
+      <editWidget type="TextEdit">
+        <config>
+          <Option type="Map">
+            <Option value="false" name="IsMultiline" type="bool"/>
+            <Option value="false" name="UseHtml" type="bool"/>
+          </Option>
+        </config>
+      </editWidget>
+    </field>
     <field name="material" configurationFlags="None">
       <editWidget type="TextEdit">
         <config>
@@ -2596,21 +2606,22 @@
     <alias field="strasse" index="13" name="Straße"/>
     <alias field="profilnam" index="14" name="Profilbezeichnung"/>
     <alias field="entwart" index="15" name="Entwässerungssystem"/>
-    <alias field="material" index="16" name="Material"/>
-    <alias field="profilauskleidung" index="17" name="Profilauskleidung"/>
-    <alias field="innenmaterial" index="18" name="Innenmaterial"/>
-    <alias field="ks" index="19" name="Rauheitsbeiwert"/>
-    <alias field="haltungstyp" index="20" name="Elementtyp"/>
-    <alias field="simstatus" index="21" name="Planungsstatus"/>
-    <alias field="rwanschluss" index="22" name="hat RW-Anschlüsse"/>
-    <alias field="druckdicht" index="23" name="druckdicht"/>
-    <alias field="xschob" index="24" name="x Anfang"/>
-    <alias field="yschob" index="25" name="y Anfang"/>
-    <alias field="xschun" index="26" name="x Ende"/>
-    <alias field="yschun" index="27" name="y Ende"/>
-    <alias field="kommentar" index="28" name="Kommentar"/>
-    <alias field="createdat" index="29" name="erstellt"/>
-    <alias field="laenge_3d" index="30" name=""/>
+    <alias field="abflussart" index="16" name="Abflussart"/>
+    <alias field="material" index="17" name="Material"/>
+    <alias field="profilauskleidung" index="18" name="Profilauskleidung"/>
+    <alias field="innenmaterial" index="19" name="Innenmaterial"/>
+    <alias field="ks" index="20" name="Rauheitsbeiwert"/>
+    <alias field="haltungstyp" index="21" name="Elementtyp"/>
+    <alias field="simstatus" index="22" name="Planungsstatus"/>
+    <alias field="rwanschluss" index="23" name="hat RW-Anschlüsse"/>
+    <alias field="druckdicht" index="24" name="druckdicht"/>
+    <alias field="xschob" index="25" name="x Anfang"/>
+    <alias field="yschob" index="26" name="y Anfang"/>
+    <alias field="xschun" index="27" name="x Ende"/>
+    <alias field="yschun" index="28" name="y Ende"/>
+    <alias field="kommentar" index="29" name="Kommentar"/>
+    <alias field="createdat" index="30" name="erstellt"/>
+    <alias field="laenge_3d" index="31" name=""/>
   </aliases>
   <defaults>
     <default field="pk" applyOnUpdate="0" expression=""/>
@@ -2629,6 +2640,7 @@
     <default field="strasse" applyOnUpdate="0" expression=""/>
     <default field="profilnam" applyOnUpdate="0" expression=""/>
     <default field="entwart" applyOnUpdate="0" expression=""/>
+    <default field="abflussart" applyOnUpdate="0" expression=""/>
     <default field="material" applyOnUpdate="0" expression=""/>
     <default field="profilauskleidung" applyOnUpdate="0" expression=""/>
     <default field="innenmaterial" applyOnUpdate="0" expression=""/>
@@ -2662,6 +2674,7 @@
     <constraint field="strasse" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
     <constraint field="profilnam" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
     <constraint field="entwart" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
+    <constraint field="abflussart" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
     <constraint field="material" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
     <constraint field="profilauskleidung" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
     <constraint field="innenmaterial" exp_strength="0" unique_strength="0" notnull_strength="0" constraints="0"/>
@@ -2695,6 +2708,7 @@
     <constraint field="strasse" exp="" desc=""/>
     <constraint field="profilnam" exp="" desc=""/>
     <constraint field="entwart" exp="" desc=""/>
+    <constraint field="abflussart" exp="" desc=""/>
     <constraint field="material" exp="" desc=""/>
     <constraint field="profilauskleidung" exp="" desc=""/>
     <constraint field="innenmaterial" exp="" desc=""/>
@@ -2735,6 +2749,7 @@
       <column name="strasse" hidden="0" width="-1" type="field"/>
       <column name="profilnam" hidden="0" width="-1" type="field"/>
       <column name="entwart" hidden="0" width="-1" type="field"/>
+      <column name="abflussart" hidden="0" width="-1" type="field"/>
       <column name="material" hidden="0" width="-1" type="field"/>
       <column name="profilauskleidung" hidden="0" width="-1" type="field"/>
       <column name="innenmaterial" hidden="0" width="-1" type="field"/>
@@ -2773,8 +2788,8 @@ Ein Beispiel:
 from PyQt4.QtGui import QWidget
 
 def my_form_open(dialog, layer, feature):
-	geom = feature.geometry()
-	control = dialog.findChild(QWidget, "MyLineEdit")
+    geom = feature.geometry()
+    control = dialog.findChild(QWidget, "MyLineEdit")
 ]]></editforminitcode>
   <featformsuppress>0</featformsuppress>
   <editorlayout>uifilelayout</editorlayout>
@@ -2788,6 +2803,7 @@ def my_form_open(dialog, layer, feature):
     <field name="druckdicht" editable="1"/>
     <field name="eigentum" editable="1"/>
     <field name="entwart" editable="1"/>
+    <field name="abflussart" editable="1"/>
     <field name="haltnam" editable="1"/>
     <field name="haltungstyp" editable="1"/>
     <field name="hoehe" editable="1"/>
@@ -2826,6 +2842,7 @@ def my_form_open(dialog, layer, feature):
     <field name="druckdicht" labelOnTop="0"/>
     <field name="eigentum" labelOnTop="0"/>
     <field name="entwart" labelOnTop="0"/>
+    <field name="abflussart" labelOnTop="0"/>
     <field name="haltnam" labelOnTop="0"/>
     <field name="haltungstyp" labelOnTop="0"/>
     <field name="hoehe" labelOnTop="0"/>
@@ -2857,33 +2874,34 @@ def my_form_open(dialog, layer, feature):
   <reuseLastValue>
     <field name="aussendurchmesser" reuseLastValue="0"/>
     <field name="baujahr" reuseLastValue="0"/>
-    <field name="breite" reuseLastValue="0"/>
+    <field name="breite" reuseLastValue="1"/>
     <field name="createdat" reuseLastValue="0"/>
     <field name="druckdicht" reuseLastValue="0"/>
     <field name="eigentum" reuseLastValue="1"/>
-    <field name="entwart" reuseLastValue="0"/>
+    <field name="entwart" reuseLastValue="1"/>
+    <field name="abflussart" reuseLastValue="1"/>
     <field name="haltnam" reuseLastValue="0"/>
     <field name="haltungstyp" reuseLastValue="0"/>
-    <field name="hoehe" reuseLastValue="0"/>
+    <field name="hoehe" reuseLastValue="1"/>
     <field name="innenmaterial" reuseLastValue="0"/>
     <field name="kommentar" reuseLastValue="0"/>
     <field name="ks" reuseLastValue="0"/>
     <field name="laenge" reuseLastValue="0"/>
     <field name="laenge_3d" reuseLastValue="0"/>
-    <field name="material" reuseLastValue="0"/>
+    <field name="material" reuseLastValue="1"/>
     <field name="netztyp" reuseLastValue="0"/>
     <field name="objekt_id" reuseLastValue="0"/>
     <field name="pk" reuseLastValue="0"/>
-    <field name="profilauskleidung" reuseLastValue="0"/>
+    <field name="profilauskleidung" reuseLastValue="1"/>
     <field name="profilnam" reuseLastValue="1"/>
-    <field name="rwanschluss" reuseLastValue="0"/>
+    <field name="rwanschluss" reuseLastValue="1"/>
     <field name="schoben" reuseLastValue="0"/>
     <field name="schunten" reuseLastValue="0"/>
-    <field name="simstatus" reuseLastValue="0"/>
+    <field name="simstatus" reuseLastValue="1"/>
     <field name="sohleoben" reuseLastValue="0"/>
     <field name="sohleunten" reuseLastValue="0"/>
-    <field name="strasse" reuseLastValue="0"/>
-    <field name="teilgebiet" reuseLastValue="0"/>
+    <field name="strasse" reuseLastValue="1"/>
+    <field name="teilgebiet" reuseLastValue="1"/>
     <field name="xschob" reuseLastValue="0"/>
     <field name="xschun" reuseLastValue="0"/>
     <field name="yschob" reuseLastValue="0"/>
