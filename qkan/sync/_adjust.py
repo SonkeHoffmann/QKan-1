@@ -133,8 +133,8 @@ class AdjustTask:
                     if QKan.config.sync.check_allow_deletions:
                         sqlnames.insert(2, f'sync_{table}_del')
 
-                    sqllis = ', '.join(sqlnames)
-                    logger.debug(f'Abgleich: {sqllis=}')
+                    # sqllis = ', '.join(sqlnames)
+                    # logger.debug(f'Abgleich: {sqllis=}')
 
                     for sqlnam in sqlnames:
                         if not db_qkan.sqlyml(
