@@ -1166,7 +1166,7 @@ class QKanTools(QKanPlugin):
             self.clip.dataChanged.connect(on_change)
             self.dlgzc.clip.dataChanged.connect(zoom_clip2)
         else:
-             self.clip.dataChanged.disconnect()
+            self.clip.dataChanged.disconnect()
 
 
     def run_befahrung(self) -> None:
