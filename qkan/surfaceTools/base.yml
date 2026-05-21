@@ -1,0 +1,27 @@
+params:
+  y_func: y
+  x_func: x
+queries:
+  surfacetools_application_dialog_352: |-
+    INSERT INTO teilgebiete (tgnam)
+                        SELECT teilgebiet FROM flaechen 
+                        WHERE teilgebiet IS NOT NULL AND teilgebiet <> '' AND
+                        teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                        GROUP BY teilgebiet
+  surfacetools_application_dialog_360: |-
+    INSERT INTO teilgebiete (tgnam)
+                        SELECT teilgebiet FROM haltungen 
+                        WHERE teilgebiet IS NOT NULL AND teilgebiet <> ''
+                        AND (rwanschluss = 1)
+                        AND teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                        GROUP BY teilgebiet
+  surfacetools_surfacetool_34: |-
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_flaechencut (
+                    pk INTEGER PRIMARY KEY,
+                    geom MULTIPOLYGON)
+  surfacetools_surfacetool_80: |-
+    UPDATE flaechen SET geom = (
+                    SELECT geom
+                    FROM temp_flaechencut
+                    WHERE flaechen.pk = temp_flaechencut.pk)
+                    WHERE flaechen.pk IN (SELECT pk FROM temp_flaechencut)

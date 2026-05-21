@@ -1,0 +1,4 @@
+params:
+  y_func: ST_y
+  printf_func: ST_printf
+  x_func: ST_x

@@ -1,0 +1,1687 @@
+params:
+  x_func: x
+  y_func: y
+queries:
+  zustandsklassen_zustandsklassen_funkt_124: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung
+  zustandsklassen_zustandsklassen_funkt_133: |-
+    SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_145: |-
+    SELECT
+                            untersuchdat_haltung_bewertung.pk,
+                            untersuchdat_haltung_bewertung.untersuchhal,
+                            NULL,
+                            untersuchdat_haltung_bewertung.schoben,
+                            untersuchdat_haltung_bewertung.schunten,
+                            untersuchdat_haltung_bewertung.id,
+                            untersuchdat_haltung_bewertung.videozaehler,
+                            untersuchdat_haltung_bewertung.inspektionslaenge,
+                            untersuchdat_haltung_bewertung.station,
+                            untersuchdat_haltung_bewertung.timecode,
+                            untersuchdat_haltung_bewertung.kuerzel,
+                            untersuchdat_haltung_bewertung.charakt1,
+                            untersuchdat_haltung_bewertung.charakt2,
+                            untersuchdat_haltung_bewertung.quantnr1,
+                            untersuchdat_haltung_bewertung.quantnr2,
+                            untersuchdat_haltung_bewertung.streckenschaden,
+                            untersuchdat_haltung_bewertung.pos_von,
+                            untersuchdat_haltung_bewertung.pos_bis,
+                            untersuchdat_haltung_bewertung.foto_dateiname,
+                            untersuchdat_haltung_bewertung.film_dateiname,
+                            untersuchdat_haltung_bewertung.kommentar,
+                            untersuchdat_haltung_bewertung.untersuchtag,
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe,
+                            haltungen.createdat
+                        FROM untersuchdat_haltung_bewertung, haltungen
+                        WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_181: |-
+    SELECT
+                                untersuchdat_anschlussleitung_bewertung.pk,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                anschlussleitungen.createdat,
+                                untersuchdat_anschlussleitung_bewertung.schoben,
+                                untersuchdat_anschlussleitung_bewertung.schunten,
+                                untersuchdat_anschlussleitung_bewertung.id,
+                                untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                untersuchdat_anschlussleitung_bewertung.station,
+                                untersuchdat_anschlussleitung_bewertung.timecode,
+                                untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                untersuchdat_anschlussleitung_bewertung.charakt1,
+                                untersuchdat_anschlussleitung_bewertung.charakt2,
+                                untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                untersuchdat_anschlussleitung_bewertung.pos_von,
+                                untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.kommentar,
+                                untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe
+                            FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                            WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_218: |-
+    SELECT
+                            untersuchdat_haltung_bewertung.pk,
+                            untersuchdat_haltung_bewertung.untersuchhal,
+                            NULL,
+                            untersuchdat_haltung_bewertung.schoben,
+                            untersuchdat_haltung_bewertung.schunten,
+                            untersuchdat_haltung_bewertung.id,
+                            untersuchdat_haltung_bewertung.videozaehler,
+                            untersuchdat_haltung_bewertung.inspektionslaenge,
+                            untersuchdat_haltung_bewertung.station,
+                            untersuchdat_haltung_bewertung.timecode,
+                            untersuchdat_haltung_bewertung.kuerzel,
+                            untersuchdat_haltung_bewertung.charakt1,
+                            untersuchdat_haltung_bewertung.charakt2,
+                            untersuchdat_haltung_bewertung.quantnr1,
+                            untersuchdat_haltung_bewertung.quantnr2,
+                            untersuchdat_haltung_bewertung.streckenschaden,
+                            untersuchdat_haltung_bewertung.pos_von,
+                            untersuchdat_haltung_bewertung.pos_bis,
+                            untersuchdat_haltung_bewertung.foto_dateiname,
+                            untersuchdat_haltung_bewertung.film_dateiname,
+                            untersuchdat_haltung_bewertung.kommentar,
+                            untersuchdat_haltung_bewertung.createdat,
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe,
+                            haltungen.createdat
+                        FROM untersuchdat_haltung_bewertung, haltungen
+                        WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_253: |-
+    SELECT
+                                untersuchdat_anschlussleitung_bewertung.pk,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                anschlussleitungen.createdat,
+                                untersuchdat_anschlussleitung_bewertung.schoben,
+                                untersuchdat_anschlussleitung_bewertung.schunten,
+                                untersuchdat_anschlussleitung_bewertung.id,
+                                untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                untersuchdat_anschlussleitung_bewertung.station,
+                                untersuchdat_anschlussleitung_bewertung.timecode,
+                                untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                untersuchdat_anschlussleitung_bewertung.charakt1,
+                                untersuchdat_anschlussleitung_bewertung.charakt2,
+                                untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                untersuchdat_anschlussleitung_bewertung.pos_von,
+                                untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.kommentar,
+                                untersuchdat_anschlussleitung_bewertung.createdat,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe
+                            FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                            WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_1326: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_1334: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_1361: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung
+  zustandsklassen_zustandsklassen_funkt_1369: |-
+    SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_1380: |-
+    SELECT
+                                untersuchdat_anschlussleitung_bewertung.pk,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.schoben,
+                                untersuchdat_anschlussleitung_bewertung.schunten,
+                                untersuchdat_anschlussleitung_bewertung.id,
+                                untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                untersuchdat_anschlussleitung_bewertung.station,
+                                untersuchdat_anschlussleitung_bewertung.timecode,
+                                untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                untersuchdat_anschlussleitung_bewertung.charakt1,
+                                untersuchdat_anschlussleitung_bewertung.charakt2,
+                                untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                untersuchdat_anschlussleitung_bewertung.pos_von,
+                                untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.createdat,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                anschlussleitungen.createdat
+                            FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                            WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_1416: |-
+    SELECT
+                                untersuchdat_anschlussleitung_bewertung.pk,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.schoben,
+                                untersuchdat_anschlussleitung_bewertung.schunten,
+                                untersuchdat_anschlussleitung_bewertung.id,
+                                untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                untersuchdat_anschlussleitung_bewertung.station,
+                                untersuchdat_anschlussleitung_bewertung.timecode,
+                                untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                untersuchdat_anschlussleitung_bewertung.charakt1,
+                                untersuchdat_anschlussleitung_bewertung.charakt2,
+                                untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                untersuchdat_anschlussleitung_bewertung.pos_von,
+                                untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                anschlussleitungen.createdat
+                            FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                            WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_2492: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_2500: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_2526: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_schacht_bewertung AS SELECT * FROM untersuchdat_schacht
+  zustandsklassen_zustandsklassen_funkt_2529: |-
+    SELECT CreateSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_2543: |-
+    SELECT
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.bereich,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.createdat
+                    FROM untersuchdat_schacht_bewertung
+                    WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_2568: |-
+    SELECT
+                                    untersuchdat_schacht_bewertung.pk,
+                                    untersuchdat_schacht_bewertung.untersuchsch,
+                                    untersuchdat_schacht_bewertung.id,
+                                    untersuchdat_schacht_bewertung.videozaehler,
+                                    untersuchdat_schacht_bewertung.timecode,
+                                    untersuchdat_schacht_bewertung.kuerzel,
+                                    untersuchdat_schacht_bewertung.charakt1,
+                                    untersuchdat_schacht_bewertung.charakt2,
+                                    untersuchdat_schacht_bewertung.quantnr1,
+                                    untersuchdat_schacht_bewertung.quantnr2,
+                                    untersuchdat_schacht_bewertung.streckenschaden,
+                                    untersuchdat_schacht_bewertung.pos_von,
+                                    untersuchdat_schacht_bewertung.pos_bis,
+                                    untersuchdat_schacht_bewertung.bereich,
+                                    untersuchdat_schacht_bewertung.foto_dateiname,
+                                    untersuchdat_schacht_bewertung.untersuchtag
+                                FROM untersuchdat_schacht_bewertung
+                                WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_3609: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_3617: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_3646: |-
+    SELECT
+                                    untersuchdat_haltung_bewertung.pk,
+                                    untersuchdat_haltung_bewertung.untersuchhal,
+                                    haltungen.createdat,
+                                    untersuchdat_haltung_bewertung.schoben,
+                                    untersuchdat_haltung_bewertung.schunten,
+                                    untersuchdat_haltung_bewertung.id,
+                                    untersuchdat_haltung_bewertung.videozaehler,
+                                    untersuchdat_haltung_bewertung.inspektionslaenge,
+                                    untersuchdat_haltung_bewertung.station,
+                                    untersuchdat_haltung_bewertung.timecode,
+                                    untersuchdat_haltung_bewertung.kuerzel,
+                                    untersuchdat_haltung_bewertung.charakt1,
+                                    untersuchdat_haltung_bewertung.charakt2,
+                                    untersuchdat_haltung_bewertung.quantnr1,
+                                    untersuchdat_haltung_bewertung.quantnr2,
+                                    untersuchdat_haltung_bewertung.streckenschaden,
+                                    untersuchdat_haltung_bewertung.pos_von,
+                                    untersuchdat_haltung_bewertung.pos_bis,
+                                    untersuchdat_haltung_bewertung.foto_dateiname,
+                                    untersuchdat_haltung_bewertung.film_dateiname,
+                                    untersuchdat_haltung_bewertung.kommentar,
+                                    untersuchdat_haltung_bewertung.bw_bs,
+                                    untersuchdat_haltung_bewertung.untersuchtag,
+                                    haltungen.haltnam,
+                                    haltungen.material,
+                                    haltungen.hoehe
+                                FROM untersuchdat_haltung_bewertung, haltungen
+                                WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_3682: |-
+    SELECT
+                                    untersuchdat_anschlussleitung_bewertung.pk,
+                                    untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                    anschlussleitungen.createdat,
+                                    untersuchdat_anschlussleitung_bewertung.schoben,
+                                    untersuchdat_anschlussleitung_bewertung.schunten,
+                                    untersuchdat_anschlussleitung_bewertung.id,
+                                    untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                    untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                    untersuchdat_anschlussleitung_bewertung.station,
+                                    untersuchdat_anschlussleitung_bewertung.timecode,
+                                    untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                    untersuchdat_anschlussleitung_bewertung.charakt1,
+                                    untersuchdat_anschlussleitung_bewertung.charakt2,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                    untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                    untersuchdat_anschlussleitung_bewertung.pos_von,
+                                    untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                    untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                    untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                    untersuchdat_anschlussleitung_bewertung.kommentar,
+                                    untersuchdat_anschlussleitung_bewertung.bw_bs,
+                                    untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                                    anschlussleitungen.leitnam,
+                                    anschlussleitungen.material,
+                                    anschlussleitungen.hoehe
+                                FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                                WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_3720: |-
+    SELECT
+                                    untersuchdat_haltung_bewertung.pk,
+                                    untersuchdat_haltung_bewertung.untersuchhal,
+                                    haltungen.createdat,
+                                    untersuchdat_haltung_bewertung.schoben,
+                                    untersuchdat_haltung_bewertung.schunten,
+                                    untersuchdat_haltung_bewertung.id,
+                                    untersuchdat_haltung_bewertung.videozaehler,
+                                    untersuchdat_haltung_bewertung.inspektionslaenge,
+                                    untersuchdat_haltung_bewertung.station,
+                                    untersuchdat_haltung_bewertung.timecode,
+                                    untersuchdat_haltung_bewertung.kuerzel,
+                                    untersuchdat_haltung_bewertung.charakt1,
+                                    untersuchdat_haltung_bewertung.charakt2,
+                                    untersuchdat_haltung_bewertung.quantnr1,
+                                    untersuchdat_haltung_bewertung.quantnr2,
+                                    untersuchdat_haltung_bewertung.streckenschaden,
+                                    untersuchdat_haltung_bewertung.pos_von,
+                                    untersuchdat_haltung_bewertung.pos_bis,
+                                    untersuchdat_haltung_bewertung.foto_dateiname,
+                                    untersuchdat_haltung_bewertung.film_dateiname,
+                                    untersuchdat_haltung_bewertung.kommentar,
+                                    untersuchdat_haltung_bewertung.bw_bs,
+                                    untersuchdat_haltung_bewertung.createdat,
+                                    haltungen.haltnam,
+                                    haltungen.material,
+                                    haltungen.hoehe
+                                FROM untersuchdat_haltung_bewertung, haltungen
+                                WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_3756: |-
+    SELECT
+                                    untersuchdat_anschlussleitung_bewertung.pk,
+                                    untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                    anschlussleitungen.createdat,
+                                    untersuchdat_anschlussleitung_bewertung.schoben,
+                                    untersuchdat_anschlussleitung_bewertung.schunten,
+                                    untersuchdat_anschlussleitung_bewertung.id,
+                                    untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                    untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                    untersuchdat_anschlussleitung_bewertung.station,
+                                    untersuchdat_anschlussleitung_bewertung.timecode,
+                                    untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                    untersuchdat_anschlussleitung_bewertung.charakt1,
+                                    untersuchdat_anschlussleitung_bewertung.charakt2,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                    untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                    untersuchdat_anschlussleitung_bewertung.pos_von,
+                                    untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                    untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                    untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                    untersuchdat_anschlussleitung_bewertung.kommentar,
+                                    untersuchdat_anschlussleitung_bewertung.bw_bs,
+                                    untersuchdat_anschlussleitung_bewertung.createdat,
+                                    anschlussleitungen.leitnam,
+                                    anschlussleitungen.material,
+                                    anschlussleitungen.hoehe
+                                FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                                WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_3879: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_3887: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_3894: |-
+    SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_3902: |-
+    SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_3935: |-
+    SELECT
+                                    untersuchdat_anschlussleitung_bewertung.pk,
+                                    untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                    NULL,
+                                    untersuchdat_anschlussleitung_bewertung.schoben,
+                                    untersuchdat_anschlussleitung_bewertung.schunten,
+                                    untersuchdat_anschlussleitung_bewertung.id,
+                                    untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                    untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                    untersuchdat_anschlussleitung_bewertung.station,
+                                    untersuchdat_anschlussleitung_bewertung.timecode,
+                                    untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                    untersuchdat_anschlussleitung_bewertung.charakt1,
+                                    untersuchdat_anschlussleitung_bewertung.charakt2,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                    untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                    untersuchdat_anschlussleitung_bewertung.pos_von,
+                                    untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                    untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                    untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                    NULL,
+                                    untersuchdat_anschlussleitung_bewertung.bw_bs,
+                                    untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                                    anschlussleitungen.leitnam,
+                                    anschlussleitungen.material,
+                                    anschlussleitungen.hoehe,
+                                    anschlussleitungen.createdat
+                                FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                                WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_3973: |-
+    SELECT
+                                    untersuchdat_anschlussleitung_bewertung.pk,
+                                    untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                    NULL,
+                                    untersuchdat_anschlussleitung_bewertung.schoben,
+                                    untersuchdat_anschlussleitung_bewertung.schunten,
+                                    untersuchdat_anschlussleitung_bewertung.id,
+                                    untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                    untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                    untersuchdat_anschlussleitung_bewertung.station,
+                                    untersuchdat_anschlussleitung_bewertung.timecode,
+                                    untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                    untersuchdat_anschlussleitung_bewertung.charakt1,
+                                    untersuchdat_anschlussleitung_bewertung.charakt2,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                    untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                    untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                    untersuchdat_anschlussleitung_bewertung.pos_von,
+                                    untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                    untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                    untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                    NULL,
+                                    untersuchdat_anschlussleitung_bewertung.bw_bs,
+                                    untersuchdat_anschlussleitung_bewertung.createdat,
+                                    anschlussleitungen.leitnam,
+                                    anschlussleitungen.material,
+                                    anschlussleitungen.hoehe,
+                                    anschlussleitungen.createdat
+                                FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                                WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_4097: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_4105: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_4112: |-
+    SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_4120: |-
+    SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_4151: |-
+    SELECT
+                                untersuchdat_schacht_bewertung.pk,
+                                untersuchdat_schacht_bewertung.untersuchsch,
+                                untersuchdat_schacht_bewertung.id,
+                                untersuchdat_schacht_bewertung.videozaehler,
+                                untersuchdat_schacht_bewertung.timecode,
+                                untersuchdat_schacht_bewertung.kuerzel,
+                                untersuchdat_schacht_bewertung.charakt1,
+                                untersuchdat_schacht_bewertung.charakt2,
+                                untersuchdat_schacht_bewertung.quantnr1,
+                                untersuchdat_schacht_bewertung.quantnr2,
+                                untersuchdat_schacht_bewertung.streckenschaden,
+                                untersuchdat_schacht_bewertung.pos_von,
+                                untersuchdat_schacht_bewertung.pos_bis,
+                                untersuchdat_schacht_bewertung.bereich,
+                                untersuchdat_schacht_bewertung.foto_dateiname,
+                                untersuchdat_schacht_bewertung.bw_bs,
+                                untersuchdat_schacht_bewertung.untersuchtag
+                            FROM untersuchdat_schacht_bewertung  
+                            WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_4177: |-
+    SELECT
+                                            untersuchdat_schacht_bewertung.pk,
+                                            untersuchdat_schacht_bewertung.untersuchsch,
+                                            untersuchdat_schacht_bewertung.id,
+                                            untersuchdat_schacht_bewertung.videozaehler,
+                                            untersuchdat_schacht_bewertung.timecode,
+                                            untersuchdat_schacht_bewertung.kuerzel,
+                                            untersuchdat_schacht_bewertung.charakt1,
+                                            untersuchdat_schacht_bewertung.charakt2,
+                                            untersuchdat_schacht_bewertung.quantnr1,
+                                            untersuchdat_schacht_bewertung.quantnr2,
+                                            untersuchdat_schacht_bewertung.streckenschaden,
+                                            untersuchdat_schacht_bewertung.pos_von,
+                                            untersuchdat_schacht_bewertung.pos_bis,
+                                            untersuchdat_schacht_bewertung.bereich,
+                                            untersuchdat_schacht_bewertung.foto_dateiname,
+                                            untersuchdat_schacht_bewertung.bw_bs,
+                                            untersuchdat_schacht_bewertung.createdat
+                                        FROM untersuchdat_schacht_bewertung  
+                                        WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_4290: |-
+    SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_4298: |-
+    SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_4305: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_4313: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_4347: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung
+  zustandsklassen_zustandsklassen_funkt_4350: |-
+    SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_4358: |-
+    SELECT
+                        haltungen.haltnam,
+                        haltungen.material,
+                        haltungen.hoehe,
+                        untersuchdat_haltung_bewertung.untersuchhal
+                    FROM haltungen
+                    INNER JOIN untersuchdat_haltung_bewertung  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal
+  zustandsklassen_zustandsklassen_funkt_4369: |-
+    SELECT
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe,
+                            untersuchdat_haltung_bewertung.untersuchhal
+                        FROM anschlussleitungen
+                        INNER JOIN untersuchdat_haltung_bewertung ON anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal
+  zustandsklassen_zustandsklassen_funkt_4473: |-
+    SELECT
+                            untersuchdat_haltung_bewertung.pk,
+                            untersuchdat_haltung_bewertung.untersuchhal,
+                            haltungen.createdat,
+                            untersuchdat_haltung_bewertung.schoben,
+                            untersuchdat_haltung_bewertung.schunten,
+                            untersuchdat_haltung_bewertung.id,
+                            untersuchdat_haltung_bewertung.videozaehler,
+                            untersuchdat_haltung_bewertung.inspektionslaenge,
+                            untersuchdat_haltung_bewertung.station,
+                            untersuchdat_haltung_bewertung.timecode,
+                            untersuchdat_haltung_bewertung.kuerzel,
+                            untersuchdat_haltung_bewertung.charakt1,
+                            untersuchdat_haltung_bewertung.charakt2,
+                            untersuchdat_haltung_bewertung.quantnr1,
+                            untersuchdat_haltung_bewertung.quantnr2,
+                            untersuchdat_haltung_bewertung.streckenschaden,
+                            untersuchdat_haltung_bewertung.pos_von,
+                            untersuchdat_haltung_bewertung.pos_bis,
+                            untersuchdat_haltung_bewertung.foto_dateiname,
+                            untersuchdat_haltung_bewertung.film_dateiname,
+                            untersuchdat_haltung_bewertung.kommentar,
+                            untersuchdat_haltung_bewertung.bw_bs,
+                            untersuchdat_haltung_bewertung.untersuchtag, 
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe
+                        FROM untersuchdat_haltung_bewertung, haltungen
+                        WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_4509: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            anschlussleitungen.createdat,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.kommentar,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_4547: |-
+    SELECT
+                            untersuchdat_haltung_bewertung.pk,
+                            untersuchdat_haltung_bewertung.untersuchhal,
+                            haltungen.createdat,
+                            untersuchdat_haltung_bewertung.schoben,
+                            untersuchdat_haltung_bewertung.schunten,
+                            untersuchdat_haltung_bewertung.id,
+                            untersuchdat_haltung_bewertung.videozaehler,
+                            untersuchdat_haltung_bewertung.inspektionslaenge,
+                            untersuchdat_haltung_bewertung.station,
+                            untersuchdat_haltung_bewertung.timecode,
+                            untersuchdat_haltung_bewertung.kuerzel,
+                            untersuchdat_haltung_bewertung.charakt1,
+                            untersuchdat_haltung_bewertung.charakt2,
+                            untersuchdat_haltung_bewertung.quantnr1,
+                            untersuchdat_haltung_bewertung.quantnr2,
+                            untersuchdat_haltung_bewertung.streckenschaden,
+                            untersuchdat_haltung_bewertung.pos_von,
+                            untersuchdat_haltung_bewertung.pos_bis,
+                            untersuchdat_haltung_bewertung.foto_dateiname,
+                            untersuchdat_haltung_bewertung.film_dateiname,
+                            untersuchdat_haltung_bewertung.kommentar,
+                            untersuchdat_haltung_bewertung.bw_bs,
+                            untersuchdat_haltung_bewertung.createdat, 
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe
+                        FROM untersuchdat_haltung_bewertung, haltungen
+                        WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_4583: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            anschlussleitungen.createdat,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.kommentar,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.createdat,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_7202: |-
+    CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_7205: |-
+    SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_7341: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_7349: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_7356: |-
+    SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_7364: |-
+    SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_7400: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung
+  zustandsklassen_zustandsklassen_funkt_7403: |-
+    SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_7411: |-
+    SELECT
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit
+                        FROM anschlussleitungen
+                        INNER JOIN untersuchdat_anschlussleitung_bewertung ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
+  zustandsklassen_zustandsklassen_funkt_7514: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.createdat,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe,
+                            anschlussleitungen.createdat
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_7553: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe,
+                            anschlussleitungen.createdat
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_10171: |-
+    CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_10174: |-
+    SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_10310: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_10318: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_10325: |-
+    SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_10333: |-
+    SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_10368: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_schacht_bewertung AS SELECT * FROM untersuchdat_schacht
+  zustandsklassen_zustandsklassen_funkt_10371: |-
+    SELECT CreateSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_10378: |-
+    SELECT
+                    schaechte.schnam,
+                    schaechte.material,
+                    untersuchdat_schacht_bewertung.untersuchsch
+                FROM schaechte
+                    INNER JOIN untersuchdat_schacht_bewertung  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch
+  zustandsklassen_zustandsklassen_funkt_10477: |-
+    SELECT
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.bereich,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.bw_bs,
+                        untersuchdat_schacht_bewertung.createdat
+                    FROM untersuchdat_schacht_bewertung  
+                    WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_10504: |-
+    SELECT
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.bereich,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.bw_bs,
+                        untersuchdat_schacht_bewertung.untersuchtag
+                    FROM untersuchdat_schacht_bewertung  
+                    WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_13644: |-
+    CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht
+  zustandsklassen_zustandsklassen_funkt_13647: |-
+    SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_13787: |-
+    SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_13795: |-
+    SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_13802: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_13810: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_13847: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung
+  zustandsklassen_zustandsklassen_funkt_13849: |-
+    SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_13857: |-
+    SELECT
+                        haltungen.haltnam,
+                        haltungen.material,
+                        haltungen.hoehe,
+                        untersuchdat_haltung_bewertung.untersuchhal
+                    FROM haltungen
+                    INNER JOIN untersuchdat_haltung_bewertung  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal
+  zustandsklassen_zustandsklassen_funkt_13868: |-
+    SELECT
+                        anschlussleitungen.leitnam,
+                        anschlussleitungen.material,
+                        anschlussleitungen.hoehe,
+                        untersuchdat_haltung_bewertung.untersuchhal
+                    FROM anschlussleitungen
+                    INNER JOIN untersuchdat_haltung_bewertung  ON anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchhal
+  zustandsklassen_zustandsklassen_funkt_13969: |-
+    SELECT
+                            untersuchdat_haltung_bewertung.pk,
+                            untersuchdat_haltung_bewertung.untersuchhal,
+                            haltungen.createdat,
+                            untersuchdat_haltung_bewertung.schoben,
+                            untersuchdat_haltung_bewertung.schunten,
+                            untersuchdat_haltung_bewertung.id,
+                            untersuchdat_haltung_bewertung.videozaehler,
+                            untersuchdat_haltung_bewertung.inspektionslaenge,
+                            untersuchdat_haltung_bewertung.station,
+                            untersuchdat_haltung_bewertung.timecode,
+                            untersuchdat_haltung_bewertung.kuerzel,
+                            untersuchdat_haltung_bewertung.charakt1,
+                            untersuchdat_haltung_bewertung.charakt2,
+                            untersuchdat_haltung_bewertung.quantnr1,
+                            untersuchdat_haltung_bewertung.quantnr2,
+                            untersuchdat_haltung_bewertung.streckenschaden,
+                            untersuchdat_haltung_bewertung.pos_von,
+                            untersuchdat_haltung_bewertung.pos_bis,
+                            untersuchdat_haltung_bewertung.foto_dateiname,
+                            untersuchdat_haltung_bewertung.film_dateiname,
+                            untersuchdat_haltung_bewertung.kommentar,
+                            untersuchdat_haltung_bewertung.bw_bs,
+                            untersuchdat_haltung_bewertung.createdat,
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe
+                        FROM untersuchdat_haltung_bewertung, Haltungen
+                        WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_14004: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            anschlussleitungen.createdat,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.createdat,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_14042: |-
+    SELECT
+                            untersuchdat_haltung_bewertung.pk,
+                            untersuchdat_haltung_bewertung.untersuchhal,
+                            haltungen.createdat,
+                            untersuchdat_haltung_bewertung.schoben,
+                            untersuchdat_haltung_bewertung.schunten,
+                            untersuchdat_haltung_bewertung.id,
+                            untersuchdat_haltung_bewertung.videozaehler,
+                            untersuchdat_haltung_bewertung.inspektionslaenge,
+                            untersuchdat_haltung_bewertung.station,
+                            untersuchdat_haltung_bewertung.timecode,
+                            untersuchdat_haltung_bewertung.kuerzel,
+                            untersuchdat_haltung_bewertung.charakt1,
+                            untersuchdat_haltung_bewertung.charakt2,
+                            untersuchdat_haltung_bewertung.quantnr1,
+                            untersuchdat_haltung_bewertung.quantnr2,
+                            untersuchdat_haltung_bewertung.streckenschaden,
+                            untersuchdat_haltung_bewertung.pos_von,
+                            untersuchdat_haltung_bewertung.pos_bis,
+                            untersuchdat_haltung_bewertung.foto_dateiname,
+                            untersuchdat_haltung_bewertung.film_dateiname,
+                            untersuchdat_haltung_bewertung.kommentar,
+                            untersuchdat_haltung_bewertung.bw_bs,
+                            untersuchdat_haltung_bewertung.untersuchtag,
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe
+                        FROM untersuchdat_haltung_bewertung, Haltungen
+                        WHERE haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_14077: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            anschlussleitungen.createdat,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_16373: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_16381: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_16396: |-
+    CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_16398: |-
+    SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_16441: |-
+    SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_16449: |-
+    SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_16474: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung
+  zustandsklassen_zustandsklassen_funkt_16476: |-
+    SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_16484: |-
+    SELECT
+                        anschlussleitungen.leitnam,
+                        anschlussleitungen.material,
+                        anschlussleitungen.hoehe,
+                        untersuchdat_anschlussleitung_bewertung.untersuchleit
+                    FROM anschlussleitungen
+                    INNER JOIN untersuchdat_anschlussleitung_bewertung  ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
+  zustandsklassen_zustandsklassen_funkt_16583: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.createdat,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe,
+                            anschlussleitungen.createdat
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_16620: |-
+    SELECT
+                            untersuchdat_anschlussleitung_bewertung.pk,
+                            untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.schoben,
+                            untersuchdat_anschlussleitung_bewertung.schunten,
+                            untersuchdat_anschlussleitung_bewertung.id,
+                            untersuchdat_anschlussleitung_bewertung.videozaehler,
+                            untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                            untersuchdat_anschlussleitung_bewertung.station,
+                            untersuchdat_anschlussleitung_bewertung.timecode,
+                            untersuchdat_anschlussleitung_bewertung.kuerzel,
+                            untersuchdat_anschlussleitung_bewertung.charakt1,
+                            untersuchdat_anschlussleitung_bewertung.charakt2,
+                            untersuchdat_anschlussleitung_bewertung.quantnr1,
+                            untersuchdat_anschlussleitung_bewertung.quantnr2,
+                            untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                            untersuchdat_anschlussleitung_bewertung.pos_von,
+                            untersuchdat_anschlussleitung_bewertung.pos_bis,
+                            untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                            untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                            NULL,
+                            untersuchdat_anschlussleitung_bewertung.bw_bs,
+                            untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                            anschlussleitungen.leitnam,
+                            anschlussleitungen.material,
+                            anschlussleitungen.hoehe,
+                            anschlussleitungen.createdat
+                        FROM untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                        WHERE anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_18919: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_18927: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_18942: |-
+    CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_18944: |-
+    SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_18987: |-
+    SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_18995: |-
+    SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_19018: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_schacht_bewertung AS SELECT * FROM untersuchdat_schacht
+  zustandsklassen_zustandsklassen_funkt_19020: |-
+    SELECT CreateSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_19027: |-
+    SELECT
+                            schaechte.schnam,
+                            schaechte.material,
+                            untersuchdat_schacht_bewertung.untersuchsch
+                        FROM schaechte
+                            INNER JOIN untersuchdat_schacht_bewertung  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch
+  zustandsklassen_zustandsklassen_funkt_19125: |-
+    SELECT
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.bereich,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.bw_bs,
+                        untersuchdat_schacht_bewertung.createdat
+                    FROM untersuchdat_schacht_bewertung
+                    WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_19152: |-
+    SELECT
+                        untersuchdat_schacht_bewertung.pk,
+                        untersuchdat_schacht_bewertung.untersuchsch,
+                        untersuchdat_schacht_bewertung.id,
+                        untersuchdat_schacht_bewertung.videozaehler,
+                        untersuchdat_schacht_bewertung.timecode,
+                        untersuchdat_schacht_bewertung.kuerzel,
+                        untersuchdat_schacht_bewertung.charakt1,
+                        untersuchdat_schacht_bewertung.charakt2,
+                        untersuchdat_schacht_bewertung.quantnr1,
+                        untersuchdat_schacht_bewertung.quantnr2,
+                        untersuchdat_schacht_bewertung.streckenschaden,
+                        untersuchdat_schacht_bewertung.pos_von,
+                        untersuchdat_schacht_bewertung.pos_bis,
+                        untersuchdat_schacht_bewertung.bereich,
+                        untersuchdat_schacht_bewertung.foto_dateiname,
+                        untersuchdat_schacht_bewertung.bw_bs,
+                        untersuchdat_schacht_bewertung.untersuchtag
+                    FROM untersuchdat_schacht_bewertung
+                    WHERE ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_22094: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_22102: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_22117: |-
+    CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht
+  zustandsklassen_zustandsklassen_funkt_22119: |-
+    SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_22156: |-
+    SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_22164: |-
+    SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_22194: |-
+    SELECT
+                                untersuchdat_haltung_bewertung.pk,
+                                untersuchdat_haltung_bewertung.untersuchhal,
+                                NULL,
+                                untersuchdat_haltung_bewertung.schoben,
+                                untersuchdat_haltung_bewertung.schunten,
+                                untersuchdat_haltung_bewertung.id,
+                                untersuchdat_haltung_bewertung.videozaehler,
+                                untersuchdat_haltung_bewertung.inspektionslaenge,
+                                untersuchdat_haltung_bewertung.station,
+                                untersuchdat_haltung_bewertung.timecode,
+                                untersuchdat_haltung_bewertung.kuerzel,
+                                untersuchdat_haltung_bewertung.charakt1,
+                                untersuchdat_haltung_bewertung.charakt2,
+                                untersuchdat_haltung_bewertung.quantnr1,
+                                untersuchdat_haltung_bewertung.quantnr2,
+                                untersuchdat_haltung_bewertung.streckenschaden,
+                                untersuchdat_haltung_bewertung.pos_von,
+                                untersuchdat_haltung_bewertung.pos_bis,
+                                untersuchdat_haltung_bewertung.foto_dateiname,
+                                untersuchdat_haltung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_haltung_bewertung.bw_bs,
+                                untersuchdat_haltung_bewertung.createdat,
+                                haltungen.haltnam,
+                                haltungen.material,
+                                haltungen.hoehe,
+                                untersuchdat_haltung_bewertung.untersuchtag,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_D,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B
+                                FROM
+                                untersuchdat_haltung_bewertung, haltungen
+                                WHERE
+                                haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal
+                                AND(untersuchdat_haltung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_22238: |-
+    SELECT
+                                untersuchdat_haltung_bewertung.pk,
+                                untersuchdat_haltung_bewertung.untersuchhal,
+                                NULL,
+                                untersuchdat_haltung_bewertung.schoben,
+                                untersuchdat_haltung_bewertung.schunten,
+                                untersuchdat_haltung_bewertung.id,
+                                untersuchdat_haltung_bewertung.videozaehler,
+                                untersuchdat_haltung_bewertung.inspektionslaenge,
+                                untersuchdat_haltung_bewertung.station,
+                                untersuchdat_haltung_bewertung.timecode,
+                                untersuchdat_haltung_bewertung.kuerzel,
+                                untersuchdat_haltung_bewertung.charakt1,
+                                untersuchdat_haltung_bewertung.charakt2,
+                                untersuchdat_haltung_bewertung.quantnr1,
+                                untersuchdat_haltung_bewertung.quantnr2,
+                                untersuchdat_haltung_bewertung.streckenschaden,
+                                untersuchdat_haltung_bewertung.pos_von,
+                                untersuchdat_haltung_bewertung.pos_bis,
+                                untersuchdat_haltung_bewertung.foto_dateiname,
+                                untersuchdat_haltung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_haltung_bewertung.bw_bs,
+                                untersuchdat_haltung_bewertung.createdat,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                anschlussleitungen.createdat,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_D,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B
+                                FROM
+                                untersuchdat_haltung_bewertung, haltungen
+                                WHERE
+                                anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchleit
+                                AND(untersuchdat_haltung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_22284: |-
+    SELECT
+                                untersuchdat_haltung_bewertung.pk,
+                                untersuchdat_haltung_bewertung.untersuchhal,
+                                NULL,
+                                untersuchdat_haltung_bewertung.schoben,
+                                untersuchdat_haltung_bewertung.schunten,
+                                untersuchdat_haltung_bewertung.id,
+                                untersuchdat_haltung_bewertung.videozaehler,
+                                untersuchdat_haltung_bewertung.inspektionslaenge,
+                                untersuchdat_haltung_bewertung.station,
+                                untersuchdat_haltung_bewertung.timecode,
+                                untersuchdat_haltung_bewertung.kuerzel,
+                                untersuchdat_haltung_bewertung.charakt1,
+                                untersuchdat_haltung_bewertung.charakt2,
+                                untersuchdat_haltung_bewertung.quantnr1,
+                                untersuchdat_haltung_bewertung.quantnr2,
+                                untersuchdat_haltung_bewertung.streckenschaden,
+                                untersuchdat_haltung_bewertung.pos_von,
+                                untersuchdat_haltung_bewertung.pos_bis,
+                                untersuchdat_haltung_bewertung.foto_dateiname,
+                                untersuchdat_haltung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_haltung_bewertung.bw_bs,
+                                untersuchdat_haltung_bewertung.untersuchtag,
+                                haltungen.haltnam,
+                                haltungen.material,
+                                haltungen.hoehe,
+                                untersuchdat_haltung_bewertung.createdat,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_D,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B
+                                FROM
+                                untersuchdat_haltung_bewertung, haltungen
+                                WHERE
+                                haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal
+                                AND(untersuchdat_haltung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_22328: |-
+    SELECT
+                                untersuchdat_haltung_bewertung.pk,
+                                untersuchdat_haltung_bewertung.untersuchhal,
+                                NULL,
+                                untersuchdat_haltung_bewertung.schoben,
+                                untersuchdat_haltung_bewertung.schunten,
+                                untersuchdat_haltung_bewertung.id,
+                                untersuchdat_haltung_bewertung.videozaehler,
+                                untersuchdat_haltung_bewertung.inspektionslaenge,
+                                untersuchdat_haltung_bewertung.station,
+                                untersuchdat_haltung_bewertung.timecode,
+                                untersuchdat_haltung_bewertung.kuerzel,
+                                untersuchdat_haltung_bewertung.charakt1,
+                                untersuchdat_haltung_bewertung.charakt2,
+                                untersuchdat_haltung_bewertung.quantnr1,
+                                untersuchdat_haltung_bewertung.quantnr2,
+                                untersuchdat_haltung_bewertung.streckenschaden,
+                                untersuchdat_haltung_bewertung.pos_von,
+                                untersuchdat_haltung_bewertung.pos_bis,
+                                untersuchdat_haltung_bewertung.foto_dateiname,
+                                untersuchdat_haltung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_haltung_bewertung.bw_bs,
+                                untersuchdat_haltung_bewertung.untersuchtag,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                anschlussleitungen.createdat,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_D,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S,
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B
+                                FROM
+                                untersuchdat_haltung_bewertung, haltungen
+                                WHERE
+                                anschlussleitungen.leitnam = untersuchdat_haltung_bewertung.untersuchleit
+                                AND(untersuchdat_haltung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_24546: |-
+    UPDATE untersuchdat_haltung_bewertung
+                           SET Zustandsklasse_S = (Case 
+                           WHEN Zustandsklasse_S = '5_isy'  THEN 0
+                           WHEN Zustandsklasse_S = '4_isy'  THEN 1
+                           WHEN Zustandsklasse_S = '3_isy'  THEN 2
+                           WHEN Zustandsklasse_S = '2_isy'  THEN 3
+                           WHEN Zustandsklasse_S = '1_isy'  THEN 4
+                           WHEN Zustandsklasse_S = '0_isy'  THEN 5
+                           ELSE Zustandsklasse_S
+                           END)
+                           WHERE untersuchdat_haltung_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_24562: |-
+    UPDATE untersuchdat_haltung_bewertung
+                                       SET Zustandsklasse_B = (Case 
+                                       WHEN Zustandsklasse_B = '5_isy'  THEN 0
+                                       WHEN Zustandsklasse_B = '4_isy'  THEN 1
+                                       WHEN Zustandsklasse_B = '3_isy'  THEN 2
+                                       WHEN Zustandsklasse_B = '2_isy'  THEN 3
+                                       WHEN Zustandsklasse_B = '1_isy'  THEN 4
+                                       WHEN Zustandsklasse_B = '0_isy'  THEN 5
+                                       ELSE Zustandsklasse_B
+                                       END)
+                                       WHERE untersuchdat_haltung_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_24578: |-
+    UPDATE untersuchdat_haltung_bewertung
+                                                   SET Zustandsklasse_D = (Case 
+                                                   WHEN Zustandsklasse_D = '5_isy'  THEN 0
+                                                   WHEN Zustandsklasse_D = '4_isy'  THEN 1
+                                                   WHEN Zustandsklasse_D = '3_isy'  THEN 2
+                                                   WHEN Zustandsklasse_D = '2_isy'  THEN 3
+                                                   WHEN Zustandsklasse_D = '1_isy'  THEN 4
+                                                   WHEN Zustandsklasse_D = '0_isy'  THEN 5
+                                                   ELSE Zustandsklasse_D
+                                                   END)
+                                                   WHERE untersuchdat_haltung_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_24596: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_24604: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_24611: |-
+    SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_24619: |-
+    SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_24657: |-
+    SELECT
+                                untersuchdat_anschlussleitung_bewertung.pk,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.schoben,
+                                untersuchdat_anschlussleitung_bewertung.schunten,
+                                untersuchdat_anschlussleitung_bewertung.id,
+                                untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                untersuchdat_anschlussleitung_bewertung.station,
+                                untersuchdat_anschlussleitung_bewertung.timecode,
+                                untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                untersuchdat_anschlussleitung_bewertung.charakt1,
+                                untersuchdat_anschlussleitung_bewertung.charakt2,
+                                untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                untersuchdat_anschlussleitung_bewertung.pos_von,
+                                untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.bw_bs,
+                                untersuchdat_anschlussleitung_bewertung.createdat,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                anschlussleitungen.createdat,
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_D,
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S,
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_B
+                                FROM
+                                untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                                WHERE
+                                anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
+                                AND(untersuchdat_anschlussleitung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_24703: |-
+    SELECT
+                                untersuchdat_anschlussleitung_bewertung.pk,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.schoben,
+                                untersuchdat_anschlussleitung_bewertung.schunten,
+                                untersuchdat_anschlussleitung_bewertung.id,
+                                untersuchdat_anschlussleitung_bewertung.videozaehler,
+                                untersuchdat_anschlussleitung_bewertung.inspektionslaenge,
+                                untersuchdat_anschlussleitung_bewertung.station,
+                                untersuchdat_anschlussleitung_bewertung.timecode,
+                                untersuchdat_anschlussleitung_bewertung.kuerzel,
+                                untersuchdat_anschlussleitung_bewertung.charakt1,
+                                untersuchdat_anschlussleitung_bewertung.charakt2,
+                                untersuchdat_anschlussleitung_bewertung.quantnr1,
+                                untersuchdat_anschlussleitung_bewertung.quantnr2,
+                                untersuchdat_anschlussleitung_bewertung.streckenschaden,
+                                untersuchdat_anschlussleitung_bewertung.pos_von,
+                                untersuchdat_anschlussleitung_bewertung.pos_bis,
+                                untersuchdat_anschlussleitung_bewertung.foto_dateiname,
+                                untersuchdat_anschlussleitung_bewertung.film_dateiname,
+                                NULL,
+                                untersuchdat_anschlussleitung_bewertung.bw_bs,
+                                untersuchdat_anschlussleitung_bewertung.untersuchtag,
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                anschlussleitungen.createdat,
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_D,
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S,
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_B
+                                FROM
+                                untersuchdat_anschlussleitung_bewertung, anschlussleitungen
+                                WHERE
+                                anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
+                                AND(untersuchdat_anschlussleitung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                untersuchdat_anschlussleitung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_anschlussleitung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_26911: |-
+    UPDATE untersuchdat_anschlussleitung_bewertung
+                           SET Zustandsklasse_S = (Case 
+                           WHEN Zustandsklasse_S = '5_isy'  THEN 0
+                           WHEN Zustandsklasse_S = '4_isy'  THEN 1
+                           WHEN Zustandsklasse_S = '3_isy'  THEN 2
+                           WHEN Zustandsklasse_S = '2_isy'  THEN 3
+                           WHEN Zustandsklasse_S = '1_isy'  THEN 4
+                           WHEN Zustandsklasse_S = '0_isy'  THEN 5
+                           ELSE Zustandsklasse_S
+                           END)
+                           WHERE untersuchdat_anschlussleitung_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_26927: |-
+    UPDATE untersuchdat_anschlussleitung_bewertung
+                                       SET Zustandsklasse_B = (Case 
+                                       WHEN Zustandsklasse_B = '5_isy'  THEN 0
+                                       WHEN Zustandsklasse_B = '4_isy'  THEN 1
+                                       WHEN Zustandsklasse_B = '3_isy'  THEN 2
+                                       WHEN Zustandsklasse_B = '2_isy'  THEN 3
+                                       WHEN Zustandsklasse_B = '1_isy'  THEN 4
+                                       WHEN Zustandsklasse_B = '0_isy'  THEN 5
+                                       ELSE Zustandsklasse_B
+                                       END)
+                                       WHERE untersuchdat_anschlussleitung_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_26943: |-
+    UPDATE untersuchdat_anschlussleitung_bewertung
+                                                   SET Zustandsklasse_D = (Case 
+                                                   WHEN Zustandsklasse_D = '5_isy'  THEN 0
+                                                   WHEN Zustandsklasse_D = '4_isy'  THEN 1
+                                                   WHEN Zustandsklasse_D = '3_isy'  THEN 2
+                                                   WHEN Zustandsklasse_D = '2_isy'  THEN 3
+                                                   WHEN Zustandsklasse_D = '1_isy'  THEN 4
+                                                   WHEN Zustandsklasse_D = '0_isy'  THEN 5
+                                                   ELSE Zustandsklasse_D
+                                                   END)
+                                                   WHERE untersuchdat_anschlussleitung_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_26961: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_26969: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_26976: |-
+    SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_26984: |-
+    SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_27016: |-
+    SELECT
+                                untersuchdat_schacht_bewertung.pk,
+                                untersuchdat_schacht_bewertung.untersuchsch,
+                                untersuchdat_schacht_bewertung.id,
+                                untersuchdat_schacht_bewertung.videozaehler,
+                                untersuchdat_schacht_bewertung.timecode,
+                                untersuchdat_schacht_bewertung.kuerzel,
+                                untersuchdat_schacht_bewertung.charakt1,
+                                untersuchdat_schacht_bewertung.charakt2,
+                                untersuchdat_schacht_bewertung.quantnr1,
+                                untersuchdat_schacht_bewertung.quantnr2,
+                                untersuchdat_schacht_bewertung.streckenschaden,
+                                untersuchdat_schacht_bewertung.pos_von,
+                                untersuchdat_schacht_bewertung.pos_bis,
+                                untersuchdat_schacht_bewertung.bereich,
+                                untersuchdat_schacht_bewertung.foto_dateiname,
+                                untersuchdat_schacht_bewertung.bw_bs,
+                                untersuchdat_schacht_bewertung.createdat,
+                                        schaechte.schnam,
+                                        schaechte.material,
+                                        schaechte.createdat,
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_D,
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_S,
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_B
+                                        FROM
+                                        untersuchdat_schacht_bewertung, schaechte
+                                        WHERE
+                                        schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch
+                                        AND(untersuchdat_schacht_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                        OR
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                        OR
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_schacht_bewertung.createdat) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_27053: |-
+    SELECT
+                                untersuchdat_schacht_bewertung.pk,
+                                untersuchdat_schacht_bewertung.untersuchsch,
+                                untersuchdat_schacht_bewertung.id,
+                                untersuchdat_schacht_bewertung.videozaehler,
+                                untersuchdat_schacht_bewertung.timecode,
+                                untersuchdat_schacht_bewertung.kuerzel,
+                                untersuchdat_schacht_bewertung.charakt1,
+                                untersuchdat_schacht_bewertung.charakt2,
+                                untersuchdat_schacht_bewertung.quantnr1,
+                                untersuchdat_schacht_bewertung.quantnr2,
+                                untersuchdat_schacht_bewertung.streckenschaden,
+                                untersuchdat_schacht_bewertung.pos_von,
+                                untersuchdat_schacht_bewertung.pos_bis,
+                                untersuchdat_schacht_bewertung.bereich,
+                                untersuchdat_schacht_bewertung.foto_dateiname,
+                                untersuchdat_schacht_bewertung.bw_bs,
+                                untersuchdat_schacht_bewertung.untersuchtag,
+                                        schaechte.schnam,
+                                        schaechte.material,
+                                        schaechte.createdat,
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_D,
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_S,
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_B
+                                        FROM
+                                        untersuchdat_schacht_bewertung, schaechte
+                                        WHERE
+                                        schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch
+                                        AND (untersuchdat_schacht_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                        OR
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                        OR
+                                        untersuchdat_schacht_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', untersuchdat_schacht_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  zustandsklassen_zustandsklassen_funkt_29916: |-
+    UPDATE untersuchdat_schacht_bewertung
+                           SET Zustandsklasse_S = (Case 
+                           WHEN Zustandsklasse_S = '5_isy'  THEN 0
+                           WHEN Zustandsklasse_S = '4_isy'  THEN 1
+                           WHEN Zustandsklasse_S = '3_isy'  THEN 2
+                           WHEN Zustandsklasse_S = '2_isy'  THEN 3
+                           WHEN Zustandsklasse_S = '1_isy'  THEN 4
+                           WHEN Zustandsklasse_S = '0_isy'  THEN 5
+                           ELSE Zustandsklasse_S
+                           END)
+                           WHERE untersuchdat_schacht_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_29932: |-
+    UPDATE untersuchdat_schacht_bewertung
+                                       SET Zustandsklasse_B = (Case 
+                                       WHEN Zustandsklasse_B = '5_isy'  THEN 0
+                                       WHEN Zustandsklasse_B = '4_isy'  THEN 1
+                                       WHEN Zustandsklasse_B = '3_isy'  THEN 2
+                                       WHEN Zustandsklasse_B = '2_isy'  THEN 3
+                                       WHEN Zustandsklasse_B = '1_isy'  THEN 4
+                                       WHEN Zustandsklasse_B = '0_isy'  THEN 5
+                                       ELSE Zustandsklasse_B
+                                       END)
+                                       WHERE untersuchdat_schacht_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_29948: |-
+    UPDATE untersuchdat_schacht_bewertung
+                                                   SET Zustandsklasse_D = (Case 
+                                                   WHEN Zustandsklasse_D = '5_isy'  THEN 0
+                                                   WHEN Zustandsklasse_D = '4_isy'  THEN 1
+                                                   WHEN Zustandsklasse_D = '3_isy'  THEN 2
+                                                   WHEN Zustandsklasse_D = '2_isy'  THEN 3
+                                                   WHEN Zustandsklasse_D = '1_isy'  THEN 4
+                                                   WHEN Zustandsklasse_D = '0_isy'  THEN 5
+                                                   ELSE Zustandsklasse_D
+                                                   END)
+                                                   WHERE untersuchdat_schacht_bewertung.pk = ? ;
+  zustandsklassen_zustandsklassen_funkt_29965: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_29973: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_29980: |-
+    SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_29988: |-
+    SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_30020: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung
+  zustandsklassen_zustandsklassen_funkt_30022: |-
+    SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30034: |-
+    SELECT
+                    haltungen.haltnam,
+                    haltungen.material,
+                    haltungen.hoehe,
+                    untersuchdat_haltung_bewertung.untersuchhal
+                FROM haltungen
+                INNER JOIN untersuchdat_haltung_bewertung  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal
+  zustandsklassen_zustandsklassen_funkt_30129: |-
+    CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_30131: |-
+    SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30267: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_30275: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30282: |-
+    SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_30290: |-
+    SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30306: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung
+  zustandsklassen_zustandsklassen_funkt_30308: |-
+    SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30319: |-
+    SELECT
+                        anschlussleitungen.leitnam,
+                        anschlussleitungen.material,
+                        anschlussleitungen.hoehe,
+                        untersuchdat_anschlussleitung_bewertung.untersuchleit
+                    FROM anschlussleitungen
+                    INNER JOIN untersuchdat_anschlussleitung_bewertung ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
+  zustandsklassen_zustandsklassen_funkt_30413: |-
+    CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_30415: |-
+    SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30552: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_30560: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30567: |-
+    SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_30575: |-
+    SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30591: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_schacht_bewertung AS SELECT * FROM untersuchdat_schacht
+  zustandsklassen_zustandsklassen_funkt_30593: |-
+    SELECT CreateSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30604: |-
+    SELECT
+                            schaechte.schnam,
+                            schaechte.material,
+                            untersuchdat_schacht_bewertung.untersuchsch
+                        FROM schaechte
+                            INNER JOIN untersuchdat_schacht_bewertung  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch
+  zustandsklassen_zustandsklassen_funkt_30700: |-
+    CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht
+  zustandsklassen_zustandsklassen_funkt_30702: |-
+    SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_30837: |-
+    SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_30845: |-
+    SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_30852: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_30860: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30877: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_haltung_bewertung AS SELECT * FROM untersuchdat_haltung
+  zustandsklassen_zustandsklassen_funkt_30879: |-
+    SELECT CreateSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_30891: |-
+    SELECT
+                            haltungen.haltnam,
+                            haltungen.material,
+                            haltungen.hoehe,
+                            untersuchdat_haltung_bewertung.untersuchhal
+                        FROM haltungen
+                        INNER JOIN untersuchdat_haltung_bewertung  ON haltungen.haltnam = untersuchdat_haltung_bewertung.untersuchhal
+  zustandsklassen_zustandsklassen_funkt_31057: |-
+    CREATE TABLE IF NOT EXISTS haltungen_untersucht_bewertung AS SELECT * FROM haltungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_31059: |-
+    SELECT CreateSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31105: |-
+    SELECT RecoverGeometryColumn('untersuchdat_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_31113: |-
+    SELECT RecoverSpatialIndex('untersuchdat_haltung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31120: |-
+    SELECT RecoverGeometryColumn('haltungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_31128: |-
+    SELECT RecoverSpatialIndex('haltungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31143: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_anschlussleitung_bewertung AS SELECT * FROM untersuchdat_anschlussleitung
+  zustandsklassen_zustandsklassen_funkt_31145: |-
+    SELECT CreateSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31156: |-
+    SELECT
+                                anschlussleitungen.leitnam,
+                                anschlussleitungen.material,
+                                anschlussleitungen.hoehe,
+                                untersuchdat_anschlussleitung_bewertung.untersuchleit
+                            FROM anschlussleitungen
+                            INNER JOIN untersuchdat_anschlussleitung_bewertung ON anschlussleitungen.leitnam = untersuchdat_anschlussleitung_bewertung.untersuchleit
+  zustandsklassen_zustandsklassen_funkt_31322: |-
+    CREATE TABLE IF NOT EXISTS anschlussleitungen_untersucht_bewertung AS SELECT * FROM anschlussleitungen_untersucht
+  zustandsklassen_zustandsklassen_funkt_31324: |-
+    SELECT CreateSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31370: |-
+    SELECT RecoverGeometryColumn('untersuchdat_anschlussleitung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_31378: |-
+    SELECT RecoverSpatialIndex('untersuchdat_anschlussleitung_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31385: |-
+    SELECT RecoverGeometryColumn('anschlussleitungen_untersucht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_31393: |-
+    SELECT RecoverSpatialIndex('anschlussleitungen_untersucht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31409: |-
+    CREATE TABLE IF NOT EXISTS untersuchdat_schacht_bewertung AS SELECT * FROM untersuchdat_schacht
+  zustandsklassen_zustandsklassen_funkt_31411: |-
+    SELECT CreateSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31422: |-
+    SELECT
+                                    schaechte.schnam,
+                                    schaechte.material,
+                                    untersuchdat_schacht_bewertung.untersuchsch
+                                FROM schaechte
+                                    INNER JOIN untersuchdat_schacht_bewertung  ON schaechte.schnam = untersuchdat_schacht_bewertung.untersuchsch
+  zustandsklassen_zustandsklassen_funkt_31589: |-
+    CREATE TABLE IF NOT EXISTS schaechte_untersucht_bewertung AS SELECT * FROM schaechte_untersucht
+  zustandsklassen_zustandsklassen_funkt_31591: |-
+    SELECT CreateSpatialIndex('schaechte_untersucht_bewertung', 'geop');
+  zustandsklassen_zustandsklassen_funkt_31637: |-
+    SELECT RecoverGeometryColumn('untersuchdat_schacht_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  zustandsklassen_zustandsklassen_funkt_31645: |-
+    SELECT RecoverSpatialIndex('untersuchdat_schacht_bewertung', 'geom');
+  zustandsklassen_zustandsklassen_funkt_31652: |-
+    SELECT RecoverGeometryColumn('schaechte_untersucht_bewertung', 'geop', ?, 'POINT', 'XY');
+  zustandsklassen_zustandsklassen_funkt_31660: |-
+    SELECT RecoverSpatialIndex('schaechte_untersucht_bewertung', 'geop');

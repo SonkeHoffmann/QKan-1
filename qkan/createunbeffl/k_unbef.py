@@ -65,8 +65,8 @@ def create_unpaved_areas(
     # status_message.setText("Erzeugung von unbefestigten Flächen ist in Arbeit.")
     progress_bar.setValue(1)
 
-    # ------------------------------------------------------------------------------
-    # Datenbankverbindungen
+    # Modul-spezifische Queries laden
+    db_qkan.loadmodule("createunbeffl")
 
     # Kontrolle, ob tezg-Flächen eindeutig Namen haben:
 
@@ -86,15 +86,7 @@ def create_unpaved_areas(
             )
             return False
     else:
-        sql = """SELECT count(*) AS anz
-            FROM tezg AS te
-            LEFT JOIN abflussparameter AS ap
-            ON te.abflussparameter = ap.apnam
-            LEFT JOIN bodenklassen AS bk
-            ON bk.bknam = ap.bodenklasse
-            WHERE te.abflussparameter ISNULL OR
-                  bk.infiltrationsrateanfang ISNULL OR
-                  bk.infiltrationsrateanfang < 0.00001"""
+        sql = db_qkan.load_query("createunbeffl_check_incomplete_tezg")
         if not db_qkan.sql(sql, "QKan.CreateUnbefFlaechen (1)"):
             return False
         data = db_qkan.fetchall()
@@ -154,26 +146,7 @@ def create_unpaved_areas(
     # 1. aus der Abfrage werden alle Datensätze ohne geom-Objekte ausgeschlossen
     # 2. Wenn in einer tezg-Fläche keine Fläche liegt, wird einfach die tezg-Fläche übernommen
 
-    sql = """WITH flbef AS (
-            SELECT
-              row_number() OVER (ORDER BY tezg.pk, flaechen.pk) AS num, 
-              tezg.haltnam AS haltnam, tezg.neigkl AS neigkl, 
-              tezg.regenschreiber AS regenschreiber, tezg.teilgebiet AS teilgebiet,
-              tezg.abflussparameter AS abflussparameter,
-              'Erzeugt mit Plugin Erzeuge unbefestigte Flaechen' AS kommentar, 
-              MakeValid(tezg.geom) AS geot, 
-              ST_Union(MakeValid(flaechen.geom)) AS geob
-            FROM (SELECT * FROM tezg WHERE geom IS NOT NULL) AS tezg
-            LEFT JOIN (SELECT * FROM flaechen WHERE geom IS NOT NULL) AS flaechen
-            ON Intersects(tezg.geom, flaechen.geom){auswahl}
-            GROUP BY tezg.pk)
-            INSERT INTO flaechen (flnam, haltnam, neigkl, regenschreiber, teilgebiet, abflussparameter, kommentar, geom) 
-             SELECT printf('fd_%s', num) AS flnam, haltnam, neigkl, regenschreiber, teilgebiet, abflussparameter,
-            kommentar, 
-            CASE WHEN geob IS NULL  THEN geot ELSE CastToMultiPolygon(Difference(geot,geob)) END AS geof FROM flbef
-            WHERE area(geof) > 0.5 AND geof IS NOT NULL""".format(
-        auswahl=auswahl
-    )
+    sql = db_qkan.load_query("createunbeffl_create_unpaved_areas", auswahl=auswahl)
 
     logger.debug(
         "QKan.k_unbef (3) - liste_selAbflparamTeilgeb = \n{}".format(

@@ -1,0 +1,17 @@
+params:
+queries:
+  createunbeffl_k_unbef_163: |-
+    INSERT INTO linkfl (flnam, aufteilen, teilgebiet, geom, glink)
+        # SELECT
+        # fl.flnam AS flnam,
+        # NULL AS aufteilen,
+        # fl.teilgebiet AS teilgebiet,
+        # NULL AS geom,
+        # MakeLine(PointOnSurface(fl.geom),Centroid(ha.geom)) AS glink
+        # FROM flaechen AS fl
+        # LEFT JOIN haltungen AS ha
+        # ON fl.haltnam = ha.haltnam
+        # INNER JOIN tezg AS tg
+        # ON 'fd_' || ltrim(tg.flnam, 'ft_') = fl.flnam
+        # WHERE fl.flnam NOT IN
+        # (   SELECT flnam FROM linkfl WHERE flnam IS NOT NULL)

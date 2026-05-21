@@ -1,0 +1,21 @@
+params:
+  y_func: y
+queries:
+  swmmporter_application_dialog_249: |-
+    WITH tgb AS (
+                    SELECT teilgebiet FROM flaechen
+                    WHERE teilgebiet IS NOT NULL
+                    UNION
+                    SELECT teilgebiet FROM tezg
+                    WHERE teilgebiet IS NOT NULL
+                    UNION
+                    SELECT teilgebiet FROM haltungen
+                    WHERE teilgebiet IS NOT NULL
+                    UNION
+                    SELECT teilgebiet FROM schaechte
+                    WHERE teilgebiet IS NOT NULL
+                    )
+                    INSERT INTO teilgebiete (tgnam)
+                    SELECT teilgebiet FROM tgb
+                    WHERE teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                    GROUP BY teilgebiet

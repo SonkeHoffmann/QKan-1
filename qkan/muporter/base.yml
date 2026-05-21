@@ -1,0 +1,21 @@
+params:
+  y_func: y
+queries:
+  muporter_application_dialog_288: |-
+    INSERT INTO teilgebiete (tgnam)
+                        SELECT teilgebiet FROM flaechen 
+                        WHERE teilgebiet IS NOT NULL AND
+                        teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                        GROUP BY teilgebiet
+  muporter_application_dialog_296: |-
+    INSERT INTO teilgebiete (tgnam)
+                        SELECT teilgebiet FROM haltungen 
+                        WHERE teilgebiet IS NOT NULL AND
+                        teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                        GROUP BY teilgebiet
+  muporter_application_dialog_304: |-
+    INSERT INTO teilgebiete (tgnam)
+                        SELECT teilgebiet FROM schaechte 
+                        WHERE teilgebiet IS NOT NULL AND
+                        teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                        GROUP BY teilgebiet

@@ -1,0 +1,1263 @@
+params:
+  x_func: x
+  y_func: y
+queries:
+  subkans_subkans_funkt_151: |-
+    SELECT RecoverSpatialIndex('substanz_haltung_bewertung', 'geom');
+  subkans_subkans_funkt_158: |-
+    SELECT RecoverGeometryColumn('substanz_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  subkans_subkans_funkt_166: |-
+    SELECT RecoverSpatialIndex('haltungen_substanz_bewertung', 'geom');
+  subkans_subkans_funkt_173: |-
+    SELECT RecoverGeometryColumn('haltungen_substanz_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  subkans_subkans_funkt_204: |-
+    CREATE TABLE IF NOT EXISTS substanz_haltung_bewertung AS 
+                            SELECT pk, 
+                            untersuchhal, 
+                            schoben,
+                            schunten,
+                            id,
+                            videozaehler,
+                            inspektionslaenge,
+                            station,
+                            timecode,
+                            kuerzel,
+                            charakt1,
+                            charakt2,
+                            quantnr1,
+                            quantnr2,
+                            streckenschaden,
+                            streckenschaden_lfdnr,
+                            pos_von,
+                            pos_bis,
+                            foto_dateiname,
+                            film_dateiname,
+                            kommentar,
+                            bw_bs,
+                            createdat,
+                            Zustandsklasse_D,
+                            Zustandsklasse_S,
+                            Zustandsklasse_B,
+                            untersuchtag,
+                            geom
+                            FROM untersuchdat_haltung_bewertung
+  subkans_subkans_funkt_236: |-
+    SELECT CreateSpatialIndex('substanz_haltung_bewertung', 'geom');
+  subkans_subkans_funkt_286: |-
+    CREATE TABLE IF NOT EXISTS haltungen_substanz_bewertung AS 
+                                   SELECT pk, 
+                                   haltnam, 
+                                   schoben, 
+                                   schunten,                                  
+                                   hoehe,                                     
+                                   breite,                                   
+                                   laenge,                                 
+                                   baujahr,
+                                   untersuchtag,
+                                   untersucher,
+                                   wetter,
+                                   bewertungsart,
+                                   bewertungstag,
+                                    strasse,
+                                    datenart,
+                                    max_ZD,
+                                    max_ZB, 
+                                    max_ZS,
+                                    objektklasse_dichtheit,
+                                    objektklasse_standsicherheit,
+                                    objektklasse_betriebssicherheit,
+                                    objektklasse_gesamt,
+                                   geom
+                                   FROM haltungen_untersucht_bewertung
+  subkans_subkans_funkt_313: |-
+    SELECT CreateSpatialIndex('haltungen_substanz_bewertung', 'geom');
+  subkans_subkans_funkt_324: |-
+    SELECT
+                                substanz_haltung_bewertung.pk,
+                                substanz_haltung_bewertung.untersuchhal,
+                                NULL,
+                                substanz_haltung_bewertung.schoben,
+                                substanz_haltung_bewertung.schunten,
+                                substanz_haltung_bewertung.id,
+                                substanz_haltung_bewertung.videozaehler,
+                                substanz_haltung_bewertung.inspektionslaenge,
+                                substanz_haltung_bewertung.station,
+                                substanz_haltung_bewertung.timecode,
+                                substanz_haltung_bewertung.kuerzel,
+                                substanz_haltung_bewertung.charakt1,
+                                substanz_haltung_bewertung.charakt2,
+                                substanz_haltung_bewertung.quantnr1,
+                                substanz_haltung_bewertung.quantnr2,
+                                substanz_haltung_bewertung.streckenschaden,
+                                substanz_haltung_bewertung.pos_von,
+                                substanz_haltung_bewertung.pos_bis,
+                                substanz_haltung_bewertung.foto_dateiname,
+                                substanz_haltung_bewertung.film_dateiname,
+                                substanz_haltung_bewertung.kommentar,
+                                substanz_haltung_bewertung.bw_bs,
+                                substanz_haltung_bewertung.createdat,
+                                haltungen.haltnam,
+                                haltungen.material,
+                                haltungen.hoehe,
+                                haltungen.createdat,
+                                substanz_haltung_bewertung.Zustandsklasse_D,
+                                substanz_haltung_bewertung.Zustandsklasse_S,
+                                substanz_haltung_bewertung.Zustandsklasse_B,
+                                substanz_haltung_bewertung.untersuchtag
+                                FROM
+                                substanz_haltung_bewertung, haltungen
+                                WHERE
+                                haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
+                                AND(substanz_haltung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                substanz_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                substanz_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  subkans_subkans_funkt_379: |-
+    SELECT
+                                substanz_haltung_bewertung.pk,
+                                substanz_haltung_bewertung.untersuchhal,
+                                NULL,
+                                substanz_haltung_bewertung.schoben,
+                                substanz_haltung_bewertung.schunten,
+                                substanz_haltung_bewertung.id,
+                                substanz_haltung_bewertung.videozaehler,
+                                substanz_haltung_bewertung.inspektionslaenge,
+                                substanz_haltung_bewertung.station,
+                                substanz_haltung_bewertung.timecode,
+                                substanz_haltung_bewertung.kuerzel,
+                                substanz_haltung_bewertung.charakt1,
+                                substanz_haltung_bewertung.charakt2,
+                                substanz_haltung_bewertung.quantnr1,
+                                substanz_haltung_bewertung.quantnr2,
+                                substanz_haltung_bewertung.streckenschaden,
+                                substanz_haltung_bewertung.pos_von,
+                                substanz_haltung_bewertung.pos_bis,
+                                substanz_haltung_bewertung.foto_dateiname,
+                                substanz_haltung_bewertung.film_dateiname,
+                                substanz_haltung_bewertung.kommentar,
+                                substanz_haltung_bewertung.bw_bs,
+                                substanz_haltung_bewertung.createdat,
+                                haltungen.haltnam,
+                                haltungen.material,
+                                haltungen.hoehe,
+                                haltungen.createdat,
+                                substanz_haltung_bewertung.Zustandsklasse_D,
+                                substanz_haltung_bewertung.Zustandsklasse_S,
+                                substanz_haltung_bewertung.Zustandsklasse_B
+                                FROM
+                                substanz_haltung_bewertung, haltungen
+                                WHERE
+                                haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
+                                AND(substanz_haltung_bewertung.Zustandsklasse_D = 'Einzelfallbetrachtung'
+                                OR
+                                substanz_haltung_bewertung.Zustandsklasse_B = 'Einzelfallbetrachtung'
+                                OR
+                                substanz_haltung_bewertung.Zustandsklasse_S = 'Einzelfallbetrachtung') AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  subkans_subkans_funkt_430: |-
+    UPDATE substanz_haltung_bewertung
+                                SET Zustandsklasse_S = ?
+                                WHERE substanz_haltung_bewertung.pk = ?;
+  subkans_subkans_funkt_528: |-
+    UPDATE substanz_haltung_bewertung
+                                        SET Zustandsklasse_S = ?
+                                        WHERE substanz_haltung_bewertung.pk = ?;
+  subkans_subkans_funkt_577: |-
+    UPDATE substanz_haltung_bewertung
+                                        SET Zustandsklasse_S = ?
+                                        WHERE substanz_haltung_bewertung.pk = ?;
+  subkans_subkans_funkt_626: |-
+    UPDATE substanz_haltung_bewertung
+                                        SET Zustandsklasse_S = ?
+                                        WHERE substanz_haltung_bewertung.pk = ?;
+  subkans_subkans_funkt_3003: |-
+    SELECT RecoverSpatialIndex('substanz_haltung_bewertung', 'geom');
+  subkans_subkans_funkt_3010: |-
+    SELECT RecoverGeometryColumn('substanz_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  subkans_subkans_funkt_3018: |-
+    SELECT RecoverSpatialIndex('haltungen_substanz_bewertung', 'geom');
+  subkans_subkans_funkt_3025: |-
+    SELECT RecoverGeometryColumn('haltungen_substanz_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  subkans_subkans_funkt_3080: |-
+    SELECT
+                                        substanz_haltung_bewertung.pk,
+                                        substanz_haltung_bewertung.untersuchhal,
+                                        NULL,
+                                        substanz_haltung_bewertung.schoben,
+                                        substanz_haltung_bewertung.schunten,
+                                        substanz_haltung_bewertung.id,
+                                        substanz_haltung_bewertung.videozaehler,
+                                        substanz_haltung_bewertung.inspektionslaenge,
+                                        substanz_haltung_bewertung.station,
+                                        substanz_haltung_bewertung.timecode,
+                                        substanz_haltung_bewertung.kuerzel,
+                                        substanz_haltung_bewertung.charakt1,
+                                        substanz_haltung_bewertung.charakt2,
+                                        substanz_haltung_bewertung.quantnr1,
+                                        substanz_haltung_bewertung.quantnr2,
+                                        substanz_haltung_bewertung.streckenschaden,
+                                        substanz_haltung_bewertung.pos_von,
+                                        substanz_haltung_bewertung.pos_bis,
+                                        substanz_haltung_bewertung.foto_dateiname,
+                                        substanz_haltung_bewertung.film_dateiname,
+                                        substanz_haltung_bewertung.kommentar,
+                                        substanz_haltung_bewertung.bw_bs,
+                                        substanz_haltung_bewertung.createdat,
+                                        haltungen.haltnam,
+                                        haltungen.material,
+                                        haltungen.hoehe,
+                                        haltungen.createdat,
+                                        substanz_haltung_bewertung.Zustandsklasse_D,
+                                        substanz_haltung_bewertung.Zustandsklasse_S,
+                                        substanz_haltung_bewertung.Zustandsklasse_B,
+                                        substanz_haltung_bewertung.untersuchtag
+                                        FROM
+                                        substanz_haltung_bewertung, haltungen
+                                        WHERE
+                                        haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
+                                        AND ((substanz_haltung_bewertung.kuerzel = 'BCA') OR ( substanz_haltung_bewertung.kuerzel = 'BCB'))
+                                         AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+  subkans_subkans_funkt_3121: |-
+    SELECT
+                                        substanz_haltung_bewertung.pk,
+                                        substanz_haltung_bewertung.untersuchhal,
+                                        NULL,
+                                        substanz_haltung_bewertung.schoben,
+                                        substanz_haltung_bewertung.schunten,
+                                        substanz_haltung_bewertung.id,
+                                        substanz_haltung_bewertung.videozaehler,
+                                        substanz_haltung_bewertung.inspektionslaenge,
+                                        substanz_haltung_bewertung.station,
+                                        substanz_haltung_bewertung.timecode,
+                                        substanz_haltung_bewertung.kuerzel,
+                                        substanz_haltung_bewertung.charakt1,
+                                        substanz_haltung_bewertung.charakt2,
+                                        substanz_haltung_bewertung.quantnr1,
+                                        substanz_haltung_bewertung.quantnr2,
+                                        substanz_haltung_bewertung.streckenschaden,
+                                        substanz_haltung_bewertung.pos_von,
+                                        substanz_haltung_bewertung.pos_bis,
+                                        substanz_haltung_bewertung.foto_dateiname,
+                                        substanz_haltung_bewertung.film_dateiname,
+                                        substanz_haltung_bewertung.kommentar,
+                                        substanz_haltung_bewertung.bw_bs,
+                                        substanz_haltung_bewertung.createdat,
+                                        haltungen.haltnam,
+                                        haltungen.material,
+                                        haltungen.hoehe,
+                                        haltungen.createdat,
+                                        substanz_haltung_bewertung.Zustandsklasse_D,
+                                        substanz_haltung_bewertung.Zustandsklasse_S,
+                                        substanz_haltung_bewertung.Zustandsklasse_B
+                                        FROM
+                                        substanz_haltung_bewertung, haltungen
+                                        WHERE
+                                        haltungen.haltnam = substanz_haltung_bewertung.untersuchhal
+                                        AND ((substanz_haltung_bewertung.kuerzel = 'BCA') OR ( substanz_haltung_bewertung.kuerzel = 'BCB'))
+                                        AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+  subkans_subkans_funkt_3283: |-
+    CREATE TABLE IF NOT EXISTS substanz_haltung_bewertung AS 
+                    SELECT pk, 
+                    untersuchhal, 
+                    schoben,
+                    schunten,
+                    id,
+                    videozaehler,
+                    inspektionslaenge,
+                    station,
+                    timecode,
+                    kuerzel,
+                    charakt1,
+                    charakt2,
+                    quantnr1,
+                    quantnr2,
+                    streckenschaden,
+                    streckenschaden_lfdnr,
+                    pos_von,
+                    pos_bis,
+                    foto_dateiname,
+                    film_dateiname,
+                    kommentar,
+                    bw_bs,
+                    createdat,
+                    Zustandsklasse_D,
+                    Zustandsklasse_S,
+                    Zustandsklasse_B,
+                    untersuchtag,
+                    geom
+                    FROM untersuchdat_haltung_bewertung
+  subkans_subkans_funkt_3315: |-
+    SELECT CreateSpatialIndex('substanz_haltung_bewertung', 'geom');
+  subkans_subkans_funkt_3443: |-
+    SELECT
+                           substanz_haltung_bewertung.pk,
+                           substanz_haltung_bewertung.untersuchhal,
+                           NULL,
+                           substanz_haltung_bewertung.schoben,
+                           substanz_haltung_bewertung.schunten,
+                           substanz_haltung_bewertung.id,
+                           substanz_haltung_bewertung.videozaehler,
+                           substanz_haltung_bewertung.inspektionslaenge,
+                           substanz_haltung_bewertung.station,
+                           substanz_haltung_bewertung.timecode,
+                           substanz_haltung_bewertung.kuerzel,
+                           substanz_haltung_bewertung.charakt1,
+                           substanz_haltung_bewertung.charakt2,
+                           substanz_haltung_bewertung.quantnr1,
+                           substanz_haltung_bewertung.quantnr2,
+                           substanz_haltung_bewertung.streckenschaden,
+                           substanz_haltung_bewertung.pos_von,
+                           substanz_haltung_bewertung.pos_bis,
+                           substanz_haltung_bewertung.foto_dateiname,
+                           substanz_haltung_bewertung.film_dateiname,
+                           substanz_haltung_bewertung.bw_bs,
+                           substanz_haltung_bewertung.createdat,
+                           substanz_haltung_bewertung.Zustandsklasse_ges,
+                           haltungen.haltnam,
+                           haltungen.material,
+                           haltungen.hoehe,
+                           haltungen.createdat,
+                           substanz_haltung_bewertung.untersuchtag
+                       FROM substanz_haltung_bewertung, haltungen
+                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_3480: |-
+    SELECT
+                           substanz_haltung_bewertung.pk,
+                           substanz_haltung_bewertung.untersuchhal,
+                           NULL,
+                           substanz_haltung_bewertung.schoben,
+                           substanz_haltung_bewertung.schunten,
+                           substanz_haltung_bewertung.id,
+                           substanz_haltung_bewertung.videozaehler,
+                           substanz_haltung_bewertung.inspektionslaenge,
+                           substanz_haltung_bewertung.station,
+                           substanz_haltung_bewertung.timecode,
+                           substanz_haltung_bewertung.kuerzel,
+                           substanz_haltung_bewertung.charakt1,
+                           substanz_haltung_bewertung.charakt2,
+                           substanz_haltung_bewertung.quantnr1,
+                           substanz_haltung_bewertung.quantnr2,
+                           substanz_haltung_bewertung.streckenschaden,
+                           substanz_haltung_bewertung.pos_von,
+                           substanz_haltung_bewertung.pos_bis,
+                           substanz_haltung_bewertung.foto_dateiname,
+                           substanz_haltung_bewertung.film_dateiname,
+                           substanz_haltung_bewertung.bw_bs,
+                           substanz_haltung_bewertung.createdat,
+                           substanz_haltung_bewertung.Zustandsklasse_ges,
+                           haltungen.haltnam,
+                           haltungen.material,
+                           haltungen.hoehe,
+                           haltungen.createdat
+                       FROM substanz_haltung_bewertung, haltungen
+                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_5562: |-
+    SELECT RecoverGeometryColumn('substanz_haltung_bewertung', 'geom', ?, 'LINESTRING', 'XY');
+  subkans_subkans_funkt_5668: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5720: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5762: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5794: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5807: |-
+    SELECT
+                                                                       substanz_haltung_bewertung.pk,
+                                                                       substanz_haltung_bewertung.untersuchhal,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.schoben,
+                                                                       substanz_haltung_bewertung.schunten,
+                                                                       substanz_haltung_bewertung.id,
+                                                                       substanz_haltung_bewertung.videozaehler,
+                                                                       substanz_haltung_bewertung.inspektionslaenge,
+                                                                       substanz_haltung_bewertung.station,
+                                                                       substanz_haltung_bewertung.timecode,
+                                                                       substanz_haltung_bewertung.kuerzel,
+                                                                       substanz_haltung_bewertung.charakt1,
+                                                                       substanz_haltung_bewertung.charakt2,
+                                                                       substanz_haltung_bewertung.quantnr1,
+                                                                       substanz_haltung_bewertung.quantnr2,
+                                                                       substanz_haltung_bewertung.Schadensart,
+                                                                       substanz_haltung_bewertung.Schadensauspraegung,
+                                                                       substanz_haltung_bewertung.streckenschaden,
+                                                                       substanz_haltung_bewertung.pos_von,
+                                                                       substanz_haltung_bewertung.pos_bis,
+                                                                       substanz_haltung_bewertung.foto_dateiname,
+                                                                       substanz_haltung_bewertung.film_dateiname,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.bw_bs,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_D,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_S,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_B,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                                       substanz_haltung_bewertung.Schadenslaenge,
+                                                                       substanz_haltung_bewertung.createdat,
+                                                                       haltungen.haltnam,
+                                                                       haltungen.material,
+                                                                       haltungen.breite,
+                                                                       haltungen.createdat,
+                                                                       haltungen.profilnam,
+                                                                       substanz_haltung_bewertung.untersuchtag
+                                                                   FROM substanz_haltung_bewertung, haltungen
+                                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                                                                   AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS') 
+                                                                   AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_5851: |-
+    SELECT
+                                                                       substanz_haltung_bewertung.pk,
+                                                                       substanz_haltung_bewertung.untersuchhal,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.schoben,
+                                                                       substanz_haltung_bewertung.schunten,
+                                                                       substanz_haltung_bewertung.id,
+                                                                       substanz_haltung_bewertung.videozaehler,
+                                                                       substanz_haltung_bewertung.inspektionslaenge,
+                                                                       substanz_haltung_bewertung.station,
+                                                                       substanz_haltung_bewertung.timecode,
+                                                                       substanz_haltung_bewertung.kuerzel,
+                                                                       substanz_haltung_bewertung.charakt1,
+                                                                       substanz_haltung_bewertung.charakt2,
+                                                                       substanz_haltung_bewertung.quantnr1,
+                                                                       substanz_haltung_bewertung.quantnr2,
+                                                                       substanz_haltung_bewertung.Schadensart,
+                                                                       substanz_haltung_bewertung.Schadensauspraegung,
+                                                                       substanz_haltung_bewertung.streckenschaden,
+                                                                       substanz_haltung_bewertung.pos_von,
+                                                                       substanz_haltung_bewertung.pos_bis,
+                                                                       substanz_haltung_bewertung.foto_dateiname,
+                                                                       substanz_haltung_bewertung.film_dateiname,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.bw_bs,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_D,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_S,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_B,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                                       substanz_haltung_bewertung.Schadenslaenge,
+                                                                       substanz_haltung_bewertung.createdat,
+                                                                       haltungen.haltnam,
+                                                                       haltungen.material,
+                                                                       haltungen.breite,
+                                                                       haltungen.createdat,
+                                                                       haltungen.profilnam
+                                                                   FROM substanz_haltung_bewertung, haltungen
+                                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                                                                   AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS') 
+                                                                   AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_5908: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5923: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5931: |-
+    UPDATE substanz_haltung_bewertung SET Schadenslaenge = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_5953: |-
+    SELECT
+                                                                                   substanz_haltung_bewertung.pk,
+                                                                                   substanz_haltung_bewertung.untersuchhal,
+                                                                                   NULL,
+                                                                                   substanz_haltung_bewertung.schoben,
+                                                                                   substanz_haltung_bewertung.schunten,
+                                                                                   substanz_haltung_bewertung.id,
+                                                                                   substanz_haltung_bewertung.videozaehler,
+                                                                                   substanz_haltung_bewertung.inspektionslaenge,
+                                                                                   substanz_haltung_bewertung.station,
+                                                                                   substanz_haltung_bewertung.timecode,
+                                                                                   substanz_haltung_bewertung.kuerzel,
+                                                                                   substanz_haltung_bewertung.charakt1,
+                                                                                   substanz_haltung_bewertung.charakt2,
+                                                                                   substanz_haltung_bewertung.quantnr1,
+                                                                                   substanz_haltung_bewertung.quantnr2,
+                                                                                   substanz_haltung_bewertung.Schadensart,
+                                                                                   substanz_haltung_bewertung.Schadensauspraegung,
+                                                                                   substanz_haltung_bewertung.streckenschaden,
+                                                                                   substanz_haltung_bewertung.pos_von,
+                                                                                   substanz_haltung_bewertung.pos_bis,
+                                                                                   substanz_haltung_bewertung.foto_dateiname,
+                                                                                   substanz_haltung_bewertung.film_dateiname,
+                                                                                   NULL,
+                                                                                   substanz_haltung_bewertung.bw_bs,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_D,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_S,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_B,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                                                   substanz_haltung_bewertung.Schadenslaenge,
+                                                                                   substanz_haltung_bewertung.createdat,
+                                                                                   haltungen.haltnam,
+                                                                                   haltungen.material,
+                                                                                   haltungen.hoehe,
+                                                                                   haltungen.createdat,
+                                                                                   substanz_haltung_bewertung.untersuchtag
+                                                                               FROM substanz_haltung_bewertung, haltungen
+                                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                                                                               AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='C')) 
+                                                                               AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
+                                                                               AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_5998: |-
+    SELECT
+                                                                                   substanz_haltung_bewertung.pk,
+                                                                                   substanz_haltung_bewertung.untersuchhal,
+                                                                                   NULL,
+                                                                                   substanz_haltung_bewertung.schoben,
+                                                                                   substanz_haltung_bewertung.schunten,
+                                                                                   substanz_haltung_bewertung.id,
+                                                                                   substanz_haltung_bewertung.videozaehler,
+                                                                                   substanz_haltung_bewertung.inspektionslaenge,
+                                                                                   substanz_haltung_bewertung.station,
+                                                                                   substanz_haltung_bewertung.timecode,
+                                                                                   substanz_haltung_bewertung.kuerzel,
+                                                                                   substanz_haltung_bewertung.charakt1,
+                                                                                   substanz_haltung_bewertung.charakt2,
+                                                                                   substanz_haltung_bewertung.quantnr1,
+                                                                                   substanz_haltung_bewertung.quantnr2,
+                                                                                   substanz_haltung_bewertung.Schadensart,
+                                                                                   substanz_haltung_bewertung.Schadensauspraegung,
+                                                                                   substanz_haltung_bewertung.streckenschaden,
+                                                                                   substanz_haltung_bewertung.pos_von,
+                                                                                   substanz_haltung_bewertung.pos_bis,
+                                                                                   substanz_haltung_bewertung.foto_dateiname,
+                                                                                   substanz_haltung_bewertung.film_dateiname,
+                                                                                   NULL,
+                                                                                   substanz_haltung_bewertung.bw_bs,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_D,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_S,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_B,
+                                                                                   substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                                                   substanz_haltung_bewertung.Schadenslaenge,
+                                                                                   substanz_haltung_bewertung.createdat,
+                                                                                   haltungen.haltnam,
+                                                                                   haltungen.material,
+                                                                                   haltungen.hoehe,
+                                                                                   haltungen.createdat
+                                                                               FROM substanz_haltung_bewertung, haltungen
+                                                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+                                                                               AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A') OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='C')) 
+                                                                               AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
+                                                                               AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6093: |-
+    UPDATE substanz_haltung_bewertung SET Startgewicht = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_6100: |-
+    UPDATE substanz_haltung_bewertung SET Schadensgewicht = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_6113: |-
+    SELECT
+                                   substanz_haltung_bewertung.pk,
+                                   substanz_haltung_bewertung.untersuchhal,
+                                   NULL,
+                                   substanz_haltung_bewertung.schoben,
+                                   substanz_haltung_bewertung.schunten,
+                                   substanz_haltung_bewertung.id,
+                                   substanz_haltung_bewertung.videozaehler,
+                                   substanz_haltung_bewertung.inspektionslaenge,
+                                   substanz_haltung_bewertung.station,
+                                   substanz_haltung_bewertung.timecode,
+                                   substanz_haltung_bewertung.kuerzel,
+                                   substanz_haltung_bewertung.charakt1,
+                                   substanz_haltung_bewertung.charakt2,
+                                   substanz_haltung_bewertung.quantnr1,
+                                   substanz_haltung_bewertung.quantnr2,
+                                   substanz_haltung_bewertung.Schadensart,
+                                   substanz_haltung_bewertung.Schadensauspraegung,
+                                   substanz_haltung_bewertung.streckenschaden,
+                                   substanz_haltung_bewertung.pos_von,
+                                   substanz_haltung_bewertung.pos_bis,
+                                   substanz_haltung_bewertung.foto_dateiname,
+                                   substanz_haltung_bewertung.film_dateiname,
+                                   NULL,
+                                   substanz_haltung_bewertung.bw_bs,
+                                   substanz_haltung_bewertung.Zustandsklasse_D,
+                                   substanz_haltung_bewertung.Zustandsklasse_S,
+                                   substanz_haltung_bewertung.Zustandsklasse_B,
+                                   substanz_haltung_bewertung.Zustandsklasse_ges,
+                                   substanz_haltung_bewertung.Schadenslaenge,
+                                   substanz_haltung_bewertung.Startgewicht,
+                                   substanz_haltung_bewertung.createdat,
+                                   haltungen.haltnam,
+                                   haltungen.material,
+                                   haltungen.hoehe,
+                                   haltungen.createdat,
+                                   substanz_haltung_bewertung.untersuchtag
+                               FROM substanz_haltung_bewertung, haltungen
+                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                               AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND (substanz_haltung_bewertung.streckenschaden ='A' or substanz_haltung_bewertung.streckenschaden ='C')) 
+                                AND substanz_haltung_bewertung.Schadenslaenge is not NULL
+                                AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
+                               AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6159: |-
+    SELECT
+                                   substanz_haltung_bewertung.pk,
+                                   substanz_haltung_bewertung.untersuchhal,
+                                   NULL,
+                                   substanz_haltung_bewertung.schoben,
+                                   substanz_haltung_bewertung.schunten,
+                                   substanz_haltung_bewertung.id,
+                                   substanz_haltung_bewertung.videozaehler,
+                                   substanz_haltung_bewertung.inspektionslaenge,
+                                   substanz_haltung_bewertung.station,
+                                   substanz_haltung_bewertung.timecode,
+                                   substanz_haltung_bewertung.kuerzel,
+                                   substanz_haltung_bewertung.charakt1,
+                                   substanz_haltung_bewertung.charakt2,
+                                   substanz_haltung_bewertung.quantnr1,
+                                   substanz_haltung_bewertung.quantnr2,
+                                   substanz_haltung_bewertung.Schadensart,
+                                   substanz_haltung_bewertung.Schadensauspraegung,
+                                   substanz_haltung_bewertung.streckenschaden,
+                                   substanz_haltung_bewertung.pos_von,
+                                   substanz_haltung_bewertung.pos_bis,
+                                   substanz_haltung_bewertung.foto_dateiname,
+                                   substanz_haltung_bewertung.film_dateiname,
+                                   NULL,
+                                   substanz_haltung_bewertung.bw_bs,
+                                   substanz_haltung_bewertung.Zustandsklasse_D,
+                                   substanz_haltung_bewertung.Zustandsklasse_S,
+                                   substanz_haltung_bewertung.Zustandsklasse_B,
+                                   substanz_haltung_bewertung.Zustandsklasse_ges,
+                                   substanz_haltung_bewertung.Schadenslaenge,
+                                   substanz_haltung_bewertung.Startgewicht,
+                                   substanz_haltung_bewertung.createdat,
+                                   haltungen.haltnam,
+                                   haltungen.material,
+                                   haltungen.hoehe,
+                                   haltungen.createdat
+                               FROM substanz_haltung_bewertung, haltungen
+                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                               AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND (substanz_haltung_bewertung.streckenschaden ='A' or substanz_haltung_bewertung.streckenschaden ='C')) 
+                                AND substanz_haltung_bewertung.Schadenslaenge is not NULL
+                                AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
+                               AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6353: |-
+    #                        SELECT
+                #                            substanz_haltung_bewertung.pk,
+                #                            substanz_haltung_bewertung.untersuchhal,
+                #                            NULL,
+                #                            substanz_haltung_bewertung.schoben,
+                #                            substanz_haltung_bewertung.schunten,
+                #                            substanz_haltung_bewertung.id,
+                #                            substanz_haltung_bewertung.videozaehler,
+                #                            substanz_haltung_bewertung.inspektionslaenge,
+                #                            substanz_haltung_bewertung.station,
+                #                            substanz_haltung_bewertung.timecode,
+                #                            substanz_haltung_bewertung.kuerzel,
+                #                            substanz_haltung_bewertung.charakt1,
+                #                            substanz_haltung_bewertung.charakt2,
+                #                            substanz_haltung_bewertung.quantnr1,
+                #                            substanz_haltung_bewertung.quantnr2,
+                #                            substanz_haltung_bewertung.Schadensart,
+                #                            substanz_haltung_bewertung.Schadensauspraegung,
+                #                            substanz_haltung_bewertung.streckenschaden,
+                #                            substanz_haltung_bewertung.pos_von,
+                #                            substanz_haltung_bewertung.pos_bis,
+                #                            substanz_haltung_bewertung.foto_dateiname,
+                #                            substanz_haltung_bewertung.film_dateiname,
+                #                            NULL,
+                #                            substanz_haltung_bewertung.bw_bs,
+                #                            substanz_haltung_bewertung.Zustandsklasse_D,
+                #                            substanz_haltung_bewertung.Zustandsklasse_S,
+                #                            substanz_haltung_bewertung.Zustandsklasse_B,
+                #                            substanz_haltung_bewertung.Zustandsklasse_ges,
+                #                            substanz_haltung_bewertung.Schadenslaenge,
+                #                            substanz_haltung_bewertung.Startgewicht,
+                #                            substanz_haltung_bewertung.createdat,
+                #                            haltungen.haltnam,
+                #                            haltungen.material,
+                #                            haltungen.hoehe,
+                #                            haltungen.createdat
+                #                        FROM substanz_haltung_bewertung, haltungen
+                #                        WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+                #                        AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')
+                #                        AND (substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
+                #                        AND Zustandsklasse_ges IN (0,1,2,3,4)
+                #
+  subkans_subkans_funkt_6544: |-
+    SELECT
+                                               substanz_haltung_bewertung.pk,
+                                               substanz_haltung_bewertung.untersuchhal,
+                                               NULL,
+                                               substanz_haltung_bewertung.schoben,
+                                               substanz_haltung_bewertung.schunten,
+                                               substanz_haltung_bewertung.id,
+                                               substanz_haltung_bewertung.videozaehler,
+                                               substanz_haltung_bewertung.inspektionslaenge,
+                                               substanz_haltung_bewertung.station,
+                                               substanz_haltung_bewertung.timecode,
+                                               substanz_haltung_bewertung.kuerzel,
+                                               substanz_haltung_bewertung.charakt1,
+                                               substanz_haltung_bewertung.charakt2,
+                                               substanz_haltung_bewertung.quantnr1,
+                                               substanz_haltung_bewertung.quantnr2,
+                                               substanz_haltung_bewertung.Schadensart,
+                                               substanz_haltung_bewertung.Schadensauspraegung,
+                                               substanz_haltung_bewertung.streckenschaden,
+                                               substanz_haltung_bewertung.pos_von,
+                                               substanz_haltung_bewertung.pos_bis,
+                                               substanz_haltung_bewertung.foto_dateiname,
+                                               substanz_haltung_bewertung.film_dateiname,
+                                               NULL,
+                                               substanz_haltung_bewertung.bw_bs,
+                                               substanz_haltung_bewertung.Zustandsklasse_D,
+                                               substanz_haltung_bewertung.Zustandsklasse_S,
+                                               substanz_haltung_bewertung.Zustandsklasse_B,
+                                               substanz_haltung_bewertung.Zustandsklasse_ges,
+                                               substanz_haltung_bewertung.Schadenslaenge,
+                                               substanz_haltung_bewertung.Startgewicht,
+                                               substanz_haltung_bewertung.createdat,
+                                               haltungen.haltnam,
+                                               haltungen.material,
+                                               haltungen.hoehe,
+                                               haltungen.createdat,
+                                               substanz_haltung_bewertung.untersuchtag
+                                           FROM substanz_haltung_bewertung, haltungen
+                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                                           AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND (substanz_haltung_bewertung.streckenschaden ='A' or substanz_haltung_bewertung.streckenschaden ='C')) 
+    						   AND substanz_haltung_bewertung.Schadenslaenge is not NULL 
+                                           AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
+                                           AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6590: |-
+    SELECT
+                                               substanz_haltung_bewertung.pk,
+                                               substanz_haltung_bewertung.untersuchhal,
+                                               NULL,
+                                               substanz_haltung_bewertung.schoben,
+                                               substanz_haltung_bewertung.schunten,
+                                               substanz_haltung_bewertung.id,
+                                               substanz_haltung_bewertung.videozaehler,
+                                               substanz_haltung_bewertung.inspektionslaenge,
+                                               substanz_haltung_bewertung.station,
+                                               substanz_haltung_bewertung.timecode,
+                                               substanz_haltung_bewertung.kuerzel,
+                                               substanz_haltung_bewertung.charakt1,
+                                               substanz_haltung_bewertung.charakt2,
+                                               substanz_haltung_bewertung.quantnr1,
+                                               substanz_haltung_bewertung.quantnr2,
+                                               substanz_haltung_bewertung.Schadensart,
+                                               substanz_haltung_bewertung.Schadensauspraegung,
+                                               substanz_haltung_bewertung.streckenschaden,
+                                               substanz_haltung_bewertung.pos_von,
+                                               substanz_haltung_bewertung.pos_bis,
+                                               substanz_haltung_bewertung.foto_dateiname,
+                                               substanz_haltung_bewertung.film_dateiname,
+                                               NULL,
+                                               substanz_haltung_bewertung.bw_bs,
+                                               substanz_haltung_bewertung.Zustandsklasse_D,
+                                               substanz_haltung_bewertung.Zustandsklasse_S,
+                                               substanz_haltung_bewertung.Zustandsklasse_B,
+                                               substanz_haltung_bewertung.Zustandsklasse_ges,
+                                               substanz_haltung_bewertung.Schadenslaenge,
+                                               substanz_haltung_bewertung.Startgewicht,
+                                               substanz_haltung_bewertung.createdat,
+                                               haltungen.haltnam,
+                                               haltungen.material,
+                                               haltungen.hoehe,
+                                               haltungen.createdat
+                                           FROM substanz_haltung_bewertung, haltungen
+                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                                           AND (substanz_haltung_bewertung.Schadensart = 'StrS' AND (streckenschaden ='A' or streckenschaden ='C')) 
+    						   AND substanz_haltung_bewertung.Schadenslaenge is not NULL
+                                           AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
+                                           AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6787: |-
+    SELECT
+                                                   substanz_haltung_bewertung.pk,
+                                                   substanz_haltung_bewertung.untersuchhal,
+                                                   NULL,
+                                                   substanz_haltung_bewertung.schoben,
+                                                   substanz_haltung_bewertung.schunten,
+                                                   substanz_haltung_bewertung.id,
+                                                   substanz_haltung_bewertung.videozaehler,
+                                                   substanz_haltung_bewertung.inspektionslaenge,
+                                                   substanz_haltung_bewertung.station,
+                                                   substanz_haltung_bewertung.timecode,
+                                                   substanz_haltung_bewertung.kuerzel,
+                                                   substanz_haltung_bewertung.charakt1,
+                                                   substanz_haltung_bewertung.charakt2,
+                                                   substanz_haltung_bewertung.quantnr1,
+                                                   substanz_haltung_bewertung.quantnr2,
+                                                   substanz_haltung_bewertung.Schadensart,
+                                                   substanz_haltung_bewertung.Schadensauspraegung,
+                                                   substanz_haltung_bewertung.streckenschaden,
+                                                   substanz_haltung_bewertung.pos_von,
+                                                   substanz_haltung_bewertung.pos_bis,
+                                                   substanz_haltung_bewertung.foto_dateiname,
+                                                   substanz_haltung_bewertung.film_dateiname,
+                                                   NULL,
+                                                   substanz_haltung_bewertung.bw_bs,
+                                                   substanz_haltung_bewertung.Zustandsklasse_D,
+                                                   substanz_haltung_bewertung.Zustandsklasse_S,
+                                                   substanz_haltung_bewertung.Zustandsklasse_B,
+                                                   substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                   substanz_haltung_bewertung.Schadenslaenge,
+                                                   substanz_haltung_bewertung.createdat,
+                                                   haltungen.haltnam,
+                                                   haltungen.material,
+                                                   haltungen.hoehe,
+                                                   haltungen.createdat,
+                                                   substanz_haltung_bewertung.untersuchtag
+                                               FROM substanz_haltung_bewertung, haltungen
+                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
+                                               AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
+                                               AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
+                                               AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6831: |-
+    SELECT
+                                                   substanz_haltung_bewertung.pk,
+                                                   substanz_haltung_bewertung.untersuchhal,
+                                                   NULL,
+                                                   substanz_haltung_bewertung.schoben,
+                                                   substanz_haltung_bewertung.schunten,
+                                                   substanz_haltung_bewertung.id,
+                                                   substanz_haltung_bewertung.videozaehler,
+                                                   substanz_haltung_bewertung.inspektionslaenge,
+                                                   substanz_haltung_bewertung.station,
+                                                   substanz_haltung_bewertung.timecode,
+                                                   substanz_haltung_bewertung.kuerzel,
+                                                   substanz_haltung_bewertung.charakt1,
+                                                   substanz_haltung_bewertung.charakt2,
+                                                   substanz_haltung_bewertung.quantnr1,
+                                                   substanz_haltung_bewertung.quantnr2,
+                                                   substanz_haltung_bewertung.Schadensart,
+                                                   substanz_haltung_bewertung.Schadensauspraegung,
+                                                   substanz_haltung_bewertung.streckenschaden,
+                                                   substanz_haltung_bewertung.pos_von,
+                                                   substanz_haltung_bewertung.pos_bis,
+                                                   substanz_haltung_bewertung.foto_dateiname,
+                                                   substanz_haltung_bewertung.film_dateiname,
+                                                   NULL,
+                                                   substanz_haltung_bewertung.bw_bs,
+                                                   substanz_haltung_bewertung.Zustandsklasse_D,
+                                                   substanz_haltung_bewertung.Zustandsklasse_S,
+                                                   substanz_haltung_bewertung.Zustandsklasse_B,
+                                                   substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                   substanz_haltung_bewertung.Schadenslaenge,
+                                                   substanz_haltung_bewertung.createdat,
+                                                   haltungen.haltnam,
+                                                   haltungen.material,
+                                                   haltungen.hoehe,
+                                                   haltungen.createdat
+                                               FROM substanz_haltung_bewertung, haltungen
+                                               WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+                                               AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
+                                               AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
+                                               AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6938: |-
+    SELECT
+                                                           substanz_haltung_bewertung.pk,
+                                                           substanz_haltung_bewertung.untersuchhal,
+                                                           NULL,
+                                                           substanz_haltung_bewertung.schoben,
+                                                           substanz_haltung_bewertung.schunten,
+                                                           substanz_haltung_bewertung.id,
+                                                           substanz_haltung_bewertung.videozaehler,
+                                                           substanz_haltung_bewertung.inspektionslaenge,
+                                                           substanz_haltung_bewertung.station,
+                                                           substanz_haltung_bewertung.timecode,
+                                                           substanz_haltung_bewertung.kuerzel,
+                                                           substanz_haltung_bewertung.charakt1,
+                                                           substanz_haltung_bewertung.charakt2,
+                                                           substanz_haltung_bewertung.quantnr1,
+                                                           substanz_haltung_bewertung.quantnr2,
+                                                           substanz_haltung_bewertung.Schadensart,
+                                                           substanz_haltung_bewertung.Schadensauspraegung,
+                                                           substanz_haltung_bewertung.streckenschaden,
+                                                           substanz_haltung_bewertung.pos_von,
+                                                           substanz_haltung_bewertung.pos_bis,
+                                                           substanz_haltung_bewertung.foto_dateiname,
+                                                           substanz_haltung_bewertung.film_dateiname,
+                                                           NULL,
+                                                           substanz_haltung_bewertung.bw_bs,
+                                                           substanz_haltung_bewertung.Zustandsklasse_D,
+                                                           substanz_haltung_bewertung.Zustandsklasse_S,
+                                                           substanz_haltung_bewertung.Zustandsklasse_B,
+                                                           substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                           substanz_haltung_bewertung.Schadenslaenge,
+                                                           substanz_haltung_bewertung.createdat,
+                                                           haltungen.haltnam,
+                                                           haltungen.material,
+                                                           haltungen.hoehe,
+                                                           haltungen.createdat,
+                                                           substanz_haltung_bewertung.untersuchtag
+                                                       FROM substanz_haltung_bewertung, haltungen
+                                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
+                                                       AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
+                                                       AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
+                                                       AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_6982: |-
+    SELECT
+                                                           substanz_haltung_bewertung.pk,
+                                                           substanz_haltung_bewertung.untersuchhal,
+                                                           NULL,
+                                                           substanz_haltung_bewertung.schoben,
+                                                           substanz_haltung_bewertung.schunten,
+                                                           substanz_haltung_bewertung.id,
+                                                           substanz_haltung_bewertung.videozaehler,
+                                                           substanz_haltung_bewertung.inspektionslaenge,
+                                                           substanz_haltung_bewertung.station,
+                                                           substanz_haltung_bewertung.timecode,
+                                                           substanz_haltung_bewertung.kuerzel,
+                                                           substanz_haltung_bewertung.charakt1,
+                                                           substanz_haltung_bewertung.charakt2,
+                                                           substanz_haltung_bewertung.quantnr1,
+                                                           substanz_haltung_bewertung.quantnr2,
+                                                           substanz_haltung_bewertung.Schadensart,
+                                                           substanz_haltung_bewertung.Schadensauspraegung,
+                                                           substanz_haltung_bewertung.streckenschaden,
+                                                           substanz_haltung_bewertung.pos_von,
+                                                           substanz_haltung_bewertung.pos_bis,
+                                                           substanz_haltung_bewertung.foto_dateiname,
+                                                           substanz_haltung_bewertung.film_dateiname,
+                                                           NULL,
+                                                           substanz_haltung_bewertung.bw_bs,
+                                                           substanz_haltung_bewertung.Zustandsklasse_D,
+                                                           substanz_haltung_bewertung.Zustandsklasse_S,
+                                                           substanz_haltung_bewertung.Zustandsklasse_B,
+                                                           substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                           substanz_haltung_bewertung.Schadenslaenge,
+                                                           substanz_haltung_bewertung.createdat,
+                                                           haltungen.haltnam,
+                                                           haltungen.material,
+                                                           haltungen.hoehe,
+                                                           haltungen.createdat
+                                                       FROM substanz_haltung_bewertung, haltungen
+                                                       WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+                                                       AND (substanz_haltung_bewertung.Schadensart = 'PktS') 
+                                                       AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
+                                                       AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7090: |-
+    SELECT
+                                                               substanz_haltung_bewertung.pk,
+                                                               substanz_haltung_bewertung.untersuchhal,
+                                                               NULL,
+                                                               substanz_haltung_bewertung.schoben,
+                                                               substanz_haltung_bewertung.schunten,
+                                                               substanz_haltung_bewertung.id,
+                                                               substanz_haltung_bewertung.videozaehler,
+                                                               substanz_haltung_bewertung.inspektionslaenge,
+                                                               substanz_haltung_bewertung.station,
+                                                               substanz_haltung_bewertung.timecode,
+                                                               substanz_haltung_bewertung.kuerzel,
+                                                               substanz_haltung_bewertung.charakt1,
+                                                               substanz_haltung_bewertung.charakt2,
+                                                               substanz_haltung_bewertung.quantnr1,
+                                                               substanz_haltung_bewertung.quantnr2,
+                                                               substanz_haltung_bewertung.Schadensart,
+                                                               substanz_haltung_bewertung.Schadensauspraegung,
+                                                               substanz_haltung_bewertung.streckenschaden,
+                                                               substanz_haltung_bewertung.pos_von,
+                                                               substanz_haltung_bewertung.pos_bis,
+                                                               substanz_haltung_bewertung.foto_dateiname,
+                                                               substanz_haltung_bewertung.film_dateiname,
+                                                               NULL,
+                                                               substanz_haltung_bewertung.bw_bs,
+                                                               substanz_haltung_bewertung.Zustandsklasse_D,
+                                                               substanz_haltung_bewertung.Zustandsklasse_S,
+                                                               substanz_haltung_bewertung.Zustandsklasse_B,
+                                                               substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                               substanz_haltung_bewertung.Schadenslaenge,
+                                                               substanz_haltung_bewertung.createdat,
+                                                               haltungen.haltnam,
+                                                               haltungen.material,
+                                                               haltungen.hoehe,
+                                                               haltungen.createdat,
+                                                               substanz_haltung_bewertung.untersuchtag
+                                                           FROM substanz_haltung_bewertung, haltungen
+                                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
+                                                           AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
+                                                           AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
+                                                           AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7134: |-
+    SELECT
+                                                               substanz_haltung_bewertung.pk,
+                                                               substanz_haltung_bewertung.untersuchhal,
+                                                               NULL,
+                                                               substanz_haltung_bewertung.schoben,
+                                                               substanz_haltung_bewertung.schunten,
+                                                               substanz_haltung_bewertung.id,
+                                                               substanz_haltung_bewertung.videozaehler,
+                                                               substanz_haltung_bewertung.inspektionslaenge,
+                                                               substanz_haltung_bewertung.station,
+                                                               substanz_haltung_bewertung.timecode,
+                                                               substanz_haltung_bewertung.kuerzel,
+                                                               substanz_haltung_bewertung.charakt1,
+                                                               substanz_haltung_bewertung.charakt2,
+                                                               substanz_haltung_bewertung.quantnr1,
+                                                               substanz_haltung_bewertung.quantnr2,
+                                                               substanz_haltung_bewertung.Schadensart,
+                                                               substanz_haltung_bewertung.Schadensauspraegung,
+                                                               substanz_haltung_bewertung.streckenschaden,
+                                                               substanz_haltung_bewertung.pos_von,
+                                                               substanz_haltung_bewertung.pos_bis,
+                                                               substanz_haltung_bewertung.foto_dateiname,
+                                                               substanz_haltung_bewertung.film_dateiname,
+                                                               NULL,
+                                                               substanz_haltung_bewertung.bw_bs,
+                                                               substanz_haltung_bewertung.Zustandsklasse_D,
+                                                               substanz_haltung_bewertung.Zustandsklasse_S,
+                                                               substanz_haltung_bewertung.Zustandsklasse_B,
+                                                               substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                               substanz_haltung_bewertung.Schadenslaenge,
+                                                               substanz_haltung_bewertung.createdat,
+                                                               haltungen.haltnam,
+                                                               haltungen.material,
+                                                               haltungen.hoehe,
+                                                               haltungen.createdat
+                                                           FROM substanz_haltung_bewertung, haltungen
+                                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                                                           AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
+                                                           AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS')
+                                                           AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7241: |-
+    SELECT
+                                                                       substanz_haltung_bewertung.pk,
+                                                                       substanz_haltung_bewertung.untersuchhal,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.schoben,
+                                                                       substanz_haltung_bewertung.schunten,
+                                                                       substanz_haltung_bewertung.id,
+                                                                       substanz_haltung_bewertung.videozaehler,
+                                                                       substanz_haltung_bewertung.inspektionslaenge,
+                                                                       substanz_haltung_bewertung.station,
+                                                                       substanz_haltung_bewertung.timecode,
+                                                                       substanz_haltung_bewertung.kuerzel,
+                                                                       substanz_haltung_bewertung.charakt1,
+                                                                       substanz_haltung_bewertung.charakt2,
+                                                                       substanz_haltung_bewertung.quantnr1,
+                                                                       substanz_haltung_bewertung.quantnr2,
+                                                                       substanz_haltung_bewertung.Schadensart,
+                                                                       substanz_haltung_bewertung.Schadensauspraegung,
+                                                                       substanz_haltung_bewertung.streckenschaden,
+                                                                       substanz_haltung_bewertung.pos_von,
+                                                                       substanz_haltung_bewertung.pos_bis,
+                                                                       substanz_haltung_bewertung.foto_dateiname,
+                                                                       substanz_haltung_bewertung.film_dateiname,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.bw_bs,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_D,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_S,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_B,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                                       substanz_haltung_bewertung.Schadenslaenge,
+                                                                       substanz_haltung_bewertung.createdat,
+                                                                       haltungen.haltnam,
+                                                                       haltungen.material,
+                                                                       haltungen.hoehe,
+                                                                       haltungen.createdat,
+                                                                       substanz_haltung_bewertung.untersuchtag
+                                                                   FROM substanz_haltung_bewertung, haltungen
+                                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120 
+                                                                   AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
+                                                                   AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
+                                                                   AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7285: |-
+    SELECT
+                                                                       substanz_haltung_bewertung.pk,
+                                                                       substanz_haltung_bewertung.untersuchhal,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.schoben,
+                                                                       substanz_haltung_bewertung.schunten,
+                                                                       substanz_haltung_bewertung.id,
+                                                                       substanz_haltung_bewertung.videozaehler,
+                                                                       substanz_haltung_bewertung.inspektionslaenge,
+                                                                       substanz_haltung_bewertung.station,
+                                                                       substanz_haltung_bewertung.timecode,
+                                                                       substanz_haltung_bewertung.kuerzel,
+                                                                       substanz_haltung_bewertung.charakt1,
+                                                                       substanz_haltung_bewertung.charakt2,
+                                                                       substanz_haltung_bewertung.quantnr1,
+                                                                       substanz_haltung_bewertung.quantnr2,
+                                                                       substanz_haltung_bewertung.Schadensart,
+                                                                       substanz_haltung_bewertung.Schadensauspraegung,
+                                                                       substanz_haltung_bewertung.streckenschaden,
+                                                                       substanz_haltung_bewertung.pos_von,
+                                                                       substanz_haltung_bewertung.pos_bis,
+                                                                       substanz_haltung_bewertung.foto_dateiname,
+                                                                       substanz_haltung_bewertung.film_dateiname,
+                                                                       NULL,
+                                                                       substanz_haltung_bewertung.bw_bs,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_D,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_S,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_B,
+                                                                       substanz_haltung_bewertung.Zustandsklasse_ges,
+                                                                       substanz_haltung_bewertung.Schadenslaenge,
+                                                                       substanz_haltung_bewertung.createdat,
+                                                                       haltungen.haltnam,
+                                                                       haltungen.material,
+                                                                       haltungen.hoehe,
+                                                                       haltungen.createdat
+                                                                   FROM substanz_haltung_bewertung, haltungen
+                                                                   WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                                                                   AND (substanz_haltung_bewertung.Schadensart = 'UmfS') 
+                                                                   AND (substanz_haltung_bewertung.Schadensauspraegung = 'DdS')
+                                                                   AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7405: |-
+    CREATE TABLE IF NOT EXISTS haltungen_substanz_bewertung AS 
+                            SELECT pk, 
+                            haltnam, 
+                            schoben, 
+                            schunten,                                  
+                            hoehe,                                     
+                            breite,                                   
+                            laenge,                                 
+                            baujahr,
+                            untersuchtag,
+                            untersucher,
+                            wetter,
+                            bewertungsart,
+                            bewertungstag,
+                             strasse,
+                             datenart,
+                             max_ZD,
+                             max_ZB, 
+                             max_ZS,
+                             objektklasse_dichtheit,
+                             objektklasse_standsicherheit,
+                             objektklasse_betriebssicherheit,
+                             objektklasse_gesamt,
+                            geom
+                            FROM haltungen_untersucht_bewertung
+  subkans_subkans_funkt_7432: |-
+    SELECT CreateSpatialIndex('haltungen_substanz_bewertung', 'geom');
+  subkans_subkans_funkt_7452: |-
+    SELECT
+                                               substanz_haltung_bewertung.pk,
+                                               substanz_haltung_bewertung.untersuchhal,
+                                               NULL,
+                                               substanz_haltung_bewertung.schoben,
+                                               substanz_haltung_bewertung.schunten,
+                                               substanz_haltung_bewertung.id,
+                                               substanz_haltung_bewertung.videozaehler,
+                                               substanz_haltung_bewertung.inspektionslaenge,
+                                               substanz_haltung_bewertung.station,
+                                               substanz_haltung_bewertung.timecode,
+                                               substanz_haltung_bewertung.kuerzel,
+                                               substanz_haltung_bewertung.charakt1,
+                                               substanz_haltung_bewertung.charakt2,
+                                               substanz_haltung_bewertung.quantnr1,
+                                               substanz_haltung_bewertung.quantnr2,
+                                               substanz_haltung_bewertung.Schadensart,
+                                               substanz_haltung_bewertung.Schadensauspraegung,
+                                               substanz_haltung_bewertung.streckenschaden,
+                                               substanz_haltung_bewertung.pos_von,
+                                               substanz_haltung_bewertung.pos_bis,
+                                               substanz_haltung_bewertung.foto_dateiname,
+                                               substanz_haltung_bewertung.film_dateiname,
+                                               NULL,
+                                               substanz_haltung_bewertung.bw_bs,
+                                               substanz_haltung_bewertung.Zustandsklasse_D,
+                                               substanz_haltung_bewertung.Zustandsklasse_S,
+                                               substanz_haltung_bewertung.Zustandsklasse_B,
+                                               substanz_haltung_bewertung.Zustandsklasse_ges,
+                                               substanz_haltung_bewertung.Schadenslaenge,
+                                               substanz_haltung_bewertung.createdat,
+                                               substanz_haltung_bewertung.Startgewicht,
+                                               haltungen.haltnam,
+                                               haltungen.material,
+                                               haltungen.hoehe,
+                                               haltungen.createdat,
+                                               substanz_haltung_bewertung.untersuchtag
+                                           FROM substanz_haltung_bewertung, haltungen
+                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                                           AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
+                                           AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
+                                           AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7498: |-
+    SELECT
+                                               substanz_haltung_bewertung.pk,
+                                               substanz_haltung_bewertung.untersuchhal,
+                                               NULL,
+                                               substanz_haltung_bewertung.schoben,
+                                               substanz_haltung_bewertung.schunten,
+                                               substanz_haltung_bewertung.id,
+                                               substanz_haltung_bewertung.videozaehler,
+                                               substanz_haltung_bewertung.inspektionslaenge,
+                                               substanz_haltung_bewertung.station,
+                                               substanz_haltung_bewertung.timecode,
+                                               substanz_haltung_bewertung.kuerzel,
+                                               substanz_haltung_bewertung.charakt1,
+                                               substanz_haltung_bewertung.charakt2,
+                                               substanz_haltung_bewertung.quantnr1,
+                                               substanz_haltung_bewertung.quantnr2,
+                                               substanz_haltung_bewertung.Schadensart,
+                                               substanz_haltung_bewertung.Schadensauspraegung,
+                                               substanz_haltung_bewertung.streckenschaden,
+                                               substanz_haltung_bewertung.pos_von,
+                                               substanz_haltung_bewertung.pos_bis,
+                                               substanz_haltung_bewertung.foto_dateiname,
+                                               substanz_haltung_bewertung.film_dateiname,
+                                               NULL,
+                                               substanz_haltung_bewertung.bw_bs,
+                                               substanz_haltung_bewertung.Zustandsklasse_D,
+                                               substanz_haltung_bewertung.Zustandsklasse_S,
+                                               substanz_haltung_bewertung.Zustandsklasse_B,
+                                               substanz_haltung_bewertung.Zustandsklasse_ges,
+                                               substanz_haltung_bewertung.Schadenslaenge,
+                                               substanz_haltung_bewertung.createdat,
+                                               substanz_haltung_bewertung.Startgewicht,
+                                               haltungen.haltnam,
+                                               haltungen.material,
+                                               haltungen.hoehe,
+                                               haltungen.createdat
+                                           FROM substanz_haltung_bewertung, haltungen
+                                           WHERE haltungen.haltnam = substanz_haltung_bewertung.untersuchhal AND ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120
+                                           AND (substanz_haltung_bewertung.Schadensart = 'PktS' OR substanz_haltung_bewertung.Schadensart = 'UmfS' OR (substanz_haltung_bewertung.Schadensart = 'StrS' AND streckenschaden ='A')) 
+                                           AND (substanz_haltung_bewertung.Schadensauspraegung = 'OfS' OR substanz_haltung_bewertung.Schadensauspraegung = 'DdS' OR substanz_haltung_bewertung.Schadensauspraegung = 'SoB')
+                                           AND Zustandsklasse_ges IN (0,1,2,3,4)
+  subkans_subkans_funkt_7580: |-
+    UPDATE substanz_haltung_bewertung SET Schadensgewicht = ? WHERE substanz_haltung_bewertung.pk = ?
+  subkans_subkans_funkt_7587: |-
+    SELECT
+                            substanz_haltung_bewertung.pk AS pk,
+                            substanz_haltung_bewertung.untersuchhal,
+                            SUM(substanz_haltung_bewertung.Schadensgewicht) AS Gesamtschadensgewicht,
+                            haltungen_untersucht.haltnam,
+                            coalesce(MIN(
+                                CASE 
+                                    WHEN substanz_haltung_bewertung.kuerzel = 'BCE' 
+                                         AND substanz_haltung_bewertung.station < haltungen_untersucht.laenge  
+                                    THEN substanz_haltung_bewertung.station
+                                    ELSE haltungen_untersucht.laenge
+                                END
+                            ),haltungen.laenge),  
+                        haltungen_substanz_bewertung.pk,
+                        haltungen_substanz_bewertung.objektklasse_gesamt
+                        FROM 
+                            substanz_haltung_bewertung
+                        JOIN 
+                            haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
+                        JOIN 
+                            haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = substanz_haltung_bewertung.untersuchhal
+                        JOIN 
+                            haltungen ON substanz_haltung_bewertung.untersuchhal = haltungen.haltnam
+                        WHERE ABS(strftime('%s', substanz_haltung_bewertung.untersuchtag) - strftime('%s', ?)) < 120
+                        GROUP BY 
+                            substanz_haltung_bewertung.untersuchhal;
+  subkans_subkans_funkt_7614: |-
+    SELECT
+                                        substanz_haltung_bewertung.pk AS pk,
+                                        substanz_haltung_bewertung.untersuchhal,
+                                        SUM(substanz_haltung_bewertung.Schadensgewicht) AS Gesamtschadensgewicht,
+                                        haltungen_untersucht.haltnam,
+                                        coalesce(MIN(
+                                            CASE 
+                                                WHEN substanz_haltung_bewertung.kuerzel = 'BCE' 
+                                                     AND substanz_haltung_bewertung.station < haltungen_untersucht.laenge  
+                                                THEN substanz_haltung_bewertung.station
+                                                ELSE haltungen_untersucht.laenge
+                                            END
+                                        ),haltungen.laenge),  
+                                    haltungen_substanz_bewertung.pk,
+                                    haltungen_substanz_bewertung.objektklasse_gesamt
+                                    FROM 
+                                        substanz_haltung_bewertung
+                                    JOIN 
+                                        haltungen_untersucht ON haltungen_untersucht.haltnam = substanz_haltung_bewertung.untersuchhal
+                                    JOIN 
+                                        haltungen_substanz_bewertung ON haltungen_substanz_bewertung.haltnam = substanz_haltung_bewertung.untersuchhal
+                                    JOIN 
+                                        haltungen ON substanz_haltung_bewertung.untersuchhal = haltungen.haltnam
+                                    WHERE ABS(strftime('%s', substanz_haltung_bewertung.createdat) - strftime('%s', ?)) < 120 
+                                    GROUP BY 
+                                        substanz_haltung_bewertung.untersuchhal;
+  subkans_subkans_funkt_7675: |-
+    UPDATE haltungen_substanz_bewertung SET Abnutzung = ? WHERE haltungen_substanz_bewertung.pk = ?
+  subkans_subkans_funkt_7681: |-
+    UPDATE haltungen_substanz_bewertung SET Substanzklasse = ? WHERE haltungen_substanz_bewertung.pk = ?
+  subkans_subkans_funkt_7693: |-
+    SELECT RecoverGeometryColumn('haltungen_substanz_bewertung', 'geom', ?, 'LINESTRING', 'XY');

@@ -1,0 +1,433 @@
+params:
+  y_func: y
+  x_func: x
+  intersects_func: Intersects
+  pointn_func: PointN
+queries:
+  tools_k_layersadapt_326: |-
+    SELECT srid
+                                FROM geom_cols_ref_sys
+                                WHERE Lower(f_table_name) = Lower(?)
+                                AND Lower(f_geometry_column) = Lower(?)
+  tools_k_befahrung_26: |-
+    SELECT
+               haltnam,
+               COUNT(*)
+            FROM
+               haltungen_untersucht
+            GROUP BY
+               haltnam
+            HAVING COUNT(*) > 1
+  tools_k_befahrung_41: |-
+    SELECT
+                   untersuchhal,
+                   COUNT(*)
+                FROM
+                   untersuchdat_haltung
+                WHERE kuerzel = 'BCD' and charakt1 = 'XP'
+                GROUP BY
+                   untersuchhal
+                HAVING COUNT(*) > 1
+  tools_application_538: |-
+    INSERT INTO teilgebiete (tgnam)
+                        SELECT teilgebiet FROM flaechen 
+                        WHERE teilgebiet IS NOT NULL AND
+                        teilgebiet NOT IN (SELECT tgnam FROM teilgebiete)
+                        GROUP BY teilgebiet
+  tools_application_547: |-
+    INSERT INTO abflussparameter (apnam)
+                        SELECT abflussparameter FROM flaechen 
+                        WHERE abflussparameter IS NOT NULL AND
+                        abflussparameter NOT IN (SELECT apnam FROM abflussparameter)
+                        GROUP BY abflussparameter
+  tools_k_runoffparams_104: |-
+    WITH flintersect AS (
+                        SELECT
+                            lf.pk,
+                            lf.flnam AS flnam, 
+                            coalesce(fl.neigkl, 1) AS neigkl,
+                            fl.abflussparameter AS abflussparameter, 
+                            fl.teilgebiet AS teilgebiet, 
+                            CASE WHEN (fl.aufteilen <> 'ja' AND not fl.aufteilen) OR fl.aufteilen IS NULL THEN fl.geom 
+                                 ELSE CastToMultiPolygon(intersection(fl.geom,tg.geom)) END AS geom
+                        FROM linkfl AS lf
+                        INNER JOIN flaechen AS fl
+                        ON lf.flnam = fl.flnam
+                        LEFT JOIN tezg AS tg
+                        ON lf.tezgnam = tg.flnam),
+                    qdist AS (
+                        SELECT 
+                            lf.pk,
+                            ST_Distance(fl.geom,ha.geom) AS "abstand",
+                            CASE WHEN Intersects(ha.geom,fl.geom) THEN
+                                HausdorffDistance(fl.geom,Intersection(ha.geom,fl.geom))
+                            ELSE 
+                                MaxDistance(fl.geom,ClosestPoint(ha.geom,fl.geom))-ST_Distance(fl.geom,ha.geom)
+                            END AS "fliesslaenge",
+                           fl.neigkl AS "neigkl", 
+                           CASE fl.neigkl WHEN 1 THEN 0.5 WHEN 2 THEN 2.5 WHEN 3 THEN 7.0 WHEN 4 THEN 12 WHEN 5 THEN 20 END AS "neigung"
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN haltungen AS ha
+                        ON ha.haltnam = lf.haltnam
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+                    UPDATE linkfl 
+                    SET (abflusstyp, speicherzahl, speicherkonst) = (
+                        SELECT 'Speicherkaskade', 3, ({fun})*0.3333
+                        FROM qdist
+                        WHERE qdist.pk = linkfl.pk)
+                    WHERE pk IN (
+                        SELECT lf.pk
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+  tools_k_runoffparams_161: |-
+    WITH flintersect AS (
+                        SELECT
+                            lf.pk,
+                            lf.flnam AS flnam, 
+                            coalesce(fl.neigkl, 1) AS neigkl,
+                            fl.abflussparameter AS abflussparameter, 
+                            fl.teilgebiet AS teilgebiet, 
+                            CASE WHEN fl.aufteilen IS NULL or fl.aufteilen <> 'ja' THEN fl.geom ELSE CastToMultiPolygon(intersection(fl.geom,tg.geom)) END AS geom
+                        FROM linkfl AS lf
+                        INNER JOIN flaechen AS fl
+                        ON lf.flnam = fl.flnam
+                        LEFT JOIN tezg AS tg
+                        ON lf.tezgnam = tg.flnam),
+                    qdist AS (
+                        SELECT 
+                            lf.pk,
+                            ST_Distance(fl.geom,ha.geom) AS "abstand",
+                            CASE WHEN Intersects(ha.geom,fl.geom) THEN
+                                HausdorffDistance(fl.geom,Intersection(ha.geom,fl.geom))
+                            ELSE 
+                                MaxDistance(fl.geom,ClosestPoint(ha.geom,fl.geom))-ST_Distance(fl.geom,ha.geom)
+                            END AS "fliesslaenge",
+                           fl.neigkl AS "neigkl", 
+                           CASE fl.neigkl WHEN 1 THEN 0.5 WHEN 2 THEN 2.5 WHEN 3 THEN 7.0 WHEN 4 THEN 12 WHEN 5 THEN 20 END AS "neigung"
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN haltungen AS ha
+                        ON ha.haltnam = lf.haltnam
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+                    UPDATE linkfl 
+                    SET (abflusstyp, fliesszeitkanal) = (
+                        SELECT 'Fliesszeiten', {fun}
+                        FROM qdist
+                        WHERE qdist.pk = linkfl.pk)
+                    WHERE pk IN (
+                        SELECT lf.pk
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+  tools_k_runoffparams_216: |-
+    WITH flintersect AS (
+                        SELECT
+                            lf.pk,
+                            lf.flnam AS flnam, 
+                            coalesce(fl.neigkl, 1) AS neigkl,
+                            fl.abflussparameter AS abflussparameter, 
+                            fl.teilgebiet AS teilgebiet, 
+                            CASE WHEN fl.aufteilen IS NULL or fl.aufteilen <> 'ja' THEN fl.geom ELSE CastToMultiPolygon(intersection(fl.geom,tg.geom)) END AS geom
+                        FROM linkfl AS lf
+                        INNER JOIN flaechen AS fl
+                        ON lf.flnam = fl.flnam
+                        LEFT JOIN tezg AS tg
+                        ON lf.tezgnam = tg.flnam),
+                    qdist AS (
+                        SELECT 
+                            lf.pk,
+                            ST_Distance(fl.geom,ha.geom) AS "abstand",
+                            CASE WHEN Intersects(ha.geom,fl.geom) THEN
+                                HausdorffDistance(fl.geom,Intersection(ha.geom,fl.geom))
+                            ELSE 
+                                MaxDistance(fl.geom,ClosestPoint(ha.geom,fl.geom))-ST_Distance(fl.geom,ha.geom)
+                            END AS "fliesslaenge",
+                           fl.neigkl AS "neigkl", 
+                           CASE fl.neigkl WHEN 1 THEN 0.5 WHEN 2 THEN 2.5 WHEN 3 THEN 7.0 WHEN 4 THEN 12 WHEN 5 THEN 20 END AS "neigung"
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN haltungen AS ha
+                        ON ha.haltnam = lf.haltnam
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+                    UPDATE linkfl 
+                    SET (abflusstyp, fliesszeitflaeche) = (
+                        SELECT 'Fliesszeiten', {fun}
+                        FROM qdist
+                        WHERE qdist.pk = linkfl.pk)
+                    WHERE pk IN (
+                        SELECT lf.pk
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+  tools_k_runoffparams_271: |-
+    WITH flintersect AS (
+                        SELECT
+                            lf.pk,
+                            lf.flnam AS flnam, 
+                            coalesce(fl.neigkl, 1) AS neigkl,
+                            fl.abflussparameter AS abflussparameter, 
+                            fl.teilgebiet AS teilgebiet, 
+                            CASE WHEN fl.aufteilen IS NULL or fl.aufteilen <> 'ja' THEN fl.geom ELSE CastToMultiPolygon(intersection(fl.geom,tg.geom)) END AS geom
+                        FROM linkfl AS lf
+                        INNER JOIN flaechen AS fl
+                        ON lf.flnam = fl.flnam
+                        LEFT JOIN tezg AS tg
+                        ON lf.tezgnam = tg.flnam),
+                    qdist AS (
+                        SELECT 
+                            lf.pk,
+                            ST_Distance(fl.geom,ha.geom) AS "abstand",
+                            CASE WHEN Intersects(ha.geom,fl.geom) THEN
+                                HausdorffDistance(fl.geom,Intersection(ha.geom,fl.geom))
+                            ELSE 
+                                MaxDistance(fl.geom,ClosestPoint(ha.geom,fl.geom))-ST_Distance(fl.geom,ha.geom)
+                            END AS "fliesslaenge",
+                           fl.neigkl AS "neigkl", 
+                           CASE fl.neigkl WHEN 1 THEN 0.5 WHEN 2 THEN 2.5 WHEN 3 THEN 7.0 WHEN 4 THEN 12 WHEN 5 THEN 20 END AS "neigung"
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN haltungen AS ha
+                        ON ha.haltnam = lf.haltnam
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+                    UPDATE linkfl 
+                    SET (abflusstyp, fliesszeitflaeche) = (
+                        SELECT 'Schwerpunktlaufzeit', {fun}
+                        FROM qdist
+                        WHERE qdist.pk = linkfl.pk)
+                    WHERE pk IN (
+                        SELECT lf.pk
+                        FROM linkfl AS lf
+                        INNER JOIN flintersect AS fl
+                        ON lf.pk = fl.pk
+                        INNER JOIN abflussparameter AS ap
+                        ON fl.abflussparameter = ap.apnam
+                        WHERE ap.bodenklasse {kriterium}{auswahl}
+                    )
+  tools_k_filepath_40: |-
+    select pk, foto_dateiname
+                            from untersuchdat_haltung
+  tools_k_filepath_80: |-
+    select pk, name, datei
+                                    from videos where objekt = 'Haltung'
+  tools_k_filepath_120: |-
+    select pk, foto_dateiname
+                            from untersuchdat_anschlussleitung
+  tools_k_filepath_161: |-
+    select pk, name, datei
+                                    from videos where objekt = 'Anschlussleitung'
+  tools_k_filepath_200: |-
+    select pk, foto_dateiname 
+                            from untersuchdat_schacht
+  tools_k_filepath_242: |-
+    select pk, name, datei
+                                    from videos where objekt = 'Schacht'
+  tools_k_schadenstexte_165: |-
+    SELECT
+                hu.pk AS id,
+                st_x(pointn(hu.geom, 1))                AS xanf,
+                st_y(pointn(hu.geom, 1))                AS yanf,
+                st_x(pointn(hu.geom, -1))               AS xend,
+                st_y(pointn(hu.geom, -1))               AS yend
+                FROM haltungen_untersucht AS hu
+                WHERE hu.haltnam IS NOT NULL AND
+                      hu.untersuchtag IS NOT NULL
+                ORDER BY id
+  tools_k_schadenstexte_186: |-
+    SELECT
+                uh.pk, hu.pk AS id,
+                CASE hu.untersuchrichtung
+                    WHEN 'gegen Fließrichtung' THEN GLength(hu.geom) - uh.station
+                    WHEN 'in Fließrichtung'    THEN uh.station
+                                               ELSE uh.station END        AS station
+                FROM untersuchdat_haltung AS uh
+                JOIN haltungen_untersucht AS hu
+                ON hu.haltnam = uh.untersuchhal AND
+                   hu.schoben = uh.schoben AND
+                   hu.schunten = uh.schunten AND
+                   hu.untersuchtag = uh.untersuchtag
+                WHERE hu.haltnam IS NOT NULL AND
+                      hu.untersuchtag IS NOT NULL AND
+                      coalesce(laenge, 0) > 0.05 AND
+                      uh.station IS NOT NULL AND
+                      hu.geom IS NOT NULL AND
+                      abs(uh.station) < 10000 
+                GROUP BY hu.haltnam, hu.untersuchtag, round(station, 3), uh.kuerzel
+                ORDER BY id, station
+  tools_k_schadenstexte_225: |-
+    UPDATE haltungen_untersucht
+                SET id = unum.row_number
+                FROM (
+                    SELECT
+                        hu.pk AS pk, hu.haltnam, 
+                        row_number() OVER (PARTITION BY hu.haltnam, hu.schoben, hu.schunten ORDER BY hu.untersuchtag DESC) AS row_number
+                    FROM haltungen_untersucht AS hu
+                    GROUP BY hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag
+                ) AS unum
+                WHERE haltungen_untersucht.pk = unum.pk
+  tools_k_schadenstexte_245: |-
+    WITH num AS (
+                    SELECT
+                        hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag, 
+                        row_number() OVER (PARTITION BY hu.haltnam, hu.schoben, hu.schunten ORDER BY hu.untersuchtag DESC) AS row_number
+                    FROM haltungen_untersucht AS hu
+                    GROUP BY hu.haltnam, hu.schoben, hu.schunten, hu.untersuchtag
+                )
+                UPDATE untersuchdat_haltung
+                SET id = uid.id
+                FROM (
+                    SELECT uh.pk AS pk, num.row_number AS id
+                    FROM untersuchdat_haltung AS uh
+                    JOIN num
+                    ON	uh.untersuchhal = num.haltnam AND
+                        uh.schoben = num.schoben AND
+                        uh.schunten = num.schunten AND
+                        uh.untersuchtag = num.untersuchtag
+                ) AS uid
+                WHERE untersuchdat_haltung.pk = uid.pk
+  tools_k_schadenstexte_362: |-
+    SELECT
+                sc.pk AS id,
+                st_x(sc.geop)                AS xsch,
+                st_y(sc.geop)                AS ysch
+                FROM schaechte_untersucht AS sc
+                WHERE sc.schnam IS NOT NULL AND
+                      sc.untersuchtag IS NOT NULL
+                ORDER BY id
+  tools_k_schadenstexte_382: |-
+    SELECT
+                us.pk, su.pk AS id,
+                0.0                                 AS station
+                FROM untersuchdat_schacht           AS us
+                JOIN schaechte_untersucht AS su ON su.schnam = us.untersuchsch AND su.untersuchtag = us.untersuchtag
+                WHERE su.schnam IS NOT NULL AND
+                      su.untersuchtag IS NOT NULL AND
+                      su.geop IS NOT NULL
+                GROUP BY su.schnam, su.untersuchtag, us.kuerzel
+                ORDER BY id, station, us.pk
+  tools_k_schadenstexte_411: |-
+    UPDATE schaechte_untersucht
+                SET id = unum.row_number
+                FROM (
+                    SELECT
+                        su.pk AS pk, su.schnam, 
+                        row_number() OVER (PARTITION BY su.schnam ORDER BY su.untersuchtag DESC) AS row_number
+                    FROM schaechte_untersucht AS su
+                    GROUP BY su.schnam, su.untersuchtag
+                ) AS unum
+                WHERE schaechte_untersucht.pk = unum.pk
+  tools_k_schadenstexte_431: |-
+    WITH num AS (
+                    SELECT
+                        su.schnam, su.untersuchtag, 
+                        row_number() OVER (PARTITION BY su.schnam ORDER BY su.untersuchtag DESC) AS row_number
+                    FROM schaechte_untersucht AS su
+                    GROUP BY su.schnam, su.untersuchtag
+                )
+                UPDATE untersuchdat_schacht
+                SET id = uid.id
+                FROM (
+                    SELECT uh.pk AS pk, num.row_number AS id
+                    FROM untersuchdat_schacht AS uh
+                    JOIN num
+                    ON	uh.untersuchsch = num.schnam AND
+                        uh.untersuchtag = num.untersuchtag
+                ) AS uid
+                WHERE untersuchdat_schacht.pk = uid.pk
+  tools_k_schadenstexte_631: |-
+    SELECT
+                hu.pk AS id,
+                st_x(pointn(hu.geom, 1))                AS xanf,
+                st_y(pointn(hu.geom, 1))                AS yanf,
+                st_x(pointn(hu.geom, -1))               AS xend,
+                st_y(pointn(hu.geom, -1))               AS yend,
+                GLength(hu.geom)                        AS laenge,
+                AsBinary(hu.geom) 						AS geom_wkb
+                FROM anschlussleitungen_untersucht AS hu
+                WHERE hu.leitnam IS NOT NULL AND
+                      hu.untersuchtag IS NOT NULL
+                ORDER BY id
+  tools_k_schadenstexte_654: |-
+    SELECT
+                uh.pk, hu.pk AS id,
+                CASE hu.untersuchrichtung
+                    WHEN 'gegen Fließrichtung' THEN GLength(hu.geom) - uh.station
+                    WHEN 'in Fließrichtung'    THEN uh.station
+                                               ELSE uh.station END        AS station
+                FROM untersuchdat_anschlussleitung AS uh
+                JOIN anschlussleitungen_untersucht AS hu
+                ON hu.leitnam = uh.untersuchleit AND
+                   hu.schoben = uh.schoben AND
+                   hu.schunten = uh.schunten AND
+                   hu.untersuchtag = uh.untersuchtag
+                WHERE hu.leitnam IS NOT NULL AND
+                      hu.untersuchtag IS NOT NULL AND
+                      coalesce(laenge, 0) > 0.05 AND
+                      uh.station IS NOT NULL AND
+                      hu.geom IS NOT NULL AND
+                      abs(uh.station) < 10000 AND
+                      hu.untersuchrichtung IS NOT NULL
+                GROUP BY hu.leitnam, hu.untersuchtag, round(station, 3), uh.kuerzel
+                ORDER BY id, station
+  tools_k_schadenstexte_694: |-
+    UPDATE anschlussleitungen_untersucht
+                SET id = unum.row_number
+                FROM (
+                    SELECT
+                        hu.pk AS pk, hu.leitnam, 
+                        row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten 
+                                           ORDER BY hu.untersuchtag DESC) AS row_number
+                    FROM anschlussleitungen_untersucht AS hu
+                    GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag
+                ) AS unum
+                WHERE anschlussleitungen_untersucht.pk = unum.pk
+  tools_k_schadenstexte_715: |-
+    WITH num AS (
+                    SELECT
+                        hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag, 
+                        row_number() OVER (PARTITION BY hu.leitnam, hu.schoben, hu.schunten 
+                                           ORDER BY hu.untersuchtag DESC) AS row_number
+                    FROM anschlussleitungen_untersucht AS hu
+                    GROUP BY hu.leitnam, hu.schoben, hu.schunten, hu.untersuchtag
+                )
+                UPDATE untersuchdat_anschlussleitung
+                SET id = uid.id
+                FROM (
+                    SELECT uh.pk AS pk, num.row_number AS id
+                    FROM untersuchdat_anschlussleitung AS uh
+                    JOIN num
+                    ON	uh.untersuchleit = num.leitnam AND
+                        uh.schoben = num.schoben AND
+                        uh.schunten = num.schunten AND
+                        uh.untersuchtag = num.untersuchtag
+                ) AS uid
+                WHERE untersuchdat_anschlussleitung.pk = uid.pk

@@ -1,2 +1,5 @@
-params: {}
-queries: {}
+params:
+  x_func: ST_x
+  y_func: ST_y
+  area_func: ST_area
+  intersects_func: ST_Intersects

@@ -159,10 +159,9 @@ class CreateUnbefFlDialog(QKanDialog, FORM_CLASS):  # type: ignore
         with DBConnection(dbname=self.db_name) as db_qkan:
             if not db_qkan.connected:
                 return
-            if not db_qkan.sql(
-                f"SELECT count(*) AS anz FROM tezg WHERE 1{auswahl}",
-                "QKan.CreateUnbefFlaechen (5)",
-            ):
+            db_qkan.loadmodule("createunbeffl")
+            sql = db_qkan.load_query("createunbeffl_count_selected_tezg", auswahl=auswahl)
+            if not db_qkan.sql(sql, "QKan.CreateUnbefFlaechen (5)"):
                 logger.info(
                     "CreateUnbefFlDialog.count_selection: QKan-Datenbank wurde wegen eines Fehlers geschlossen"
                 )
@@ -196,12 +195,13 @@ class CreateUnbefFlDialog(QKanDialog, FORM_CLASS):  # type: ignore
                 )
                 return
 
+            # Modul-spezifische Queries laden
+            db_qkan.loadmodule("createunbeffl")
+
             # Kontrolle, ob in Tabelle "abflussparameter" ein Datensatz für unbefestigte Flächen vorhanden ist
             # (Standard: apnam = '$Default_Unbef')
 
-            sql = """SELECT apnam
-                FROM abflussparameter
-                WHERE bodenklasse IS NOT NULL AND trim(bodenklasse) <> ''"""
+            sql = db_qkan.load_query("createunbeffl_select_abflussparameter")
 
             if not db_qkan.sql(sql, "createunbeffl.run (1)"):
                 return
@@ -210,15 +210,7 @@ class CreateUnbefFlDialog(QKanDialog, FORM_CLASS):  # type: ignore
 
             if data is None:
                 if QKan.config.autokorrektur:
-                    sql = """
-                    INSERT INTO abflussparameter
-                        ('apnam', 'kommentar', 'anfangsabflussbeiwert', 'endabflussbeiwert', 'benetzungsverlust', 
-                        'muldenverlust', 'benetzung_startwert', 'mulden_startwert', 'bodenklasse', 
-                        'createdat') 
-                    VALUES (
-                        '$Default_Unbef', 'von QKan ergänzt', 0.5, 0.5, 2, 5, 0, 0, 'LehmLoess', '13.01.2011 08:44:50'
-                        )
-                    """
+                    sql = db_qkan.load_query("createunbeffl_insert_default_abflussparameter")
                     if not db_qkan.sql(sql, "createunbeffl.run (2)"):
                         return
                 else:
@@ -228,19 +220,7 @@ class CreateUnbefFlDialog(QKanDialog, FORM_CLASS):  # type: ignore
                         'für unbefestigte Flächen ("bodenklasse" darf nicht leer oder NULL sein)',
                     )
 
-            sql = """SELECT te.abflussparameter, te.teilgebiet, bk.bknam, count(*) AS anz, 
-                    CASE WHEN te.abflussparameter ISNULL THEN 'Fehler: Kein Abflussparameter angegeben' ELSE
-                        CASE WHEN bk.infiltrationsrateanfang ISNULL THEN 'Fehler: Keine Bodenklasse angegeben' 
-                             WHEN bk.infiltrationsrateanfang < 0.00001 THEN 'Fehler: undurchlässige Bodenart'
-                             ELSE ''
-                        END
-                    END AS status
-                                FROM tezg AS te
-                                LEFT JOIN abflussparameter AS ap
-                                ON te.abflussparameter = ap.apnam
-                                LEFT JOIN bodenklassen AS bk
-                                ON bk.bknam = ap.bodenklasse
-                                GROUP BY abflussparameter, teilgebiet"""
+            sql = db_qkan.load_query("createunbeffl_select_tezg_bodenklassen")
             if not db_qkan.sql(sql, "createunbeffl.run (4)"):
                 return
 
