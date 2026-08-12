@@ -5,10 +5,13 @@ from qgis.core import QgsCoordinateReferenceSystem, QgsVectorLayer, QgsDataSourc
 from qgis.gui import QgsProjectionSelectionWidget
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
+    QApplication,
     QCheckBox,
     QDialog,
+    QDialogButtonBox,
     QFileDialog,
     QLineEdit,
+    QProgressBar,
     QPushButton,
     QWidget,
     QComboBox,
@@ -39,6 +42,9 @@ class ZustandDialog(_Dialog, ZUSTAND_CLASS):  # type: ignore
     db: QLineEdit
     date: QLineEdit
     comboBox: QComboBox
+    button_box: QDialogButtonBox
+    progressBar_zustandsklassen: QProgressBar
+    import_callback: Optional[Callable[[], bool]]
 
     epsg: QgsProjectionSelectionWidget
 
@@ -95,7 +101,32 @@ class ZustandDialog(_Dialog, ZUSTAND_CLASS):  # type: ignore
         self.db.setText(QKan.config.database.qkan)
         # noinspection PyCallByClass,PyArgumentList
         self.epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
+        self.progressBar_zustandsklassen.setRange(0, 100)
+        self.progressBar_zustandsklassen.setValue(0)
+        self.progressBar_zustandsklassen.setFormat("%p%")
+        self.import_callback = None
         self.button_box.helpRequested.connect(self.click_help)
+
+    def accept(self) -> None:
+        if self.import_callback is None:
+            super().accept()
+            return
+
+        self.button_box.setEnabled(False)
+        self.progressBar_zustandsklassen.setValue(0)
+        QApplication.processEvents()
+
+        success = False
+        try:
+            success = bool(self.import_callback())
+        finally:
+            self.button_box.setEnabled(True)
+            QApplication.processEvents()
+
+        if success:
+            self.progressBar_zustandsklassen.setValue(100)
+            QApplication.processEvents()
+            super().accept()
 
 
     def checkBox_click(self):

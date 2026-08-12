@@ -1,8 +1,10 @@
 import os
 from datetime import datetime
+from typing import Optional
 
 from qgis.core import Qgis
 from qgis.utils import iface, pluginDirectory
+from qgis.PyQt.QtWidgets import QApplication, QProgressBar
 from qkan.database.dbfunc import DBConnection
 
 from qkan.utils import get_logger
@@ -13,17 +15,41 @@ logger = get_logger("QKan.zustand.import")
 
 
 class Zustandsklassen_funkt:
-    def __init__(self, check_cb,  db_qkan: DBConnection, date, epsg, datetype):
+    def __init__(
+        self,
+        check_cb,
+        db_qkan: DBConnection,
+        date,
+        epsg,
+        datetype,
+        progress_bar: Optional[QProgressBar] = None,
+    ):
 
         self.check_cb = check_cb
         self.db = db_qkan
         self.date = date
         self.crs = epsg
         self.datetype = datetype
+        self.progress_bar = progress_bar
 
         self.haltung=False
         self.leitung=False
         self.qmlDir = os.path.join(pluginDirectory("qkan"), "zustandsklassen")
+
+    def _set_progress(self, value: int) -> None:
+        if self.progress_bar is None:
+            return
+
+        self.progress_bar.setValue(max(0, min(100, value)))
+        QApplication.processEvents()
+
+    def _run_step(self, steps, current, func) -> int:
+        current += 1
+        progress = int((current - 1) * 100 / steps)
+        self._set_progress(progress)
+        func()
+        self._set_progress(int(current * 100 / steps))
+        return current
     
     def run(self):
         check_cb = self.check_cb
@@ -44,74 +70,81 @@ class Zustandsklassen_funkt:
         self.bewertungstexte()
 
         if check_cb['cb7']:
-            self.haltung = True
-            self.leitung = False
-            self.bewertungstexte_haltung()
+            selected_steps.append(lambda: self._set_haltung_and_run(self.bewertungstexte_haltung))
 
         if check_cb['cb8']:
-            self.bewertungstexte_schacht()
+            selected_steps.append(self.bewertungstexte_schacht)
 
         if check_cb['cb10']:
-            self.leitung = True
-            self.haltung = False
-            self.bewertungstexte_leitung()
+            selected_steps.append(lambda: self._set_leitung_and_run(self.bewertungstexte_leitung))
 
         if check_cb['cb3'] and check_cb['cb1']:
-            self.haltung = True
-            self.leitung = False
-            self.bewertung_dwa_haltung()
+            selected_steps.append(lambda: self._set_haltung_and_run(self.bewertung_dwa_haltung))
 
         if check_cb['cb5'] and check_cb['cb4']:
-            self.bewertung_dwa_schacht()
+            selected_steps.append(self.bewertung_dwa_schacht)
 
         if check_cb['cb3'] and check_cb['cb2']:
-            self.bewertung_isy_haltung()
+            selected_steps.append(self.bewertung_isy_haltung)
 
         if check_cb['cb5'] and check_cb['cb6']:
-            self.bewertung_isy_schacht()
+            selected_steps.append(self.bewertung_isy_schacht)
 
         if check_cb['cb9']:
-            self.haltung = True
-            self.leitung = False
-            self.bewertung_dwa_neu_haltung()
+            selected_steps.append(lambda: self._set_haltung_and_run(self.bewertung_dwa_neu_haltung))
 
         if check_cb['cb14']:
-            self.bewertung_dwa_neu_schaechte()
+            selected_steps.append(self.bewertung_dwa_neu_schaechte)
 
         if check_cb['cb15']:
-            self.leitung = True
-            self.haltung = False
-            self.bewertung_dwa_neu_leitung()
+            selected_steps.append(lambda: self._set_leitung_and_run(self.bewertung_dwa_neu_leitung))
 
         if check_cb['cb11'] and check_cb['cb12']:
-            self.leitung = True
-            self.haltung = False
-            self.bewertung_dwa_leitung()
+            selected_steps.append(lambda: self._set_leitung_and_run(self.bewertung_dwa_leitung))
 
         if check_cb['cb11'] and check_cb['cb13']:
-            self.bewertung_isy_leitung()
+            selected_steps.append(self.bewertung_isy_leitung)
 
         if check_cb['cb16']:
-            self.einzelfallbetrachtung_haltung()
-            self.bewertung_dwa_neu_haltung()
+            selected_steps.append(self.einzelfallbetrachtung_haltung)
+            selected_steps.append(lambda: self._set_haltung_and_run(self.bewertung_dwa_neu_haltung))
 
         if check_cb['cb17']:
-            self.einzelfallbetrachtung_schacht()
-            self.bewertung_dwa_neu_schaechte()
+            selected_steps.append(self.einzelfallbetrachtung_schacht)
+            selected_steps.append(self.bewertung_dwa_neu_schaechte)
 
         if check_cb['cb18']:
-            self.einzelfallbetrachtung_leitung()
-            self.bewertung_dwa_neu_leitung()
+            selected_steps.append(self.einzelfallbetrachtung_leitung)
+            selected_steps.append(lambda: self._set_leitung_and_run(self.bewertung_dwa_neu_leitung))
 
         if check_cb['cb19']:
-            self.tab_dwa_haltung()
-            self.tab_dwa_leitung()
-            self.tab_dwa_schacht()
+            selected_steps.append(self.tab_dwa_haltung)
+            selected_steps.append(self.tab_dwa_leitung)
+            selected_steps.append(self.tab_dwa_schacht)
 
         if check_cb['cb20']:
-            self.tab_isybau_haltung()
-            self.tab_isybau_leitung()
-            self.tab_isybau_schacht()
+            selected_steps.append(self.tab_isybau_haltung)
+            selected_steps.append(self.tab_isybau_leitung)
+            selected_steps.append(self.tab_isybau_schacht)
+
+        total_steps = max(1, len(selected_steps))
+        current_step = 0
+        self._set_progress(0)
+
+        for step in selected_steps:
+            current_step = self._run_step(total_steps, current_step, step)
+
+        self._set_progress(100)
+
+    def _set_haltung_and_run(self, func):
+        self.haltung = True
+        self.leitung = False
+        func()
+
+    def _set_leitung_and_run(self, func):
+        self.leitung = True
+        self.haltung = False
+        func()
 
     def bewertungstexte(self):
         db = self.db
