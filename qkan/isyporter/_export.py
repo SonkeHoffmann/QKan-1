@@ -17,7 +17,30 @@ from qkan.tools.qkan_utils import fortschritt
 from qkan.utils import get_logger
 
 logger = get_logger("QKan.xml.export")
-locale.setlocale(locale.LC_TIME, "deu_deu")
+
+
+def _set_time_locale() -> None:
+    for locale_name in (
+        "de_DE.UTF-8",
+        "de_DE.utf8",
+        "de_DE",
+        "deu_deu",
+        "German_Germany.1252",
+    ):
+        try:
+            locale.setlocale(locale.LC_TIME, locale_name)
+            return
+        except locale.Error:
+            continue
+
+    try:
+        locale.setlocale(locale.LC_TIME, "")
+        logger.warning("Konnte keine deutsche LC_TIME-Locale setzen; verwende System-Default.")
+    except locale.Error:
+        logger.warning("Konnte keine LC_TIME-Locale setzen; verwende unveränderte Locale.")
+
+
+_set_time_locale()
 
 month_map = {
     "Jan": "01", "Jan.": "01", "Januar": "01",

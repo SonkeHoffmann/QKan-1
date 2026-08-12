@@ -6,9 +6,11 @@ from qgis.gui import QgsProjectionSelectionWidget
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
     QCheckBox,
+    QApplication,
     QDialog,
     QFileDialog,
     QLineEdit,
+    QProgressBar,
     QPushButton,
     QWidget,
     QDialogButtonBox,
@@ -41,12 +43,14 @@ class SubkansDialog(_Dialog, SUBKANS_CLASS):  # type: ignore
     db: QLineEdit
     date: QLineEdit
     comboBox: QComboBox
+    progressBar_subkans: QProgressBar
 
     epsg: QgsProjectionSelectionWidget
 
     checkBox_1: QCheckBox
     checkBox_2: QCheckBox
     checkBox_3: QCheckBox
+    import_callback: Optional[Callable[[], bool]]
 
 
     def __init__(
@@ -79,7 +83,32 @@ class SubkansDialog(_Dialog, SUBKANS_CLASS):  # type: ignore
         self.db.setText(QKan.config.database.qkan)
         # noinspection PyCallByClass,PyArgumentList
         self.epsg.setCrs(QgsCoordinateReferenceSystem.fromEpsgId(QKan.config.epsg))
+        self.progressBar_subkans.setRange(0, 100)
+        self.progressBar_subkans.setValue(0)
+        self.progressBar_subkans.setFormat("%p%")
+        self.import_callback = None
         self.button_box.helpRequested.connect(self.click_help)
+
+    def accept(self) -> None:
+        if self.import_callback is None:
+            super().accept()
+            return
+
+        self.button_box.setEnabled(False)
+        self.progressBar_subkans.setValue(0)
+        QApplication.processEvents()
+
+        success = False
+        try:
+            success = bool(self.import_callback())
+        finally:
+            self.button_box.setEnabled(True)
+            QApplication.processEvents()
+
+        if success:
+            self.progressBar_subkans.setValue(100)
+            QApplication.processEvents()
+            super().accept()
 
     def select_db(self):
         filename, _filter = QFileDialog.getOpenFileName(self, "Datenbank wählen", "", '*.sqlite')
