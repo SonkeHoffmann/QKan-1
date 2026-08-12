@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Callable, Optional
 
 from qkan.utils import get_logger
 from math import pi, floor, ceil
@@ -13,6 +14,7 @@ from qgis.core import (
     QgsVectorLayer,
     QgsDataSourceUri,
 )
+from qgis.PyQt.QtWidgets import QApplication, QProgressBar
 from qgis.utils import iface, spatialite_connect
 
 from qkan import enums
@@ -22,7 +24,15 @@ logger = get_logger("QKan.zustand.import")
 
 
 class Subkans_funkt:
-    def __init__(self, check_cb, db_qkan: DBConnection, date, epsg, datetype):
+    def __init__(
+        self,
+        check_cb,
+        db_qkan: DBConnection,
+        date,
+        epsg,
+        datetype,
+        progress_bar: Optional[QProgressBar] = None,
+    ):
 
         self.check_cb = check_cb
         self.db = db_qkan
@@ -31,20 +41,42 @@ class Subkans_funkt:
         self.haltung = True
 
         self.datetype = datetype
+        self.progress_bar = progress_bar
+
+    def _set_progress(self, value: int) -> None:
+        if self.progress_bar is None:
+            return
+
+        self.progress_bar.setValue(max(0, min(100, value)))
+        QApplication.processEvents()
+
+    def _loop_progress(self, current: int, total: int, start: int, span: int) -> None:
+        if total <= 0:
+            return
+
+        value = start + int(span * current / total)
+        self._set_progress(value)
 
     def run(self):
         check_cb = self.check_cb
 
+        self._set_progress(0)
+
         if check_cb['cb1']:
             self.einzelfallbetrachtung_haltung()
+            self._set_progress(20)
 
         if check_cb['cb2']:
             self.bewertung_dwa_neu_haltung()
+            self._set_progress(40)
 
         if check_cb['cb3']:
             self.bewertung_subkans()
+            self._set_progress(60)
             self.schadens_ueberlagerung()
+            self._set_progress(80)
             self.subkans()
+            self._set_progress(100)
 
     # jh: besser round(n, decimals), weil round_up_down bei negativen Zahlen falsch rundet...
     def round_up_down(self, n, decimals=2):
@@ -7544,7 +7576,9 @@ class Subkans_funkt:
         data = (date,)
         db.sql(sql,parameters=data)
 
-        for attr in db1.fetchall():
+        rows = db1.fetchall()
+        total_rows = len(rows)
+        for index, attr in enumerate(rows, start=1):
 
             sl = attr[28]
             # iface.messageBar().pushMessage("Error",
@@ -7581,6 +7615,9 @@ class Subkans_funkt:
             data = (round_up(sg,2), attr[0])
 
             db.sql(sql,parameters=data)
+
+            if total_rows > 0 and (index == total_rows or index % max(1, total_rows // 100) == 0):
+                self._loop_progress(index, total_rows, 80, 12)
 
         #Bruttoschadenslänge BSL und Abnutzung ABN
         if self.datetype == 'Befahrungsdatum':
@@ -7644,7 +7681,9 @@ class Subkans_funkt:
         sbk='-'
         abn='-'
 
-        for attr in db.fetchall():
+        rows = db.fetchall()
+        total_rows = len(rows)
+        for index, attr in enumerate(rows, start=1):
             # abn = bsl/länge*100
             if attr[2] not in ("","not found", None, None) and attr[3] not in ("","not found", None, None):
                 print(abn)
@@ -7682,6 +7721,9 @@ class Subkans_funkt:
             data = (sbk, attr[5])
 
             db.sql(sql,parameters=data)
+
+            if total_rows > 0 and (index == total_rows or index % max(1, total_rows // 100) == 0):
+                self._loop_progress(index, total_rows, 92, 8)
 
         try:
             db1.commit()

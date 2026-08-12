@@ -36,6 +36,8 @@ class Substanzklasse(QKanPlugin):
     def run_import(self) -> None:
         """Anzeigen des Importformulars Substanzklassen und anschließender Start der Ermittlung der Substanzklassen"""
 
+        self.import_dlg.import_callback = self._doimport
+        self.import_dlg.progressBar_subkans.setValue(0)
         self.import_dlg.show()
 
         if self.import_dlg.exec_():
@@ -102,6 +104,37 @@ class Substanzklasse(QKanPlugin):
         check_cb['cb2'] = self.import_dlg.checkBox_2.isChecked()
         check_cb['cb3'] = self.import_dlg.checkBox_3.isChecked()
 
+        self.import_dlg.progressBar_subkans.setValue(0)
+
+        if not QKan.config.database.qkan:
+            fehlermeldung("Fehler beim Import", "Es wurde keine Datei ausgewählt!")
+            self.iface.messageBar().pushMessage(
+                "Fehler beim Import",
+                "Es wurde keine Datei ausgewählt!",
+                level=Qgis.MessageLevel.Critical,
+            )
+            return False
+
+        crs: QgsCoordinateReferenceSystem = self.import_dlg.epsg.crs()
+
+        try:
+            epsg = int(crs.postgisSrid())
+        except ValueError:
+            self.log.exception(
+                "Failed to parse selected CRS %s\nauthid:%s\n"
+                "description:%s\nproj:%s\npostgisSrid:%s\nsrsid:%s\nacronym:%s",
+                crs,
+                crs.authid(),
+                crs.description(),
+                crs.findMatchingProj(),
+                crs.postgisSrid(),
+                crs.srsid(),
+                crs.ellipsoidAcronym(),
+            )
+            return False
+
+        QKan.config.epsg = epsg
+        QKan.config.save()
 
         self.log.info("Creating DB")
         with DBConnection(
@@ -120,7 +153,14 @@ class Substanzklasse(QKanPlugin):
                 return False
 
             self.log.info("DB creation finished, starting Zustandsklassen")
-            subkans = Subkans_funkt(check_cb, db_qkan, QKan.config.zustand.date, QKan.config.epsg, datetype)
+            subkans = Subkans_funkt(
+                check_cb,
+                db_qkan,
+                QKan.config.zustand.date,
+                QKan.config.epsg,
+                datetype,
+                progress_bar=self.import_dlg.progressBar_subkans,
+            )
             subkans.run()
             del subkans
 
