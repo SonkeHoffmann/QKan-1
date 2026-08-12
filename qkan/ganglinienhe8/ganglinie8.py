@@ -1,9 +1,25 @@
 import datetime
-
-import matplotlib.dates as mdates
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from qkan.dependency_paths import ensure_user_site_packages
+ensure_user_site_packages()
+try:
+    import matplotlib
+    try:
+        matplotlib.use("QtAgg")
+    except Exception:
+        pass
+    import matplotlib.dates as mdates
+    from matplotlib import pyplot as plt
+    try:
+        from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+    except ImportError:
+        from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+except ImportError:
+    mdates = None
+    plt = None
+    FigureCanvas = None
+    NavigationToolbar = None
 from qgis.PyQt.QtWidgets import QWidget
 
 from qkan.database.sbfunc import SBConnection
@@ -21,6 +37,9 @@ class Ganglinie8:
          Ganglinien haben.
         :type t: int
         """
+        if plt is None:
+            raise ImportError("matplotlib is required for Ganglinie8")
+
         self.__log = get_logger("QKan.gangliniehe8.Ganglinie8")
         self.__t = t
         self.__dialog = GanglinieDialog()

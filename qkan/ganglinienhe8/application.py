@@ -25,7 +25,6 @@ import os.path
 from typing import Any, List, Optional, Union
 
 from PyQt5.QtGui import QMouseEvent
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QFileDialog, QGridLayout, QLabel, QMessageBox
@@ -35,13 +34,35 @@ from qgis.gui import QgisInterface
 from qkan import QKan
 from qkan.tools.qkan_utils import get_qkanlayer_attributes
 from qkan.database.sbfunc import SBConnection
-from . import plotter, slider as s
+from . import slider as s
+from qkan.dependency_paths import ensure_user_site_packages
+
+ensure_user_site_packages()
+try:
+    import matplotlib
+    try:
+        matplotlib.use("QtAgg")
+    except Exception:
+        pass
+    from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
+except ImportError:
+    try:
+        from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
+    except ImportError:
+        NavigationToolbar2QT = None
+try:
+    from . import plotter
+    from .ganglinie8 import Ganglinie8
+    _matplotlib_available = True
+except ImportError:
+    plotter = None
+    Ganglinie8 = None
+    _matplotlib_available = False
 
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 from .application_dialog import LaengsschnittDialog
 from .dijkstra import find_route
-from .ganglinie8 import Ganglinie8
 from .models import HaltungenStruct, LayerType, SliderMode, Type
 from ..utils import get_logger
 
@@ -71,9 +92,12 @@ class GanglinienHE8:
         self.__speed_controller: Optional[s.Slider] = None
         self.__speed_label = None
         self.__default_function = None
-        self.__ganglinie = Ganglinie8(1)
-        self.__dlg2 = self.__ganglinie.get_dialog()
+        self.__ganglinie = Ganglinie8(1) if _matplotlib_available else None
+        self.__dlg2 = self.__ganglinie.get_dialog() if self.__ganglinie is not None else None
         self.__workspace = ""
+
+        if not _matplotlib_available:
+            self.__log.warning("Matplotlib fehlt; das Ganglinien- und Längsschnitt-Tool bleibt deaktiviert.")
 
         self.__log.info("Application-Modul gestartet")
 
@@ -82,6 +106,9 @@ class GanglinienHE8:
         Längsschnitt- und Ganglinie-Tool werden als unabhängige Werkzeuge dargestellt.
         Hier werden die GUI-Elemente mit bestimmten Event-Listenern verbunden.
         """
+        if not _matplotlib_available:
+            return
+
         icon_path_laengs = ":/plugins/qkan/ganglinienhe8/icon_laengs.png"
         icon_path_gangl = ":/plugins/qkan/ganglinienhe8/icon_gangl.png"
         icon_forward = ":/plugins/qkan/ganglinienhe8/icon_forward.png"
@@ -371,6 +398,10 @@ class GanglinienHE8:
         """
         Wird aufgerufen, wenn der Längsschnitt angeklickt wird.
         """
+        if not _matplotlib_available:
+            self.__log.warning("Matplotlib fehlt; der Längsschnitt kann nicht gestartet werden.")
+            return
+
         self.__log.info("Längsschnitt-Tool gestartet!")
 
         def init_application() -> Any:
@@ -610,6 +641,10 @@ class GanglinienHE8:
         """
         Wird aufgerufen, wenn das Ganglinien-Tool angeklickt wird.
         """
+        if not _matplotlib_available:
+            self.__log.warning("Matplotlib fehlt; die Ganglinie kann nicht gestartet werden.")
+            return
+
         tmp = Ganglinie8(self.__t)
         self.__t += 1
         self.__log.info("Ganglinie8 hinzugefügt")

@@ -1,8 +1,23 @@
 from PyQt5.QtWidgets import *
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
+try:
+    import matplotlib
+    try:
+        matplotlib.use("QtAgg")
+    except Exception:
+        pass
+    from matplotlib import pyplot as plt
+    try:
+        from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+    except ImportError:
+        from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+    from matplotlib.figure import Figure
+except ImportError:
+    plt = None
+    FigureCanvas = None
+    NavigationToolbar = None
+    Figure = None
 from qgis.core import Qgis
 from qgis.gui import QgisInterface
 
@@ -10,7 +25,9 @@ from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.tools.qkan_utils import fehlermeldung, get_database_QKan
 from qkan.plugin import QKanPlugin
+from qkan.dependency_paths import ensure_user_site_packages
 
+ensure_user_site_packages()
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 from ._laengsschnitt import LaengsTask
@@ -24,11 +41,16 @@ class Laengsschnitt(QKanPlugin):
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
 
+        self._matplotlib_available = plt is not None
         self.laengs_dlg = None
+        self.animation = None
         self.db_qkan: DBConnection = None
         self.auswahl={}
 
         self.windows = []
+
+        if not self._matplotlib_available:
+            logger.warning("Matplotlib fehlt; das Längsschnitt-Modul bleibt deaktiviert.")
 
 
     def refresh_function(self, database, fig, canv, fig_2, canv_2, fig_3, canv_3, selected, auswahl, point, massstab,
@@ -130,6 +152,9 @@ class Laengsschnitt(QKanPlugin):
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
+        if not self._matplotlib_available:
+            return
+
         icon = ":/plugins/qkan/laengsschnitt/res/laengsschnitt.png"
         QKan.instance.add_action(
             icon,
@@ -147,7 +172,7 @@ class Laengsschnitt(QKanPlugin):
 
     def closeEvent(self, event):
         #TODO: Animation stoppen und löchen wenn das Fenster geschlossen wird, da sonst immer ein fehler kommt!
-        if self.animation:
+        if getattr(self, "animation", None):
             #self.animation.event_source.stop()  # Animation beenden
             self.animation.stop_animation()
             self.animation = None
@@ -157,6 +182,9 @@ class Laengsschnitt(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if not self._matplotlib_available:
+            return
+
         self.dialog = self.laengs_dlg
 
         fig_attr ='fig1'
@@ -175,6 +203,9 @@ class Laengsschnitt(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if not self._matplotlib_available:
+            return
+
         self.dialog = self.laengs_dlg
 
 
@@ -196,6 +227,9 @@ class Laengsschnitt(QKanPlugin):
         """
         Fügt das Matplotlib-Widget in den jeweiligen Dialog ein.
         """
+        if not self._matplotlib_available:
+            return
+
         self.dialog = self.laengs_dlg
 
         fig_attr = 'fig3'
@@ -220,6 +254,9 @@ class Laengsschnitt(QKanPlugin):
         self.get_widget()
         self.get_widget_2()
         self.get_widget_3()
+        if not self._matplotlib_available:
+            logger.warning("Matplotlib fehlt; der Längsschnitt kann nicht geöffnet werden.")
+            return
         self.fig = self.dialog.fig
         self.canv = self.dialog.canv
         self.selected = self.dialog.selected

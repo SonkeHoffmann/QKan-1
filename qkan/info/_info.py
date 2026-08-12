@@ -1,10 +1,17 @@
 from qgis.utils import spatialite_connect
 
 from qkan.database.dbfunc import DBConnection
+from qkan.dependency_paths import ensure_user_site_packages
 from qkan.utils import get_logger
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-import matplotlib.patches as mpatches
+ensure_user_site_packages()
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib.gridspec import GridSpec
+    import matplotlib.patches as mpatches
+except ImportError:
+    plt = None
+    GridSpec = None
+    mpatches = None
 import numpy as np
 from math import cos, sin, radians
 
@@ -25,6 +32,9 @@ class Info:
     def __init__(self, fig_1, canv_1, fig_2, canv_2, fig_3, canv_3, fig_4, canv_4, fig_5, canv_5, fig_6, canv_6, fig_7,
                  canv_7, fig_8, canv_8, fig_9, canv_9, fig_10, canv_10, combo, dat1, dat2, dat3, dat8, dat9,
                  db_qkan: DBConnection, check):
+        if plt is None:
+            raise ImportError("matplotlib is required for Info")
+
         self.db_qkan = db_qkan
         self.anz_haltungen = 0
         self.anz_schaechte = 0

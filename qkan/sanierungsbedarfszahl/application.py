@@ -9,7 +9,7 @@ from qkan.plugin import QKanPlugin
 # noinspection PyUnresolvedReferences
 from . import resources  # noqa: F401
 from .application_dialog import SanierungDialog
-from .sanierungsbedarfszahl_funkt import SanierungsbedarfszahlFunkt
+from .sanierungsbedarfszahl_funkt import HAS_PANDAS, SanierungsbedarfszahlFunkt
 
 
 class Sanierungsbedarfszahl(QKanPlugin):
@@ -20,6 +20,10 @@ class Sanierungsbedarfszahl(QKanPlugin):
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
+        if not HAS_PANDAS:
+            self.log.warning("pandas fehlt; das Sanierungsbedarfszahl-Modul bleibt deaktiviert.")
+            return
+
         icon_import = ":/plugins/qkan/sanierungsbedarfszahl/res/icon_sanierungsbedarfszahl.png"
         QKan.instance.add_action(
             icon_import,
@@ -34,6 +38,15 @@ class Sanierungsbedarfszahl(QKanPlugin):
 
     def run_import(self) -> None:
         """Anzeigen des Importformulars Sanierungsbedarfszahl und anschließender Start der Ermittlung der Sanierungsbedarfszahl"""
+
+        if not HAS_PANDAS:
+            fehlermeldung("Fehlende Abhängigkeit", "Das Paket pandas ist nicht installiert.")
+            self.iface.messageBar().pushMessage(
+                "Fehlende Abhängigkeit",
+                "Das Paket pandas ist nicht installiert.",
+                level=Qgis.MessageLevel.Critical,
+            )
+            return
 
         self.import_dlg.show()
 

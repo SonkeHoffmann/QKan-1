@@ -1,20 +1,40 @@
 import datetime
-
-import matplotlib.animation as animation
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
+from qkan.dependency_paths import ensure_user_site_packages
+ensure_user_site_packages()
+try:
+    import matplotlib
+    try:
+        matplotlib.use("QtAgg")
+    except Exception:
+        pass
+    import matplotlib.animation as animation
+    import matplotlib.dates as mdates
+    import matplotlib.pyplot as plt
+except ImportError:
+    animation = None
+    mdates = None
+    plt = None
 try:
     import win32com.client
     WINDOWS = True
 except ImportError:
     WINDOWS = False
 from PyQt5 import QtCore
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.transforms import Affine2D
+try:
+    from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.transforms import Affine2D
+except ImportError:
+    try:
+        from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.transforms import Affine2D
+    except ImportError:
+        FigureCanvas = None
+        Affine2D = None
 from qgis.core import Qgis
 from qgis.utils import iface, spatialite_connect
 import gc
 import numpy as np
+from typing import Any
 from PyQt5.QtCore import QTimer
 
 from qkan.database.dbfunc import DBConnection
@@ -28,10 +48,13 @@ logger = get_logger("QKan.laengs.import")
 # TODO: mit einpflegen, dass die Geländehöhe von meheren DGM Layern angezeigt wird und Kreuzunde Haltungen dargestellt werden
 
 class LaengsTask:
-    def __init__(self, db_qkan: DBConnection, file: str, fig: plt.figure, canv: FigureCanvas, fig_2: plt.figure,
-                 canv_2: FigureCanvas, fig_3: plt.figure, canv_3: FigureCanvas, selected, auswahl, point,
+    def __init__(self, db_qkan: DBConnection, file: str, fig: Any, canv: Any, fig_2: Any,
+                 canv_2: Any, fig_3: Any, canv_3: Any, selected, auswahl, point,
                  massstab, features, db_erg, ausgabe, max, label_4,
                  pushButton_4, horizontalSlider_3, geschw_2, anf):
+        if plt is None:
+            raise ImportError("matplotlib is required for LaengsTask")
+
         self.db_qkan = db_qkan
         self.fig = fig
         self.canv = canv

@@ -1,12 +1,32 @@
-import datetime
+from __future__ import annotations
 
-import matplotlib.animation as animation
-import matplotlib.lines as lines
-import matplotlib.text as mtext
-import matplotlib.transforms as mtransforms
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.lines import Line2D
+import datetime
+from qkan.dependency_paths import ensure_user_site_packages
+ensure_user_site_packages()
+try:
+    import matplotlib
+    try:
+        matplotlib.use("QtAgg")
+    except Exception:
+        pass
+    import matplotlib.animation as animation
+    import matplotlib.lines as lines
+    import matplotlib.text as mtext
+    import matplotlib.transforms as mtransforms
+    from matplotlib import pyplot as plt
+    try:
+        from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
+    except ImportError:
+        from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+    from matplotlib.lines import Line2D
+except ImportError:
+    animation = None
+    lines = None
+    mtext = None
+    mtransforms = None
+    plt = None
+    FigureCanvasQTAgg = None
+    Line2D = None
 from qgis.PyQt.QtWidgets import QWidget
 
 from qkan.database.sbfunc import SBConnection
@@ -26,6 +46,9 @@ class Laengsschnitt:
         selektierten Elemente verfügt.
         :type _route: dict
         """
+        if plt is None:
+            raise ImportError("matplotlib is required for QKan plotter")
+
         self.__log = get_logger("QKan.plotter.Laengsschnitt")
         self.__route = _route
         self.__fig = plt.figure(0)

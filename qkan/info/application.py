@@ -4,14 +4,30 @@ from PyQt5.QtWidgets import *
 from qkan import QKan
 from qkan.database.dbfunc import DBConnection
 from qkan.plugin import QKanPlugin
+from qkan.dependency_paths import ensure_user_site_packages
 from xml.etree.ElementTree import Element, SubElement, tostring
 try:
     import win32com.client as w3c
 except:
     w3c = None
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+ensure_user_site_packages()
+try:
+    import matplotlib
+    try:
+        matplotlib.use("QtAgg")
+    except Exception:
+        pass
+    from matplotlib import pyplot as plt
+    try:
+        from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+    except ImportError:
+        from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+except ImportError:
+    plt = None
+    FigureCanvas = None
+    NavigationToolbar = None
 from typing import Dict, List, Optional, Union
 from pathlib import Path
 from xml.dom import minidom
@@ -20,8 +36,6 @@ from qkan.utils import get_logger
 logger = get_logger("QKan")
 
 from PyQt5.QtWidgets import QTableWidgetItem
-
-from ._info import Info
 from .application_dialog import InfoDialog
 
 # noinspection PyUnresolvedReferences
@@ -55,7 +69,14 @@ class Infos(QKanPlugin):
     def __init__(self, iface: QgisInterface):
         super().__init__(iface)
 
+        self._matplotlib_available = plt is not None
+
         self.info_dlg = InfoDialog(default_dir=self.default_dir, tr=self.tr)
+
+        if not self._matplotlib_available:
+            logger.warning("Matplotlib fehlt; das Info-Modul bleibt deaktiviert.")
+            return
+
         self.info_dlg.pb_exportExcel.clicked.connect(self.run_info)
         self.info_dlg.pb_exportXML.clicked.connect(self.run_info_2)
         self.info_dlg.lineEdit.textChanged.connect(self.run)
@@ -85,6 +106,9 @@ class Infos(QKanPlugin):
 
     # noinspection PyPep8Naming
     def initGui(self) -> None:
+        if not self._matplotlib_available:
+            return
+
         icon_import = ":/plugins/qkan/info/res/info.png"
         QKan.instance.add_action(
             icon_import,
@@ -249,6 +273,12 @@ class Infos(QKanPlugin):
 
 
     def run(self) -> None:
+        if not self._matplotlib_available:
+            logger.warning("Matplotlib fehlt; das Info-Modul kann nicht ausgeführt werden.")
+            return
+
+        from ._info import Info
+
         # Prüfen, ob ein Projekt geladen ist
         project = QgsProject.instance()
         layers = project.mapLayers()
@@ -377,6 +407,12 @@ class Infos(QKanPlugin):
             self.info_dlg.tableWidget_2.setItem(2, 10, QTableWidgetItem(str(test.anz_schaechte_saniert_mw)))
 
     def run_info(self) -> None:
+        if not self._matplotlib_available:
+            logger.warning("Matplotlib fehlt; der Info-Export ist nicht verfügbar.")
+            return
+
+        from ._info import Info
+
         # Prüfen, ob ein Projekt geladen ist
         project = QgsProject.instance()
         layers = project.mapLayers()
@@ -663,6 +699,12 @@ class Infos(QKanPlugin):
             logger.warning('Hinweis: Es ist kein Projekt geladen!')
 
     def run_info_2(self) -> None:
+        if not self._matplotlib_available:
+            logger.warning("Matplotlib fehlt; der XML-Export ist nicht verfügbar.")
+            return
+
+        from ._info import Info
+
         # Prüfen, ob ein Projekt geladen ist
         project = QgsProject.instance()
         layers = project.mapLayers()

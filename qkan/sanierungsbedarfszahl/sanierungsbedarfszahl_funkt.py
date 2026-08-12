@@ -3,7 +3,12 @@ from qgis.core import *
 from qgis.utils import iface, spatialite_connect, pluginDirectory
 import sqlite3
 import math
-import pandas as pd
+try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    pd = None
+    HAS_PANDAS = False
 from qkan.tools.qkan_utils import loadLayer
 from qkan import enums
 
@@ -43,6 +48,9 @@ class SanierungsbedarfszahlFunkt:
 
 
     def run(self):
+        if not HAS_PANDAS:
+            raise ImportError("pandas is required for SanierungsbedarfszahlFunkt")
+
         check_cb = self.check_cb
         if check_cb['cb3'] and check_cb['cb1']:
             self.haltung = True
