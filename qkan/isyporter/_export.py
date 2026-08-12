@@ -20,6 +20,7 @@ logger = get_logger("QKan.xml.export")
 
 
 def _set_time_locale() -> None:
+    """Setze bevorzugt deutsche LC_TIME-Locale, aber ohne Import-Abbruch."""
     for locale_name in (
         "de_DE.UTF-8",
         "de_DE.utf8",
