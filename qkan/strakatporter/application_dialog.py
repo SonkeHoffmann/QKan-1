@@ -3,10 +3,12 @@ from typing import Callable, Optional
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
+    QApplication,
     QCheckBox,
     QDialog,
     QFileDialog,
     QLineEdit,
+    QProgressBar,
     QPushButton,
     QWidget,
     QDialogButtonBox,
@@ -49,6 +51,8 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
     tf_database: QLineEdit
     tf_import: QLineEdit
     tf_project: QLineEdit
+    progressBar_strakat: QProgressBar
+    import_callback: Optional[Callable[[], bool]]
 
     pb_database: QPushButton
     pb_import: QPushButton
@@ -92,6 +96,32 @@ class ImportDialog(_Dialog, IMPORT_CLASS):  # type: ignore
         self.button_box.helpRequested.connect(self.click_help)
         self.pb_ordnerFotos.clicked.connect(self.select_ordnerbild)
         self.pb_ordnervideo.clicked.connect(self.select_ordnervideo)
+
+        self.progressBar_strakat.setRange(0, 100)
+        self.progressBar_strakat.setValue(0)
+        self.progressBar_strakat.setFormat("%p%")
+        self.import_callback = None
+
+    def accept(self) -> None:
+        if self.import_callback is None:
+            super().accept()
+            return
+
+        self.button_box.setEnabled(False)
+        self.progressBar_strakat.setValue(0)
+        QApplication.processEvents()
+
+        success = False
+        try:
+            success = bool(self.import_callback())
+        finally:
+            self.button_box.setEnabled(True)
+            QApplication.processEvents()
+
+        if success:
+            self.progressBar_strakat.setValue(100)
+            QApplication.processEvents()
+            super().accept()
 
     def prepareDialog(self, iface) -> bool:
         # Initialisierung der Anzeige der Anzahl zu exportierender Objekte
